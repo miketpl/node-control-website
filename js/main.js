@@ -64,7 +64,7 @@
 
     // ── Scroll-triggered fade-in animations ──────────────────
     const animatedElements = document.querySelectorAll(
-        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card, .screenshot-placeholder'
+        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card, .screenshot-card'
     );
 
     // Reset: hide elements initially until they scroll into view
@@ -89,4 +89,48 @@
 
     animatedElements.forEach(el => observer.observe(el));
 
+    // ── Screenshot category tabs ───────────────────────────
+    const tabs = document.querySelectorAll('.screenshot-tab');
+    const categories = document.querySelectorAll('.screenshot-category');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const cat = tab.dataset.category;
+            tabs.forEach(t => t.classList.remove('active'));
+            categories.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            const target = document.querySelector(`.screenshot-category[data-category="${cat}"]`);
+            if (target) {
+                target.classList.add('active');
+                // Re-trigger fade-in for newly visible cards
+                target.querySelectorAll('.screenshot-card').forEach(card => {
+                    card.style.opacity = '1';
+                    card.style.animation = 'fadeInUp 0.5s ease forwards';
+                });
+            }
+        });
+    });
+
 })();
+
+// ── Lightbox (global scope for onclick) ────────────────────
+function openLightbox(card) {
+    const img = card.querySelector('img');
+    const overlay = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    if (img && overlay && lightboxImg) {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        overlay.classList.add('active');
+    }
+}
+
+function closeLightbox() {
+    const overlay = document.getElementById('lightbox');
+    if (overlay) overlay.classList.remove('active');
+}
+
+// Close lightbox on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+});

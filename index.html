@@ -115,27 +115,111 @@
         <div class="container">
             <h2 class="section-title">See It In Action</h2>
             <p class="section-subtitle">A modern, dark-themed interface designed for network engineers who live in the terminal.</p>
-            <div class="screenshots-grid">
-                <div class="screenshot-placeholder">
-                    <div class="screenshot-inner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                        <span>Topology View</span>
+
+            <!-- Category tabs -->
+            <div class="screenshot-tabs">
+                <button class="screenshot-tab active" data-category="l2">L2 Topology</button>
+                <button class="screenshot-tab" data-category="l3">L3 Topology</button>
+                <button class="screenshot-tab" data-category="wan">WAN Watcher</button>
+                <button class="screenshot-tab" data-category="api">API Explorer</button>
+                <button class="screenshot-tab" data-category="sessions">Sessions</button>
+            </div>
+
+            <!-- L2 Topology -->
+            <div class="screenshot-category active" data-category="l2">
+                <div class="screenshots-grid">
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-l2-topology.png" alt="L2 Topology - full network map" loading="lazy">
+                        <div class="caption">Auto-discovered L2 topology via CDP/LLDP</div>
                     </div>
-                </div>
-                <div class="screenshot-placeholder">
-                    <div class="screenshot-inner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                        <span>Device Management</span>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-l2-highlight-links.png" alt="L2 Topology - highlighted links" loading="lazy">
+                        <div class="caption">Hover to highlight links and interfaces</div>
                     </div>
-                </div>
-                <div class="screenshot-placeholder">
-                    <div class="screenshot-inner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                        <span>Config Backup</span>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-vlan-table.png" alt="L2 Topology - VLAN lookup" loading="lazy">
+                        <div class="caption">Right-click to view VLANs on any switch</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-mac-table.png" alt="L2 Topology - MAC table" loading="lazy">
+                        <div class="caption">Live MAC address table with search and refresh</div>
                     </div>
                 </div>
             </div>
-            <p class="screenshots-note">Screenshots coming soon — app is in active development.</p>
+
+            <!-- L3 Topology -->
+            <div class="screenshot-category" data-category="l3">
+                <div class="screenshots-grid">
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-l3-topology.png" alt="L3 Topology - network map" loading="lazy">
+                        <div class="caption">Hierarchical L3 topology with role detection</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-route-table.png" alt="L3 Topology - route table" loading="lazy">
+                        <div class="caption">Right-click to view route tables with search</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-traceroute.png" alt="L3 Topology - traceroute" loading="lazy">
+                        <div class="caption">Fast traceroute between devices</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WAN Watcher -->
+            <div class="screenshot-category" data-category="wan">
+                <div class="screenshots-grid">
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-sdwan-watcher-topology.png" alt="WAN Watcher - ring topology" loading="lazy">
+                        <div class="caption">SD-WAN ring topology with site detection</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-sdwan-links.png" alt="WAN Watcher - inter-site links" loading="lazy">
+                        <div class="caption">Visualise inter-site and intra-site links</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-sdwan-route-table.png" alt="WAN Watcher - route tables" loading="lazy">
+                        <div class="caption">Per-VRF route table viewer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Explorer -->
+            <div class="screenshot-category" data-category="api">
+                <div class="screenshots-grid">
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-api-explorer-dropdown.png" alt="API Explorer - platform selection" loading="lazy">
+                        <div class="caption">Multi-platform API explorer: Meraki, DNA Center, PAN-OS, ISE</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-api-explorer-results.png" alt="API Explorer - results view" loading="lazy">
+                        <div class="caption">JSON response with readable table view</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions -->
+            <div class="screenshot-category" data-category="sessions">
+                <div class="screenshots-grid">
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-cmd-mode.png" alt="Command Mode - safe mode" loading="lazy">
+                        <div class="caption">Command Mode with Safe Mode protection</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-ssh-terminal-cdp.png" alt="SSH Terminal - CDP output" loading="lazy">
+                        <div class="caption">Broadcast commands to all devices simultaneously</div>
+                    </div>
+                    <div class="screenshot-card" onclick="openLightbox(this)">
+                        <img src="images/screenshots/nc-interactive-terminal.png" alt="Interactive Terminal" loading="lazy">
+                        <div class="caption">Full interactive terminal sessions</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Lightbox -->
+        <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+            <img id="lightbox-img" src="" alt="Screenshot preview">
         </div>
     </section>
 
