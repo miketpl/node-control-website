@@ -1,1 +1,606 @@
-<!-- placeholder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Control — Network Operations Desktop App</title>
+    <meta name="description" content="Node Control is a cross-platform desktop application for managing Cisco, Meraki, Palo Alto, and ISE network infrastructure. SSH, API, topology, backups, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --accent-orange: #ff8c00;
+            --accent-cyan: #00d4ff;
+            --accent-green: #4caf50;
+            --text-primary: #f0f0f0;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #1f2937;
+            --glow-orange: rgba(255, 140, 0, 0.15);
+            --glow-cyan: rgba(0, 212, 255, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ─────────────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-orange), #ff6a00);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: #fff;
+        }
+        .nav-logo-text {
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+        .nav-cta {
+            background: var(--accent-orange);
+            color: #fff !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
+        }
+
+        /* ── Hero ────────────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--glow-orange) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-content { max-width: 800px; position: relative; z-index: 1; }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-orange), #ff6a00);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 140, 0, 0.5);
+        }
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+        }
+        .hero-platforms {
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .hero-platforms span { margin: 0 0.25rem; }
+
+        /* ── Features ────────────────────────────────────── */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .section-header h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            border-color: var(--accent-orange);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .feature-icon.orange { background: var(--glow-orange); }
+        .feature-icon.cyan { background: var(--glow-cyan); }
+        .feature-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ── Platforms ───────────────────────────────────── */
+        .platforms {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .platform-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .platform-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .platform-item:hover { opacity: 1; }
+        .platform-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+        .platform-item span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ── Modes ───────────────────────────────────────── */
+        .modes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .mode-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .mode-card.safe { border-color: var(--accent-orange); }
+        .mode-card.config { border-color: var(--accent-cyan); }
+        .mode-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 1rem 0 0.75rem;
+        }
+        .mode-card.safe h3 { color: var(--accent-orange); }
+        .mode-card.config h3 { color: var(--accent-cyan); }
+        .mode-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .mode-icon { font-size: 2.5rem; }
+
+        /* ── CTA ─────────────────────────────────────────── */
+        .cta-section {
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-section p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-section .btn { position: relative; z-index: 1; }
+
+        /* ── Footer ──────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .features-grid { grid-template-columns: 1fr; }
+            .modes-grid { grid-template-columns: 1fr; }
+            .platform-logos { gap: 1.5rem; }
+            .footer-inner { justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">NC</div>
+            <span class="nav-logo-text">Node Control</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#platforms">Platforms</a></li>
+            <li><a href="#modes">Safe Mode</a></li>
+            <li><a href="#download" class="nav-cta">Download</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <div class="hero-badge-dot"></div>
+            v0.9.8 — Now with Safe Mode
+        </div>
+        <h1>Network operations,<br><span class="gradient">under control.</span></h1>
+        <p>A cross-platform desktop app for managing Cisco, Meraki, Palo Alto, and ISE infrastructure. SSH sessions, API explorer, topology views, backups, and more — all in one place.</p>
+        <div class="hero-buttons">
+            <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-primary">
+                Download for Mac
+            </a>
+            <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-secondary">
+                Download for Windows
+            </a>
+        </div>
+        <div class="hero-platforms">
+            macOS <span>&middot;</span> Windows <span>&middot;</span> Built with Python &amp; PySide6
+        </div>
+    </div>
+</section>
+
+<!-- ── Features ───────────────────────────────────────────── -->
+<section class="section" id="features">
+    <div class="section-header">
+        <h2>Everything you need to manage your network</h2>
+        <p>From quick show commands to full API exploration, Node Control covers your daily ops workflow.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon orange">&#128268;</div>
+            <h3>Connection Manager</h3>
+            <p>SSH into devices with saved credentials, stored securely in your system keychain. Tabbed sessions, reconnect handling, and credential management built in.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon cyan">&#128225;</div>
+            <h3>API Explorer</h3>
+            <p>Browse and execute API calls across Meraki, Cisco DNA Center, ISE ERS, and PAN-OS. 42+ preset operations with custom path support and JSON editing.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon orange">&#128506;</div>
+            <h3>Network Topology</h3>
+            <p>Visualise your network with auto-discovered L2/L3 topology maps. CDP/LLDP neighbours, MAC address tables, ARP, and routing tables &mdash; all interactive.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon cyan">&#128187;</div>
+            <h3>Interactive Terminal</h3>
+            <p>Full SSH terminal with Tab completion, command history, and PAN-OS scripting mode. Works like your favourite terminal emulator, inside the app.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon orange">&#128190;</div>
+            <h3>Config Backup</h3>
+            <p>One-click configuration backups across your device fleet. Schedule backups, compare diffs, and track configuration changes over time.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon cyan">&#128203;</div>
+            <h3>Task Runner</h3>
+            <p>Execute bulk operations across multiple devices. File transfers, packet captures, and custom command sequences &mdash; with real-time progress tracking.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── Platforms ──────────────────────────────────────────── -->
+<section class="platforms" id="platforms">
+    <div class="section">
+        <div class="section-header">
+            <h2>Multi-vendor support</h2>
+            <p>One app for your entire network, regardless of vendor.</p>
+        </div>
+        <div class="platform-logos">
+            <div class="platform-item">
+                <div class="platform-icon">&#128311;</div>
+                <span>Cisco IOS / IOS-XE</span>
+            </div>
+            <div class="platform-item">
+                <div class="platform-icon">&#9729;&#65039;</div>
+                <span>Cisco Meraki</span>
+            </div>
+            <div class="platform-item">
+                <div class="platform-icon">&#128737;&#65039;</div>
+                <span>Cisco ISE</span>
+            </div>
+            <div class="platform-item">
+                <div class="platform-icon">&#129516;</div>
+                <span>Cisco DNA Center</span>
+            </div>
+            <div class="platform-item">
+                <div class="platform-icon">&#128293;</div>
+                <span>Palo Alto PAN-OS</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Safe Mode ─────────────────────────────────────────── -->
+<section class="section" id="modes">
+    <div class="section-header">
+        <h2>Safe Mode &mdash; production confidence</h2>
+        <p>Choose your risk level at startup. Safe Mode enforces read-only access across the entire app.</p>
+    </div>
+    <div class="modes-grid">
+        <div class="mode-card safe">
+            <div class="mode-icon">&#128274;</div>
+            <h3>Safe Mode</h3>
+            <p>Read-only access. Show commands only &mdash; no config changes. Terminal mode and HTTPS disabled. Perfect for monitoring production networks.</p>
+        </div>
+        <div class="mode-card config">
+            <div class="mode-icon">&#9881;&#65039;</div>
+            <h3>Config Mode</h3>
+            <p>Full access. All commands, terminal mode, HTTPS sessions, API mutations, and tasks enabled. Use with caution on production.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── Download CTA ──────────────────────────────────────── -->
+<section class="cta-section" id="download">
+    <h2>Ready to take control?</h2>
+    <p>Download Node Control and start managing your network infrastructure today.</p>
+    <div class="hero-buttons" style="justify-content: center;">
+        <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-primary">
+            Download Latest Release
+        </a>
+    </div>
+    <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+        v0.9.8 &middot; macOS &amp; Windows &middot; Free for personal use
+    </p>
+</section>
+
+<!-- ── Footer ────────────────────────────────────────────── -->
+<footer>
+    <div class="footer-inner">
+        <p>&copy; 2026 Node Control. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://github.com/miketpl/node-control-releases/releases/latest">Releases</a>
+            <a href="mailto:support@nodecontrol.io">Contact</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ── Smooth scroll ─────────────────────────────────────── -->
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+});
+</script>
+
+</body>
+</html>
