@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="cubeGlow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="orangeGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="bgGrad" cx="50%" cy="38%" r="55%" fx="50%" fy="36%">
+      <stop offset="0%" stop-color="#0f2a38"/>
+      <stop offset="45%" stop-color="#0a1c28"/>
+      <stop offset="100%" stop-color="#060c12"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="200" fill="url(#bgGrad)"/>
+
+
+  <!-- ============================================ -->
+  <!-- LEFT TOPOLOGY CLUSTER (separate, decorative) -->
+  <!-- Not connected to central cube                -->
+  <!-- ============================================ -->
+  <g stroke="#3a6575" stroke-width="1.3" opacity="0.35">
+    <line x1="80" y1="320" x2="170" y2="265"/>
+    <line x1="170" y1="265" x2="220" y2="350"/>
+    <line x1="80" y1="320" x2="220" y2="350"/>
+    <line x1="80" y1="320" x2="115" y2="425"/>
+    <line x1="220" y1="350" x2="115" y2="425"/>
+    <line x1="115" y1="425" x2="180" y2="470"/>
+  </g>
+
+  <!-- Left cluster orange nodes -->
+  <g filter="url(#orangeGlow)"><circle cx="80" cy="320" r="10" fill="#ff9800"/></g>
+  <circle cx="80" cy="320" r="10" fill="#ff9800"/>
+  <circle cx="80" cy="320" r="4" fill="#ffd080"/>
+
+  <g filter="url(#orangeGlow)"><circle cx="220" cy="350" r="9" fill="#ff9800"/></g>
+  <circle cx="220" cy="350" r="9" fill="#ff9800"/>
+  <circle cx="220" cy="350" r="3.5" fill="#ffd080"/>
+
+  <g filter="url(#orangeGlow)"><circle cx="115" cy="425" r="8" fill="#ff9800"/></g>
+  <circle cx="115" cy="425" r="8" fill="#ff9800"/>
+  <circle cx="115" cy="425" r="3" fill="#ffd080"/>
+
+  <!-- Left cluster cyan nodes -->
+  <g filter="url(#glow)"><circle cx="170" cy="265" r="9" fill="#00e5ff"/></g>
+  <circle cx="170" cy="265" r="9" fill="#00e5ff"/>
+  <circle cx="170" cy="265" r="3.5" fill="#ffffff"/>
+
+  <g filter="url(#glow)"><circle cx="180" cy="470" r="7" fill="#00e5ff"/></g>
+  <circle cx="180" cy="470" r="7" fill="#00e5ff"/>
+  <circle cx="180" cy="470" r="2.5" fill="#ffffff"/>
+
+
+  <!-- ============================================ -->
+  <!-- RIGHT TOPOLOGY CLUSTER (separate, decorative)-->
+  <!-- ============================================ -->
+  <g stroke="#3a6575" stroke-width="1.3" opacity="0.35">
+    <line x1="810" y1="275" x2="910" y2="310"/>
+    <line x1="910" y1="310" x2="875" y2="400"/>
+    <line x1="810" y1="275" x2="790" y2="370"/>
+    <line x1="790" y1="370" x2="875" y2="400"/>
+    <line x1="875" y1="400" x2="930" y2="460"/>
+    <line x1="790" y1="370" x2="845" y2="460"/>
+    <line x1="845" y1="460" x2="930" y2="460"/>
+  </g>
+
+  <!-- Right cluster orange nodes -->
+  <g filter="url(#orangeGlow)"><circle cx="910" cy="310" r="10" fill="#ff9800"/></g>
+  <circle cx="910" cy="310" r="10" fill="#ff9800"/>
+  <circle cx="910" cy="310" r="4" fill="#ffd080"/>
+
+  <g filter="url(#orangeGlow)"><circle cx="875" cy="400" r="9" fill="#ff9800"/></g>
+  <circle cx="875" cy="400" r="9" fill="#ff9800"/>
+  <circle cx="875" cy="400" r="3.5" fill="#ffd080"/>
+
+  <g filter="url(#orangeGlow)"><circle cx="930" cy="460" r="8" fill="#ff9800"/></g>
+  <circle cx="930" cy="460" r="8" fill="#ff9800"/>
+  <circle cx="930" cy="460" r="3" fill="#ffd080"/>
+
+  <!-- Right cluster cyan nodes -->
+  <g filter="url(#glow)"><circle cx="810" cy="275" r="9" fill="#00e5ff"/></g>
+  <circle cx="810" cy="275" r="9" fill="#00e5ff"/>
+  <circle cx="810" cy="275" r="3.5" fill="#ffffff"/>
+
+  <g filter="url(#glow)"><circle cx="790" cy="370" r="8" fill="#00e5ff"/></g>
+  <circle cx="790" cy="370" r="8" fill="#00e5ff"/>
+  <circle cx="790" cy="370" r="3" fill="#ffffff"/>
+
+  <g filter="url(#glow)"><circle cx="845" cy="460" r="7" fill="#00e5ff"/></g>
+  <circle cx="845" cy="460" r="7" fill="#00e5ff"/>
+  <circle cx="845" cy="460" r="2.5" fill="#ffffff"/>
+
+
+  <!-- ============================================ -->
+  <!-- CENTRAL ISOMETRIC CUBE                       -->
+  <!-- ============================================ -->
+  <g transform="translate(512, 400)" filter="url(#glow)">
+    <!-- Top face -->
+    <polygon points="0,-100 120,-48 0,12 -120,-48" fill="#0a1a28" stroke="#00e5ff" stroke-width="2.8" stroke-linejoin="round"/>
+    <!-- Left face -->
+    <polygon points="-120,-48 0,12 0,135 -120,75" fill="#071218" stroke="#00e5ff" stroke-width="2.8" stroke-linejoin="round"/>
+    <!-- Right face -->
+    <polygon points="120,-48 0,12 0,135 120,75" fill="#050e14" stroke="#00e5ff" stroke-width="2.8" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Bright apex node on top of cube -->
+  <g filter="url(#glow)"><circle cx="512" cy="300" r="11" fill="#00e5ff"/></g>
+  <circle cx="512" cy="300" r="11" fill="#00e5ff"/>
+  <circle cx="512" cy="300" r="5.5" fill="#ffffff"/>
+
+  <!-- WiFi signal arcs above cube -->
+  <g transform="translate(512, 285)" filter="url(#glow)">
+    <path d="M -14,-10 Q 0,-22 14,-10" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+    <path d="M -26,-18 Q 0,-40 26,-18" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <path d="M -38,-25 Q 0,-56 38,-25" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+  </g>
+
+
+
+  <!-- ============================================ -->
+  <!-- WORDMARK: NodeControl                        -->
+  <!-- ============================================ -->
+  <g filter="url(#textGlow)">
+    <text x="512" y="660" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="700" font-size="108" fill="#ffffff" letter-spacing="2">
+      <tspan fill="#ffffff" font-weight="700">Node</tspan><tspan fill="#00e5ff" font-weight="300">Control</tspan>
+    </text>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- TAGLINE: AUTOMATE EVERYTHING                 -->
+  <!-- ============================================ -->
+  <text x="512" y="730" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="300" font-size="38" fill="#6a8a9a" letter-spacing="14">AUTOMATE  EVERYTHING</text>
+
+</svg>

@@ -3,604 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node Control — Network Operations Desktop App</title>
-    <meta name="description" content="Node Control is a cross-platform desktop application for managing Cisco, Meraki, Palo Alto, and ISE network infrastructure. SSH, API, topology, backups, and more.">
+    <title>NodeControl — Automate Everything</title>
+    <meta name="description" content="NodeControl is a powerful desktop network operations platform for discovery, topology mapping, configuration management, and automation.">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a2235;
-            --accent-orange: #ff8c00;
-            --accent-cyan: #00d4ff;
-            --accent-green: #4caf50;
-            --text-primary: #f0f0f0;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --border: #1f2937;
-            --glow-orange: rgba(255, 140, 0, 0.15);
-            --glow-cyan: rgba(0, 212, 255, 0.15);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* ── Nav ─────────────────────────────────────────── */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
-        }
-        .nav-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 64px;
-        }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-        .nav-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent-orange), #ff6a00);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 18px;
-            color: #fff;
-        }
-        .nav-logo-text {
-            font-weight: 700;
-            font-size: 1.15rem;
-            letter-spacing: -0.02em;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .nav-links a:hover { color: var(--accent-cyan); }
-        .nav-cta {
-            background: var(--accent-orange);
-            color: #fff !important;
-            padding: 0.5rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .nav-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
-        }
-
-        /* ── Hero ────────────────────────────────────────── */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 6rem 2rem 4rem;
-            position: relative;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--glow-orange) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .hero-content { max-width: 800px; position: relative; z-index: 1; }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            padding: 0.4rem 1rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-        .hero-badge-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-        }
-        .hero h1 .gradient {
-            background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
-        }
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.85rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-orange), #ff6a00);
-            color: #fff;
-            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.3);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 140, 0, 0.5);
-        }
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
-        }
-        .hero-platforms {
-            margin-top: 3rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .hero-platforms span { margin: 0 0.25rem; }
-
-        /* ── Features ────────────────────────────────────── */
-        .section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 6rem 2rem;
-        }
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-        .section-header h2 {
-            font-size: 2.25rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-        }
-        .section-header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .feature-card:hover {
-            border-color: var(--accent-orange);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .feature-card:hover::before { opacity: 1; }
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.25rem;
-        }
-        .feature-icon.orange { background: var(--glow-orange); }
-        .feature-icon.cyan { background: var(--glow-cyan); }
-        .feature-card h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-        }
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* ── Platforms ───────────────────────────────────── */
-        .platforms {
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-        .platform-logos {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 3rem;
-            flex-wrap: wrap;
-        }
-        .platform-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            opacity: 0.6;
-            transition: opacity 0.3s;
-        }
-        .platform-item:hover { opacity: 1; }
-        .platform-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-        }
-        .platform-item span {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* ── Modes ───────────────────────────────────────── */
-        .modes-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .mode-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2.5rem;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        .mode-card.safe { border-color: var(--accent-orange); }
-        .mode-card.config { border-color: var(--accent-cyan); }
-        .mode-card h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 1rem 0 0.75rem;
-        }
-        .mode-card.safe h3 { color: var(--accent-orange); }
-        .mode-card.config h3 { color: var(--accent-cyan); }
-        .mode-card p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        .mode-icon { font-size: 2.5rem; }
-
-        /* ── CTA ─────────────────────────────────────────── */
-        .cta-section {
-            text-align: center;
-            padding: 6rem 2rem;
-            position: relative;
-        }
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .cta-section h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-        .cta-section p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        .cta-section .btn { position: relative; z-index: 1; }
-
-        /* ── Footer ──────────────────────────────────────── */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        footer p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .footer-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-        .footer-links a:hover { color: var(--text-primary); }
-
-        /* ── Responsive ──────────────────────────────────── */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .features-grid { grid-template-columns: 1fr; }
-            .modes-grid { grid-template-columns: 1fr; }
-            .platform-logos { gap: 1.5rem; }
-            .footer-inner { justify-content: center; text-align: center; }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- ── Navigation ─────────────────────────────────────────── -->
-<nav>
-    <div class="nav-inner">
-        <a href="#" class="nav-logo">
-            <div class="nav-logo-icon">NC</div>
-            <span class="nav-logo-text">Node Control</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="#features">Features</a></li>
-            <li><a href="#platforms">Platforms</a></li>
-            <li><a href="#modes">Safe Mode</a></li>
-            <li><a href="#download" class="nav-cta">Download</a></li>
-        </ul>
-    </div>
-</nav>
-
-<!-- ── Hero ───────────────────────────────────────────────── -->
-<section class="hero">
-    <div class="hero-content">
-        <div class="hero-badge">
-            <div class="hero-badge-dot"></div>
-            v0.9.8 — Now with Safe Mode
-        </div>
-        <h1>Network operations,<br><span class="gradient">under control.</span></h1>
-        <p>A cross-platform desktop app for managing Cisco, Meraki, Palo Alto, and ISE infrastructure. SSH sessions, API explorer, topology views, backups, and more — all in one place.</p>
-        <div class="hero-buttons">
-            <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-primary">
-                Download for Mac
+    <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <img src="images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
             </a>
-            <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-secondary">
-                Download for Windows
-            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#screenshots">Screenshots</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#docs">Docs</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-        <div class="hero-platforms">
-            macOS <span>&middot;</span> Windows <span>&middot;</span> Built with Python &amp; PySide6
-        </div>
-    </div>
-</section>
+    </nav>
 
-<!-- ── Features ───────────────────────────────────────────── -->
-<section class="section" id="features">
-    <div class="section-header">
-        <h2>Everything you need to manage your network</h2>
-        <p>From quick show commands to full API exploration, Node Control covers your daily ops workflow.</p>
-    </div>
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon orange">&#128268;</div>
-            <h3>Connection Manager</h3>
-            <p>SSH into devices with saved credentials, stored securely in your system keychain. Tabbed sessions, reconnect handling, and credential management built in.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon cyan">&#128225;</div>
-            <h3>API Explorer</h3>
-            <p>Browse and execute API calls across Meraki, Cisco DNA Center, ISE ERS, and PAN-OS. 42+ preset operations with custom path support and JSON editing.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon orange">&#128506;</div>
-            <h3>Network Topology</h3>
-            <p>Visualise your network with auto-discovered L2/L3 topology maps. CDP/LLDP neighbours, MAC address tables, ARP, and routing tables &mdash; all interactive.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon cyan">&#128187;</div>
-            <h3>Interactive Terminal</h3>
-            <p>Full SSH terminal with Tab completion, command history, and PAN-OS scripting mode. Works like your favourite terminal emulator, inside the app.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon orange">&#128190;</div>
-            <h3>Config Backup</h3>
-            <p>One-click configuration backups across your device fleet. Schedule backups, compare diffs, and track configuration changes over time.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon cyan">&#128203;</div>
-            <h3>Task Runner</h3>
-            <p>Execute bulk operations across multiple devices. File transfers, packet captures, and custom command sequences &mdash; with real-time progress tracking.</p>
-        </div>
-    </div>
-</section>
-
-<!-- ── Platforms ──────────────────────────────────────────── -->
-<section class="platforms" id="platforms">
-    <div class="section">
-        <div class="section-header">
-            <h2>Multi-vendor support</h2>
-            <p>One app for your entire network, regardless of vendor.</p>
-        </div>
-        <div class="platform-logos">
-            <div class="platform-item">
-                <div class="platform-icon">&#128311;</div>
-                <span>Cisco IOS / IOS-XE</span>
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-glow"></div>
+        <div class="hero-content">
+            <img src="images/hero-banner.png" alt="NodeControl Logo" class="hero-banner">
+            <p class="hero-subtitle">The desktop platform for network discovery, topology mapping, configuration management, and full automation — built for network engineers.</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v8m-4-4l4 4 4-4"/></svg>
+                    Download Now
+                </a>
+                <a href="#features" class="btn btn-outline">Explore Features</a>
             </div>
-            <div class="platform-item">
-                <div class="platform-icon">&#9729;&#65039;</div>
-                <span>Cisco Meraki</span>
-            </div>
-            <div class="platform-item">
-                <div class="platform-icon">&#128737;&#65039;</div>
-                <span>Cisco ISE</span>
-            </div>
-            <div class="platform-item">
-                <div class="platform-icon">&#129516;</div>
-                <span>Cisco DNA Center</span>
-            </div>
-            <div class="platform-item">
-                <div class="platform-icon">&#128293;</div>
-                <span>Palo Alto PAN-OS</span>
+            <div class="hero-version">v0.9.8 — Early Access</div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ FEATURES ═══════════════════ -->
+    <section class="section" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Everything you need to manage your network infrastructure from a single desktop application.</p>
+            <div class="features-grid">
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                    </div>
+                    <h3>Network Discovery</h3>
+                    <p>Automatically discover devices across your network using CDP, LLDP, and SNMP. Build a complete inventory in minutes.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
+                    </div>
+                    <h3>L2/L3/WAN Topology</h3>
+                    <p>Interactive topology maps for Layer 2, Layer 3, and WAN with live VLAN, STP, MAC table, and route table flyouts with search.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <h3>Configuration Management</h3>
+                    <p>Push configurations, run commands, and manage device settings across your entire fleet from one interface.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <h3>Automated Backups</h3>
+                    <p>Schedule automatic configuration backups with diff comparison. Never lose a config change again.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h3>Real-time Monitoring</h3>
+                    <p>Live interface status, bandwidth monitoring, ping, and traceroute — all integrated into the topology view.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <h3>Device Library Sync</h3>
+                    <p>GitHub-backed device library keeps your team in sync. Share device definitions and templates across installations.</p>
+                </div>
+
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ── Safe Mode ─────────────────────────────────────────── -->
-<section class="section" id="modes">
-    <div class="section-header">
-        <h2>Safe Mode &mdash; production confidence</h2>
-        <p>Choose your risk level at startup. Safe Mode enforces read-only access across the entire app.</p>
-    </div>
-    <div class="modes-grid">
-        <div class="mode-card safe">
-            <div class="mode-icon">&#128274;</div>
-            <h3>Safe Mode</h3>
-            <p>Read-only access. Show commands only &mdash; no config changes. Terminal mode and HTTPS disabled. Perfect for monitoring production networks.</p>
+    <!-- ═══════════════════ SCREENSHOTS ═══════════════════ -->
+    <section class="section section-alt" id="screenshots">
+        <div class="container">
+            <h2 class="section-title">See It In Action</h2>
+            <p class="section-subtitle">A modern, dark-themed interface designed for network engineers who live in the terminal.</p>
+            <div class="screenshots-grid">
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        <span>Topology View</span>
+                    </div>
+                </div>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        <span>Device Management</span>
+                    </div>
+                </div>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        <span>Config Backup</span>
+                    </div>
+                </div>
+            </div>
+            <p class="screenshots-note">Screenshots coming soon — app is in active development.</p>
         </div>
-        <div class="mode-card config">
-            <div class="mode-icon">&#9881;&#65039;</div>
-            <h3>Config Mode</h3>
-            <p>Full access. All commands, terminal mode, HTTPS sessions, API mutations, and tasks enabled. Use with caution on production.</p>
+    </section>
+
+    <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
+    <section class="section" id="download">
+        <div class="container">
+            <h2 class="section-title">Download NodeControl</h2>
+            <p class="section-subtitle">Get started with NodeControl on your platform.</p>
+            <div class="download-cards">
+
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    </div>
+                    <h3>macOS</h3>
+                    <p>Requires macOS 12 (Monterey) or later</p>
+                    <a href="#" class="btn btn-primary btn-download">Download for macOS</a>
+                    <span class="download-meta">.dmg — v0.9.8 — 85 MB</span>
+                </div>
+
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                    </div>
+                    <h3>Windows</h3>
+                    <p>Requires Windows 10 or later</p>
+                    <a href="#" class="btn btn-primary btn-download">Download for Windows</a>
+                    <span class="download-meta">.exe — v0.9.8 — Coming Soon</span>
+                </div>
+
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ── Download CTA ──────────────────────────────────────── -->
-<section class="cta-section" id="download">
-    <h2>Ready to take control?</h2>
-    <p>Download Node Control and start managing your network infrastructure today.</p>
-    <div class="hero-buttons" style="justify-content: center;">
-        <a href="https://github.com/miketpl/node-control-releases/releases/latest" class="btn btn-primary">
-            Download Latest Release
-        </a>
-    </div>
-    <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
-        v0.9.8 &middot; macOS &amp; Windows &middot; Free for personal use
-    </p>
-</section>
+    <!-- ═══════════════════ PRICING ═══════════════════ -->
+    <section class="section section-alt" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Pricing</h2>
+            <p class="section-subtitle">Simple pricing for teams of all sizes.</p>
+            <div class="pricing-grid">
 
-<!-- ── Footer ────────────────────────────────────────────── -->
-<footer>
-    <div class="footer-inner">
-        <p>&copy; 2026 Node Control. All rights reserved.</p>
-        <div class="footer-links">
-            <a href="https://github.com/miketpl/node-control-releases/releases/latest">Releases</a>
-            <a href="mailto:support@nodecontrol.io">Contact</a>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <div class="pricing-price">Free</div>
+                        <p>For individual engineers</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Up to 25 devices</li>
+                        <li>L2 topology mapping</li>
+                        <li>Basic configuration backup</li>
+                        <li>Community support</li>
+                    </ul>
+                    <a href="#download" class="btn btn-outline">Get Started</a>
+                </div>
+
+                <div class="pricing-card pricing-featured">
+                    <div class="pricing-badge">Popular</div>
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <div class="pricing-price">$29<span>/month</span></div>
+                        <p>For network teams</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Unlimited devices</li>
+                        <li>L2 + L3 + WAN topology</li>
+                        <li>Automated backups & scheduling</li>
+                        <li>Device library sync</li>
+                        <li>Priority email support</li>
+                    </ul>
+                    <a href="#download" class="btn btn-primary">Get Started</a>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="pricing-price">Custom</div>
+                        <p>For large organisations</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Everything in Professional</li>
+                        <li>Multi-site support</li>
+                        <li>SSO & RBAC</li>
+                        <li>Dedicated support</li>
+                        <li>Custom integrations</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-outline">Contact Sales</a>
+                </div>
+
+            </div>
         </div>
-    </div>
-</footer>
+    </section>
 
-<!-- ── Smooth scroll ─────────────────────────────────────── -->
-<script>
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
-    });
-});
-</script>
+    <!-- ═══════════════════ DOCS ═══════════════════ -->
+    <section class="section" id="docs">
+        <div class="container">
+            <h2 class="section-title">Documentation</h2>
+            <p class="section-subtitle">Get up and running quickly with our guides and references.</p>
+            <div class="docs-grid">
 
+                <a href="#" class="docs-card">
+                    <div class="docs-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                    </div>
+                    <h3>Quick Start Guide</h3>
+                    <p>Install NodeControl and discover your first network in under 5 minutes.</p>
+                </a>
+
+                <a href="#" class="docs-card">
+                    <div class="docs-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <h3>Full Documentation</h3>
+                    <p>Comprehensive reference for all features, settings, and workflows.</p>
+                </a>
+
+                <a href="#" class="docs-card">
+                    <div class="docs-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    </div>
+                    <h3>API Reference</h3>
+                    <p>Integrate NodeControl with your existing tools and automation pipelines.</p>
+                </a>
+
+                <a href="#" class="docs-card">
+                    <div class="docs-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3>Changelog</h3>
+                    <p>See what's new in every release, including bug fixes and improvements.</p>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ CONTACT ═══════════════════ -->
+    <section class="section section-alt" id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="section-subtitle">Have questions, need support, or want to discuss enterprise licensing?</p>
+            <div class="contact-grid">
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <h3>Email Support</h3>
+                    <p>Get in touch with our team directly.</p>
+                    <a href="mailto:support@nodecontrol.io" class="contact-link">support@nodecontrol.io</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    </div>
+                    <h3>GitHub</h3>
+                    <p>Report issues and request features.</p>
+                    <a href="https://github.com/miketpl" class="contact-link">github.com/miketpl</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </div>
+                    <h3>Enterprise Sales</h3>
+                    <p>Discuss custom licensing and integrations.</p>
+                    <a href="mailto:sales@nodecontrol.io" class="contact-link">sales@nodecontrol.io</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="images/logo-simple.svg" alt="NodeControl" class="footer-logo">
+                    <span class="footer-logo-text">Node<span class="cyan">Control</span></span>
+                    <p>Built for Network Engineers</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="#download">Download</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#docs">Docs</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#contact">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Connect</h4>
+                    <a href="https://github.com/miketpl">GitHub</a>
+                    <a href="mailto:support@nodecontrol.io">Email</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 NodeControl by TPL. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
