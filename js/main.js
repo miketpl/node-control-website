@@ -64,7 +64,7 @@
 
     // ── Scroll-triggered fade-in animations ──────────────────
     const animatedElements = document.querySelectorAll(
-        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card, .screenshot-card'
+        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card'
     );
 
     // Reset: hide elements initially until they scroll into view
