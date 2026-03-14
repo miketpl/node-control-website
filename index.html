@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NodeControl — Automate Everything</title>
-    <meta name="description" content="NodeControl is a powerful desktop network operations platform for discovery, topology mapping, configuration management, and automation.">
+    <meta name="description" content="NodeControl is an AI-powered desktop network operations platform for discovery, topology mapping, configuration management, intelligent troubleshooting, and automation. Built for network engineers by The Promised LAN.">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=0.9.8">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -26,6 +26,8 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#screenshots">Screenshots</a></li>
+                <li><a href="#watcher">Watcher</a></li>
+                <li><a href="#ai">AI Ops</a></li>
                 <li><a href="#download">Download</a></li>
                 <li><a href="#pricing">Pricing</a></li>
                 <li><a href="#docs">Docs</a></li>
@@ -39,7 +41,8 @@
         <div class="hero-bg-glow"></div>
         <div class="hero-content">
             <img src="images/hero-banner.png" alt="NodeControl Logo" class="hero-banner">
-            <p class="hero-subtitle">The desktop platform for network discovery, topology mapping, configuration management, and full automation — built for network engineers.</p>
+            <p class="hero-subtitle">Built for Network Engineers. Automate config changes, discovery, topology mapping, config management, and troubleshooting &mdash; all from one desktop app, now with AI-powered intelligence that understands your infrastructure and thinks the way a network engineer thinks.</p>
+            <p class="hero-tagline"><span class="cyan">AUTOMATE</span> <span class="orange">EVERYTHING</span></p>
             <div class="hero-buttons">
                 <a href="#download" class="btn btn-primary">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v8m-4-4l4 4 4-4"/></svg>
@@ -47,63 +50,72 @@
                 </a>
                 <a href="#features" class="btn btn-outline">Explore Features</a>
             </div>
-            <div class="hero-version">v0.9.8 — Early Access</div>
+            <div class="hero-version">v0.9.7 &mdash; Early Access</div>
+            <!-- TPL branding is part of the hero banner image -->
         </div>
     </section>
 
     <!-- ═══════════════════ FEATURES ═══════════════════ -->
     <section class="section" id="features">
         <div class="container">
-            <h2 class="section-title">Powerful Features</h2>
-            <p class="section-subtitle">Everything you need to manage your network infrastructure from a single desktop application.</p>
+            <h2 class="section-title">Everything <span class="orange">Automated</span></h2>
+            <p class="section-subtitle">One desktop app. Every network operation. AI-powered intelligence baked in. Built for engineers who live in the terminal but need visibility across the whole infrastructure.</p>
             <div class="features-grid">
 
                 <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature-icon icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
                     </div>
                     <h3>Network Discovery</h3>
-                    <p>Automatically discover devices across your network using CDP, LLDP, and SNMP. Build a complete inventory in minutes.</p>
+                    <p>Drop in a seed IP and watch your network map itself. CDP, LLDP, and SNMP discovery builds a complete inventory in minutes &mdash; no spreadsheets required.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
                     </div>
-                    <h3>L2/L3/WAN Topology</h3>
-                    <p>Interactive topology maps for Layer 2, Layer 3, and WAN with live VLAN, STP, MAC table, and route table flyouts with search.</p>
+                    <h3>L2 / L3 / WAN Topology</h3>
+                    <p>Interactive topology maps with live VLAN, STP, MAC table, and route table flyouts. Right-click any node for instant SSH, ping, traceroute, or table lookups with full search.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature-icon icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                     </div>
-                    <h3>Configuration Management</h3>
-                    <p>Push configurations, run commands, and manage device settings across your entire fleet from one interface.</p>
+                    <h3>Push Config at Scale</h3>
+                    <p>Broadcast commands to your entire fleet or target individual devices. Safe mode, config mode, dry-run &mdash; your network, your rules.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </div>
-                    <h3>Automated Backups</h3>
-                    <p>Schedule automatic configuration backups with diff comparison. Never lose a config change again.</p>
+                    <h3>Automated Backups &amp; Tasks</h3>
+                    <p>Scheduled config backups with diff comparison, automated tasks from the task runner, and repeatable workflows &mdash; so you always know what changed, when, and by whom.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                    </div>
+                    <h3>Terminal Modes</h3>
+                    <p>Connect to one device or hundreds at once. Command mode, full interactive terminal, or HTTPS via embedded browser &mdash; with safe mode to stop you breaking anything.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     </div>
-                    <h3>Real-time Monitoring</h3>
-                    <p>Live interface status, bandwidth monitoring, ping, and traceroute — all integrated into the topology view.</p>
+                    <h3>API Explorer</h3>
+                    <p>Built-in API explorer for Meraki, DNA Center, PAN-OS, and Cisco ISE. Execute calls, view JSON responses, and provision devices &mdash; no Postman needed.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v2a6 6 0 0 0 3.47 5.44L6 20h12l-1.47-2.56A6 6 0 0 0 20 12v-2a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>
                     </div>
-                    <h3>Device Library Sync</h3>
-                    <p>GitHub-backed device library keeps your team in sync. Share device definitions and templates across installations.</p>
+                    <h3>AI Agent Backend <span class="ai-badge">Coming Soon</span></h3>
+                    <p>Nine specialist AI agents that understand your network. Ask questions in plain English &mdash; get topology analysis, config recommendations, what-if scenarios, and root cause diagnosis.</p>
                 </div>
 
             </div>
@@ -113,125 +125,253 @@
     <!-- ═══════════════════ SCREENSHOTS ═══════════════════ -->
     <section class="section section-alt" id="screenshots">
         <div class="container">
-            <h2 class="section-title">See It In Action</h2>
-            <p class="section-subtitle">A modern, dark-themed interface designed for network engineers who live in the terminal.</p>
+            <h2 class="section-title">See It In <span class="cyan">Action</span></h2>
+            <p class="section-subtitle">A dark-themed interface designed for engineers who need real visibility and insights &mdash; not dashboards built for managers, with stats that mean nothing.</p>
 
-            <!-- Category tabs -->
-            <div class="screenshot-tabs">
-                <button class="screenshot-tab active" data-category="l2">L2 Topology</button>
-                <button class="screenshot-tab" data-category="l3">L3 Topology</button>
-                <button class="screenshot-tab" data-category="wan">WAN Watcher</button>
-                <button class="screenshot-tab" data-category="api">API Explorer</button>
-                <button class="screenshot-tab" data-category="sessions">Sessions</button>
+            <!-- Category: Topology Views -->
+            <div class="screenshot-category">
+                <h3 class="screenshot-category-title"><span class="orange">01</span> Topology Views</h3>
+                <p class="screenshot-category-desc">Layer 2, Layer 3, and WAN topology maps with interactive overlays, link highlighting, and right-click context menus.</p>
             </div>
-
-            <!-- L2 Topology -->
-            <div class="screenshot-category active" data-category="l2">
-                <div class="screenshots-grid">
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-l2-topology.png" alt="L2 Topology - full network map" loading="lazy">
-                        <div class="caption">Auto-discovered L2 topology via CDP/LLDP</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-l2-highlight-links.png" alt="L2 Topology - highlighted links" loading="lazy">
-                        <div class="caption">Hover to highlight links and interfaces</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-vlan-table.png" alt="L2 Topology - VLAN lookup" loading="lazy">
-                        <div class="caption">Right-click to view VLANs on any switch</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-mac-table.png" alt="L2 Topology - MAC table" loading="lazy">
-                        <div class="caption">Live MAC address table with search and refresh</div>
-                    </div>
+            <div class="screenshots-grid screenshots-grid-3">
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-l2-topology.png" alt="L2 Topology View" loading="lazy">
+                    <span class="screenshot-label">L2 Topology &mdash; Full Network View</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-l2-highlight-links.png" alt="L2 Highlighted Links" loading="lazy">
+                    <span class="screenshot-label">L2 &mdash; Link &amp; Interface Highlighting</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-l3-topology.png" alt="L3 Topology View" loading="lazy">
+                    <span class="screenshot-label">L3 Topology &mdash; VRF Corporate</span>
                 </div>
             </div>
 
-            <!-- L3 Topology -->
-            <div class="screenshot-category" data-category="l3">
-                <div class="screenshots-grid">
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-l3-topology.png" alt="L3 Topology - network map" loading="lazy">
-                        <div class="caption">Hierarchical L3 topology with role detection</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-route-table.png" alt="L3 Topology - route table" loading="lazy">
-                        <div class="caption">Right-click to view route tables with search</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-traceroute.png" alt="L3 Topology - traceroute" loading="lazy">
-                        <div class="caption">Fast traceroute between devices</div>
-                    </div>
+            <!-- Category: Right-Click Context -->
+            <div class="screenshot-category">
+                <h3 class="screenshot-category-title"><span class="orange">02</span> Right-Click Everything</h3>
+                <p class="screenshot-category-desc">VLANs, MAC tables, route tables, traceroute &mdash; all one right-click away from any node on the topology.</p>
+            </div>
+            <div class="screenshots-grid screenshots-grid-4">
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-vlan-table.png" alt="VLAN Table Lookup" loading="lazy">
+                    <span class="screenshot-label">VLAN Table Lookup</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-mac-table.png" alt="MAC Address Table" loading="lazy">
+                    <span class="screenshot-label">MAC Address Table</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-route-table.png" alt="Route Table" loading="lazy">
+                    <span class="screenshot-label">Route Table with Search</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-traceroute.png" alt="Fast Traceroute" loading="lazy">
+                    <span class="screenshot-label">Fast Traceroute</span>
                 </div>
             </div>
 
-            <!-- WAN Watcher -->
-            <div class="screenshot-category" data-category="wan">
-                <div class="screenshots-grid">
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-sdwan-watcher-topology.png" alt="WAN Watcher - ring topology" loading="lazy">
-                        <div class="caption">SD-WAN ring topology with site detection</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-sdwan-links.png" alt="WAN Watcher - inter-site links" loading="lazy">
-                        <div class="caption">Visualise inter-site and intra-site links</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-sdwan-route-table.png" alt="WAN Watcher - route tables" loading="lazy">
-                        <div class="caption">Per-VRF route table viewer</div>
-                    </div>
+            <!-- Category: Terminal & SSH -->
+            <div class="screenshot-category">
+                <h3 class="screenshot-category-title"><span class="orange">03</span> Terminal &amp; SSH</h3>
+                <p class="screenshot-category-desc">Multi-device SSH or HTTPS sessions with command mode or full interactive terminal mode, with broadcast-to-all. Ships with safe mode or config mode for peace of mind &mdash; in safe mode only show and non config-changing commands can be entered.</p>
+            </div>
+            <div class="screenshots-grid screenshots-grid-4">
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-cmd-mode.png" alt="Command Mode" loading="lazy">
+                    <span class="screenshot-label">SSH &mdash; Command Mode (Safe)</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-ssh-terminal-cdp.png" alt="CDP Output" loading="lazy">
+                    <span class="screenshot-label">Broadcast &mdash; CDP Neighbors</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-interactive-terminal.png" alt="Interactive Terminal" loading="lazy">
+                    <span class="screenshot-label">Interactive Terminal &mdash; Config Mode</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-embedded-browser.png" alt="Embedded HTTPS Browser" loading="lazy">
+                    <span class="screenshot-label">HTTPS &mdash; Embedded Browser</span>
                 </div>
             </div>
 
-            <!-- API Explorer -->
-            <div class="screenshot-category" data-category="api">
-                <div class="screenshots-grid">
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-api-explorer-dropdown.png" alt="API Explorer - platform selection" loading="lazy">
-                        <div class="caption">Multi-platform API explorer: Meraki, DNA Center, PAN-OS, ISE</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-api-explorer-results.png" alt="API Explorer - results view" loading="lazy">
-                        <div class="caption">JSON response with readable table view</div>
-                    </div>
+            <!-- Category: API Explorer -->
+            <div class="screenshot-category">
+                <h3 class="screenshot-category-title"><span class="orange">04</span> API Explorer</h3>
+                <p class="screenshot-category-desc">Query Meraki, DNA Center, PAN-OS, and Cisco ISE APIs directly. JSON response view with readable table output.</p>
+            </div>
+            <div class="screenshots-grid screenshots-grid-2">
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-api-explorer-dropdown.png?v=20260314" alt="API Explorer — Meraki Networks Query" loading="lazy">
+                    <span class="screenshot-label">Meraki &mdash; List Networks with Readable View</span>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/nc-api-explorer-results.png" alt="API Explorer Results" loading="lazy">
+                    <span class="screenshot-label">JSON Response &amp; Readable View</span>
                 </div>
             </div>
-
-            <!-- Sessions -->
-            <div class="screenshot-category" data-category="sessions">
-                <div class="screenshots-grid">
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-cmd-mode.png" alt="Command Mode - safe mode" loading="lazy">
-                        <div class="caption">Command Mode with Safe Mode protection</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-ssh-terminal-cdp.png" alt="SSH Terminal - CDP output" loading="lazy">
-                        <div class="caption">Broadcast commands to all devices simultaneously</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-interactive-terminal.png" alt="Interactive Terminal" loading="lazy">
-                        <div class="caption">Full interactive terminal sessions</div>
-                    </div>
-                    <div class="screenshot-card" onclick="openLightbox(this)">
-                        <img src="images/screenshots/nc-task-menu.png" alt="Built-in task menu" loading="lazy">
-                        <div class="caption">Built-in tasks: topology, backup, scan, capture and more</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+    </section>
 
-        <!-- Lightbox -->
-        <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
-            <img id="lightbox-img" src="" alt="Screenshot preview">
+    <!-- ═══════════════════ WATCHER OF THE WAN ═══════════════════ -->
+    <section class="section watcher-section" id="watcher">
+        <div class="container">
+            <div class="watcher-header">
+                <h2 class="watcher-title">
+                    <span class="watcher-light">Watcher</span> <span class="watcher-dim">of The</span> <span class="cyan watcher-bold">WAN</span>
+                </h2>
+                <p class="section-subtitle">Full-mesh SD-WAN topology visualization. Every site, every tunnel, every route &mdash; on one screen. Right-click any router to inspect route tables, trace paths, or open an SSH session.</p>
+            </div>
+            <div class="watcher-showcase">
+                <div class="watcher-main-image screenshot-card">
+                    <img src="images/screenshots/nc-sdwan-watcher-topology.png" alt="Watcher of The WAN — Full Mesh Topology" loading="lazy">
+                    <span class="screenshot-label">Full-Mesh SD-WAN Topology</span>
+                </div>
+                <div class="watcher-side-images">
+                    <div class="screenshot-card">
+                        <img src="images/screenshots/nc-sdwan-links.png" alt="SDWAN Link View — Select One Device, See All Tunnels" loading="lazy">
+                        <span class="screenshot-label">Select a Device &mdash; See All Its Tunnels</span>
+                    </div>
+                    <div class="screenshot-card">
+                        <img src="images/screenshots/nc-sdwan-route-table.png" alt="SDWAN Route Table" loading="lazy">
+                        <span class="screenshot-label">SD-WAN Route Table Lookup</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ AI OPERATIONS ═══════════════════ -->
+    <section class="section ai-section" id="ai">
+        <div class="container">
+            <div class="ai-header">
+                <h2 class="ai-title">
+                    <span class="ai-title-light">AI-Powered</span> <span class="orange ai-title-bold">Operations</span>
+                </h2>
+                <div class="ai-coming-soon">Coming Soon &mdash; Available for Demo</div>
+                <p class="section-subtitle">Nine specialist AI agents that understand your network inside and out. Ask questions in plain English. Get intelligent answers backed by real device data.</p>
+            </div>
+
+            <div class="ai-agents-grid">
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h3>Network Monitor</h3>
+                    <p>Real-time health checks, interface status, and alert prioritisation across your entire fleet.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <h3>Traffic Analysis</h3>
+                    <p>Bandwidth utilisation, bottleneck detection, and traffic pattern analysis with natural language queries.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h3>Route Intelligence</h3>
+                    <p>BGP, OSPF, and static route analysis. Path tracing, convergence checks, and routing anomaly detection.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+                    </div>
+                    <h3>Config Analysis</h3>
+                    <p>Compliance auditing, configuration drift detection, and security posture assessment &mdash; automatically.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <h3>Change Advisor</h3>
+                    <p>What-if analysis with risk ratings before you push. Safe config generation with automatic rollback commands baked in.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                    <h3>Alert Correlation</h3>
+                    <p>Intelligent alert grouping, noise reduction, and priority scoring. Find the signal in the storm.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
+                    </div>
+                    <h3>Topology Agent</h3>
+                    <p>Blast radius analysis, single points of failure identification, and intelligent path recommendation.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Firewall Agent</h3>
+                    <p>Cross-platform security policy auditing, NAT rule analysis, and policy optimisation. Ask it to find shadowed or redundant rules across any vendor.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3>Log Analysis</h3>
+                    <p>Pattern detection across syslog, event correlation, and AI-driven root cause analysis. Stop scrolling through logs manually.</p>
+                </div>
+
+            </div>
+
+            <div class="ai-features-row">
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div>
+                        <h4>Natural Language Chat</h4>
+                        <p>Ask your network questions like you'd ask a senior engineer. The AI orchestrator routes your query to the right specialist agent automatically.</p>
+                    </div>
+                </div>
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
+                    </div>
+                    <div>
+                        <h4>Flexible LLM Backend</h4>
+                        <p>Run on Anthropic Claude in the cloud or bring your own models &mdash; NVIDIA NIM, vLLM, Ollama. Your data, your infrastructure, your choice.</p>
+                    </div>
+                </div>
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+                    </div>
+                    <div>
+                        <h4>Multi-Vendor Intelligence</h4>
+                        <p>Cisco, Arista, Juniper, Palo Alto, Fortinet, and more &mdash; the agents speak every dialect your network runs, regardless of vendor.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Screenshots placeholder -->
+            <div class="ai-screenshots-placeholder" id="ai-screenshots">
+                <p class="ai-screenshots-note">AI interface screenshots arriving soon &mdash; available now for live demo.</p>
+            </div>
+
         </div>
     </section>
 
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-    <section class="section" id="download">
+    <section class="section section-alt" id="download">
         <div class="container">
-            <h2 class="section-title">Download NodeControl</h2>
-            <p class="section-subtitle">Get started with NodeControl on your platform.</p>
+            <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
+            <p class="section-subtitle">One download. Full desktop app &mdash; your network data stays on your machine. Optional cloud AI for those who want it.</p>
             <div class="download-cards">
 
                 <div class="download-card">
@@ -241,7 +381,7 @@
                     <h3>macOS</h3>
                     <p>Requires macOS 12 (Monterey) or later</p>
                     <a href="#" class="btn btn-primary btn-download">Download for macOS</a>
-                    <span class="download-meta">.dmg — v0.9.8 — 85 MB</span>
+                    <span class="download-meta">.dmg &mdash; v0.9.7 &mdash; 85 MB</span>
                 </div>
 
                 <div class="download-card">
@@ -251,7 +391,7 @@
                     <h3>Windows</h3>
                     <p>Requires Windows 10 or later</p>
                     <a href="#" class="btn btn-primary btn-download">Download for Windows</a>
-                    <span class="download-meta">.exe — v0.9.8 — Coming Soon</span>
+                    <span class="download-meta">.exe &mdash; v0.9.7 &mdash; Coming Soon</span>
                 </div>
 
             </div>
@@ -259,10 +399,13 @@
     </section>
 
     <!-- ═══════════════════ PRICING ═══════════════════ -->
-    <section class="section section-alt" id="pricing">
+    <section class="section" id="pricing">
         <div class="container">
             <h2 class="section-title">Pricing</h2>
-            <p class="section-subtitle">Simple pricing for teams of all sizes.</p>
+            <p class="section-subtitle">Simple pricing. No per-device fees. No cloud lock-in.</p>
+
+            <!-- Core Platform tiers -->
+            <div class="pricing-tier-label"><span class="cyan">Core</span> Platform</div>
             <div class="pricing-grid">
 
                 <div class="pricing-card">
@@ -284,13 +427,15 @@
                     <div class="pricing-badge">Popular</div>
                     <div class="pricing-header">
                         <h3>Professional</h3>
-                        <div class="pricing-price">$29<span>/month</span></div>
+                        <div class="pricing-price">&pound;29<span>/month</span></div>
                         <p>For network teams</p>
                     </div>
                     <ul class="pricing-features">
                         <li>Unlimited devices</li>
                         <li>L2 + L3 + WAN topology</li>
-                        <li>Automated backups & scheduling</li>
+                        <li>Watcher of The WAN (SD-WAN)</li>
+                        <li>API Explorer (Meraki, DNA, ISE)</li>
+                        <li>Automated backups &amp; scheduling</li>
                         <li>Device library sync</li>
                         <li>Priority email support</li>
                     </ul>
@@ -306,7 +451,7 @@
                     <ul class="pricing-features">
                         <li>Everything in Professional</li>
                         <li>Multi-site support</li>
-                        <li>SSO & RBAC</li>
+                        <li>SSO &amp; RBAC</li>
                         <li>Dedicated support</li>
                         <li>Custom integrations</li>
                     </ul>
@@ -314,11 +459,52 @@
                 </div>
 
             </div>
+
+            <!-- AI Operations tiers -->
+            <div class="pricing-tier-label pricing-tier-ai"><span class="orange">AI</span> Operations <span class="ai-badge">Coming Soon</span></div>
+            <div class="pricing-grid pricing-grid-2">
+
+                <div class="pricing-card pricing-card-ai">
+                    <div class="pricing-header">
+                        <h3>AI Pro</h3>
+                        <div class="pricing-price pricing-price-orange">&pound;49<span>/month</span></div>
+                        <p>AI-powered network operations</p>
+                    </div>
+                    <ul class="pricing-features pricing-features-ai">
+                        <li>Requires Professional or higher</li>
+                        <li>Natural language chat interface</li>
+                        <li>Cloud LLM (Anthropic Claude)</li>
+                        <li>5 specialist agents included</li>
+                        <li>What-if analysis &amp; risk rating</li>
+                        <li>Config generation with rollback</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-outline btn-outline-orange">Join Waitlist</a>
+                </div>
+
+                <div class="pricing-card pricing-card-ai pricing-featured-ai">
+                    <div class="pricing-badge pricing-badge-ai">Full Suite</div>
+                    <div class="pricing-header">
+                        <h3>AI Enterprise</h3>
+                        <div class="pricing-price pricing-price-orange">Custom</div>
+                        <p>Self-hosted AI, total control</p>
+                    </div>
+                    <ul class="pricing-features pricing-features-ai">
+                        <li>Everything in AI Pro</li>
+                        <li>All 9 specialist agents</li>
+                        <li>Self-hosted LLM (NIM, vLLM, Ollama)</li>
+                        <li>Air-gapped deployment option</li>
+                        <li>Custom agent development</li>
+                        <li>Dedicated AI engineering support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary btn-primary-orange">Contact Sales</a>
+                </div>
+
+            </div>
         </div>
     </section>
 
     <!-- ═══════════════════ DOCS ═══════════════════ -->
-    <section class="section" id="docs">
+    <section class="section section-alt" id="docs">
         <div class="container">
             <h2 class="section-title">Documentation</h2>
             <p class="section-subtitle">Get up and running quickly with our guides and references.</p>
@@ -328,32 +514,40 @@
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
                     </div>
-                    <h3>Quick Start Guide</h3>
-                    <p>Install NodeControl and discover your first network in under 5 minutes.</p>
+                    <div>
+                        <h3>Quick Start Guide</h3>
+                        <p>Install NodeControl and discover your first network in under 5 minutes.</p>
+                    </div>
                 </a>
 
                 <a href="#" class="docs-card">
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
-                    <h3>Full Documentation</h3>
-                    <p>Comprehensive reference for all features, settings, and workflows.</p>
+                    <div>
+                        <h3>Full Documentation</h3>
+                        <p>Comprehensive reference for all features, settings, and workflows.</p>
+                    </div>
                 </a>
 
                 <a href="#" class="docs-card">
-                    <div class="docs-icon">
+                    <div class="docs-icon icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     </div>
-                    <h3>API Reference</h3>
-                    <p>Integrate NodeControl with your existing tools and automation pipelines.</p>
+                    <div>
+                        <h3>API Reference</h3>
+                        <p>Integrate NodeControl with your existing tools and automation pipelines.</p>
+                    </div>
                 </a>
 
                 <a href="#" class="docs-card">
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
-                    <h3>Changelog</h3>
-                    <p>See what's new in every release, including bug fixes and improvements.</p>
+                    <div>
+                        <h3>Changelog</h3>
+                        <p>See what's new in every release, including bug fixes and improvements.</p>
+                    </div>
                 </a>
 
             </div>
@@ -361,7 +555,7 @@
     </section>
 
     <!-- ═══════════════════ CONTACT ═══════════════════ -->
-    <section class="section section-alt" id="contact">
+    <section class="section" id="contact">
         <div class="container">
             <h2 class="section-title">Get In Touch</h2>
             <p class="section-subtitle">Have questions, need support, or want to discuss enterprise licensing?</p>
@@ -377,7 +571,7 @@
                 </div>
 
                 <div class="contact-card">
-                    <div class="contact-icon">
+                    <div class="contact-icon icon-orange">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </div>
                     <h3>GitHub</h3>
@@ -405,33 +599,43 @@
                 <div class="footer-brand">
                     <img src="images/logo-simple.svg" alt="NodeControl" class="footer-logo">
                     <span class="footer-logo-text">Node<span class="cyan">Control</span></span>
-                    <p>Built for Network Engineers</p>
+                    <p class="footer-tagline">Automate Everything</p>
+                    <div class="footer-tpl">
+                        <span class="tpl-brought-sm">A product of</span>
+                        <span class="tpl-name-sm">The Promised <span class="cyan">LAN</span></span>
+                        <span class="tpl-tagline-sm">Engineering the Future of Networking</span>
+                    </div>
                 </div>
                 <div class="footer-links">
                     <h4>Product</h4>
                     <a href="#features">Features</a>
+                    <a href="#screenshots">Screenshots</a>
+                    <a href="#watcher">Watcher of The WAN</a>
+                    <a href="#ai">AI Operations</a>
                     <a href="#download">Download</a>
                     <a href="#pricing">Pricing</a>
-                    <a href="#docs">Docs</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="#docs">Documentation</a>
+                    <a href="#">Quick Start Guide</a>
+                    <a href="#">API Reference</a>
+                    <a href="#">Changelog</a>
                 </div>
                 <div class="footer-links">
                     <h4>Company</h4>
                     <a href="#contact">Contact</a>
+                    <a href="https://github.com/miketpl">GitHub</a>
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
                 </div>
-                <div class="footer-links">
-                    <h4>Connect</h4>
-                    <a href="https://github.com/miketpl">GitHub</a>
-                    <a href="mailto:support@nodecontrol.io">Email</a>
-                </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 NodeControl by TPL. All rights reserved.</p>
+                <p>&copy; 2025 NodeControl by <span class="orange">The Promised LAN</span>. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="js/main.js?v=0.9.8"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

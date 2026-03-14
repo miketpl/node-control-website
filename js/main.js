@@ -64,7 +64,7 @@
 
     // ── Scroll-triggered fade-in animations ──────────────────
     const animatedElements = document.querySelectorAll(
-        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card'
+        '.feature-card, .download-card, .pricing-card, .docs-card, .contact-card, .screenshot-card, .watcher-main-image, .ai-agent-card, .ai-highlight'
     );
 
     // Reset: hide elements initially until they scroll into view
@@ -89,48 +89,37 @@
 
     animatedElements.forEach(el => observer.observe(el));
 
-    // ── Screenshot category tabs ───────────────────────────
-    const tabs = document.querySelectorAll('.screenshot-tab');
-    const categories = document.querySelectorAll('.screenshot-category');
+    // ── Screenshot lightbox ──────────────────────────────────
+    // Create lightbox overlay
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox-overlay';
+    lightbox.innerHTML = '<img class="lightbox-img" src="" alt=""><span class="lightbox-close">&times;</span>';
+    document.body.appendChild(lightbox);
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const cat = tab.dataset.category;
-            tabs.forEach(t => t.classList.remove('active'));
-            categories.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            const target = document.querySelector(`.screenshot-category[data-category="${cat}"]`);
-            if (target) {
-                target.classList.add('active');
-                // Re-trigger fade-in for newly visible cards
-                target.querySelectorAll('.screenshot-card').forEach(card => {
-                    card.style.opacity = '1';
-                    card.style.animation = 'fadeInUp 0.5s ease forwards';
-                });
-            }
+    const lightboxImg = lightbox.querySelector('.lightbox-img');
+    const lightboxClose = lightbox.querySelector('.lightbox-close');
+
+    // Click any screenshot card image to open lightbox
+    document.querySelectorAll('.screenshot-card img, .watcher-main-image img').forEach(img => {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
     });
 
-})();
-
-// ── Lightbox (global scope for onclick) ────────────────────
-function openLightbox(card) {
-    const img = card.querySelector('img');
-    const overlay = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    if (img && overlay && lightboxImg) {
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt;
-        overlay.classList.add('active');
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
     }
-}
 
-function closeLightbox() {
-    const overlay = document.getElementById('lightbox');
-    if (overlay) overlay.classList.remove('active');
-}
+    lightbox.addEventListener('click', closeLightbox);
+    lightboxClose.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
 
-// Close lightbox on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
-});
+})();
