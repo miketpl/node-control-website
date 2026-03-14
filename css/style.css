@@ -172,10 +172,10 @@ a:hover {
     position: relative;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     text-align: center;
-    padding: calc(var(--nav-height) + 40px) 24px 60px;
+    padding: calc(var(--nav-height) + 10px) 24px 60px;
     overflow: hidden;
 }
 
