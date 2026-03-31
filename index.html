@@ -30,7 +30,7 @@
                 <li><a href="#ai">AI Ops</a></li>
                 <li><a href="#download">Download</a></li>
                 <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#docs">Docs</a></li>
+                <li><a href="docs/">Docs</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -50,7 +50,7 @@
                 </a>
                 <a href="#features" class="btn btn-outline">Explore Features</a>
             </div>
-            <div class="hero-version">v0.9.7 &mdash; Early Access</div>
+            <div class="hero-version">v0.9.17 &mdash; Early Access</div>
             <!-- TPL branding is part of the hero banner image -->
         </div>
     </section>
@@ -119,6 +119,13 @@
                 </div>
 
             </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ STATEMENT ═══════════════════ -->
+    <section class="section statement-section">
+        <div class="container">
+            <img src="images/nc%20found%20it.jpg" alt="While you were troubleshooting, NodeControl already found it" class="statement-image">
         </div>
     </section>
 
@@ -371,30 +378,132 @@
     <section class="section section-alt" id="download">
         <div class="container">
             <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
-            <p class="section-subtitle">One download. Full desktop app &mdash; your network data stays on your machine. Optional cloud AI for those who want it.</p>
-            <div class="download-cards">
+            <p class="section-subtitle">Your network data stays on your machine. Pick your edition and platform below.</p>
 
-                <div class="download-card">
-                    <div class="download-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                    </div>
-                    <h3>macOS</h3>
-                    <p>Requires macOS 12 (Monterey) or later</p>
-                    <a href="#" class="btn btn-primary btn-download">Download for macOS</a>
-                    <span class="download-meta">.dmg &mdash; v0.9.7 &mdash; 85 MB</span>
+            <!-- Free Edition -->
+            <div class="download-tier">
+                <div class="download-tier-header">
+                    <h3 class="download-tier-title"><span class="cyan">Free</span> Edition</h3>
+                    <p class="download-tier-desc">Up to 25 devices &mdash; L2 topology, basic config backup, community support. Enter your details and we'll email you a verification code instantly.</p>
                 </div>
+                <div class="download-cards">
+                    <div class="download-card" style="grid-column: 1 / -1;">
+                        <!-- Step 1: Request form -->
+                        <form class="request-form" id="freeRequestForm">
+                            <div class="form-row">
+                                <input type="text" id="reqName" placeholder="Full name" required class="form-input">
+                                <input type="email" id="reqEmail" placeholder="Work email" required class="form-input">
+                            </div>
+                            <div class="form-row">
+                                <select id="reqPlatform" required class="form-input">
+                                    <option value="" disabled selected>Platform</option>
+                                    <option value="macos">macOS</option>
+                                    <option value="windows">Windows</option>
+                                    <option value="both">Both</option>
+                                </select>
+                                <input type="text" id="reqCompany" placeholder="Company / Organisation" class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-outline btn-download" id="reqSubmitBtn">Request Free Access</button>
+                            <span class="download-meta">We'll send a verification code to your email within seconds.</span>
+                            <div id="reqResult" class="redeem-result"></div>
+                        </form>
 
-                <div class="download-card">
-                    <div class="download-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                        <!-- Step 2: Verify email code (hidden initially) -->
+                        <div class="request-form" id="verifySection" style="display: none;">
+                            <p style="color: #c8cdd3; margin-bottom: 16px;">We've sent a <strong style="color: #00e8ff;">6-digit code</strong> to <span id="verifyEmailDisplay" style="color: #00e8ff;"></span>. Enter it below:</p>
+                            <div class="form-row form-row-redeem">
+                                <input type="text" id="verifyCode" placeholder="Enter 6-digit code" class="form-input form-input-code" maxlength="6" spellcheck="false" autocomplete="off" inputmode="numeric">
+                                <button type="button" id="verifyBtn" class="btn btn-primary">Verify</button>
+                            </div>
+                            <div id="verifyResult" class="redeem-result"></div>
+                            <button type="button" id="resendBtn" class="btn-link" style="margin-top: 12px; background: none; border: none; color: #636b75; cursor: pointer; font-size: 13px;">Didn't receive it? Resend code</button>
+                        </div>
+
+                        <!-- Step 3: Download code revealed (hidden initially) -->
+                        <div class="request-form" id="downloadCodeSection" style="display: none;">
+                            <p style="color: #c8cdd3; margin-bottom: 8px;">Email verified! Your permanent download code is:</p>
+                            <div style="text-align: center; margin: 20px 0;">
+                                <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
+                            </div>
+                            <p style="color: #636b75; font-size: 13px; margin-bottom: 20px;">Save this code &mdash; you can use it anytime to download NodeControl Free Edition below.</p>
+                        </div>
                     </div>
-                    <h3>Windows</h3>
-                    <p>Requires Windows 10 or later</p>
-                    <a href="#" class="btn btn-primary btn-download">Download for Windows</a>
-                    <span class="download-meta">.exe &mdash; v0.9.7 &mdash; Coming Soon</span>
                 </div>
-
             </div>
+
+            <!-- Already have a code? / Redeem -->
+            <div class="download-tier download-tier-redeem">
+                <div class="download-tier-header">
+                    <h3 class="download-tier-title">Have a <span class="cyan">Download Code</span>?</h3>
+                    <p class="download-tier-desc">Enter your code below to access your download.</p>
+                </div>
+                <div class="download-cards">
+                    <div class="download-card" style="grid-column: 1 / -1;">
+                        <div class="redeem-form" id="redeemForm">
+                            <div class="form-row form-row-redeem">
+                                <input type="text" id="redeemCode" placeholder="Enter your download code (NC-XXXX-XXXX)" class="form-input form-input-code" spellcheck="false" autocomplete="off">
+                                <button type="button" id="redeemBtn" class="btn btn-primary">Redeem</button>
+                            </div>
+                            <div id="redeemResult" class="redeem-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pro Edition -->
+            <div class="download-tier">
+                <div class="download-tier-header">
+                    <h3 class="download-tier-title"><span class="cyan">Professional</span> Edition</h3>
+                    <p class="download-tier-desc">Unlimited devices &mdash; L2/L3/WAN topology, Watcher of The WAN, API Explorer, automated backups &amp; scheduling.</p>
+                    <span class="download-tier-price">&pound;29/month</span>
+                </div>
+                <div class="download-cards">
+                    <div class="download-card">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        </div>
+                        <h3>macOS</h3>
+                        <a href="https://github.com/miketpl/node-control-releases-general/releases/latest/download/Node.Control-pro-0.9.17.dmg" class="btn btn-primary btn-download" id="dl-pro-mac" data-requires-license="true" data-stripe-link="STRIPE_PRO_LINK">Download for macOS</a>
+                        <span class="download-meta">.dmg &mdash; macOS 12+</span>
+                    </div>
+                    <div class="download-card">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                        </div>
+                        <h3>Windows</h3>
+                        <a href="https://github.com/miketpl/node-control-releases-general/releases/latest/download/NodeControl-pro-0.9.17-Setup.exe" class="btn btn-primary btn-download" id="dl-pro-win" data-requires-license="true" data-stripe-link="STRIPE_PRO_LINK">Download for Windows</a>
+                        <span class="download-meta">.exe &mdash; Windows 10+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Edition -->
+            <div class="download-tier">
+                <div class="download-tier-header">
+                    <h3 class="download-tier-title"><span class="orange">AI</span> Edition <span class="ai-badge">Coming Soon</span></h3>
+                    <p class="download-tier-desc">Everything in Professional plus 5 specialist AI agents, natural language chat, what-if analysis &amp; config generation.</p>
+                    <span class="download-tier-price download-tier-price-orange">&pound;49/month</span>
+                </div>
+                <div class="download-cards">
+                    <div class="download-card download-card-ai">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        </div>
+                        <h3>macOS</h3>
+                        <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/Node.Control-ai-0.9.17.dmg" class="btn btn-primary btn-primary-orange btn-download" id="dl-ai-mac" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for macOS</a>
+                        <span class="download-meta">.dmg &mdash; macOS 12+</span>
+                    </div>
+                    <div class="download-card download-card-ai">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                        </div>
+                        <h3>Windows</h3>
+                        <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/NodeControl-ai-0.9.17-Setup.exe" class="btn btn-primary btn-primary-orange btn-download" id="dl-ai-win" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for Windows</a>
+                        <span class="download-meta">.exe &mdash; Windows 10+</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -420,7 +529,7 @@
                         <li>Basic configuration backup</li>
                         <li>Community support</li>
                     </ul>
-                    <a href="#download" class="btn btn-outline">Get Started</a>
+                    <a href="#download" class="btn btn-outline">Download Free</a>
                 </div>
 
                 <div class="pricing-card pricing-featured">
@@ -439,7 +548,7 @@
                         <li>Device library sync</li>
                         <li>Priority email support</li>
                     </ul>
-                    <a href="#download" class="btn btn-primary">Get Started</a>
+                    <a href="#download" class="btn btn-primary" data-stripe-link="STRIPE_PRO_LINK">Subscribe &amp; Download</a>
                 </div>
 
                 <div class="pricing-card">
@@ -478,7 +587,7 @@
                         <li>What-if analysis &amp; risk rating</li>
                         <li>Config generation with rollback</li>
                     </ul>
-                    <a href="#contact" class="btn btn-outline btn-outline-orange">Join Waitlist</a>
+                    <a href="#download" class="btn btn-outline btn-outline-orange">Download AI Edition</a>
                 </div>
 
                 <div class="pricing-card pricing-card-ai pricing-featured-ai">
@@ -510,7 +619,7 @@
             <p class="section-subtitle">Get up and running quickly with our guides and references.</p>
             <div class="docs-grid">
 
-                <a href="#" class="docs-card">
+                <a href="docs/quick-start.html" class="docs-card">
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
                     </div>
@@ -520,7 +629,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="docs-card">
+                <a href="docs/" class="docs-card">
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
@@ -530,7 +639,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="docs-card">
+                <a href="docs/api-reference.html" class="docs-card">
                     <div class="docs-icon icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     </div>
@@ -540,7 +649,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="docs-card">
+                <a href="docs/changelog.html" class="docs-card">
                     <div class="docs-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>

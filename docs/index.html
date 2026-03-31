@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation — NodeControl</title>
+    <meta name="description" content="NodeControl documentation — quick start guide, feature reference, API docs, and changelog.">
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css?v=20260314">
+    <link rel="stylesheet" href="../css/docs.css?v=20260314">
+</head>
+<body>
+
+    <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../index.html#download">Download</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
+                <li><a href="./" class="active">Docs</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════ DOCS LAYOUT ═══════════════════ -->
+    <div class="docs-layout">
+
+        <!-- Sidebar -->
+        <aside class="docs-sidebar" id="docsSidebar">
+            <div class="docs-sidebar-header">
+                <h3>Documentation</h3>
+                <span class="docs-version">v0.9.17</span>
+            </div>
+
+            <nav class="docs-nav">
+                <div class="docs-nav-section">
+                    <h4>Getting Started</h4>
+                    <a href="./" class="docs-nav-link active">Overview</a>
+                    <a href="quick-start.html" class="docs-nav-link">Quick Start Guide</a>
+                    <a href="installation.html" class="docs-nav-link">Installation</a>
+                    <a href="first-discovery.html" class="docs-nav-link">Your First Discovery</a>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4>Core Features</h4>
+                    <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+                    <a href="topology.html" class="docs-nav-link">Topology Views</a>
+                    <a href="terminal.html" class="docs-nav-link">Terminal &amp; SSH</a>
+                    <a href="config-management.html" class="docs-nav-link">Config Management</a>
+                    <a href="backups.html" class="docs-nav-link">Automated Backups</a>
+                    <a href="task-runner.html" class="docs-nav-link">Task Runner</a>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4>Advanced</h4>
+                    <a href="api-explorer.html" class="docs-nav-link">API Explorer</a>
+                    <a href="watcher.html" class="docs-nav-link">Watcher of The WAN</a>
+                    <a href="device-library.html" class="docs-nav-link">Device Library</a>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4>AI Operations</h4>
+                    <a href="ai-overview.html" class="docs-nav-link">AI Overview</a>
+                    <a href="ai-agents.html" class="docs-nav-link">AI Agents</a>
+                    <a href="ai-chat.html" class="docs-nav-link">Chat Interface</a>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4>Reference</h4>
+                    <a href="api-reference.html" class="docs-nav-link">API Reference</a>
+                    <a href="settings.html" class="docs-nav-link">Settings</a>
+                    <a href="troubleshooting.html" class="docs-nav-link">Troubleshooting</a>
+                    <a href="changelog.html" class="docs-nav-link">Changelog</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <h1>NodeControl Documentation</h1>
+                <p class="docs-lead">Everything you need to get up and running with NodeControl — from first install to advanced automation.</p>
+
+                <div class="docs-cards-grid">
+                    <a href="quick-start.html" class="docs-quicklink">
+                        <h3>Quick Start Guide</h3>
+                        <p>Install NodeControl and discover your first network in under 5 minutes.</p>
+                    </a>
+                    <a href="topology.html" class="docs-quicklink">
+                        <h3>Topology Views</h3>
+                        <p>L2, L3, and WAN topology maps with interactive overlays and right-click context menus.</p>
+                    </a>
+                    <a href="terminal.html" class="docs-quicklink">
+                        <h3>Terminal &amp; SSH</h3>
+                        <p>Multi-device SSH sessions with command mode, interactive terminal, and broadcast.</p>
+                    </a>
+                    <a href="api-explorer.html" class="docs-quicklink">
+                        <h3>API Explorer</h3>
+                        <p>Query Meraki, DNA Center, PAN-OS, and Cisco ISE APIs directly.</p>
+                    </a>
+                    <a href="watcher.html" class="docs-quicklink">
+                        <h3>Watcher of The WAN</h3>
+                        <p>Full-mesh SD-WAN topology visualization and route inspection.</p>
+                    </a>
+                    <a href="ai-overview.html" class="docs-quicklink docs-quicklink-ai">
+                        <h3>AI Operations</h3>
+                        <p>Nine specialist AI agents that understand your network. Coming soon.</p>
+                    </a>
+                </div>
+
+                <h2>What's New in v0.9.17</h2>
+                <p>See the <a href="changelog.html">full changelog</a> for details on every release.</p>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+    // Mobile nav toggle
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>
