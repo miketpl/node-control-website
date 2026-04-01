@@ -52,11 +52,11 @@ app.config.update(
     # Download URLs
     FREE_MAC_URL=os.environ.get(
         "FREE_MAC_URL",
-        "https://github.com/miketpl/node-control-releases-free/releases/latest/download/Node.Control-free-0.9.17.dmg"
+        "https://github.com/miketpl/node-control-releases-free/releases/latest"
     ),
     FREE_WIN_URL=os.environ.get(
         "FREE_WIN_URL",
-        "https://github.com/miketpl/node-control-releases-free/releases/latest/download/NodeControl-free-0.9.17-Setup.exe"
+        "https://github.com/miketpl/node-control-releases-free/releases/latest"
     ),
 
     # Code expiry (hours)
