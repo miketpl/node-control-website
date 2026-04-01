@@ -49,14 +49,9 @@ app.config.update(
     SMTP_FROM=os.environ.get("SMTP_FROM", "noreply@nodecontrol.io"),
     SMTP_FROM_NAME=os.environ.get("SMTP_FROM_NAME", "NodeControl"),
 
-    # Download URLs
-    FREE_MAC_URL=os.environ.get(
-        "FREE_MAC_URL",
-        "https://github.com/miketpl/node-control-releases-free/releases/latest"
-    ),
-    FREE_WIN_URL=os.environ.get(
-        "FREE_WIN_URL",
-        "https://github.com/miketpl/node-control-releases-free/releases/latest"
+    # Releases repo (public) for free tier downloads
+    FREE_RELEASES_REPO=os.environ.get(
+        "FREE_RELEASES_REPO", "miketpl/node-control-releases-free"
     ),
 
     # Code expiry (hours)
@@ -211,6 +206,36 @@ def require_admin(f):
             return jsonify({"error": "Unauthorized"}), 401
         return f(*args, **kwargs)
     return decorated
+
+
+# ── Download URL resolver ───────────────────────────────────
+
+def _get_latest_download_urls() -> dict:
+    """Fetch the latest release from the free releases repo and return
+    direct browser_download_url links keyed by platform (mac/win).
+    Falls back to the releases page URL on any failure.
+    """
+    repo = app.config["FREE_RELEASES_REPO"]
+    fallback = f"https://github.com/{repo}/releases/latest"
+    try:
+        url = f"https://api.github.com/repos/{repo}/releases/latest"
+        req = Request(url)
+        req.add_header("Accept", "application/vnd.github+json")
+        with urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        assets = data.get("assets", [])
+        urls = {"mac": fallback, "win": fallback}
+        for asset in assets:
+            name = (asset.get("name") or "").lower()
+            dl = asset.get("browser_download_url", "")
+            if name.endswith(".dmg"):
+                urls["mac"] = dl
+            elif name.endswith(".exe"):
+                urls["win"] = dl
+        return urls
+    except Exception as exc:
+        logger.warning(f"Failed to resolve download URLs: {exc}")
+        return {"mac": fallback, "win": fallback}
 
 
 # ── GitHub License Sync ──────────────────────────────────────
@@ -487,14 +512,12 @@ def redeem():
     db.close()
 
     tier = license_row["tier"]
+    downloads = _get_latest_download_urls()
     return jsonify({
         "success": True,
         "tier": tier,
         "label": f"{tier.title()} Edition",
-        "downloads": {
-            "mac": app.config["FREE_MAC_URL"],
-            "win": app.config["FREE_WIN_URL"],
-        },
+        "downloads": downloads,
         "download_count": new_count,
     })
 
