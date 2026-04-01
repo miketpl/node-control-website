@@ -4,6 +4,12 @@ Flask API for handling free edition download requests,
 email verification, code redemption, and license tracking.
 """
 
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+import base64
+import json
 import os
 import secrets
 import string
@@ -14,6 +20,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from functools import wraps
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -53,6 +61,11 @@ app.config.update(
 
     # Code expiry (hours)
     CODE_EXPIRY_HOURS=int(os.environ.get("CODE_EXPIRY_HOURS", 72)),
+
+    # GitHub license repo for free tier validation
+    LICENSE_REPO=os.environ.get("LICENSE_REPO", "miketpl/node-control-license-free"),
+    LICENSE_FILE=os.environ.get("LICENSE_FILE", "licenses.json"),
+    GITHUB_PAT=os.environ.get("GITHUB_PAT", ""),
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -200,6 +213,87 @@ def require_admin(f):
     return decorated
 
 
+# ── GitHub License Sync ──────────────────────────────────────
+
+def _sync_licenses_to_github():
+    """Push all active free licenses to the GitHub license repo.
+
+    The app reads this file on startup to validate free-tier license codes.
+    """
+    pat = app.config["GITHUB_PAT"]
+    if not pat:
+        logger.warning("GITHUB_PAT not configured — skipping license sync")
+        return
+
+    repo = app.config["LICENSE_REPO"]
+    filepath = app.config["LICENSE_FILE"]
+
+    db = get_db()
+    rows = db.execute(
+        "SELECT code, email, name, created_at FROM licenses "
+        "WHERE tier = 'free' AND status = 'active' ORDER BY created_at"
+    ).fetchall()
+    db.close()
+
+    payload = {
+        "licenses": [
+            {
+                "code": row["code"],
+                "email": row["email"],
+                "name": row["name"],
+                "issued": row["created_at"],
+            }
+            for row in rows
+        ],
+        "grace_period_days": 7,
+        "updated": datetime.utcnow().isoformat(),
+    }
+
+    content_b64 = base64.b64encode(
+        json.dumps(payload, indent=2).encode("utf-8")
+    ).decode("utf-8")
+
+    # Get current file SHA (needed for updates)
+    url = f"https://api.github.com/repos/{repo}/contents/{filepath}"
+    headers = {
+        "Authorization": f"Bearer {pat}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+    sha = None
+    try:
+        req = Request(url, headers=headers)
+        with urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            sha = data.get("sha")
+    except URLError:
+        pass  # File doesn't exist yet — that's fine
+
+    # Create or update the file
+    body = {
+        "message": f"Update free licenses ({len(rows)} active)",
+        "content": content_b64,
+    }
+    if sha:
+        body["sha"] = sha
+
+    try:
+        req = Request(
+            url,
+            data=json.dumps(body).encode("utf-8"),
+            headers={**headers, "Content-Type": "application/json"},
+            method="PUT",
+        )
+        with urlopen(req, timeout=15) as resp:
+            if resp.status in (200, 201):
+                logger.info(f"Synced {len(rows)} licenses to GitHub")
+            else:
+                logger.error(f"GitHub sync returned {resp.status}")
+    except Exception as exc:
+        logger.error(f"Failed to sync licenses to GitHub: {exc}")
+
+
 # ── API Routes ───────────────────────────────────────────────
 
 @app.route("/api/health", methods=["GET"])
@@ -342,6 +436,12 @@ def verify_code():
     db.commit()
     db.close()
 
+    # Sync active licenses to GitHub so the app can validate on startup
+    try:
+        _sync_licenses_to_github()
+    except Exception as exc:
+        logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+
     return jsonify({
         "success": True,
         "download_code": license_row["code"],
@@ -441,6 +541,12 @@ def revoke_license(license_id):
     db.execute("UPDATE licenses SET status = 'revoked' WHERE id = ?", (license_id,))
     db.commit()
     db.close()
+
+    try:
+        _sync_licenses_to_github()
+    except Exception as exc:
+        logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+
     return jsonify({"success": True, "message": "License revoked"})
 
 
