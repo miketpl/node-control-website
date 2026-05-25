@@ -240,83 +240,107 @@ def _get_latest_download_urls() -> dict:
 
 # ── GitHub License Sync ──────────────────────────────────────
 
-def _sync_licenses_to_github():
-    """Push all active free licenses to the GitHub license repo.
+def _github_headers():
+    """Common headers for GitHub Contents API calls."""
+    return {
+        "Authorization": f"Bearer {app.config['GITHUB_PAT']}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+    }
 
-    The app reads this file on startup to validate free-tier license codes.
+
+def _get_licenses_json():
+    """Fetch current licenses.json from GitHub.
+
+    Returns (parsed_dict, file_sha) or (None, None) if the file
+    doesn't exist yet.
+    """
+    repo = app.config["LICENSE_REPO"]
+    filepath = app.config["LICENSE_FILE"]
+    url = f"https://api.github.com/repos/{repo}/contents/{filepath}"
+
+    try:
+        req = Request(url, headers=_github_headers())
+        with urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            content = json.loads(
+                base64.b64decode(data["content"]).decode("utf-8")
+            )
+            return content, data["sha"]
+    except URLError:
+        return None, None
+
+
+def _put_licenses_json(content: dict, sha: str | None, message: str):
+    """Write licenses.json back to GitHub via the Contents API."""
+    repo = app.config["LICENSE_REPO"]
+    filepath = app.config["LICENSE_FILE"]
+    url = f"https://api.github.com/repos/{repo}/contents/{filepath}"
+
+    content_b64 = base64.b64encode(
+        json.dumps(content, indent=2).encode("utf-8")
+    ).decode("utf-8")
+
+    body = {"message": message, "content": content_b64}
+    if sha:
+        body["sha"] = sha
+
+    req = Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers=_github_headers(),
+        method="PUT",
+    )
+    with urlopen(req, timeout=15) as resp:
+        if resp.status in (200, 201):
+            logger.info(f"GitHub licenses.json updated: {message}")
+        else:
+            logger.error(f"GitHub sync returned {resp.status}")
+
+
+def _add_code_to_licenses(new_code: str):
+    """Append a verified license code to licenses.json in GitHub.
+
+    The desktop app reads this file on startup to validate free-tier codes.
     """
     pat = app.config["GITHUB_PAT"]
     if not pat:
         logger.warning("GITHUB_PAT not configured — skipping license sync")
         return
 
-    repo = app.config["LICENSE_REPO"]
-    filepath = app.config["LICENSE_FILE"]
+    current, sha = _get_licenses_json()
 
-    db = get_db()
-    rows = db.execute(
-        "SELECT code, email, name, created_at FROM licenses "
-        "WHERE tier = 'free' AND status = 'active' ORDER BY created_at"
-    ).fetchall()
-    db.close()
+    if current is None:
+        # File doesn't exist yet — create it with the first code
+        current = {"codes": [], "updated": ""}
 
-    payload = {
-        "licenses": [
-            {
-                "code": row["code"],
-                "email": row["email"],
-                "name": row["name"],
-                "issued": row["created_at"],
-            }
-            for row in rows
-        ],
-        "grace_period_days": 7,
-        "updated": datetime.utcnow().isoformat(),
-    }
+    if new_code not in current.get("codes", []):
+        current.setdefault("codes", []).append(new_code)
+        current["updated"] = datetime.utcnow().isoformat()
+        _put_licenses_json(current, sha, f"Add code {new_code}")
+    else:
+        logger.info(f"Code {new_code} already in licenses.json — skipping")
 
-    content_b64 = base64.b64encode(
-        json.dumps(payload, indent=2).encode("utf-8")
-    ).decode("utf-8")
 
-    # Get current file SHA (needed for updates)
-    url = f"https://api.github.com/repos/{repo}/contents/{filepath}"
-    headers = {
-        "Authorization": f"Bearer {pat}",
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
+def _remove_code_from_licenses(code: str):
+    """Remove a revoked license code from licenses.json in GitHub."""
+    pat = app.config["GITHUB_PAT"]
+    if not pat:
+        logger.warning("GITHUB_PAT not configured — skipping license sync")
+        return
 
-    sha = None
-    try:
-        req = Request(url, headers=headers)
-        with urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            sha = data.get("sha")
-    except URLError:
-        pass  # File doesn't exist yet — that's fine
+    current, sha = _get_licenses_json()
+    if current is None:
+        return
 
-    # Create or update the file
-    body = {
-        "message": f"Update free licenses ({len(rows)} active)",
-        "content": content_b64,
-    }
-    if sha:
-        body["sha"] = sha
-
-    try:
-        req = Request(
-            url,
-            data=json.dumps(body).encode("utf-8"),
-            headers={**headers, "Content-Type": "application/json"},
-            method="PUT",
-        )
-        with urlopen(req, timeout=15) as resp:
-            if resp.status in (200, 201):
-                logger.info(f"Synced {len(rows)} licenses to GitHub")
-            else:
-                logger.error(f"GitHub sync returned {resp.status}")
-    except Exception as exc:
-        logger.error(f"Failed to sync licenses to GitHub: {exc}")
+    codes = current.get("codes", [])
+    if code in codes:
+        codes.remove(code)
+        current["updated"] = datetime.utcnow().isoformat()
+        _put_licenses_json(current, sha, f"Revoke code {code}")
+    else:
+        logger.info(f"Code {code} not in licenses.json — nothing to remove")
 
 
 # ── API Routes ───────────────────────────────────────────────
@@ -461,9 +485,9 @@ def verify_code():
     db.commit()
     db.close()
 
-    # Sync active licenses to GitHub so the app can validate on startup
+    # Push the new code to licenses.json in GitHub so the app can validate
     try:
-        _sync_licenses_to_github()
+        _add_code_to_licenses(license_row["code"])
     except Exception as exc:
         logger.error(f"License GitHub sync failed (non-fatal): {exc}")
 
@@ -561,14 +585,16 @@ def list_licenses():
 def revoke_license(license_id):
     """Revoke/delete a license."""
     db = get_db()
+    row = db.execute("SELECT code FROM licenses WHERE id = ?", (license_id,)).fetchone()
     db.execute("UPDATE licenses SET status = 'revoked' WHERE id = ?", (license_id,))
     db.commit()
     db.close()
 
-    try:
-        _sync_licenses_to_github()
-    except Exception as exc:
-        logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+    if row:
+        try:
+            _remove_code_from_licenses(row["code"])
+        except Exception as exc:
+            logger.error(f"License GitHub sync failed (non-fatal): {exc}")
 
     return jsonify({"success": True, "message": "License revoked"})
 
