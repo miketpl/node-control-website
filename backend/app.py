@@ -58,9 +58,10 @@ app.config.update(
     CODE_EXPIRY_HOURS=int(os.environ.get("CODE_EXPIRY_HOURS", 72)),
 
     # GitHub license repo for free tier validation
-    LICENSE_REPO=os.environ.get("LICENSE_REPO", "miketpl/node-control-license-free"),
+    LICENSE_REPO=os.environ.get("LICENSE_REPO", "miketpl/node-control-licenses-free"),
     LICENSE_FILE=os.environ.get("LICENSE_FILE", "licenses.json"),
-    GITHUB_PAT=os.environ.get("GITHUB_PAT", ""),
+    GITHUB_PAT=os.environ.get("GITHUB_PAT", ""),          # read-only (app license check)
+    GITHUB_PAT_WRITE=os.environ.get("GITHUB_PAT_WRITE", ""),  # read/write (license sync)
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -240,10 +241,16 @@ def _get_latest_download_urls() -> dict:
 
 # ── GitHub License Sync ──────────────────────────────────────
 
-def _github_headers():
-    """Common headers for GitHub Contents API calls."""
+def _github_headers(write=False):
+    """Common headers for GitHub Contents API calls.
+
+    Uses GITHUB_PAT_WRITE for mutations, falls back to GITHUB_PAT.
+    """
+    pat = app.config["GITHUB_PAT_WRITE"] if write else app.config["GITHUB_PAT"]
+    if not pat:
+        pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     return {
-        "Authorization": f"Bearer {app.config['GITHUB_PAT']}",
+        "Authorization": f"Bearer {pat}",
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
         "Content-Type": "application/json",
@@ -289,7 +296,7 @@ def _put_licenses_json(content: dict, sha: str | None, message: str):
     req = Request(
         url,
         data=json.dumps(body).encode("utf-8"),
-        headers=_github_headers(),
+        headers=_github_headers(write=True),
         method="PUT",
     )
     with urlopen(req, timeout=15) as resp:
@@ -304,9 +311,9 @@ def _add_code_to_licenses(new_code: str):
 
     The desktop app reads this file on startup to validate free-tier codes.
     """
-    pat = app.config["GITHUB_PAT"]
+    pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
-        logger.warning("GITHUB_PAT not configured — skipping license sync")
+        logger.warning("No GitHub PAT configured — skipping license sync")
         return
 
     current, sha = _get_licenses_json()
@@ -325,9 +332,9 @@ def _add_code_to_licenses(new_code: str):
 
 def _remove_code_from_licenses(code: str):
     """Remove a revoked license code from licenses.json in GitHub."""
-    pat = app.config["GITHUB_PAT"]
+    pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
-        logger.warning("GITHUB_PAT not configured — skipping license sync")
+        logger.warning("No GitHub PAT configured — skipping license sync")
         return
 
     current, sha = _get_licenses_json()
