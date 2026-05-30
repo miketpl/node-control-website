@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding devices manually — NodeControl Docs</title>
+    <meta name="description" content="Adding devices manually — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="adding-devices.html" class="docs-nav-link active">Adding Devices</a>
+      <a href="subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Adding devices manually
+                </div>
+                <h1 id="adding-devices-manually">Adding devices manually</h1>
+<p>The simplest way to add a single device.</p>
+<h2 id="open-the-add-device-dialog">Open the Add Device dialog</h2>
+<p>In the <strong>Engineer</strong> tab:</p>
+<ul>
+<li>Right-click anywhere in the device table → <strong>Add Device</strong></li>
+<li>OR click the <strong>+ Add Device</strong> toolbar button</li>
+</ul>
+<h2 id="fill-in-the-form">Fill in the form</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP address</strong></td>
+<td>Yes</td>
+<td>The management IP. IPv4 only.</td>
+</tr>
+<tr>
+<td><strong>Hostname</strong></td>
+<td>No</td>
+<td>Auto-filled from <code>show version</code> on first connect.</td>
+</tr>
+<tr>
+<td><strong>Site code</strong></td>
+<td>No</td>
+<td>2–4 character identifier. <a href="sites.html">Auto-detected from hostname</a> if your hostname matches a known pattern.</td>
+</tr>
+<tr>
+<td><strong>Tab</strong></td>
+<td>Yes</td>
+<td>Switches / Routers / Firewalls / SD-WAN / Wireless / Other</td>
+</tr>
+<tr>
+<td><strong>Device type</strong></td>
+<td>No</td>
+<td>Leave blank for auto-detect. Manually set if you want to skip the detection step (faster first connect).</td>
+</tr>
+<tr>
+<td><strong>Credential profile</strong></td>
+<td>No</td>
+<td>Defaults to your global default. Override per-device here.</td>
+</tr>
+<tr>
+<td><strong>Notes</strong></td>
+<td>No</td>
+<td>Free-text — anything useful for context (e.g., "Replacement scheduled Q3").</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>Save</strong> — the device appears in the table immediately. No SSH connection happens at this point.</p>
+<h2 id="test-the-connection">Test the connection</h2>
+<p>To confirm credentials work and detect the device type:</p>
+<ol>
+<li>Right-click the new device → <strong>Test Connection</strong></li>
+<li>Node Control opens an SSH session, attempts authentication, runs <code>show version</code></li>
+<li>Result appears in a popup:</li>
+<li>✅ "Connected as cisco_ios. Hostname: ACME-CORE-01"</li>
+<li>❌ Auth failure / connection error with diagnostic text</li>
+</ol>
+<p>Successful tests update the <strong>Hostname</strong> and <strong>Device type</strong> columns automatically.</p>
+<h2 id="device-type-auto-detect-vs-manual">Device type — auto-detect vs manual</h2>
+<p>If you leave <strong>Device type</strong> blank, Node Control will:</p>
+<ol>
+<li>Look up any previously-known device type for this IP (stored locally)</li>
+<li>Sniff the SSH banner for vendor hints (<code>SSH-2.0-HP</code>, <code>SSH-2.0-Cisco</code>, <code>OpenSSH_for_Junos</code> etc.)</li>
+<li>Try the most likely Netmiko driver</li>
+<li>If that connects, run <code>show version</code> and look at the output for vendor signatures</li>
+<li>Run opportunistic probes to catch ambiguous cases — e.g., HP ProCurve accepts the <code>cisco_ios</code> driver silently, so a probe for HP-specific commands is run</li>
+</ol>
+<p>Pick a specific driver from the dropdown only if:</p>
+<ul>
+<li>You know the device type and want to skip the detection</li>
+<li>A previous detection got it wrong and you want to override permanently</li>
+<li>Detection is failing and you want to force a specific driver</li>
+</ul>
+<p>When you manually set a device type, the <strong>Device type locked</strong> flag is set in the database — auto-detect can never overwrite it. Right-click → <strong>Unlock Device Type</strong> to re-enable auto-detect.</p>
+<h2 id="common-driver-names">Common driver names</h2>
+<table>
+<thead>
+<tr>
+<th>Vendor / OS</th>
+<th>Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco IOS / IOS-XE</td>
+<td><code>cisco_ios</code></td>
+</tr>
+<tr>
+<td>Cisco NX-OS</td>
+<td><code>cisco_nxos</code></td>
+</tr>
+<tr>
+<td>Cisco ASA</td>
+<td><code>cisco_asa</code></td>
+</tr>
+<tr>
+<td>HP ProCurve</td>
+<td><code>hp_procurve_cli</code> (alias of <code>aruba_osswitch</code>)</td>
+</tr>
+<tr>
+<td>Aruba AOS-CX</td>
+<td><code>aruba_os</code></td>
+</tr>
+<tr>
+<td>Palo Alto PAN-OS</td>
+<td><code>paloalto_panos</code></td>
+</tr>
+<tr>
+<td>Juniper Junos</td>
+<td><code>juniper_junos</code></td>
+</tr>
+<tr>
+<td>Arista EOS</td>
+<td><code>arista_eos</code></td>
+</tr>
+<tr>
+<td>Dell OS6</td>
+<td><code>dell_os6</code></td>
+</tr>
+<tr>
+<td>Dell OS10</td>
+<td><code>dell_os10</code></td>
+</tr>
+<tr>
+<td>Extreme EXOS</td>
+<td><code>extreme_exos</code></td>
+</tr>
+<tr>
+<td>Extreme VSP</td>
+<td><code>extreme_vsp</code></td>
+</tr>
+<tr>
+<td>Cisco Meraki (via Dashboard API, not SSH)</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<p>A full list of supported drivers is available in <strong>Settings → Device Types → View driver list</strong>.</p>
+<h2 id="bulk-adding-from-a-list">Bulk-adding from a list</h2>
+<p>If you have a list of IPs in a spreadsheet:</p>
+<ol>
+<li>Save the IPs as a CSV with columns: <code>ip, hostname, tab, site_code</code></li>
+<li><strong>Tools → Import Library → From CSV</strong></li>
+<li>Pick the file → preview → <strong>Import</strong></li>
+</ol>
+<p>The CSV columns are mapped to device fields. Missing columns are left blank.</p>
+<h2 id="bulk-adding-from-a-subnet">Bulk-adding from a subnet</h2>
+<p>If you don't have a list — just a known subnet range — use <a href="subnet-scan.html">Subnet scan</a> instead. It pings every IP in the range and auto-adds responding devices.</p>
+<h2 id="editing-a-device-after-adding">Editing a device after adding</h2>
+<p>Double-click any cell in the table to edit inline. Or right-click → <strong>Edit Device</strong> for a full-field dialog.</p>
+<h2 id="right-click-menu-full-options">Right-click menu — full options</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Connection</td>
+<td>SSH in, run a basic command, report result</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>Open the interactive terminal to this device</td>
+</tr>
+<tr>
+<td>Edit Device</td>
+<td>Full-field edit dialog</td>
+</tr>
+<tr>
+<td>Change Device Type</td>
+<td>Open a dropdown to manually set the Netmiko driver</td>
+</tr>
+<tr>
+<td>Lock / Unlock Device Type</td>
+<td>Toggle whether auto-detect can change the type</td>
+</tr>
+<tr>
+<td>Credentials</td>
+<td>Override the credential profile for this one device</td>
+</tr>
+<tr>
+<td>Move to tab</td>
+<td>Reassign which library tab it appears in</td>
+</tr>
+<tr>
+<td>Refresh hostname</td>
+<td>Re-run <code>show version</code> and update the hostname field</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Quick edit of the notes field</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Remove from library (with confirmation)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="subnet-scan.html">Subnet scan for bulk add</a></li>
+<li><a href="sites.html">Organise devices by site</a></li>
+<li><a href="../tasks/topology-l2.html">Test the connection by running a topology</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

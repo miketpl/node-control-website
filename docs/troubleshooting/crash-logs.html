@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading the crash log — NodeControl Docs</title>
+    <meta name="description" content="Reading the crash log — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="crash-logs.html" class="docs-nav-link active">Reading Crash Logs</a>
+      <a href="update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/troubleshooting/">Troubleshooting</a> &rsaquo; Reading the crash log
+                </div>
+                <h1 id="reading-the-crash-log">Reading the crash log</h1>
+<p>When Node Control crashes — either with a Python exception or a Qt/C++ segfault — it writes a log file you can attach to a support ticket.</p>
+<h2 id="location">Location</h2>
+<pre><code>~/NodeControl_crash.log         (Mac, Linux)
+%USERPROFILE%\NodeControl_crash.log   (Windows)
+</code></pre>
+<p>This is intentionally a top-level file in your home directory, not buried in app support folders. Easy to find when you need to.</p>
+<h2 id="format">Format</h2>
+<p>Append-only — every crash adds to the bottom. The most recent crash is the last block in the file.</p>
+<p>Each crash block has:</p>
+<pre><code>=== Crash at &lt;ISO-8601 timestamp&gt; ===
+Node Control version: 0.9.29
+Platform: macOS 14.5 (Darwin 23.5.0)
+Python: 3.10.13
+
+&lt;Python traceback if available&gt;
+
+&lt;Qt/C++ stack trace if available — captured via faulthandler&gt;
+
+=== End crash ===
+</code></pre>
+<h2 id="what-to-look-for">What to look for</h2>
+<h3 id="python-tracebacks-traceback-most-recent-call-last">Python tracebacks (<code>Traceback (most recent call last):</code>)</h3>
+<p>These come from exceptions raised in Node Control's Python code. The last few lines show where the crash originated:</p>
+<pre><code>Traceback (most recent call last):
+  File &quot;controllers/find_device_task.py&quot;, line 412, in _on_done
+    pd.finish(success=found &gt; 0)
+NameError: name 'found' is not defined
+</code></pre>
+<p>This kind of crash is usually a Node Control bug — please report.</p>
+<h3 id="qt-c-stack-traces">Qt / C++ stack traces</h3>
+<p>Crashes inside the Qt framework or PyInstaller's native bindings. Captured via Python's <code>faulthandler</code>:</p>
+<pre><code>Current thread 0x00007ff850dcb700 (most recent call first):
+  File &quot;ui/widgets/terminal_view.py&quot;, line 84 in resizeEvent
+  ...
+
+Stack (most recent call first):
+0   QtCore        0x108450abc qt_message_output + 124
+1   QtWidgets     0x108abcdef QWidget::resizeEvent + 88
+</code></pre>
+<p>These are harder to debug from the trace alone but the file/line context still helps.</p>
+<h3 id="killed-9-segmentation-fault">"Killed: 9" / "Segmentation fault"</h3>
+<p>The OS killed Node Control without a Python traceback. The <code>faulthandler</code> traceback may still be at the top of the crash block — that's the best clue. Common causes:</p>
+<ul>
+<li>Out of memory (very large topology runs on small machines)</li>
+<li>PySide6 library version mismatch</li>
+<li>macOS Gatekeeper interfering with an unsigned helper binary</li>
+</ul>
+<h2 id="when-to-send-the-crash-log">When to send the crash log</h2>
+<ul>
+<li>Any reproducible crash — even if you can work around it</li>
+<li>Any crash you can't reproduce — we can still learn from the trace</li>
+<li>Crashes that started after upgrading — high-priority for us to investigate</li>
+</ul>
+<h2 id="how-to-send">How to send</h2>
+<p>Email <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> with:</p>
+<ul>
+<li>The crash log (attach the whole file, or paste just the latest block)</li>
+<li>Node Control version (from Help → About, or the top of the crash log)</li>
+<li>OS version</li>
+<li>What you were doing when it crashed</li>
+<li>Repro steps if you can reliably trigger it</li>
+</ul>
+<h2 id="privacy">Privacy</h2>
+<p>The crash log can contain:</p>
+<ul>
+<li>File paths from your filesystem (e.g., paths to libraries, settings)</li>
+<li>Hostnames or IPs from your library (if they appeared in the crashing function's local variables)</li>
+<li>Stack frames showing what code was running</li>
+</ul>
+<p>It does NOT contain:</p>
+<ul>
+<li>Passwords or credentials (those are in the OS keychain, not in Python memory normally)</li>
+<li>Network device configurations</li>
+<li>Personal data of network end-users</li>
+</ul>
+<p>You can review and redact the log before sending — it's a plain text file.</p>
+<h2 id="rotating-clearing-the-crash-log">Rotating / clearing the crash log</h2>
+<p>The crash log doesn't auto-rotate. If it grows large (&gt;10 MB), feel free to:</p>
+<ul>
+<li>Rename it (<code>NodeControl_crash.log</code> → <code>NodeControl_crash_2026-05-25.log</code>) for archive</li>
+<li>Delete the file — Node Control re-creates it on next crash</li>
+</ul>
+<h2 id="why-did-node-control-crash-and-not-just-show-an-error">"Why did Node Control crash and not just show an error?"</h2>
+<p>Most user-facing errors (failed SSH, parser errors, network timeouts) are caught and shown in dialogs / run logs — they don't crash the app.</p>
+<p>A crash happens when:</p>
+<ul>
+<li>An unexpected exception bubbles up to the top of a thread (Python error not caught)</li>
+<li>The Qt event loop hits an internal C++ assertion</li>
+<li>The OS sends a fatal signal (out of memory, segfault)</li>
+</ul>
+<p>If you're seeing crashes for things that "should" be normal errors (e.g., a typo in a settings field crashes the app), that's a bug worth reporting.</p>
+<h2 id="debug-mode-for-catching-elusive-issues">Debug mode for catching elusive issues</h2>
+<p>If a crash is happening intermittently and you want more context:</p>
+<ol>
+<li>Settings → Advanced → enable <strong>Debug logging</strong></li>
+<li>Restart Node Control</li>
+<li>Reproduce the issue</li>
+<li>Quit Node Control</li>
+</ol>
+<p>The debug log at:</p>
+<pre><code>~/Library/Application Support/netOps/debug.log
+%APPDATA%\netOps\debug.log
+</code></pre>
+<p>Captures every internal event leading up to the crash. Larger and more verbose than the crash log, but often pinpoints the root cause more precisely.</p>
+<p>Send both crash log AND debug log when reporting elusive issues.</p>
+<h2 id="recovery-after-a-crash">Recovery after a crash</h2>
+<p>After a crash:</p>
+<ul>
+<li>Your library and settings are safe (SQLite + JSON, both auto-saved frequently)</li>
+<li>Any in-progress task's results may be lost (re-run the task)</li>
+<li>Open SSH sessions are killed (re-open after relaunch)</li>
+<li>Recent UI state (e.g., which tab was active) may reset</li>
+</ul>
+<p>If the app crashes immediately on launch (preventing you from using it at all):</p>
+<ol>
+<li>Move <code>~/Library/Application Support/netOps/settings.json</code> aside — sometimes corrupted settings prevent launch</li>
+<li>Launch — should come up with default settings</li>
+<li>If still crashing, see <a href="#app-wont-launch">App won't launch</a> below</li>
+</ol>
+<h2 id="app-wont-launch">App won't launch</h2>
+<p>If launch fails:</p>
+<ol>
+<li><strong>Mac</strong>: try launching from terminal: <code>/Applications/Node\ Control\ Free.app/Contents/MacOS/Node\ Control\ Free</code> — captures any errors that the GUI launcher would silently swallow</li>
+<li><strong>Windows</strong>: try launching from Command Prompt: <code>"C:\Program Files\Node Control Free\Node Control Free.exe"</code> — same idea</li>
+<li><strong>Linux</strong>: launch from terminal directly — error output goes to stderr</li>
+</ol>
+<p>Send the terminal output to support along with the crash log.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="ssh-connection-issues.html">SSH connection problems</a> — most user-facing errors aren't crashes</li>
+<li><a href="update-issues.html">Update problems</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

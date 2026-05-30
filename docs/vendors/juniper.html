@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juniper Junos — NodeControl Docs</title>
+    <meta name="description" content="Juniper Junos — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="juniper.html" class="docs-nav-link active">Juniper Junos</a>
+      <a href="arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Juniper Junos
+                </div>
+                <h1 id="juniper-junos">Juniper Junos</h1>
+<p>Juniper switches, routers, and SRX firewalls are supported via the standard Junos CLI.</p>
+<h2 id="driver">Driver</h2>
+<ul>
+<li>Netmiko: <code>juniper_junos</code></li>
+</ul>
+<h2 id="what-works">What works</h2>
+<ul>
+<li>L2 topology with LLDP (Juniper doesn't do CDP)</li>
+<li>L3 topology with OSPF + BGP</li>
+<li>Port Utilisation</li>
+<li>Bandwidth</li>
+<li>VLAN Port Finder</li>
+<li>Find Device (full BFS walk + port disable)</li>
+<li>Inventory (chassis, modules, virtual chassis members)</li>
+<li>Monitor (CPU, memory, alarms)</li>
+</ul>
+<h2 id="detection">Detection</h2>
+<p><code>show version</code> output identifies Junos cleanly. SSH banner often <code>SSH-2.0-OpenSSH_for_Junos</code>.</p>
+<h2 id="virtual-chassis-vc">Virtual Chassis (VC)</h2>
+<p>Juniper EX-series VC stacks appear as one logical device with multiple members. Each member is inventoried with its serial.</p>
+<h2 id="vrfs-and-routing-instances">VRFs and routing-instances</h2>
+<p>Junos supports multiple routing-instances. Node Control walks all instances for L3 topology and unions the results, similar to the Palo Alto LR handling.</p>
+<h2 id="srx-firewalls">SRX firewalls</h2>
+<p>Junos-based SRX firewalls:</p>
+<ul>
+<li>Detected as <code>juniper_junos</code></li>
+<li>Inventory works</li>
+<li>L3 topology covers OSPF + BGP within the chosen routing-instances</li>
+<li>IPSec tunnels (used heavily on SRX) are covered in the WAN topology task</li>
+</ul>
+<h2 id="common-gotchas">Common gotchas</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Why</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>show interfaces</code> is verbose</td>
+<td>Junos <code>extensive</code> mode is default</td>
+<td>The catalog uses <code>show interfaces brief</code> for most reports, <code>extensive</code> only when full data needed</td>
+</tr>
+<tr>
+<td>LLDP-only neighbours</td>
+<td>Junos doesn't support CDP</td>
+<td>Expected — neighbours appear via LLDP</td>
+</tr>
+<tr>
+<td>Stack members not enumerated</td>
+<td>VC didn't detect as a stack</td>
+<td><code>show virtual-chassis status</code> should appear in Inventory — check raw output</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration-mode">Configuration mode</h2>
+<p>Junos has a commit-based config model with <code>commit</code> / <code>commit and-quit</code>. Node Control is read-only by default and doesn't enter config mode except for port shut/no-shut actions which use a single-line operational mode (<code>set interfaces &lt;port&gt; disable</code>).</p>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li><strong>Mist</strong> (Juniper's cloud wireless): not currently supported — like Meraki, would require API integration. On the roadmap.</li>
+<li><strong>EVPN-VXLAN underlay</strong>: visible in L3 topology as BGP peers, but the VXLAN overlay isn't separately rendered</li>
+<li><strong>Junos PyEZ</strong>: Node Control uses SSH directly; PyEZ-based integration isn't planned</li>
+</ul>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../tasks/topology-l3.html">Topology L3</a> — for OSPF/BGP detail</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — works with Junos VRF probes</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

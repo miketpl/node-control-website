@@ -173,6 +173,82 @@
     background: rgba(255, 152, 0, 0.04);
 }
 
+/* ── Breadcrumb ──────────────────────────────────────────── */
+.docs-breadcrumb {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+.docs-breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+.docs-breadcrumb a:hover {
+    color: var(--cyan);
+}
+
+/* ── Section lists (index page) ─────────────────────────── */
+.docs-section-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 24px;
+}
+.docs-section-list li {
+    padding: 4px 0;
+}
+.docs-section-list a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.docs-section-list a:hover {
+    color: var(--cyan);
+}
+
+/* ── Tables ──────────────────────────────────────────────── */
+.docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+.docs-content th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+}
+.docs-content td {
+    padding: 10px 14px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+}
+.docs-content tr:hover td {
+    background: var(--bg-card);
+}
+
+/* ── Lists ───────────────────────────────────────────────── */
+.docs-content ul,
+.docs-content ol {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    padding-left: 24px;
+}
+.docs-content li {
+    margin-bottom: 4px;
+}
+
+/* ── Strong / emphasis ───────────────────────────────────── */
+.docs-content strong {
+    color: var(--text-primary);
+}
+
 /* ── Code blocks (for future docs content) ────────────────── */
 .docs-content code {
     font-family: var(--mono);

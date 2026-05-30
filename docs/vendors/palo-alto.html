@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palo Alto PAN-OS — NodeControl Docs</title>
+    <meta name="description" content="Palo Alto PAN-OS — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="palo-alto.html" class="docs-nav-link active">Palo Alto PAN-OS</a>
+      <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Palo Alto PAN-OS
+                </div>
+                <h1 id="palo-alto-pan-os">Palo Alto PAN-OS</h1>
+<p>Palo Alto firewalls (PA-200 through PA-7000, plus VM-series) are first-class supported.</p>
+<h2 id="driver">Driver</h2>
+<ul>
+<li>Netmiko: <code>paloalto_panos</code></li>
+</ul>
+<h2 id="what-works">What works</h2>
+<ul>
+<li>Connectivity via SSH (the CLI mode, not the API)</li>
+<li>Auto-detection from <code>show system info</code></li>
+<li>Inventory (model, serial, software version, HA peer)</li>
+<li>L3 topology — full BGP + OSPF support across all logical routers</li>
+<li>WAN topology — BGP peers + IPSec tunnel endpoints</li>
+<li>Find Device — ARP probe across virtual routers</li>
+<li>VLAN-equivalent data: Zone-to-Interface mapping (not VLAN, but similar conceptually)</li>
+<li>Monitor — CPU, memory, env, BGP/OSPF state, session count</li>
+</ul>
+<h2 id="auto-detection">Auto-detection</h2>
+<p>For <code>show system info</code>:
+- "device-name: PA-..." → paloalto_panos
+- SSH banner pattern <code>SSH-2.0-OpenSSH_for_PANOS_*</code> is a primary signal
+- Post-connect probe: if the prompt is <code>user@host&gt;</code> (PA shell prompt with <code>&gt;</code>), confirmed PA
+- Opportunistic probe runs even if the initial driver is <code>cisco_ios</code> — PA accepts the Cisco driver silently otherwise</p>
+<h2 id="logical-routers-and-multi-routing">Logical routers and multi-routing</h2>
+<p>PA firewalls have a per-virtual-router routing model. Each VR can run BGP, OSPF, EIGRP independently.</p>
+<p>Node Control's L3 topology task walks <strong>every logical router</strong> plus the special "default" router and unions the results:</p>
+<ul>
+<li>Each LR's BGP peers</li>
+<li>Each LR's OSPF neighbours</li>
+<li>Each LR's static + connected routes</li>
+</ul>
+<p>Edges in the L3 map are tagged with the LR they came from. Hover an edge to see the per-LR breakdown.</p>
+<p><strong>Important fix in 0.9.x</strong>: previous versions only walked the first LR — multi-LR PA deployments showed only partial peer detail. The 0.9.x parsers accumulate across all command outputs and the L3 task iterates every LR explicitly. Update if you're on an older version.</p>
+<h2 id="vrf-stamping">VRF stamping</h2>
+<p>In the unioned L3 map, each edge is stamped with the LR (acting as VRF) it came from. If two LRs share a BGP peer (multi-tenant edge), you'll see two edges between the same nodes, one per LR.</p>
+<h2 id="inventory-specifics">Inventory specifics</h2>
+<p>For <code>show system info</code>:</p>
+<ul>
+<li>Model</li>
+<li>Serial</li>
+<li>PAN-OS version</li>
+<li>Boot software version</li>
+<li>Maintenance support state</li>
+<li>HA peer (if configured) — appears as separate Inventory row with HA state (active / passive / synced / not synced)</li>
+</ul>
+<h2 id="common-gotchas">Common gotchas</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Why</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BGP peers missing</td>
+<td>Older Node Control parser bug (only first LR's peers captured)</td>
+<td>Update to 0.9.27+</td>
+</tr>
+<tr>
+<td><code>show config running</code> truncated</td>
+<td>Some PA versions paginate even with <code>set cli scripting-mode on</code></td>
+<td>The catalog uses <code>set cli pager off</code> first; if still seeing pagination, raise a ticket</td>
+</tr>
+<tr>
+<td>Detection initially flags as <code>cisco_ios</code></td>
+<td>PA's prompt looks like Cisco's at first glance</td>
+<td>The opportunistic probe (<code>show system info</code>) catches this; if detection persists wrongly, manually set + lock the device type</td>
+</tr>
+<tr>
+<td>OSPF area shown as <code>unknown</code></td>
+<td>PA's <code>show routing protocol ospf neighbor</code> output is concise</td>
+<td>Hover the edge to see partial data; the LR-level config has the area detail</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cli-mode">CLI mode</h2>
+<p>Node Control uses PAN-OS CLI mode (NOT the web GUI, NOT the XML API):</p>
+<ul>
+<li>Commands run via SSH</li>
+<li>Read-only — no <code>commit</code> operations</li>
+<li>Disables paging on connect with <code>set cli pager off</code></li>
+</ul>
+<p>For users who prefer the XML API (which has wider parsing support upstream), we may add a hybrid mode in a future release — let us know if this matters.</p>
+<h2 id="ha-pairs">HA pairs</h2>
+<p>Active/passive PA pairs are common. Node Control:</p>
+<ul>
+<li>Inventories both members separately</li>
+<li>Marks each with its HA role (Active / Passive)</li>
+<li>L3 topology shows both members but folds them into a single logical node if both peer with the same neighbours (typical for routing protocols in active/passive setups where only the active speaks)</li>
+</ul>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li><strong>Panorama</strong>: not supported as a "device" type. Manage individual firewalls instead.</li>
+<li><strong>GlobalProtect</strong>: not specifically exposed</li>
+<li><strong>App-ID / User-ID</strong>: not surfaced in reports</li>
+<li><strong>Policy review</strong>: no built-in policy inspector</li>
+</ul>
+<p>For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud Manager, Panorama itself, third-party policy auditors) are better.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../tasks/topology-l3.html">L3 topology</a> — for full LR + multi-VR coverage</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — VRF-aware ARP probes work with PA LRs</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

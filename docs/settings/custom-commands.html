@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom command catalogs — NodeControl Docs</title>
+    <meta name="description" content="Custom command catalogs — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="custom-commands.html" class="docs-nav-link active">Custom Commands</a>
+      <a href="safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Custom command catalogs
+                </div>
+                <h1 id="custom-command-catalogs">Custom command catalogs</h1>
+<p>Node Control's command catalog maps vendor-and-capability to a specific command (or list of variants to try). For most users, the default catalog covers everything. For unusual firmware or non-standard vendor builds, you can override or add commands per device.</p>
+<h2 id="whats-in-the-catalog">What's in the catalog</h2>
+<p>For each (vendor, capability) pair, the catalog stores:</p>
+<ul>
+<li><strong>Primary command</strong> — what to run first</li>
+<li><strong>Alternative variants</strong> — fallbacks if the primary fails</li>
+<li><strong>Output parser</strong> — how to interpret the result</li>
+</ul>
+<p>Example for <code>(cisco_ios, MAC_TABLE)</code>:</p>
+<ul>
+<li>Primary: <code>show mac address-table</code></li>
+<li>Alternative: <code>show mac-address-table</code></li>
+<li>Alternative: <code>show mac address</code></li>
+</ul>
+<p>The first one that returns parseable output wins. The successful variant is recorded per-device so next time, it's tried first.</p>
+<h2 id="where-the-catalog-lives">Where the catalog lives</h2>
+<p>The catalog is bundled with Node Control (<code>core/vendors/command_catalog.py</code> in the source). Updates ship with each release.</p>
+<p>Per-device learned preferences are in:</p>
+<pre><code>~/Library/Application Support/netOps/netOps.db
+</code></pre>
+<p>In the <code>device_command_prefs</code> table — one row per (device IP, capability, command, last result).</p>
+<h2 id="when-to-add-a-custom-command">When to add a custom command</h2>
+<table>
+<thead>
+<tr>
+<th>Reason</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vendor firmware uses different syntax</td>
+<td>An old Cisco IOS that uses <code>show mac-address-table</code> (hyphenated) when the default catalog tries <code>show mac address-table</code> (no hyphen)</td>
+</tr>
+<tr>
+<td>Custom command produces better output</td>
+<td>You wrote a TCL script that returns nicer-formatted MAC tables</td>
+</tr>
+<tr>
+<td>Vendor not directly supported</td>
+<td>You want to use a generic <code>cisco_ios</code> driver but customise commands for a special device class</td>
+</tr>
+<tr>
+<td>Diagnostic / additional data</td>
+<td>You want to add a capability that doesn't exist in default catalog</td>
+</tr>
+</tbody>
+</table>
+<h2 id="adding-a-custom-command">Adding a custom command</h2>
+<ol>
+<li><strong>Settings → Custom Commands</strong></li>
+<li>Click <strong>+ Add Override</strong></li>
+<li>Fill in:</li>
+<li><strong>Vendor / Driver</strong> — pick from dropdown</li>
+<li><strong>Capability</strong> — pick (INTERFACES, MAC_TABLE, BGP_PEERS, etc.) or <strong>Custom</strong></li>
+<li><strong>Command</strong> — the actual CLI string</li>
+<li><strong>Priority</strong> — Primary / Alternative</li>
+<li><strong>Per-device scope</strong> — Apply to all devices of this vendor, or only to specific IPs</li>
+<li>Save — takes effect on the next task run</li>
+</ol>
+<h2 id="per-device-overrides">Per-device overrides</h2>
+<p>If only one device needs a special command (not the whole vendor):</p>
+<ol>
+<li>Right-click device in library → <strong>Commands</strong> → <strong>Override</strong></li>
+<li>Pick a capability → enter the custom command</li>
+<li>Future runs against this device use the override</li>
+</ol>
+<h2 id="self-learning-behaviour">Self-learning behaviour</h2>
+<p>Even without custom commands, Node Control tunes itself:</p>
+<ul>
+<li>Runs the catalog's primary command first</li>
+<li>If that fails (syntax error, empty output, error keywords), tries the next variant</li>
+<li>Records the winning variant in <code>device_command_prefs</code></li>
+<li>Next time the same capability is needed on that device, tries the recorded winner first</li>
+<li>Variants that have failed are skipped</li>
+</ul>
+<p>This means a fresh subnet scan against firmware variations self-tunes — older switches get older syntax, newer ones get newer syntax, no manual intervention.</p>
+<p>To inspect what's been learned:</p>
+<ol>
+<li>Settings → Custom Commands → <strong>View per-device preferences</strong> button</li>
+<li>Filter to a specific IP</li>
+<li>See which command variant won for each capability</li>
+</ol>
+<h2 id="resetting-learned-preferences">Resetting learned preferences</h2>
+<p>If a device upgrades firmware and the previously-learned command no longer works:</p>
+<ol>
+<li>Settings → Custom Commands → <strong>Reset per-device preferences</strong></li>
+<li>Confirms — clears <code>device_command_prefs</code> for the selected device(s)</li>
+<li>Next task run re-tries the catalog's primary command, re-learns</li>
+</ol>
+<h2 id="adding-a-brand-new-capability">Adding a brand-new capability</h2>
+<p>If you want to add a custom capability not in the default catalog:</p>
+<ol>
+<li>Settings → Custom Commands → <strong>+ Add Capability</strong> (advanced)</li>
+<li>Name it — e.g., <code>MY_CUSTOM_REPORT</code></li>
+<li>Add commands for each vendor</li>
+<li>The capability appears in the Reports tab as a custom report</li>
+</ol>
+<p>This is power-user territory and rarely needed. Most useful for organisations with custom firmware variants or proprietary network OSes built on top of vendor stacks.</p>
+<h2 id="sharing-custom-catalogs">Sharing custom catalogs</h2>
+<p>Custom command overrides are stored in <code>settings.json</code> and <code>device_command_prefs</code> in the local DB. To share with a colleague:</p>
+<ol>
+<li>Export your custom commands via <strong>Settings → Custom Commands → Export</strong></li>
+<li>Email the resulting JSON file</li>
+<li>Colleague imports via <strong>Settings → Custom Commands → Import</strong></li>
+</ol>
+<p>Per-device preferences are tied to specific IPs in your library — they don't transfer cleanly across networks. The catalog-level overrides do.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom command doesn't run</td>
+<td>Capability name typo</td>
+<td>Check the capability constant in the dropdown — must match exactly</td>
+</tr>
+<tr>
+<td>Output parsed wrong</td>
+<td>Custom command produces different format than the standard parser expects</td>
+<td>Either match the format, or write a custom parser (advanced — contact support)</td>
+</tr>
+<tr>
+<td>Per-device preference stuck on old command</td>
+<td>Learned preference cached after a firmware change</td>
+<td>Reset per-device preferences</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../vendors/overview.html">Vendor support overview</a></li>
+<li><a href="overview.html">Settings overview</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

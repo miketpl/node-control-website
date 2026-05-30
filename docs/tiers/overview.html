@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tier overview — Free, Pro, AI — NodeControl Docs</title>
+    <meta name="description" content="Tier overview — Free, Pro, AI — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="overview.html" class="docs-nav-link active">Tier Comparison</a>
+      <a href="upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tiers/">Tiers</a> &rsaquo; Tier overview — Free, Pro, AI
+                </div>
+                <h1 id="tier-overview-free-pro-ai">Tier overview — Free, Pro, AI</h1>
+<p>Node Control comes in three tiers. Same codebase, different feature gates. Pick the tier that matches what you're trying to do.</p>
+<h2 id="quick-comparison">Quick comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align: center;">Free</th>
+<th style="text-align: center;">Pro</th>
+<th style="text-align: center;">AI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device library</td>
+<td style="text-align: center;">25 max</td>
+<td style="text-align: center;">Unlimited</td>
+<td style="text-align: center;">Unlimited</td>
+</tr>
+<tr>
+<td>Activation</td>
+<td style="text-align: center;">Free code from nodecontrol.io</td>
+<td style="text-align: center;">Paid licence</td>
+<td style="text-align: center;">Paid licence + Azure backend</td>
+</tr>
+<tr>
+<td>Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme)</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Library</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Add devices manually</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Subnet scan (Library Updater)</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>GitHub library sync</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Tasks</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Find Device (single switch)</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Find Device (whole fabric, BFS across cores)</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Network Discovery (live topology walk)</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Layer 2 topology map</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Layer 3 topology map</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>WAN topology map</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Verify Device Types</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>SSH Terminal (interactive)</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Monitor tab (passive watch)</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Reports</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Inventory</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Port Utilisation</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Bandwidth</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>VLAN Port Finder</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Meraki Usage Summary</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>AI</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>AI Dashboard chat</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Natural-language network queries</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Automated config analysis</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Other</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Custom command catalogs</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Safe Mode (read-only command allowlist)</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Auto-updates</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+</tbody>
+</table>
+<h2 id="free">Free</h2>
+<p>Designed for small-shop engineers managing a handful of devices. Free is fully functional for inventory and ad-hoc lookups, with deliberate limits to differentiate from Pro.</p>
+<h3 id="what-you-get">What you get</h3>
+<ul>
+<li>Up to 25 devices in your library</li>
+<li>Find Device against one switch at a time (you pick the seed switch when running)</li>
+<li>Full Inventory report</li>
+<li>Interactive SSH terminal to any device in the library</li>
+<li>Custom command catalogs</li>
+<li>All the same vendor support as Pro</li>
+</ul>
+<h3 id="whats-locked">What's locked</h3>
+<ul>
+<li>More than 25 devices in the library (additions are accepted but tools only see the first 25, sorted by IP)</li>
+<li>Topology maps (L2, L3, WAN, Discovery)</li>
+<li>Reports other than Inventory</li>
+<li>Find Device across multiple switches simultaneously</li>
+<li>Monitor tab</li>
+<li>GitHub library sync</li>
+</ul>
+<h3 id="how-to-get-it">How to get it</h3>
+<ol>
+<li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a></li>
+<li>Enter your email</li>
+<li>Verify with the 6-digit code emailed to you</li>
+<li>Receive your <code>NC-XXXX-XXXX</code> activation code</li>
+<li>Download and install the Free DMG or Setup.exe</li>
+<li>Enter your code on first launch</li>
+</ol>
+<p>Free is forever — no time limit, no payment required.</p>
+<h2 id="pro">Pro</h2>
+<p>The standard tier for professional network engineers and managed-service providers.</p>
+<h3 id="what-you-get-beyond-free">What you get beyond Free</h3>
+<ul>
+<li>Unlimited devices in the library</li>
+<li>Full topology maps — L2, L3, WAN, and live Discovery</li>
+<li>All reports — Port Utilisation, Bandwidth, VLAN Port Finder, Meraki Usage Summary</li>
+<li>Find Device across an entire site or fabric, with cross-core pruning and Meraki wireless lookup</li>
+<li>Verify Device Types worker for keeping the library accurate</li>
+<li>Monitor tab for passive watch of one or more devices</li>
+<li>GitHub library sync — share device library across team members with separate read-only and push tokens</li>
+<li>Priority email support</li>
+</ul>
+<h3 id="how-to-get-it_1">How to get it</h3>
+<p>Contact us at <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> or buy directly from <a href="https://nodecontrol.io">nodecontrol.io/pro</a>.</p>
+<p>Pro is licensed per-user. Each licensed email can be used on as many machines as the user owns (laptop, desktop, lab).</p>
+<h2 id="ai">AI</h2>
+<p>For teams who want LLM-assisted network operations. Includes everything in Pro plus an AI dashboard.</p>
+<h3 id="what-you-get-beyond-pro">What you get beyond Pro</h3>
+<ul>
+<li><strong>AI chat</strong> — ask natural-language questions about your network ("which switches have STP issues?", "show me ports with high error counts")</li>
+<li><strong>Automated config analysis</strong> — AI flags risky configs, suggests cleanups, identifies compliance gaps</li>
+<li><strong>Live SSH proxy</strong> — AI agent can drive SSH sessions on your behalf to answer multi-step questions</li>
+<li>Backend service running on a customer-deployed Azure / NVIDIA DGX appliance (you control where your data goes)</li>
+</ul>
+<h3 id="how-to-get-it_2">How to get it</h3>
+<p>AI is sold as an annual subscription including the backend infrastructure. Contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> for a demo and pricing.</p>
+<h2 id="upgrading">Upgrading</h2>
+<ul>
+<li><strong>Free → Pro</strong>: see <a href="upgrading.html">Upgrading to Pro</a></li>
+<li><strong>Pro → AI</strong>: contact sales</li>
+</ul>
+<p>Your library and credentials carry forward through any upgrade — no re-entry needed.</p>
+<h2 id="cross-tier-coexistence-on-the-same-machine">Cross-tier coexistence on the same machine</h2>
+<p>Pro and Free can both be installed on the same Mac or Windows machine simultaneously. They appear as separate apps in Applications / Start Menu and have separate Gatekeeper / SmartScreen registrations. Their data directories are shared, so you'll see the same library in both — useful if you want to confirm "this device is visible to Free" before recommending it to a Free user.</p>
+<h2 id="choosing-the-right-tier">Choosing the right tier</h2>
+<table>
+<thead>
+<tr>
+<th>You are</th>
+<th>Pick</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A network engineer with a handful of devices, want a free SSH multi-tool</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Managing 25+ devices, want topology maps and reports</td>
+<td>Pro</td>
+</tr>
+<tr>
+<td>Running a managed-service practice, want AI-assisted analysis</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>A student / learner who wants to explore</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Evaluating Node Control before buying Pro</td>
+<td>Free (then upgrade)</td>
+</tr>
+</tbody>
+</table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

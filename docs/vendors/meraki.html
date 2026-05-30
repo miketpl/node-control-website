@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cisco Meraki — NodeControl Docs</title>
+    <meta name="description" content="Cisco Meraki — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="meraki.html" class="docs-nav-link active">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco Meraki
+                </div>
+                <h1 id="cisco-meraki">Cisco Meraki</h1>
+<p>Meraki devices (MR wireless APs, MS switches, MX security appliances, MV cameras) are managed via the Meraki Dashboard API — Node Control doesn't SSH to them directly.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Instead of SSH credentials, Meraki devices need a <strong>Dashboard API key</strong> with read access to your organisation(s).</p>
+<h2 id="configure-the-api-key">Configure the API key</h2>
+<ol>
+<li>In Meraki Dashboard → top-right account icon → <strong>My profile</strong></li>
+<li>Scroll to <strong>API access</strong> → <strong>Generate API key</strong></li>
+<li>Copy the long alphanumeric key — only shown once</li>
+<li>In Node Control: <strong>Settings → Credentials → Meraki API</strong> → paste key → <strong>Test</strong></li>
+</ol>
+<p>The Test button confirms the key can fetch your org list. If it returns "Successfully fetched N organisations", you're set.</p>
+<h2 id="what-works">What works</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Find Device (wireless lookup)</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Meraki Usage Summary report</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Inventory (Meraki devices)</td>
+<td>partial — basic info from Dashboard</td>
+</tr>
+<tr>
+<td>Topology integration</td>
+<td>partial — Meraki devices appear as "endpoint" nodes in L2 maps where seen via CDP/LLDP from non-Meraki switches</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-doesnt-work-yet">What doesn't work (yet)</h2>
+<ul>
+<li>SSH-style direct device management (Meraki doesn't expose CLI for managed devices)</li>
+<li>Live config push (use Dashboard API directly for that)</li>
+<li>Topology maps purely between Meraki devices (would require Meraki's own topology API; on roadmap)</li>
+</ul>
+<h2 id="find-device-wireless-lookup">Find Device — wireless lookup</h2>
+<p>The biggest Meraki integration. When you run Find Device with MAC addresses:</p>
+<ol>
+<li>Wireless mode (or Unknown mode) queries the Meraki Dashboard for each MAC</li>
+<li>Searches every network in every org your key can access</li>
+<li>Returns: org, network, SSID, IP, status (online/offline), last seen, AP name + serial, VLAN</li>
+</ol>
+<p>This makes "where is this wireless client?" answerable in seconds, even across multi-site Meraki estates.</p>
+<p>See <a href="../tasks/find-device.html">Find Device</a> for the full flow.</p>
+<h2 id="meraki-usage-summary">Meraki Usage Summary</h2>
+<p>A dedicated report covering Meraki orgs at the network level. See <a href="../reports/meraki-usage-summary.html">Meraki Usage Summary</a>.</p>
+<h2 id="adding-meraki-devices-to-the-library">Adding Meraki devices to the library</h2>
+<p>You can add Meraki devices to the library if you want them visible in the Engineer tab:</p>
+<ol>
+<li>Use the static IP each Meraki device has on its local management interface</li>
+<li>Set Device type to a custom "meraki" label (this is for your reference only — Node Control won't SSH to it)</li>
+<li>Useful for tracking which Meraki devices belong to which site</li>
+</ol>
+<p>But for actual Meraki operations (Find Device, Usage Summary), the API key is what matters — not the library entries.</p>
+<h2 id="api-rate-limits">API rate limits</h2>
+<p>Meraki Dashboard API allows 5 requests per second per organisation. Node Control:</p>
+<ul>
+<li>Throttles to stay within the limit</li>
+<li>Backs off automatically on 429 Too Many Requests</li>
+<li>Uses cheap-overview endpoints first, expensive per-client endpoints only when needed</li>
+</ul>
+<p>Most operations stay within the limit. If you have a very large estate (50+ orgs, 1000+ networks), the Meraki Usage Summary can take 5-10 minutes.</p>
+<h2 id="multi-org">Multi-org</h2>
+<p>A single API key can access multiple Meraki orgs (if your Dashboard user has access to them). Node Control automatically iterates all accessible orgs.</p>
+<p>For MSPs managing many customers' Meraki environments, this means one Node Control session covers everything.</p>
+<h2 id="bulk-provisioning">Bulk provisioning</h2>
+<p>Meraki's <code>POST /networks/{id}/devices/claim</code> is capped around 50 serials per call. Node Control's bulk claim:</p>
+<ul>
+<li>Chunks claims into batches of 50</li>
+<li>Failed batches don't block successful ones</li>
+<li>The downstream PUT step (configure claimed devices) skips serials that didn't successfully claim, so the real claim failure surfaces rather than a misleading downstream 404</li>
+</ul>
+<h2 id="common-gotchas">Common gotchas</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Why</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API key not authorised on some orgs</td>
+<td>Dashboard user doesn't have access to those orgs</td>
+<td>Get added to those orgs in Dashboard</td>
+</tr>
+<tr>
+<td>Find Device shows no Meraki results</td>
+<td>API key not configured</td>
+<td>Settings → Credentials → Meraki API</td>
+</tr>
+<tr>
+<td>Wireless client found in Meraki but no IP</td>
+<td>Older Meraki firmware reports lastSeen as epoch int; Node Control coerces to string</td>
+<td>Should work in 0.9.x+</td>
+</tr>
+<tr>
+<td>API throttled / slow</td>
+<td>High request volume in large estates</td>
+<td>Wait 1-2 minutes; the throttling backs off automatically</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../tasks/find-device.html#meraki-wireless-lookup">Find Device — wireless lookup</a></li>
+<li><a href="../reports/meraki-usage-summary.html">Meraki Usage Summary report</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

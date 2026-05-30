@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSH Terminal — NodeControl Docs</title>
+    <meta name="description" content="SSH Terminal — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="ssh-terminal.html" class="docs-nav-link active">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; SSH Terminal
+                </div>
+                <h1 id="ssh-terminal">SSH Terminal</h1>
+<p>Interactive SSH access to any device in your library, embedded directly in Node Control. No need to drop out to PuTTY, iTerm, or a separate terminal app — you can run topology and reports against a device, then jump into a shell on the same device without switching tools.</p>
+<p>Available on <strong>Free</strong>, <strong>Pro</strong>, and <strong>AI</strong>.</p>
+<h2 id="open-a-session">Open a session</h2>
+<p>Three ways:</p>
+<ol>
+<li>Right-click a device in the library → <strong>SSH</strong></li>
+<li>From a topology / Find Device result → right-click a node → <strong>Open SSH</strong></li>
+<li><strong>Tools → SSH Terminal</strong> → enter IP manually</li>
+</ol>
+<p>A new tab opens in the terminal panel with the SSH session.</p>
+<h2 id="multiple-concurrent-sessions">Multiple concurrent sessions</h2>
+<p>Each SSH session lives in its own tab. Open as many as you need:</p>
+<ul>
+<li>One per device for comparing config</li>
+<li>One per role (your "core switch", "firewall", "wireless controller" workspace)</li>
+</ul>
+<p>Tabs persist across app restarts (sessions reconnect automatically using the same credentials).</p>
+<h2 id="terminal-features">Terminal features</h2>
+<ul>
+<li><strong>Full xterm emulation</strong> via pyte — Cisco / Aruba CLI menus render correctly</li>
+<li><strong>Mouse selection</strong> for copy</li>
+<li><strong>Cmd+C / Ctrl+C</strong> to copy selected text (does NOT send Ctrl+C to the device; that's mapped to the device's interrupt key)</li>
+<li><strong>Cmd+V / Ctrl+Shift+V</strong> to paste</li>
+<li><strong>Search</strong> within scrollback (Cmd+F / Ctrl+F)</li>
+<li><strong>Save scrollback</strong> to a text file</li>
+<li><strong>Configurable colour theme</strong> (Settings → Terminal)</li>
+</ul>
+<h2 id="sending-ctrlc-to-the-device">Sending Ctrl+C to the device</h2>
+<p>To send Ctrl+C as an interrupt to the device (e.g., to cancel a long <code>show tech-support</code>):</p>
+<ul>
+<li>macOS: <strong>Ctrl+C</strong> sends the interrupt (Cmd+C is copy)</li>
+<li>Windows / Linux: <strong>Ctrl+Shift+C</strong> = copy, <strong>Ctrl+C</strong> = interrupt</li>
+</ul>
+<h2 id="send-command-to-multiple-sessions">Send command to multiple sessions</h2>
+<p>For ad-hoc multi-device commands:</p>
+<ol>
+<li>Open SSH sessions to each target device</li>
+<li>Right-click any tab → <strong>Send to all open sessions</strong></li>
+<li>Type a command in the dialog</li>
+<li>Click Send — the same command runs in every open SSH tab</li>
+</ol>
+<p>Useful for "show clock" across the fleet, or pushing a single config line to multiple switches.</p>
+<h2 id="pagination">Pagination</h2>
+<p>Long output (e.g., <code>show running-config</code>) on Cisco gear is auto-paged with <code>--More--</code> prompts. Node Control's terminal disables paging on connect by sending <code>terminal length 0</code> (or vendor equivalent), so commands return their full output without manual paging.</p>
+<p>To re-enable paging for a specific session: in the device CLI, type <code>terminal length 24</code> (Cisco) or <code>screen-length 0 disable</code> (Aruba CX) etc.</p>
+<p>The auto-pagination-off behaviour can be toggled per-tier in Settings → Terminal — useful if you have a workflow that depends on <code>--More--</code> prompts.</p>
+<h2 id="logging-session-output">Logging session output</h2>
+<p>Every SSH session is logged to:</p>
+<pre><code>~/Library/Application Support/netOps/sessions/&lt;device&gt;-&lt;timestamp&gt;.log  (Mac)
+%APPDATA%\netOps\sessions\&lt;device&gt;-&lt;timestamp&gt;.log                       (Windows)
+</code></pre>
+<p>Includes both your input and the device's output. Useful for change documentation or troubleshooting.</p>
+<p>To disable session logging: Settings → Terminal → uncheck <strong>Log session output</strong>.</p>
+<h2 id="reconnection">Reconnection</h2>
+<p>If a session drops (network blip, idle timeout):</p>
+<ul>
+<li>The tab shows "Disconnected" in red</li>
+<li>Click <strong>Reconnect</strong> to re-establish using the same credentials</li>
+<li>Sessions auto-reconnect after sleep/wake on macOS if you have <strong>Auto-reconnect</strong> enabled in Settings</li>
+</ul>
+<h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
+<p><a href="../settings/safe-mode.html">Safe Mode</a> gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is <strong>not</strong> Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you're doing when you have a CLI prompt.</p>
+<h2 id="session-sharing">Session sharing</h2>
+<p>You cannot currently share an SSH session between users — each session is local to your machine. For collaborative troubleshooting, screen-share works.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Terminal renders garbage characters</td>
+<td>Vendor sending unsupported escape sequences</td>
+<td>Try a different terminal type — Settings → Terminal → Terminal type: vt100</td>
+</tr>
+<tr>
+<td>Paste truncates long commands</td>
+<td>Some devices have small input buffer</td>
+<td>Settings → Terminal → enable <strong>Paste with delay</strong> (slows pastes to one line at a time)</td>
+</tr>
+<tr>
+<td>Ctrl+C sends interrupt when you wanted to copy</td>
+<td>macOS only — use Cmd+C for copy</td>
+<td></td>
+</tr>
+<tr>
+<td>Session locks up</td>
+<td>Heavy command output exceeding terminal buffer</td>
+<td>Settings → Terminal → increase scrollback size</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="find-device.html">Find Device</a> — for jumping straight to a switch port from a MAC search</li>
+<li><a href="../settings/safe-mode.html">Safe Mode</a> — for terminal-vs-tasks command gating</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

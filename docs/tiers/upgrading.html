@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrading from Free to Pro — NodeControl Docs</title>
+    <meta name="description" content="Upgrading from Free to Pro — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="upgrading.html" class="docs-nav-link active">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tiers/">Tiers</a> &rsaquo; Upgrading from Free to Pro
+                </div>
+                <h1 id="upgrading-from-free-to-pro">Upgrading from Free to Pro</h1>
+<p>Once your network outgrows Free's 25-device cap or you need topology maps and reports, upgrading to Pro is straightforward.</p>
+<h2 id="what-youll-keep">What you'll keep</h2>
+<ul>
+<li>Your entire device library — all devices, sites, tabs, custom commands, and credential profiles</li>
+<li>All settings — site detection regex, command preferences, UI state</li>
+<li>The SSH host keys you've already accepted (no re-trust prompts)</li>
+</ul>
+<h2 id="what-changes">What changes</h2>
+<ul>
+<li><strong>Activation flow</strong>: instead of entering an <code>NC-XXXX-XXXX</code> code, Pro asks for the email address you used when purchasing</li>
+<li><strong>App bundle name</strong>: macOS shows "Node Control Pro.app" instead of "Node Control Free.app" in Applications</li>
+<li><strong>Feature gates</strong>: all the Pro features become available immediately</li>
+</ul>
+<h2 id="upgrade-steps">Upgrade steps</h2>
+<h3 id="1-buy-a-pro-license">1. Buy a Pro license</h3>
+<p>Go to <a href="https://nodecontrol.io">nodecontrol.io</a> and click <strong>Buy Pro</strong>. The purchase flow asks for:</p>
+<ul>
+<li>Your name</li>
+<li>Email (this becomes the licensed identity)</li>
+<li>Payment details</li>
+</ul>
+<p>Once paid, your email is added to the Pro allowed-users list within ~5 minutes. You'll receive a confirmation email with download links.</p>
+<h3 id="2-download-node-control-pro">2. Download Node Control Pro</h3>
+<p>From the email or your customer portal, download:</p>
+<ul>
+<li><strong>Mac</strong>: <code>Node Control Pro-X.Y.Z.dmg</code></li>
+<li><strong>Windows</strong>: <code>Node Control Pro-X.Y.Z-Setup.exe</code></li>
+</ul>
+<h3 id="3-install-pro-alongside-free-optional">3. Install Pro alongside Free (optional)</h3>
+<p>You can keep Node Control Free installed while you set up Pro — they coexist as separate applications.</p>
+<p><strong>Mac</strong>: drag Pro to Applications normally. You'll have both <code>Node Control Free.app</code> and <code>Node Control Pro.app</code>.</p>
+<p><strong>Windows</strong>: run the Pro Setup.exe. Installs to <code>C:\Program Files\Node Control Pro\</code> alongside Free's <code>C:\Program Files\Node Control Free\</code>.</p>
+<h3 id="4-launch-pro-and-register">4. Launch Pro and register</h3>
+<p>On first launch of Pro:</p>
+<ol>
+<li>The <strong>Welcome to Node Control</strong> registration dialog appears</li>
+<li>Enter your name, email (must match your purchase email), organisation</li>
+<li>Click <strong>Submit</strong></li>
+<li>The app checks your email against the Pro allowed-users list</li>
+<li>If your email is on the list — you're in. If not — confirm the email matches, or contact support</li>
+</ol>
+<h3 id="5-verify-your-library-transferred">5. Verify your library transferred</h3>
+<p>Open the <strong>Engineer</strong> tab. You should see all the devices that were in your Free library — and now without the 25-device cap. The library is stored in <code>~/Library/Application Support/netOps/netOps.db</code> (Mac) or <code>%APPDATA%\netOps\</code> (Windows), shared across all tiers on the same machine.</p>
+<h3 id="6-uninstall-free-optional">6. Uninstall Free (optional)</h3>
+<p>Once you're happy Pro is working, you can uninstall Free:</p>
+<p><strong>Mac</strong>: drag <code>Node Control Free.app</code> from Applications to Trash. Your data is unaffected.</p>
+<p><strong>Windows</strong>: <strong>Settings → Apps → Node Control Free → Uninstall</strong>. Data preserved.</p>
+<p>The Free activation code you entered remains valid — if you ever want to install Free again on this or another machine, the same code works.</p>
+<h2 id="what-if-my-pro-email-isnt-on-the-allowed-list-yet">What if my Pro email isn't on the allowed list yet?</h2>
+<p>If you've just purchased and your registration is rejected:</p>
+<ol>
+<li>Wait ~5 minutes for the allowed list to update</li>
+<li>Click <strong>Re-register</strong> in the rejection dialog and try again</li>
+<li>If still rejected after 15 minutes, email <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> with your order number — we'll add you manually within a few hours</li>
+</ol>
+<h2 id="sharing-one-pro-license-across-machines">Sharing one Pro license across machines</h2>
+<p>A Pro license is per-user, not per-machine. You can install Pro on as many machines as you personally use — laptop, desktop, lab box. Each registration adds an entry to the Pro user list, but only your email needs to match.</p>
+<p>If you change machines (e.g., new laptop):</p>
+<ol>
+<li>Install Pro on the new machine</li>
+<li>Register with the same email</li>
+<li>The Pro library and settings don't auto-sync — use <a href="../library/github-sync.html">GitHub library sync</a> if you want a single source of truth</li>
+</ol>
+<h2 id="renewing-or-transferring-a-license">Renewing or transferring a license</h2>
+<p>Pro is sold as a perpetual licence with a one-year support and updates window. After year one, the app continues to work but you stop receiving updates until you renew.</p>
+<p>To transfer a license to a different email (e.g., job change, company restructure), contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a>. We'll move the licensed email and disable the old one.</p>
+<h2 id="downgrading-from-pro-back-to-free">Downgrading from Pro back to Free</h2>
+<p>If you want to switch back to Free (e.g., no longer working with large networks):</p>
+<ol>
+<li>Install Node Control Free</li>
+<li>Activate with an <code>NC-XXXX-XXXX</code> code from nodecontrol.io</li>
+<li>Your library is preserved. Tools that respect Free's 25-device cap will only see the first 25 devices (sorted by IP) — but the rest aren't deleted; they're just hidden</li>
+<li>You can uninstall Pro at any time</li>
+</ol>
+<p>If you later re-upgrade, all devices become visible again.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

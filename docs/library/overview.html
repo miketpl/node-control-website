@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library overview — NodeControl Docs</title>
+    <meta name="description" content="Library overview — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="overview.html" class="docs-nav-link active">Library Overview</a>
+      <a href="adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Library overview
+                </div>
+                <h1 id="library-overview">Library overview</h1>
+<p>The <strong>library</strong> is Node Control's list of the devices it can connect to. Everything else — topology maps, reports, Find Device, the SSH terminal — operates on devices in the library.</p>
+<h2 id="whats-in-the-library">What's in the library</h2>
+<p>Each entry holds:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP address</strong></td>
+<td>The management IP. Used to SSH to the device.</td>
+</tr>
+<tr>
+<td><strong>Hostname</strong></td>
+<td>What <code>show version</code> says the device is called. Auto-filled.</td>
+</tr>
+<tr>
+<td><strong>Site code</strong></td>
+<td>Two-letter or short identifier for grouping (e.g., <code>LON</code>, <code>NYC</code>, <code>BR1</code>). <a href="sites.html">Auto-detected from hostname</a>.</td>
+</tr>
+<tr>
+<td><strong>Device type</strong></td>
+<td>Netmiko driver name (<code>cisco_ios</code>, <code>hp_procurve_cli</code>, <code>paloalto_panos</code>, ...). Auto-detected on first connect, can be manually overridden.</td>
+</tr>
+<tr>
+<td><strong>Tab</strong></td>
+<td>Which library tab (Switches, Routers, Firewalls, SD-WAN, Wireless, Other) the device lives in.</td>
+</tr>
+<tr>
+<td><strong>Credential profile</strong></td>
+<td>Which set of SSH credentials to use. Defaults to your global default.</td>
+</tr>
+<tr>
+<td><strong>Notes</strong></td>
+<td>Free-text field for engineer comments.</td>
+</tr>
+</tbody>
+</table>
+<p>The library lives in <code>~/Library/Application Support/netOps/netOps.db</code> (Mac) or <code>%APPDATA%\netOps\netOps.db</code> (Windows) — a single SQLite database.</p>
+<h2 id="the-engineer-tab-main-library-view">The Engineer tab — main library view</h2>
+<p>The <strong>Engineer</strong> tab is your default library view. It's a sortable, filterable table:</p>
+<ul>
+<li><strong>Filter by site</strong> — top-left dropdown narrows the table to one site</li>
+<li><strong>Search</strong> — top-right box does live substring matching across all columns</li>
+<li><strong>Sort</strong> — click any column header</li>
+<li><strong>Right-click a row</strong> for:</li>
+<li>Test Connection</li>
+<li>SSH (opens the terminal)</li>
+<li>Change Device Type</li>
+<li>Edit Credentials</li>
+<li>Move to tab</li>
+<li>Delete</li>
+</ul>
+<h2 id="tabs">Tabs</h2>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Typical contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Switches</strong></td>
+<td>Access, distribution, core switches</td>
+</tr>
+<tr>
+<td><strong>Routers</strong></td>
+<td>WAN routers, branch ISRs, ASRs, CSRs</td>
+</tr>
+<tr>
+<td><strong>Firewalls</strong></td>
+<td>Palo Alto, ASA, Fortigate, Checkpoint</td>
+</tr>
+<tr>
+<td><strong>SD-WAN</strong></td>
+<td>Velocloud, Viptela, Silver Peak edges</td>
+</tr>
+<tr>
+<td><strong>Wireless</strong></td>
+<td>Meraki MR, Cisco APs, Aruba IAP, controllers</td>
+</tr>
+<tr>
+<td><strong>Other</strong></td>
+<td>Anything that doesn't fit above</td>
+</tr>
+</tbody>
+</table>
+<p>Move devices between tabs by right-click → <strong>Move to tab</strong>.</p>
+<h2 id="adding-devices">Adding devices</h2>
+<p>Three ways, in increasing automation:</p>
+<ol>
+<li><strong>Manual</strong> — right-click in the table → <strong>Add Device</strong> (<a href="adding-devices.html">details</a>)</li>
+<li><strong>Subnet scan</strong> — Library Updater walks an IP range and adds what it finds (<a href="subnet-scan.html">details</a>)</li>
+<li><strong>GitHub library sync</strong> — pull a shared library from a GitHub repo (<a href="github-sync.html">details</a>, Pro/AI only)</li>
+</ol>
+<h2 id="free-tier-device-cap">Free tier device cap</h2>
+<p>Free tier limits the library to <strong>25 devices</strong>. Additional devices can be added but won't appear in the device picker, won't be scanned by Inventory, and won't be visible to the (single-switch) Find Device picker.</p>
+<p>The cap is enforced at the database-read boundary — even if your library has 251 devices left over from a Pro install, the Free build only operates on 25.</p>
+<p>To remove the cap, <a href="../tiers/upgrading.html">upgrade to Pro</a>.</p>
+<h2 id="sites">Sites</h2>
+<p>A <strong>site</strong> groups devices that share physical location, ownership, or credentials. Site codes drive a lot of Node Control's behaviour:</p>
+<ul>
+<li>The <strong>Site filter</strong> dropdown filters the library view</li>
+<li>Reports and tasks can be run "for this site only" instead of all devices</li>
+<li>Find Device walks each site's cores in parallel</li>
+<li>Topology maps draw a separate map per site</li>
+</ul>
+<p>Site codes are usually 2–4 characters derived from hostname patterns. See <a href="sites.html">Site detection</a> for how Node Control extracts them.</p>
+<h2 id="backing-up-your-library">Backing up your library</h2>
+<p>The library is a single SQLite file. To back up:</p>
+<p><strong>Mac</strong>:</p>
+<pre><code>cp ~/Library/Application\ Support/netOps/netOps.db ~/Desktop/netOps-backup.db
+</code></pre>
+<p><strong>Windows</strong>:</p>
+<pre><code>copy &quot;%APPDATA%\netOps\netOps.db&quot; %USERPROFILE%\Desktop\netOps-backup.db
+</code></pre>
+<p>To restore, just copy it back. Node Control reads the file on launch.</p>
+<p>Pro/AI users have a better option: <a href="github-sync.html">GitHub library sync</a> keeps a remote copy and tracks every change in commit history.</p>
+<h2 id="editing-devices">Editing devices</h2>
+<p>Double-click any field in the device table to edit it inline. Press Enter to save, Escape to cancel.</p>
+<p>For multi-field edits, right-click → <strong>Edit Device</strong> opens a dialog with all fields visible.</p>
+<h2 id="deleting-devices">Deleting devices</h2>
+<p>Right-click → <strong>Delete</strong>. Confirms before deletion. Doesn't remove the SSH host key from your known-hosts file or the credentials from your keychain — both are reusable if you re-add the same IP.</p>
+<h2 id="library-size-limits">Library size limits</h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Library size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free</td>
+<td>25 devices (enforced)</td>
+</tr>
+<tr>
+<td>Pro / AI</td>
+<td>Practical limit ~10,000 devices (no enforced cap, but the Engineer tab gets slow above that)</td>
+</tr>
+</tbody>
+</table>
+<p>Beyond ~10,000, the Library Updater subnet-scan flow is slow and Find Device starts struggling — use multiple libraries (one per region/customer) instead of one giant one.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="adding-devices.html">Add devices manually</a></li>
+<li><a href="subnet-scan.html">Subnet scan</a></li>
+<li><a href="sites.html">Organise by site</a></li>
+<li><a href="github-sync.html">GitHub library sync</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

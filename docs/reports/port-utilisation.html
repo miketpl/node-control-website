@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Utilisation report — NodeControl Docs</title>
+    <meta name="description" content="Port Utilisation report — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="port-utilisation.html" class="docs-nav-link active">Port Utilisation</a>
+      <a href="bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/reports/">Reports</a> &rsaquo; Port Utilisation report
+                </div>
+                <h1 id="port-utilisation-report">Port Utilisation report</h1>
+<blockquote>
+<p>Available on <strong>Pro</strong> and <strong>AI</strong> tiers only.</p>
+</blockquote>
+<p>For each switch in scope, lists every port with its status, VLAN, MAC count, and traffic counters. Useful for capacity planning, finding unused ports, and spotting interface errors.</p>
+<h2 id="open-the-report">Open the report</h2>
+<ul>
+<li><strong>Reports</strong> tab → <strong>Port Utilisation</strong> → set Scope → <strong>Run</strong></li>
+</ul>
+<h2 id="whats-collected-per-port">What's collected per port</h2>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Port</strong></td>
+<td>Interface name (Gi1/0/1, swp1, ge-0/0/0, etc.)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>up / down / admin-down / err-disabled</td>
+</tr>
+<tr>
+<td><strong>Description</strong></td>
+<td>Port description if configured</td>
+</tr>
+<tr>
+<td><strong>VLAN</strong></td>
+<td>Access VLAN, or "trunk" for trunk ports</td>
+</tr>
+<tr>
+<td><strong>MAC count</strong></td>
+<td>Number of MAC addresses learned on the port</td>
+</tr>
+<tr>
+<td><strong>Speed / Duplex</strong></td>
+<td>Negotiated speed and duplex</td>
+</tr>
+<tr>
+<td><strong>In octets</strong></td>
+<td>Cumulative inbound bytes since counter reset</td>
+</tr>
+<tr>
+<td><strong>Out octets</strong></td>
+<td>Cumulative outbound bytes</td>
+</tr>
+<tr>
+<td><strong>In errors</strong></td>
+<td>Inbound error count</td>
+</tr>
+<tr>
+<td><strong>Out errors</strong></td>
+<td>Outbound error count</td>
+</tr>
+<tr>
+<td><strong>PoE draw</strong></td>
+<td>Power consumed by attached device (watts)</td>
+</tr>
+<tr>
+<td><strong>CDP / LLDP neighbour</strong></td>
+<td>If a neighbour is detected on the port</td>
+</tr>
+</tbody>
+</table>
+<h2 id="filtering">Filtering</h2>
+<p>The filter bar narrows the table by substring across all columns. Common filters:</p>
+<ul>
+<li><code>down</code> — find unused / disconnected ports</li>
+<li><code>err-disabled</code> — find ports that auto-shut due to errors</li>
+<li><code>trunk</code> — find trunks</li>
+<li><code>VLAN 100</code> — find access ports on VLAN 100</li>
+<li><code>0 errors</code> and sort by In errors — find error-free ports</li>
+</ul>
+<h2 id="per-vendor-command-set">Per-vendor command set</h2>
+<table>
+<thead>
+<tr>
+<th>Vendor</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco IOS / IOS-XE</td>
+<td><code>show interfaces</code>, <code>show interfaces status</code>, <code>show interfaces counters errors</code>, <code>show mac address-table</code></td>
+</tr>
+<tr>
+<td>Cisco NX-OS</td>
+<td><code>show interface brief</code>, <code>show interface counters</code>, <code>show interface counters errors</code></td>
+</tr>
+<tr>
+<td>HP ProCurve</td>
+<td><code>show interfaces</code> with the older syntax; counters parsed from the brief output</td>
+</tr>
+<tr>
+<td>Aruba CX</td>
+<td><code>show interface</code>, <code>show interface brief</code>, <code>show mac-address-table</code></td>
+</tr>
+<tr>
+<td>Juniper</td>
+<td><code>show interfaces extensive</code>, <code>show ethernet-switching table</code></td>
+</tr>
+<tr>
+<td>Arista</td>
+<td>Cisco-compatible commands</td>
+</tr>
+<tr>
+<td>Extreme</td>
+<td><code>show ports</code>, <code>show ports configuration</code></td>
+</tr>
+</tbody>
+</table>
+<p>The 0.9.x improvements added a dedicated ProCurve parser path so HP devices produce the same column layout as Cisco — this used to fail silently with empty columns.</p>
+<h2 id="use-cases">Use cases</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Which ports are unused on this switch?"</td>
+<td>Run for that switch, filter Status = "down" + MAC count = 0</td>
+</tr>
+<tr>
+<td>"Which ports have errors?"</td>
+<td>Run, sort In errors descending</td>
+</tr>
+<tr>
+<td>"Where is high PoE draw?"</td>
+<td>Sort PoE draw descending → top 5 ports</td>
+</tr>
+<tr>
+<td>"Which trunks exist?"</td>
+<td>Filter VLAN = "trunk"</td>
+</tr>
+<tr>
+<td>"Is VLAN 100 spread correctly across access switches?"</td>
+<td>Filter VLAN = "100", check distribution</td>
+</tr>
+</tbody>
+</table>
+<h2 id="export">Export</h2>
+<p>Same CSV / XLSX / HTML options as other reports.</p>
+<h2 id="performance">Performance</h2>
+<p>Roughly 30 seconds per switch (parallelised). A 50-switch site takes ~3–5 minutes.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In/Out octets show 0 on some switches</td>
+<td>Vendor's counter command doesn't produce parseable output</td>
+<td>Open a ticket with the device's <code>show interfaces</code> raw output</td>
+</tr>
+<tr>
+<td>PoE column empty for everything</td>
+<td>Switch doesn't support PoE, or PoE command isn't in the catalog for this vendor</td>
+<td>Check Settings → Custom Commands</td>
+</tr>
+<tr>
+<td>Status column blank for some ports</td>
+<td>Port type not recognised (e.g., management interface on some platforms)</td>
+<td>Usually safe to ignore — main data is still correct</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="bandwidth.html">Bandwidth</a> — for time-windowed traffic vs port-level snapshot</li>
+<li><a href="vlan-port-finder.html">VLAN Port Finder</a> — for VLAN-centric questions</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet scan (Library Updater) — NodeControl Docs</title>
+    <meta name="description" content="Subnet scan (Library Updater) — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="subnet-scan.html" class="docs-nav-link active">Subnet Scan</a>
+      <a href="sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Subnet scan (Library Updater)
+                </div>
+                <h1 id="subnet-scan-library-updater">Subnet scan (Library Updater)</h1>
+<p>The Library Updater walks an IP range, attempts SSH on each responding host, and adds discovered devices to your library — auto-filling the device type, hostname, and site code along the way.</p>
+<p>This is the fastest way to populate a new library, or to keep an existing one accurate as devices change.</p>
+<h2 id="open-the-library-updater">Open the Library Updater</h2>
+<ul>
+<li><strong>Tools → Library Updater</strong> (or the toolbar button)</li>
+</ul>
+<h2 id="configure-the-scan">Configure the scan</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Subnet</strong></td>
+<td>IP range to scan, in CIDR notation (e.g., <code>10.1.1.0/24</code>, <code>192.168.10.0/24</code>). Multiple subnets can be added — they'll be scanned in sequence.</td>
+</tr>
+<tr>
+<td><strong>Default tab</strong></td>
+<td>Where discovered devices land (Switches / Routers / Firewalls / etc.). The classifier may reassign based on hostname patterns.</td>
+</tr>
+<tr>
+<td><strong>Credentials</strong></td>
+<td>Which credential profile(s) to try. If you have two profiles configured, both are tried per device.</td>
+</tr>
+<tr>
+<td><strong>Parallelism</strong></td>
+<td>How many SSH connections to attempt at once. Default 10 — bump to 20-30 if you have a fast machine and good network.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="click-start-scan">Click Start Scan</h2>
+<p>The Library Updater runs through four phases:</p>
+<h3 id="phase-1-ping-sweep">Phase 1 — Ping sweep</h3>
+<p>Pings every IP in the range. Uses <code>fping</code> if installed (fast, ~5 seconds for a /24), otherwise falls back to Python ping (slower, ~30 seconds for a /24).</p>
+<p><strong>Install <code>fping</code></strong> if you don't have it:</p>
+<ul>
+<li><strong>Mac</strong>: <code>brew install fping</code></li>
+<li><strong>Linux</strong>: <code>sudo apt-get install fping</code></li>
+<li><strong>Windows</strong>: not directly available; the Python fallback is used</li>
+</ul>
+<h3 id="phase-2-ssh-classification">Phase 2 — SSH classification</h3>
+<p>For each ping-alive IP, attempts SSH using your configured credential profiles. On successful login:</p>
+<ol>
+<li>Runs <code>show version</code> (or vendor equivalent)</li>
+<li>Looks at the output for vendor-identifying strings (e.g., "Cisco IOS", "ProCurve", "PAN-OS")</li>
+<li>Picks the right Netmiko driver</li>
+<li>Extracts the hostname</li>
+</ol>
+<h3 id="phase-3-library-write">Phase 3 — Library write</h3>
+<p>For each successfully-classified device:</p>
+<ol>
+<li><strong>New device</strong>: added to the library with all fields filled</li>
+<li><strong>Existing device</strong> (IP already in library): updates hostname and device type if changed, leaves other fields alone</li>
+</ol>
+<p>The <strong>Default tab</strong> chosen at config time is overridden by the classifier when the hostname matches certain patterns:</p>
+<table>
+<thead>
+<tr>
+<th>Hostname pattern</th>
+<th>Goes to tab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ap-*</code>, <code>wap-*</code>, <code>*-ap-*</code>, <code>aironet-*</code>, <code>mr*</code></td>
+<td>Wireless</td>
+</tr>
+<tr>
+<td><code>fw-*</code>, <code>*-fw-*</code>, <code>palo-*</code>, <code>sonicwall-*</code>, <code>fortigate-*</code></td>
+<td>Firewalls</td>
+</tr>
+<tr>
+<td><code>rtr-*</code>, <code>r-*</code>, <code>*-rtr-*</code>, <code>csr-*</code>, <code>isr-*</code>, <code>asr-*</code></td>
+<td>Routers</td>
+</tr>
+<tr>
+<td><code>sw-*</code>, <code>csw-*</code>, <code>dsw-*</code>, <code>asw-*</code>, <code>stk-*</code></td>
+<td>Switches</td>
+</tr>
+<tr>
+<td><code>sdwan-*</code>, <code>velocloud-*</code>, <code>viptela-*</code></td>
+<td>SD-WAN</td>
+</tr>
+</tbody>
+</table>
+<p>Hostnames that don't match any pattern land in the Default tab.</p>
+<h3 id="phase-4-summary">Phase 4 — Summary</h3>
+<p>When the scan completes, you'll see a summary:</p>
+<pre><code>Scan complete: 47 hosts pinged, 32 SSH-classified, 28 new, 4 updated, 0 errors
+</code></pre>
+<p>The library updates immediately.</p>
+<h2 id="what-gets-logged">What gets logged</h2>
+<p>Every scan writes a session log to:</p>
+<pre><code>~/Library/Application Support/netOps/library_updater.log  (Mac)
+%APPDATA%\netOps\library_updater.log                       (Windows)
+</code></pre>
+<p>Useful for tracking why a specific IP wasn't classified (auth failure, unsupported vendor, etc.).</p>
+<h2 id="scanning-multiple-subnets">Scanning multiple subnets</h2>
+<p>The Library Updater accepts multiple subnets per scan. Click <strong>+ Add Subnet</strong> to chain them:</p>
+<pre><code>10.1.1.0/24
+10.1.2.0/24
+192.168.50.0/24
+</code></pre>
+<p>All run in sequence. Total time scales linearly with subnet count.</p>
+<h2 id="free-tier-behaviour">Free tier behaviour</h2>
+<p>The subnet scan itself works on Free, but:</p>
+<ul>
+<li>Devices added beyond the 25-device cap are accepted into the library but won't be visible to other tools</li>
+<li>This is <strong>intentional</strong> — subnet scan is the escape hatch for free users who want to inventory devices that aren't yet in their library, without being blocked by the cap</li>
+<li>After scanning, you can review the full result list and decide which 25 are most important to keep — the rest can be ignored or deleted</li>
+</ul>
+<h2 id="re-scanning">Re-scanning</h2>
+<p>Running the Library Updater on the same subnet later:</p>
+<ul>
+<li>Doesn't duplicate devices (existing IPs are updated, not re-added)</li>
+<li>Refreshes hostnames if devices have been renamed</li>
+<li>Catches device type changes (e.g., a switch that got reflashed from IOS to NX-OS)</li>
+<li>Leaves your manually-set device types alone if they're locked</li>
+</ul>
+<h2 id="scheduling-regular-scans">Scheduling regular scans</h2>
+<p>There's no built-in scheduler. For weekly/monthly automated scans:</p>
+<ul>
+<li><strong>Mac</strong>: <code>launchd</code> with a script that opens the app and triggers <code>Tools → Library Updater</code> via AppleScript</li>
+<li><strong>Windows</strong>: Task Scheduler running the app with command-line args</li>
+</ul>
+<p>We're considering native scheduling in a future release — let us know if this matters to you.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All hosts ping but none SSH</td>
+<td>Credentials wrong</td>
+<td>Test one device manually first via right-click → Test Connection</td>
+</tr>
+<tr>
+<td>Some devices show up as <code>cisco_ios</code> but they're actually HP ProCurve</td>
+<td>ProCurve accepts the Cisco driver silently — Node Control runs an opportunistic probe to catch this, but it can occasionally miss</td>
+<td>Right-click → Change Device Type → set to <code>hp_procurve_cli</code> manually; check Lock Device Type</td>
+</tr>
+<tr>
+<td>Scan very slow</td>
+<td>Default Python ping fallback</td>
+<td>Install <code>fping</code></td>
+</tr>
+<tr>
+<td><code>fping not found</code> warning</td>
+<td><code>fping</code> binary not in PATH</td>
+<td>Install or symlink it; otherwise scan continues with Python ping</td>
+</tr>
+<tr>
+<td>Many "Connection timed out"</td>
+<td>Devices unreachable, firewall blocking, or ARP cache stale</td>
+<td>Check <code>ping</code> works from a separate terminal first</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="sites.html">Organising devices by site</a></li>
+<li><a href="github-sync.html">Sharing libraries via GitHub</a></li>
+<li><a href="../tasks/verify-device-types.html">Verify Device Types task</a> — periodic sweep to catch detection errors</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

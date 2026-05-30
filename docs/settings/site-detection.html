@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site detection rules — NodeControl Docs</title>
+    <meta name="description" content="Site detection rules — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="site-detection.html" class="docs-nav-link active">Site Detection Rules</a>
+      <a href="custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Site detection rules
+                </div>
+                <h1 id="site-detection-rules">Site detection rules</h1>
+<p>How Node Control extracts a site code from a device's hostname.</p>
+<h2 id="whats-a-site-code">What's a site code</h2>
+<p>A short identifier (typically 2–4 characters) that groups devices belonging to the same physical location or administrative domain. Examples: <code>LON</code>, <code>NYC</code>, <code>BR01</code>, <code>DC1</code>.</p>
+<p>Site codes drive filters, scopes, and per-site behaviour throughout the app. See <a href="../library/sites.html">Sites</a> for the broader context.</p>
+<h2 id="how-auto-detection-works">How auto-detection works</h2>
+<p>When Node Control encounters a device with a hostname (either set manually or fetched from <code>show version</code>), it runs the hostname through a regex pattern. The first capture group becomes the site code.</p>
+<p>The default pattern extracts an alphabetic prefix:</p>
+<pre><code>^([A-Za-z]+)
+</code></pre>
+<p>So <code>LON-CORE-SW-01</code> → <code>LON</code>, <code>nyc-fw-pri</code> → <code>nyc</code> (auto-uppercased to <code>NYC</code>), <code>BR01_ACCESS_03</code> → <code>BR</code> (alphabetic only — number stripped).</p>
+<h2 id="when-the-default-works">When the default works</h2>
+<p>If your hostname convention is <code>&lt;SITE&gt;-&lt;role&gt;-&lt;number&gt;</code> or <code>&lt;SITE&gt;_&lt;role&gt;_&lt;number&gt;</code> and <code>&lt;SITE&gt;</code> is alphabetic, the default regex works. Confirm with a sample:</p>
+<ol>
+<li>Settings → <strong>Site Detection</strong></li>
+<li>The <strong>Test</strong> field accepts a hostname; type one</li>
+<li>The result shows the extracted site code</li>
+<li>Adjust regex if needed</li>
+</ol>
+<h2 id="when-you-need-a-custom-regex">When you need a custom regex</h2>
+<p>Common variations and matching regex:</p>
+<table>
+<thead>
+<tr>
+<th>Hostname format</th>
+<th>Example</th>
+<th>Regex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;SITE&gt;-&lt;role&gt;-&lt;n&gt;</code> (alphabetic site)</td>
+<td><code>LON-CORE-1</code></td>
+<td><code>^([A-Za-z]+)</code> (default)</td>
+</tr>
+<tr>
+<td><code>&lt;SITE&gt;&lt;role&gt;&lt;n&gt;</code> (no separator)</td>
+<td><code>LON-CORE1</code> → split by chars</td>
+<td><code>^([A-Z]{3})</code></td>
+</tr>
+<tr>
+<td><code>&lt;role&gt;-&lt;SITE&gt;-&lt;n&gt;</code> (site in middle)</td>
+<td><code>CORE-LON-1</code></td>
+<td><code>^[A-Z]+-([A-Z]+)</code></td>
+</tr>
+<tr>
+<td><code>&lt;SITE&gt;_&lt;role&gt;_&lt;n&gt;</code> (underscore separator)</td>
+<td><code>LON_CORE_1</code></td>
+<td><code>^([A-Za-z]+)_</code></td>
+</tr>
+<tr>
+<td><code>&lt;n&gt;-&lt;SITE&gt;-&lt;role&gt;</code> (number prefix)</td>
+<td><code>01-LON-CORE</code></td>
+<td><code>^\d+-([A-Z]+)-</code></td>
+</tr>
+<tr>
+<td><code>&lt;customer&gt;-&lt;SITE&gt;-&lt;role&gt;</code></td>
+<td><code>ACME-LON-CORE-1</code></td>
+<td><code>^[A-Z]+-([A-Z]+)-</code> (extracts LON, skipping customer)</td>
+</tr>
+<tr>
+<td>Numeric site code</td>
+<td><code>BR01-CORE-1</code></td>
+<td><code>^([A-Z]+\d+)</code> (matches <code>BR01</code>)</td>
+</tr>
+<tr>
+<td>Numeric site code only</td>
+<td><code>01-CORE-1</code></td>
+<td><code>^(\d+)</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuring-the-regex">Configuring the regex</h2>
+<ol>
+<li>Settings → <strong>Site Detection</strong></li>
+<li><strong>Regex pattern</strong> field — type the pattern</li>
+<li><strong>Test hostname</strong> field — paste a sample</li>
+<li><strong>Test result</strong> shows what the regex would extract</li>
+<li>Adjust until samples produce the right site codes</li>
+<li>Click <strong>Save</strong> — regex applied to all future hostname-to-site lookups</li>
+</ol>
+<h2 id="adaptive-detection">Adaptive detection</h2>
+<p>Node Control's site detection is more than just a single regex — it's an adaptive system:</p>
+<ol>
+<li><strong>Manual override always wins</strong> — if you've set a site code manually on a device, the regex is ignored</li>
+<li><strong>Last successful extraction is remembered</strong> — if a device's hostname was already extracted to a site code, that's used unless the hostname changes</li>
+<li><strong>Multi-pattern fallback</strong> — if you've configured multiple regex patterns (advanced), they're tried in order</li>
+</ol>
+<p>Most users only need one regex. The fallback is for complex environments where different hostname conventions exist in different parts of the library.</p>
+<h2 id="re-running-detection-on-existing-devices">Re-running detection on existing devices</h2>
+<p>After changing the regex, existing devices keep their old (potentially wrong) site codes — the change only applies to future hostname updates.</p>
+<p>To re-detect for all devices:</p>
+<ol>
+<li>Settings → Site Detection → <strong>Re-detect all</strong> button</li>
+<li>Confirms — overwrites all site codes with what the current regex extracts</li>
+<li>Doesn't touch devices with manually-set codes (they stay)</li>
+</ol>
+<h2 id="hostname-formatting-normalisation">Hostname formatting normalisation</h2>
+<p>Site codes are normalised:</p>
+<ul>
+<li>Auto-uppercased</li>
+<li>Whitespace trimmed</li>
+<li>Length capped at 8 characters</li>
+</ul>
+<p>So <code>lon</code> and <code>LON</code> both produce site code <code>LON</code>.</p>
+<h2 id="reading-the-site-code-in-tasks">Reading the site code in tasks</h2>
+<p>Site codes are visible in:</p>
+<ul>
+<li>The Engineer tab's Site filter dropdown</li>
+<li>Every task's Scope = "Site X" picker</li>
+<li>The columns of most reports</li>
+<li>The hover tooltips on topology nodes</li>
+</ul>
+<h2 id="hostnames-with-no-extractable-site-code">Hostnames with no extractable site code</h2>
+<p>Devices where the regex doesn't match get site code = empty string. They appear under "Unassigned" in the Site filter.</p>
+<p>To bulk-assign:</p>
+<ol>
+<li>Filter Engineer tab to Unassigned</li>
+<li>Select multiple devices</li>
+<li>Right-click → Set Site Code → type the code</li>
+<li>Save</li>
+</ol>
+<h2 id="best-practice-hostname-convention-first">Best practice — hostname convention first</h2>
+<p>The most maintenance-free setup is one where every device's hostname encodes the site code consistently, so a single regex covers everything. If you're inheriting a library with inconsistent hostnames:</p>
+<ol>
+<li>Standardise hostnames if you can</li>
+<li>Use bulk site-code assignment in Node Control for the rest</li>
+<li>As devices get renamed over time, the regex re-applies cleanly</li>
+</ol>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../library/sites.html">Library — Sites</a></li>
+<li><a href="../tasks/find-device.html">Find Device — uses site codes for cores</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

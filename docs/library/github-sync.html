@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sharing libraries via GitHub — NodeControl Docs</title>
+    <meta name="description" content="Sharing libraries via GitHub — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="github-sync.html" class="docs-nav-link active">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Sharing libraries via GitHub
+                </div>
+                <h1 id="sharing-libraries-via-github">Sharing libraries via GitHub</h1>
+<blockquote>
+<p>Available on <strong>Pro</strong> and <strong>AI</strong> tiers only.</p>
+</blockquote>
+<p>Node Control can synchronise your device library with a private GitHub repository. Useful when:</p>
+<ul>
+<li>Multiple engineers need to work from the same device list</li>
+<li>You want a backup beyond the local SQLite file</li>
+<li>You want change history (every library edit becomes a Git commit)</li>
+<li>You're handing a project off and want the new engineer to inherit your library</li>
+</ul>
+<h2 id="how-it-works">How it works</h2>
+<p>Node Control serialises your library to a JSON file and pushes it to a GitHub repo of your choice. Other Node Control installations pull from the same repo and import the JSON.</p>
+<ul>
+<li><strong>Pushes</strong> require a GitHub personal access token with write access to the repo</li>
+<li><strong>Pulls</strong> can use either the same write token OR a separate read-only token (recommended for workstations that should never accidentally push)</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<h3 id="1-create-the-github-repo">1. Create the GitHub repo</h3>
+<p>A private GitHub repo, owned by your account or org. Empty initially.</p>
+<p>Suggested naming: <code>nodecontrol-library-&lt;company&gt;</code> or <code>network-inventory-&lt;customer&gt;</code>.</p>
+<h3 id="2-generate-personal-access-tokens">2. Generate personal access tokens</h3>
+<p>You'll typically generate <strong>two</strong> tokens:</p>
+<p><strong>Write token</strong> (for the engineer who owns the library):
+- GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+- Repository access: only your library repo
+- Permissions: <strong>Contents → Read and Write</strong></p>
+<p><strong>Read-only token</strong> (for everyone else who pulls):
+- Same flow, different permissions
+- Permissions: <strong>Contents → Read-only</strong></p>
+<h3 id="3-configure-in-node-control">3. Configure in Node Control</h3>
+<p><strong>Settings → General → Default Library</strong> tab:</p>
+<ul>
+<li><strong>Library repo</strong>: <code>your-org/nodecontrol-library-acme</code> (or full URL)</li>
+<li><strong>Push PAT</strong>: paste your write token (only needed on machines that push)</li>
+<li><strong>Pull PAT</strong>: paste your read-only token (used for pulls; if blank, push PAT is used)</li>
+<li><strong>Auto-sync on library change</strong>: optional — pushes a commit every time you edit a device</li>
+</ul>
+<h3 id="4-first-push">4. First push</h3>
+<p>If the repo is empty:</p>
+<ol>
+<li><strong>Tools → Library → Push to GitHub</strong></li>
+<li>Confirm — your local library JSON is committed to the repo</li>
+<li>The commit message records the action and your machine name</li>
+</ol>
+<h3 id="5-first-pull-on-another-machine">5. First pull (on another machine)</h3>
+<ol>
+<li>Install Node Control Pro / AI with the same Library repo configured</li>
+<li><strong>Tools → Library → Pull from GitHub</strong></li>
+<li>A diff dialog appears showing:</li>
+<li><strong>New sites</strong>: sites in the remote library but not yours</li>
+<li><strong>Removed sites</strong>: sites in yours but not the remote</li>
+<li><strong>Per-tab IP changes</strong>: devices added, removed, or modified</li>
+<li>Click <strong>Apply</strong> to overwrite your local library with the remote contents</li>
+<li>Or <strong>Cancel</strong> to abort and review the diff</li>
+</ol>
+<p>The diff-and-confirm flow is intentional — you won't accidentally nuke your local library on a fetch.</p>
+<h2 id="conflict-resolution">Conflict resolution</h2>
+<p>If two engineers edit and push at the same time, the second push fails with a Git conflict. Resolution:</p>
+<ol>
+<li>The losing engineer pulls (Tools → Library → Pull)</li>
+<li>Reviews the diff to see what changed</li>
+<li>Re-applies their local edits on top</li>
+<li>Pushes again</li>
+</ol>
+<p>There's no automatic merge — the library JSON is treated as a single document. For teams that edit concurrently, the practice is "pull before edit, push after edit, in short cycles."</p>
+<h2 id="whats-in-the-synced-json">What's in the synced JSON</h2>
+<p>The library JSON includes:</p>
+<ul>
+<li>All devices (IPs, hostnames, site codes, tabs, device types, notes)</li>
+<li>Site detection regex</li>
+<li>Custom command preferences (if <code>device_command_prefs</code> table has entries)</li>
+</ul>
+<p>It does <strong>not</strong> include:</p>
+<ul>
+<li>Credentials (passwords stay in the local OS keychain)</li>
+<li>App settings (UI state, paths, recent files)</li>
+<li>The <code>last_license_check</code> timestamps</li>
+</ul>
+<p>So the JSON is safe to share — no secrets in it.</p>
+<h2 id="auto-sync-vs-manual">Auto-sync vs manual</h2>
+<p><strong>Auto-sync on library change</strong> (Settings → General → Default Library): commits a push every time you edit, add, or delete a device.</p>
+<p>Pros:
+- Always in sync; no risk of forgetting to push
+- Full change history in the repo</p>
+<p>Cons:
+- A new commit on every keystroke during edits — repo gets noisy
+- Slower app (each edit blocks on a GitHub API round-trip, ~500ms)</p>
+<p>Most teams turn auto-sync <strong>off</strong> and push manually at end-of-session.</p>
+<h2 id="multiple-libraries-per-customer-per-site">Multiple libraries (per customer / per site)</h2>
+<p>If you manage networks for several customers, you can have a separate library repo per customer:</p>
+<ol>
+<li>Switch the <strong>Library repo</strong> field in Settings to point at a different repo</li>
+<li><strong>Tools → Library → Pull from GitHub</strong> to load that customer's library</li>
+<li>Your local library DB is fully replaced with the pulled contents</li>
+</ol>
+<p>Switching libraries effectively "checks out" a different customer's network. Your previous local edits are gone unless they were pushed first — be deliberate about the order.</p>
+<p>A future release may add named library profiles to make this switching less destructive — let us know if this is important to you.</p>
+<h2 id="audit-trail">Audit trail</h2>
+<p>Every push and pull is logged locally in <code>library_sync.log</code> next to the DB file. The GitHub repo's commit history is the authoritative record of changes — <code>git log</code> shows who pushed what when, and <code>git diff</code> shows the device-level changes.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"401 Unauthorized" on push</td>
+<td>Token expired or wrong permissions</td>
+<td>Regenerate the token with Contents: Read and Write</td>
+</tr>
+<tr>
+<td>"Push rejected — non-fast-forward"</td>
+<td>Someone else pushed since your last pull</td>
+<td>Pull first, then push</td>
+</tr>
+<tr>
+<td>Pull shows no diff but you know the remote changed</td>
+<td>Cache issue — restart the app</td>
+<td>The library JSON is fetched once per session</td>
+</tr>
+<tr>
+<td>"Repo not found"</td>
+<td>Typo in repo path, or token doesn't have access to it</td>
+<td>Verify in a browser that you can see the repo with the same account</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="overview.html">Library overview</a></li>
+<li><a href="../security/credential-storage.html">Credential storage</a> — why credentials don't sync</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

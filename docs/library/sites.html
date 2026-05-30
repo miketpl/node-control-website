@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organising devices by site — NodeControl Docs</title>
+    <meta name="description" content="Organising devices by site — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="sites.html" class="docs-nav-link active">Organising by Site</a>
+      <a href="github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Organising devices by site
+                </div>
+                <h1 id="organising-devices-by-site">Organising devices by site</h1>
+<p>A <strong>site</strong> in Node Control is a label that groups devices belonging to the same physical location, customer, or administrative domain. Site codes drive how tools narrow their scope, which devices appear in which topology map, and how reports aggregate.</p>
+<h2 id="what-a-site-code-looks-like">What a site code looks like</h2>
+<p>A site code is typically a short identifier:</p>
+<table>
+<thead>
+<tr>
+<th>Site code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LON</code></td>
+<td>London office</td>
+</tr>
+<tr>
+<td><code>NYC</code></td>
+<td>New York office</td>
+</tr>
+<tr>
+<td><code>BR01</code></td>
+<td>Branch 01</td>
+</tr>
+<tr>
+<td><code>DC1</code></td>
+<td>Data centre 1</td>
+</tr>
+<tr>
+<td><code>ACME</code></td>
+<td>Customer Acme Networks</td>
+</tr>
+</tbody>
+</table>
+<p>Two to four characters is the sweet spot — long enough to be unambiguous, short enough to fit in hostname schemes.</p>
+<h2 id="how-site-codes-get-assigned">How site codes get assigned</h2>
+<p>Three ways:</p>
+<ol>
+<li><strong>Auto-detected from hostname</strong> (most common) — Node Control extracts the site code from the hostname using a regex</li>
+<li><strong>Manually set</strong> — right-click a device → <strong>Edit Device</strong> → set Site code</li>
+<li><strong>Bulk-assigned by site detection rule</strong> — configured in Settings</li>
+</ol>
+<h2 id="auto-detection-from-hostname">Auto-detection from hostname</h2>
+<p>Most network operators name devices with a hostname convention that embeds the site code. Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Hostname</th>
+<th>Extracted site code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LON-CORE-SW-01</code></td>
+<td><code>LON</code></td>
+</tr>
+<tr>
+<td><code>nyc-dist-fw-pri</code></td>
+<td><code>NYC</code></td>
+</tr>
+<tr>
+<td><code>BR01_ACCESS_03</code></td>
+<td><code>BR01</code></td>
+</tr>
+<tr>
+<td><code>ACME-LON-CORE-1</code></td>
+<td>depends on regex — could be <code>ACME</code> or <code>LON</code></td>
+</tr>
+</tbody>
+</table>
+<p>Node Control's default site detection regex looks for an alphabetic prefix at the start of the hostname. If your hostnames are different, you can customise the regex in <strong>Settings → Site Detection</strong>.</p>
+<p>See <a href="../settings/site-detection.html">Site detection rules</a> for the configuration details.</p>
+<h2 id="filtering-the-library-by-site">Filtering the library by site</h2>
+<p>In the Engineer tab, the top-left <strong>Site</strong> dropdown shows every unique site code in your library plus an "All" option. Pick one to filter the table.</p>
+<h2 id="running-tasks-for-a-single-site">Running tasks for a single site</h2>
+<p>Most tasks have a <strong>Scope</strong> option:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>All devices</strong></td>
+<td>Run across the entire library (slow on large libraries)</td>
+</tr>
+<tr>
+<td><strong>Site X</strong></td>
+<td>Run only against devices tagged with site X</td>
+</tr>
+<tr>
+<td><strong>Individual</strong></td>
+<td>Pick one device to run against</td>
+</tr>
+</tbody>
+</table>
+<p>For Reports, Discovery, Find Device, and Topology, you'll typically pick a specific site to keep runtime manageable.</p>
+<h2 id="sites-and-find-device">Sites and Find Device</h2>
+<p>Find Device has a per-site concept of <strong>starting switches</strong> (cores). For each site, you configure one or more switches that serve as the BFS entry points:</p>
+<ol>
+<li><strong>Settings → Find Device → Starting Switches</strong></li>
+<li>For each site, pick 1–3 switches that are CDP/LLDP-connected to most of the access layer</li>
+<li>Find Device will walk those switches first, then traverse out from there via CDP/LLDP</li>
+</ol>
+<p>If you don't configure starting switches for a site and try to run Find Device for that site, you'll get a "missing starting switches" prompt asking you to pick now.</p>
+<h2 id="sites-and-topology-maps">Sites and topology maps</h2>
+<p>When you run L2 / L3 / WAN topology with <strong>Scope = Site X</strong>, only devices in that site are walked. The resulting map shows only that site's switches, routers, firewalls, and the links between them.</p>
+<p>This keeps the maps readable — a 200-device customer network broken into 8 site maps is much more useful than one massive 200-device map.</p>
+<h2 id="renaming-a-site">Renaming a site</h2>
+<p>To change a site code (e.g., from <code>LON</code> to <code>LDN</code>):</p>
+<ol>
+<li>Right-click any device with the old code → <strong>Edit Device</strong></li>
+<li>Change the Site code field</li>
+<li>Save</li>
+<li>Repeat for every device, OR use a SQL bulk update against the local DB:</li>
+</ol>
+<pre><code class="language-sql">UPDATE devices SET site_code = 'LDN' WHERE site_code = 'LON';
+</code></pre>
+<p>(Be careful with direct DB edits — close the app first, then run via <code>sqlite3 ~/Library/Application\ Support/netOps/netOps.db</code>.)</p>
+<h2 id="devices-with-no-site-code">Devices with no site code</h2>
+<p>Devices added without a site code (and where auto-detection didn't match) appear under the "Unassigned" site in the filter dropdown. To bulk-assign:</p>
+<ol>
+<li>Filter to Unassigned</li>
+<li>Select multiple devices (Cmd/Ctrl + click)</li>
+<li>Right-click → <strong>Set Site Code</strong> → pick from existing codes or type a new one</li>
+</ol>
+<h2 id="best-practice-pick-a-convention-and-stick-with-it">Best practice — pick a convention and stick with it</h2>
+<p>The most maintenance-free setup is one where every device's hostname encodes the site code, so auto-detection just works. If you're starting from scratch:</p>
+<ul>
+<li>Decide on 2–4 character site codes</li>
+<li>Use them consistently in hostnames (e.g., <code>&lt;SITE&gt;-&lt;ROLE&gt;-&lt;NUMBER&gt;</code> like <code>LON-CORE-01</code>)</li>
+<li>Configure site detection regex to match your format</li>
+<li>Run Library Updater on each site's management subnet — devices auto-land in the right site</li>
+</ul>
+<p>For environments with inconsistent hostname conventions, you'll end up manually assigning site codes after import. Still useful, but more work.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../settings/site-detection.html">Site detection rules</a> — customise the regex</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — uses site codes for cores</li>
+<li><a href="../tasks/topology-l2.html">Topology maps</a> — render one map per site</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

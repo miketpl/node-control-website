@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports overview — NodeControl Docs</title>
+    <meta name="description" content="Reports overview — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="overview.html" class="docs-nav-link active">Reports Overview</a>
+      <a href="port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/reports/">Reports</a> &rsaquo; Reports overview
+                </div>
+                <h1 id="reports-overview">Reports overview</h1>
+<p>Reports run a specific data-collection workflow across one or more devices and render a structured result — typically a table, sometimes an interactive map.</p>
+<h2 id="open-the-reports-tab">Open the Reports tab</h2>
+<ul>
+<li>Top-level <strong>Reports</strong> tab (alongside Engineer, Discovery, Tasks, Monitor)</li>
+</ul>
+<h2 id="report-types">Report types</h2>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th style="text-align: center;">Free</th>
+<th style="text-align: center;">Pro</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="inventory.html">Inventory</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>List devices with hardware model, OS version, serial number</td>
+</tr>
+<tr>
+<td><a href="port-utilisation.html">Port Utilisation</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>For each port: status, VLAN, MAC count, in/out traffic</td>
+</tr>
+<tr>
+<td><a href="bandwidth.html">Bandwidth</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>Aggregate in/out bandwidth per interface, top talkers</td>
+</tr>
+<tr>
+<td><a href="vlan-port-finder.html">VLAN Port Finder</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>"Which ports are on VLAN X?" across the fleet</td>
+</tr>
+<tr>
+<td><a href="meraki-usage-summary.html">Meraki Usage Summary</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>Per-org and per-network Meraki usage stats</td>
+</tr>
+</tbody>
+</table>
+<h2 id="free-tier-inventory-only">Free tier — Inventory only</h2>
+<p>On Free, only <strong>Inventory</strong> is enabled. All other rows in the Reports list are greyed with an "Upgrade to Pro" tooltip. The site scope selector is locked to <strong>INDIVIDUAL</strong> (single device) — All Devices and per-site scopes are Pro features.</p>
+<h2 id="running-a-report">Running a report</h2>
+<ol>
+<li><strong>Reports</strong> tab → pick a report from the list on the left</li>
+<li>Set <strong>Scope</strong>:</li>
+<li><strong>Individual</strong> — pick one device</li>
+<li><strong>Site X</strong> — every device in a site</li>
+<li><strong>All Devices</strong> — entire library</li>
+<li>Set <strong>Filters</strong> if the report has them (e.g., interface name patterns for Port Utilisation)</li>
+<li>Click <strong>Run</strong></li>
+</ol>
+<p>A progress dialog tracks SSH connections and command runs. When complete, results render in the main panel.</p>
+<h2 id="results-format">Results format</h2>
+<p>Most reports produce a sortable, filterable table:</p>
+<ul>
+<li><strong>Click column headers</strong> to sort</li>
+<li><strong>Filter bar</strong> at the top for substring search</li>
+<li><strong>Export</strong> button — CSV, XLSX, or HTML</li>
+<li><strong>Right-click row</strong> for context actions (open SSH, view device details)</li>
+</ul>
+<p>The HTML export is a self-contained file with embedded styles — easy to email or attach to tickets.</p>
+<h2 id="caching">Caching</h2>
+<p>Same 10-minute output cache as topology tasks. Re-running a report within the cache window reuses SSH output rather than re-walking devices. Force a fresh walk with <strong>Skip cache</strong>.</p>
+<h2 id="subnet-scan-as-an-inventory-escape-hatch-free">Subnet scan as an inventory escape hatch (Free)</h2>
+<p>If you're on Free and want an Inventory across devices not yet in your 25-device library, run <a href="../library/subnet-scan.html">Library Updater</a> on a subnet first — that ping-sweep + classify flow is unrestricted, and the subsequent Inventory report works on the discovered devices (subject to the cap on display).</p>
+<h2 id="run-history">Run history</h2>
+<p>Each run's results are saved to:</p>
+<pre><code>~/Library/Application Support/netOps/reports/&lt;report&gt;_&lt;scope&gt;_&lt;timestamp&gt;.html
+%APPDATA%\netOps\reports\&lt;report&gt;_&lt;scope&gt;_&lt;timestamp&gt;.html
+</code></pre>
+<p>Useful for before-and-after comparisons (e.g., "what was the port utilisation last month?").</p>
+<h2 id="performance">Performance</h2>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>Typical timing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inventory, individual</td>
+<td>5–10 sec</td>
+</tr>
+<tr>
+<td>Inventory, 50-device site</td>
+<td>1–2 min</td>
+</tr>
+<tr>
+<td>Port Utilisation, 50-device site</td>
+<td>2–4 min</td>
+</tr>
+<tr>
+<td>Bandwidth, 50-device site</td>
+<td>2–4 min</td>
+</tr>
+<tr>
+<td>VLAN Port Finder, 100-device site</td>
+<td>3–6 min</td>
+</tr>
+<tr>
+<td>Meraki Usage Summary, 10 orgs</td>
+<td>2–5 min (depends on API quotas)</td>
+</tr>
+</tbody>
+</table>
+<p>Parallelism is configurable in Settings → Reports → Workers (default 8).</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="inventory.html">Inventory</a></li>
+<li><a href="port-utilisation.html">Port Utilisation</a></li>
+<li><a href="bandwidth.html">Bandwidth</a></li>
+<li><a href="vlan-port-finder.html">VLAN Port Finder</a></li>
+<li><a href="meraki-usage-summary.html">Meraki Usage Summary</a></li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

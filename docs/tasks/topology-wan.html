@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAN topology map — NodeControl Docs</title>
+    <meta name="description" content="WAN topology map — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="topology-wan.html" class="docs-nav-link active">WAN Topology</a>
+      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; WAN topology map
+                </div>
+                <h1 id="wan-topology-map">WAN topology map</h1>
+<blockquote>
+<p>Available on <strong>Pro</strong> and <strong>AI</strong> tiers only.</p>
+</blockquote>
+<p>The WAN topology map renders the cross-site connectivity between your sites — the routers, firewalls, and SD-WAN edges that link locations together.</p>
+<h2 id="open-the-task">Open the task</h2>
+<ul>
+<li><strong>Tasks</strong> tab → <strong>Topology (WAN)</strong> → <strong>Run</strong></li>
+</ul>
+<h2 id="configure">Configure</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scope</strong></td>
+<td>All sites, or pick a subset</td>
+</tr>
+<tr>
+<td><strong>Include redundant paths</strong></td>
+<td>Show both primary and backup links between site pairs</td>
+</tr>
+<tr>
+<td><strong>Protocols</strong></td>
+<td>BGP, MPLS, IPSec — which transport overlays to detect</td>
+</tr>
+</tbody>
+</table>
+<h2 id="whats-read">What's read</h2>
+<p>The WAN topology task walks one router-or-firewall per site (typically the WAN edge — pickable in Settings), and on each:</p>
+<ul>
+<li><code>show ip bgp summary</code> — external BGP peers (cross-site, transit, ISP)</li>
+<li><code>show ip route</code> — wan-facing routes, default route source</li>
+<li><code>show crypto ipsec sa</code> (or equivalent) — IPSec tunnel endpoints</li>
+<li>SD-WAN-specific commands for Velocloud / Viptela / Silver Peak edges</li>
+</ul>
+<h2 id="reading-the-map">Reading the map</h2>
+<ul>
+<li><strong>Nodes</strong>: one per site (collapsed) OR one per WAN edge device (expanded)</li>
+<li><strong>Edges</strong>: BGP peering, IPSec tunnels, MPLS pseudowires</li>
+<li><strong>Edge labels</strong>: AS path for BGP, tunnel peer for IPSec, VRF name for MPLS</li>
+<li>Hover for full peer details</li>
+</ul>
+<h2 id="best-practice">Best practice</h2>
+<p>WAN topology works best when each site has a clearly-designated WAN edge device tagged in the library — typically:</p>
+<ul>
+<li>A WAN router (<code>rtr-wan-*</code>, <code>csr-*</code>)</li>
+<li>A firewall doing edge / VPN termination</li>
+<li>An SD-WAN appliance</li>
+</ul>
+<p>If your library has every router tagged, the WAN task walks them all (slow, noisy). If you tag only the actual WAN edges, the map is cleaner and faster.</p>
+<h2 id="when-to-use-which-topology">When to use which topology</h2>
+<ul>
+<li><strong>L2</strong> — switch-to-switch view of a single site's fabric</li>
+<li><strong>L3</strong> — routing protocol overlay (OSPF, BGP) for a site or full network</li>
+<li><strong>WAN</strong> — cross-site connections only, your transport view</li>
+</ul>
+<p>For "where does this packet go?" type questions, L3 + WAN together usually answers it.</p>
+<h2 id="vendor-support">Vendor support</h2>
+<ul>
+<li>Cisco IOS / IOS-XE — full BGP + IPSec</li>
+<li>Cisco ASA — IPSec only (no BGP unless licensed)</li>
+<li>Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels</li>
+<li>Velocloud, Viptela — SD-WAN overlay</li>
+<li>Juniper — BGP, IPSec, MPLS pseudowires</li>
+<li>Arista — BGP, EVPN</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Some sites missing</td>
+<td>No WAN-tagged device in those sites</td>
+<td>Tag one router/firewall per site as the WAN edge</td>
+</tr>
+<tr>
+<td>IPSec tunnels not showing</td>
+<td>Firewall's <code>show crypto</code> output couldn't be parsed</td>
+<td>Check vendor + version; report to support with the raw output</td>
+</tr>
+<tr>
+<td>BGP peers missing on PA</td>
+<td>Older parser bug</td>
+<td>Update to v0.9.27+</td>
+</tr>
+</tbody>
+</table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

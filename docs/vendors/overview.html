@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor support — NodeControl Docs</title>
+    <meta name="description" content="Vendor support — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="overview.html" class="docs-nav-link active">Vendor Overview</a>
+      <a href="cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Vendor support
+                </div>
+                <h1 id="vendor-support">Vendor support</h1>
+<p>Node Control connects to network devices over SSH using vendor-specific drivers (via the Netmiko library) and parsers (Node Control's own). This page summarises which vendors are supported and links to per-vendor notes for quirks worth knowing.</p>
+<h2 id="supported-vendors">Supported vendors</h2>
+<table>
+<thead>
+<tr>
+<th>Vendor / OS</th>
+<th>Driver name</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="cisco.html">Cisco IOS / IOS-XE / IOS-XR</a></td>
+<td><code>cisco_ios</code>, <code>cisco_xe</code>, <code>cisco_xr</code></td>
+<td>✓ First-class</td>
+</tr>
+<tr>
+<td><a href="cisco.html#nx-os">Cisco NX-OS</a></td>
+<td><code>cisco_nxos</code></td>
+<td>✓ First-class</td>
+</tr>
+<tr>
+<td><a href="cisco.html#asa">Cisco ASA</a></td>
+<td><code>cisco_asa</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="meraki.html">Cisco Meraki</a></td>
+<td>(Dashboard API, not SSH)</td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="palo-alto.html">Palo Alto PAN-OS</a></td>
+<td><code>paloalto_panos</code></td>
+<td>✓ First-class</td>
+</tr>
+<tr>
+<td><a href="hp-procurve.html">HP ProCurve</a></td>
+<td><code>hp_procurve_cli</code> (aliased to <code>aruba_osswitch</code>)</td>
+<td>✓ First-class</td>
+</tr>
+<tr>
+<td><a href="aruba.html">Aruba CX</a></td>
+<td><code>aruba_os</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="aruba.html">Aruba OS-Switch</a></td>
+<td><code>aruba_osswitch</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="juniper.html">Juniper Junos</a></td>
+<td><code>juniper_junos</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="arista.html">Arista EOS</a></td>
+<td><code>arista_eos</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="dell.html">Dell OS6</a></td>
+<td><code>dell_os6</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="dell.html">Dell OS10</a></td>
+<td><code>dell_os10</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="extreme.html">Extreme EXOS</a></td>
+<td><code>extreme_exos</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td><a href="extreme.html">Extreme VSP</a></td>
+<td><code>extreme_vsp</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Linux (generic SSH)</td>
+<td><code>linux</code></td>
+<td>✓ Limited</td>
+</tr>
+<tr>
+<td>Generic Cisco-flavoured</td>
+<td>Picks <code>cisco_ios</code> as fallback</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<p>"First-class" means we have dedicated parsers for that vendor's output, custom command catalogs, and per-vendor regression test coverage.</p>
+<h2 id="what-support-actually-means">What "support" actually means</h2>
+<p>For each supported vendor:</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Required for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication &amp; basic connectivity</td>
+<td>Anything</td>
+</tr>
+<tr>
+<td><code>show version</code> parsing for type detection</td>
+<td>Library Updater</td>
+</tr>
+<tr>
+<td>Interface enumeration</td>
+<td>L2 topology, Port Utilisation, Bandwidth</td>
+</tr>
+<tr>
+<td>MAC address table parsing</td>
+<td>L2 topology, Find Device</td>
+</tr>
+<tr>
+<td>CDP/LLDP neighbour parsing</td>
+<td>L2 topology, Discovery</td>
+</tr>
+<tr>
+<td>VLAN list / port-VLAN mapping</td>
+<td>VLAN Port Finder</td>
+</tr>
+<tr>
+<td>Routing table parsing</td>
+<td>L3 topology</td>
+</tr>
+<tr>
+<td>OSPF / BGP / EIGRP neighbour parsing</td>
+<td>L3 topology</td>
+</tr>
+<tr>
+<td>ARP table parsing</td>
+<td>Find Device IP→MAC</td>
+</tr>
+<tr>
+<td>Environmental data</td>
+<td>Monitor</td>
+</tr>
+<tr>
+<td>PoE data</td>
+<td>Monitor, Port Utilisation</td>
+</tr>
+<tr>
+<td>Port shut/no-shut commands</td>
+<td>Find Device port actions</td>
+</tr>
+</tbody>
+</table>
+<p>A vendor is "fully supported" when all the above work. Some vendors (Extreme VSP, Dell OS6) have partial coverage — the <a href="#supported-vendors">per-vendor pages</a> document gaps.</p>
+<h2 id="adding-a-vendor-we-dont-yet-support">Adding a vendor we don't yet support</h2>
+<p>We add vendor support based on customer demand. If you have devices we don't list above:</p>
+<ol>
+<li>Open a support ticket with:</li>
+<li>Vendor name + OS / model</li>
+<li><code>show version</code> output from one device</li>
+<li>List of commands the vendor uses (or a link to its CLI reference)</li>
+<li>We assess feasibility — usually we can add support in 1–2 releases if the CLI is similar to a vendor we already cover</li>
+</ol>
+<h2 id="self-learning-command-catalog">Self-learning command catalog</h2>
+<p>Different firmware versions of the same vendor sometimes use slightly different commands. Node Control's catalog tracks multiple variants per capability:</p>
+<ul>
+<li>For each device, on each command run, the result is recorded as "succeeded" or "failed"</li>
+<li>Next time the same capability is needed on that device, the proven-working variant is tried first</li>
+<li>Known-failed variants are skipped</li>
+</ul>
+<p>This auto-tuning means a switch running an older firmware that doesn't understand <code>show mac-address</code> (modern Cisco) but does understand <code>show mac address</code> (older Cisco) gets the right command without manual configuration.</p>
+<p>See <a href="../settings/custom-commands.html">Custom command catalogs</a> for how to add or override commands.</p>
+<h2 id="cross-vendor-command-translation">Cross-vendor command translation</h2>
+<p>Where the same conceptual command differs across vendors, Node Control abstracts the difference. For example, "show me the MAC address table":</p>
+<table>
+<thead>
+<tr>
+<th>Vendor</th>
+<th>Command Node Control runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco IOS</td>
+<td><code>show mac address-table</code></td>
+</tr>
+<tr>
+<td>Cisco NX-OS</td>
+<td><code>show mac address-table</code></td>
+</tr>
+<tr>
+<td>Cisco IOS-XR</td>
+<td><code>show mac address-table</code></td>
+</tr>
+<tr>
+<td>HP ProCurve</td>
+<td><code>show mac-address</code> (older) / <code>show mac</code> (newer)</td>
+</tr>
+<tr>
+<td>Aruba CX</td>
+<td><code>show mac-address-table</code></td>
+</tr>
+<tr>
+<td>Juniper</td>
+<td><code>show ethernet-switching table</code></td>
+</tr>
+<tr>
+<td>Arista</td>
+<td><code>show mac address-table</code></td>
+</tr>
+<tr>
+<td>Extreme EXOS</td>
+<td><code>show fdb</code></td>
+</tr>
+</tbody>
+</table>
+<p>You don't have to know any of this — Node Control routes the right command based on detected device type.</p>
+<h2 id="per-vendor-pages">Per-vendor pages</h2>
+<p>For quirks, gotchas, and feature gaps:</p>
+<ul>
+<li><a href="cisco.html">Cisco IOS / IOS-XE / NX-OS / ASA</a></li>
+<li><a href="palo-alto.html">Palo Alto PAN-OS</a></li>
+<li><a href="hp-procurve.html">HP ProCurve</a></li>
+<li><a href="aruba.html">Aruba (CX, OS-Switch)</a></li>
+<li><a href="juniper.html">Juniper Junos</a></li>
+<li><a href="arista.html">Arista EOS</a></li>
+<li><a href="dell.html">Dell OS6 / OS10</a></li>
+<li><a href="extreme.html">Extreme EXOS / VSP</a></li>
+<li><a href="meraki.html">Cisco Meraki</a></li>
+</ul>
+<h2 id="vendor-specific-reporting-issues">Vendor-specific reporting issues</h2>
+<p>If a report has gaps for one vendor (empty columns, missing devices), check:</p>
+<ol>
+<li>The per-vendor page above for known issues</li>
+<li><a href="../tasks/verify-device-types.html">Verify Device Types</a> — might be a misdetection</li>
+<li>Settings → Custom Commands — might be a missing catalog entry</li>
+<li>Open a support ticket with the device's raw command output</li>
+</ol>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

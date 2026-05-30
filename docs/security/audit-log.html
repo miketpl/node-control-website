@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit log — NodeControl Docs</title>
+    <meta name="description" content="Audit log — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.28</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="audit-log.html" class="docs-nav-link active">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/security/">Security</a> &rsaquo; Audit log
+                </div>
+                <h1 id="audit-log">Audit log</h1>
+<p>Every security-relevant action Node Control takes is recorded in an append-only audit log.</p>
+<h2 id="location">Location</h2>
+<pre><code>~/Library/Application Support/netOps/audit.log   (Mac)
+%APPDATA%\netOps\audit.log                        (Windows)
+~/.local/share/netOps/audit.log                   (Linux)
+</code></pre>
+<p>The file is plain text, UTF-8 encoded, one event per line. Rotates when it reaches 100 MB (old logs gzipped with timestamp).</p>
+<h2 id="event-format">Event format</h2>
+<pre><code>&lt;ISO-8601 timestamp&gt; [&lt;EVENT_TYPE&gt;] &lt;key&gt;=&lt;value&gt; [&lt;key&gt;=&lt;value&gt; ...]
+</code></pre>
+<p>Example:</p>
+<pre><code>2026-05-25T14:32:01.123Z [PORT_ACTION_SHUT] device=10.1.1.5 port=GigabitEthernet1/0/3 confirmed=yes user=mike
+2026-05-25T14:32:15.456Z [SAFE_MODE_OVERRIDE_OFF] user=mike
+2026-05-25T14:35:12.789Z [CREDENTIAL_UPDATED] profile=default
+</code></pre>
+<p>Values containing spaces or special characters are quoted.</p>
+<h2 id="event-types">Event types</h2>
+<h3 id="authentication-credentials">Authentication &amp; credentials</h3>
+<ul>
+<li><code>CREDENTIAL_ADDED</code> — new credential profile saved</li>
+<li><code>CREDENTIAL_UPDATED</code> — existing profile modified</li>
+<li><code>CREDENTIAL_DELETED</code> — profile removed</li>
+<li><code>KEYCHAIN_PROMPT_DENIED</code> — OS keychain access was denied by user</li>
+</ul>
+<h3 id="device-write-actions">Device write actions</h3>
+<ul>
+<li><code>PORT_ACTION_SHUT</code> — port shut/down command sent (Find Device → right-click → Shut Port)</li>
+<li><code>PORT_ACTION_NOSHUT</code> — port enable command sent</li>
+<li><code>CUSTOM_WRITE_COMMAND</code> — a user-added write command was executed</li>
+</ul>
+<h3 id="safe-mode">Safe Mode</h3>
+<ul>
+<li><code>SAFE_MODE_BLOCK</code> — a command was blocked by Safe Mode</li>
+<li><code>SAFE_MODE_OVERRIDE_OFF</code> — Safe Mode globally disabled</li>
+<li><code>SAFE_MODE_OVERRIDE_ON</code> — Safe Mode globally re-enabled</li>
+<li><code>SAFE_MODE_PER_TAB_CHANGED</code> — per-tab override modified</li>
+</ul>
+<h3 id="sessions">Sessions</h3>
+<ul>
+<li><code>SESSION_OPEN</code> — SSH session opened</li>
+<li><code>SESSION_CLOSE</code> — SSH session closed</li>
+<li><code>SESSION_FAILED</code> — SSH connection failed (with reason)</li>
+</ul>
+<h3 id="license-registration">License &amp; registration</h3>
+<ul>
+<li><code>LICENSE_CHECK_OK</code> — successful re-validation</li>
+<li><code>LICENSE_CHECK_DENIED</code> — code/email rejected</li>
+<li><code>LICENSE_CHECK_GRACE</code> — offline grace period invoked</li>
+<li><code>REGISTRATION_SUBMITTED</code> — user registered</li>
+</ul>
+<h3 id="library">Library</h3>
+<ul>
+<li><code>DEVICE_ADDED</code> — new device added to library</li>
+<li><code>DEVICE_DELETED</code> — device removed</li>
+<li><code>DEVICE_TYPE_CHANGED</code> — device type changed (manual or auto)</li>
+<li><code>DEVICE_TYPE_LOCKED</code> — type lock enabled</li>
+<li><code>LIBRARY_IMPORTED</code> — bulk import via CSV</li>
+<li><code>LIBRARY_GITHUB_PUSH</code> — library pushed to GitHub</li>
+<li><code>LIBRARY_GITHUB_PULL</code> — library pulled from GitHub (with diff summary)</li>
+</ul>
+<h3 id="updates">Updates</h3>
+<ul>
+<li><code>UPDATE_CHECK_OK</code> — update check ran successfully</li>
+<li><code>UPDATE_DOWNLOADED</code> — new version downloaded</li>
+<li><code>UPDATE_INSTALLED</code> — install initiated</li>
+</ul>
+<h2 id="filtering-and-analysis">Filtering and analysis</h2>
+<p>The audit log is plain text — <code>grep</code>, <code>awk</code>, and standard log analysis tools work directly:</p>
+<pre><code class="language-bash"># All port shut/no-shut actions in May
+grep &quot;PORT_ACTION&quot; audit.log | grep &quot;^2026-05&quot;
+
+# Safe Mode bypasses
+grep &quot;SAFE_MODE_OVERRIDE_OFF&quot; audit.log
+
+# Failed SSH sessions to a specific device
+grep &quot;SESSION_FAILED&quot; audit.log | grep &quot;device=10.1.1.5&quot;
+</code></pre>
+<p>For Splunk / ELK ingestion, the format is parseable as key=value pairs.</p>
+<h2 id="whats-deliberately-not-logged">What's deliberately NOT logged</h2>
+<ul>
+<li><strong>Credential content</strong> (passwords, API keys) — only the event of a credential change, not the secret itself</li>
+<li><strong>Full command output</strong> — only the fact that a command was run</li>
+<li><strong>SSH session contents</strong> — those go to per-session logs (<code>sessions/</code> directory), with their own opt-out</li>
+<li><strong>User keystrokes in the SSH terminal</strong> — only that a session was opened/closed</li>
+</ul>
+<h2 id="rotation">Rotation</h2>
+<p>When the audit log exceeds 100 MB:</p>
+<ol>
+<li>Renamed to <code>audit-&lt;timestamp&gt;.log.gz</code> and gzipped</li>
+<li>New empty <code>audit.log</code> is created</li>
+<li>Old logs retained for 1 year by default (configurable in Settings → Advanced → Audit log retention)</li>
+</ol>
+<p>To keep audit logs longer for compliance, set retention to 0 (never delete) or 7 years.</p>
+<h2 id="tampering-detection">Tampering detection</h2>
+<p>The audit log is append-only by design — Node Control's code only opens it in append mode. The OS file system permissions are standard (your user can edit it if they want to), so we don't claim tamper-proofness at the file level.</p>
+<p>For tamper-evident audit:</p>
+<ul>
+<li>Ship the log to a remote syslog / SIEM</li>
+<li>Use OS-level forensic tools (e.g., FSEvents on macOS, USN journal on Windows)</li>
+<li>Sign the log file periodically with a separate key</li>
+</ul>
+<p>Roadmap: a built-in option to ship audit events to remote syslog over TCP/UDP. Let us know if this matters for your compliance posture.</p>
+<h2 id="gdpr-data-residency">GDPR / data residency</h2>
+<p>The audit log contains:</p>
+<ul>
+<li>IP addresses of devices in your library (potentially location-identifying)</li>
+<li>Hostnames (potentially location-identifying)</li>
+<li>Your local user account name</li>
+</ul>
+<p>It does NOT contain:</p>
+<ul>
+<li>Personal data of network end-users</li>
+<li>Customer PII</li>
+<li>Credentials</li>
+</ul>
+<p>For organisations with GDPR concerns: the log is stored locally on your machine, never sent to Node Control servers. Treat it like any other operational log under your data residency policy.</p>
+<h2 id="disabling-the-audit-log">Disabling the audit log</h2>
+<p>Possible but strongly discouraged:</p>
+<ul>
+<li>Settings → Advanced → uncheck <strong>Enable audit log</strong></li>
+<li>The file stops being written</li>
+<li>Existing log entries remain on disk</li>
+</ul>
+<p>If you do this for development / testing, remember to re-enable for production use.</p>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="safe-mode.html">Safe Mode</a> — the primary control whose events get audited</li>
+<li><a href="credential-storage.html">Credential storage</a> — credential events go in the audit log</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>
