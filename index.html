@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NodeControl — Automate Everything</title>
-    <meta name="description" content="NodeControl is an AI-powered desktop network operations platform for discovery, topology mapping, configuration management, intelligent troubleshooting, and automation. Built for network engineers by The Promised LAN.">
+    <title>NodeControl — Desktop Network Operations</title>
+    <meta name="description" content="NodeControl is a desktop network-operations tool for network engineers. L2 topology mapping over SSH, find any MAC or IP, multi-vendor terminal, config backup and inventory. Runs on your laptop; your data stays there.">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20260314">
+    <link rel="stylesheet" href="css/style.css?v=20261003">
 </head>
 <body>
 
@@ -27,9 +27,9 @@
                 <li><a href="#features">Features</a></li>
                 <li><a href="#screenshots">Screenshots</a></li>
                 <li><a href="#watcher">Watcher</a></li>
-                <li><a href="#ai">AI Ops</a></li>
                 <li><a href="#download">Download</a></li>
                 <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#ai">AI Ops</a></li>
                 <li><a href="docs/">Docs</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -41,14 +41,15 @@
         <div class="hero-bg-glow"></div>
         <div class="hero-content">
             <img src="images/hero-banner.png?v=20260314d" alt="NodeControl Logo" class="hero-banner">
-            <p class="hero-subtitle">Built by Network Engineers for Network Engineers. Automate config changes, discovery, topology mapping, config management, and troubleshooting &mdash; all from one desktop app, now with AI-powered intelligence that understands your infrastructure.</p>
-            <p class="hero-tagline"><span class="cyan">AUTOMATE</span> <span class="orange">EVERYTHING</span></p>
+            <h1 class="hero-headline">An L2 map of your switching estate, from SSH, in minutes.</h1>
+            <p class="hero-subtitle">No DNA Center. No agent on your devices. No cloud. NodeControl runs on your laptop and everything stays there.</p>
+            <p class="hero-free-line">Free for up to 25 devices. No time limit. It is not a trial.</p>
             <div class="hero-buttons">
                 <a href="#download" class="btn btn-primary">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v8m-4-4l4 4 4-4"/></svg>
-                    Download Now
+                    Download Free
                 </a>
-                <a href="#features" class="btn btn-outline">Explore Features</a>
+                <a href="#free-edition" class="btn btn-outline">See what's in Free</a>
             </div>
             <div class="hero-version">v0.9.17 &mdash; Early Access</div>
             <!-- TPL branding is part of the hero banner image -->
@@ -59,7 +60,7 @@
     <section class="section" id="features">
         <div class="container">
             <h2 class="section-title">Everything <span class="orange">Automated</span></h2>
-            <p class="section-subtitle">One desktop app. Every network operation. AI-powered intelligence baked in. Built for engineers who live in the terminal but need visibility across the whole infrastructure.</p>
+            <p class="section-subtitle">One desktop app. Every network operation. Built for engineers who live in the terminal but need visibility across the whole infrastructure.</p>
             <div class="features-grid">
 
                 <div class="feature-card">
@@ -249,131 +250,6 @@
         </div>
     </section>
 
-    <!-- ═══════════════════ AI OPERATIONS ═══════════════════ -->
-    <section class="section ai-section" id="ai">
-        <div class="container">
-            <div class="ai-header">
-                <h2 class="ai-title">
-                    <span class="ai-title-light">AI-Powered</span> <span class="orange ai-title-bold">Operations</span>
-                </h2>
-                <div class="ai-coming-soon">Coming Soon &mdash; Available for Demo</div>
-                <p class="section-subtitle">Nine specialist AI agents that understand your network inside and out. Ask questions in plain English. Get intelligent answers backed by real device data.</p>
-            </div>
-
-            <div class="ai-agents-grid">
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    </div>
-                    <h3>Network Monitor</h3>
-                    <p>Real-time health checks, interface status, and alert prioritisation across your entire fleet.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    </div>
-                    <h3>Traffic Analysis</h3>
-                    <p>Bandwidth utilisation, bottleneck detection, and traffic pattern analysis with natural language queries.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    </div>
-                    <h3>Route Intelligence</h3>
-                    <p>BGP, OSPF, and static route analysis. Path tracing, convergence checks, and routing anomaly detection.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
-                    </div>
-                    <h3>Config Analysis</h3>
-                    <p>Compliance auditing, configuration drift detection, and security posture assessment &mdash; automatically.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                    </div>
-                    <h3>Change Advisor</h3>
-                    <p>What-if analysis with risk ratings before you push. Safe config generation with automatic rollback commands baked in.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
-                    <h3>Alert Correlation</h3>
-                    <p>Intelligent alert grouping, noise reduction, and priority scoring. Find the signal in the storm.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
-                    </div>
-                    <h3>Topology Agent</h3>
-                    <p>Blast radius analysis, single points of failure identification, and intelligent path recommendation.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
-                    <h3>Firewall Agent</h3>
-                    <p>Cross-platform security policy auditing, NAT rule analysis, and policy optimisation. Ask it to find shadowed or redundant rules across any vendor.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <h3>Log Analysis</h3>
-                    <p>Pattern detection across syslog, event correlation, and AI-driven root cause analysis. Stop scrolling through logs manually.</p>
-                </div>
-
-            </div>
-
-            <div class="ai-features-row">
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    </div>
-                    <div>
-                        <h4>Natural Language Chat</h4>
-                        <p>Ask your network questions like you'd ask a senior engineer. The AI orchestrator routes your query to the right specialist agent automatically.</p>
-                    </div>
-                </div>
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
-                    </div>
-                    <div>
-                        <h4>Flexible LLM Backend</h4>
-                        <p>Run on Anthropic Claude in the cloud or bring your own models &mdash; NVIDIA NIM, vLLM, Ollama. Your data, your infrastructure, your choice.</p>
-                    </div>
-                </div>
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
-                    </div>
-                    <div>
-                        <h4>Multi-Vendor Intelligence</h4>
-                        <p>Cisco, Arista, Juniper, Palo Alto, Fortinet, and more &mdash; the agents speak every dialect your network runs, regardless of vendor.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI Screenshots placeholder -->
-            <div class="ai-screenshots-placeholder" id="ai-screenshots">
-                <p class="ai-screenshots-note">AI interface screenshots arriving soon &mdash; available now for live demo.</p>
-            </div>
-
-        </div>
-    </section>
-
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
     <section class="section section-alt" id="download">
         <div class="container">
@@ -381,10 +257,19 @@
             <p class="section-subtitle">Your network data stays on your machine. Pick your edition and platform below.</p>
 
             <!-- Free Edition -->
-            <div class="download-tier">
+            <div class="download-tier" id="free-edition">
                 <div class="download-tier-header">
-                    <h3 class="download-tier-title"><span class="cyan">Free</span> Edition</h3>
-                    <p class="download-tier-desc">Up to 25 devices &mdash; L2 topology, basic config backup, community support. Enter your details and we'll email you a verification code instantly.</p>
+                    <h3 class="download-tier-title"><span class="cyan">Free Edition:</span> up to 25 devices, no time limit</h3>
+                    <ul class="pricing-features download-tier-features">
+                        <li>L2 topology map</li>
+                        <li>Find Device: MAC or IP to switch port, including Meraki wireless</li>
+                        <li>Multi-vendor terminal and device library</li>
+                        <li>Config backup</li>
+                        <li>Inventory report</li>
+                        <li>Built-in SFTP/SCP server for file transfers</li>
+                    </ul>
+                    <p class="download-tier-desc">Works with Cisco IOS, IOS-XE and NX-OS, Meraki, Palo Alto, HP/Aruba, Juniper, Arista, Dell and Extreme.</p>
+                    <p class="download-tier-desc">Enter your details and we'll email you a verification code instantly.</p>
                 </div>
                 <div class="download-cards">
                     <div class="download-card" style="grid-column: 1 / -1;">
@@ -524,10 +409,13 @@
                         <p>For individual engineers</p>
                     </div>
                     <ul class="pricing-features">
-                        <li>Up to 25 devices</li>
-                        <li>L2 topology mapping</li>
-                        <li>Basic configuration backup</li>
-                        <li>Community support</li>
+                        <li>Up to 25 devices, no time limit</li>
+                        <li>L2 topology map</li>
+                        <li>Find Device: MAC or IP to switch port, including Meraki wireless</li>
+                        <li>Multi-vendor terminal and device library</li>
+                        <li>Config backup</li>
+                        <li>Inventory report</li>
+                        <li>Built-in SFTP/SCP server for file transfers</li>
                     </ul>
                     <a href="#download" class="btn btn-outline">Download Free</a>
                 </div>
@@ -609,6 +497,131 @@
                 </div>
 
             </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ AI OPERATIONS ═══════════════════ -->
+    <section class="section ai-section" id="ai">
+        <div class="container">
+            <div class="ai-header">
+                <h2 class="ai-title">
+                    <span class="ai-title-light">AI-Powered</span> <span class="orange ai-title-bold">Operations</span>
+                </h2>
+                <div class="ai-coming-soon">Coming Soon &mdash; Available for Demo</div>
+                <p class="section-subtitle">Nine specialist AI agents that understand your network inside and out. Ask questions in plain English. Get intelligent answers backed by real device data.</p>
+            </div>
+
+            <div class="ai-agents-grid">
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h3>Network Monitor</h3>
+                    <p>Real-time health checks, interface status, and alert prioritisation across your entire fleet.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <h3>Traffic Analysis</h3>
+                    <p>Bandwidth utilisation, bottleneck detection, and traffic pattern analysis with natural language queries.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h3>Route Intelligence</h3>
+                    <p>BGP, OSPF, and static route analysis. Path tracing, convergence checks, and routing anomaly detection.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+                    </div>
+                    <h3>Config Analysis</h3>
+                    <p>Compliance auditing, configuration drift detection, and security posture assessment &mdash; automatically.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <h3>Change Advisor</h3>
+                    <p>What-if analysis with risk ratings before you push. Safe config generation with automatic rollback commands baked in.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                    <h3>Alert Correlation</h3>
+                    <p>Intelligent alert grouping, noise reduction, and priority scoring. Find the signal in the storm.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
+                    </div>
+                    <h3>Topology Agent</h3>
+                    <p>Blast radius analysis, single points of failure identification, and intelligent path recommendation.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Firewall Agent</h3>
+                    <p>Cross-platform security policy auditing, NAT rule analysis, and policy optimisation. Ask it to find shadowed or redundant rules across any vendor.</p>
+                </div>
+
+                <div class="ai-agent-card">
+                    <div class="ai-agent-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3>Log Analysis</h3>
+                    <p>Pattern detection across syslog, event correlation, and AI-driven root cause analysis. Stop scrolling through logs manually.</p>
+                </div>
+
+            </div>
+
+            <div class="ai-features-row">
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div>
+                        <h4>Natural Language Chat</h4>
+                        <p>Ask your network questions like you'd ask a senior engineer. The AI orchestrator routes your query to the right specialist agent automatically.</p>
+                    </div>
+                </div>
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
+                    </div>
+                    <div>
+                        <h4>Flexible LLM Backend</h4>
+                        <p>Run on Anthropic Claude in the cloud or bring your own models &mdash; NVIDIA NIM, vLLM, Ollama. Your data, your infrastructure, your choice.</p>
+                    </div>
+                </div>
+                <div class="ai-highlight">
+                    <div class="ai-highlight-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+                    </div>
+                    <div>
+                        <h4>Multi-Vendor Intelligence</h4>
+                        <p>Cisco, Arista, Juniper, Palo Alto, Fortinet, and more &mdash; the agents speak every dialect your network runs, regardless of vendor.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Screenshots placeholder -->
+            <div class="ai-screenshots-placeholder" id="ai-screenshots">
+                <p class="ai-screenshots-note">AI interface screenshots arriving soon &mdash; available now for live demo.</p>
+            </div>
+
         </div>
     </section>
 
@@ -720,9 +733,9 @@
                     <a href="#features">Features</a>
                     <a href="#screenshots">Screenshots</a>
                     <a href="#watcher">Watcher of The WAN</a>
-                    <a href="#ai">AI Operations</a>
                     <a href="#download">Download</a>
                     <a href="#pricing">Pricing</a>
+                    <a href="#ai">AI Operations</a>
                 </div>
                 <div class="footer-links">
                     <h4>Resources</h4>
@@ -740,7 +753,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 NodeControl by <span class="orange">The Promised LAN</span>. All rights reserved.</p>
+                <p>&copy; 2026 NodeControl by <span class="orange">The Promised LAN</span>. All rights reserved.</p>
             </div>
         </div>
     </footer>

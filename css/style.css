@@ -204,6 +204,15 @@ a:hover {
     margin-bottom: 0;
 }
 
+.hero-headline {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 16px auto 12px;
+    max-width: 720px;
+    text-align: center;
+}
+
 .hero-subtitle {
     font-size: 1.05rem;
     color: var(--text-secondary);
@@ -212,6 +221,14 @@ a:hover {
     max-width: 620px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.hero-free-line {
+    font-size: 0.95rem;
+    color: var(--cyan);
+    font-family: var(--mono);
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .hero-tagline {
@@ -581,6 +598,14 @@ a:hover {
     font-weight: 700;
     margin-bottom: 6px;
 }
+.download-tier-features {
+    max-width: 540px;
+    margin: 12px auto 16px;
+}
+.download-tier-features li:last-child {
+    border-bottom: none;
+}
+
 .download-tier-desc {
     color: var(--text-secondary);
     font-size: 0.9rem;
@@ -1460,6 +1485,9 @@ select.form-input {
     }
     .hero-banner {
         max-width: 550px;
+    }
+    .hero-headline {
+        font-size: 1.5rem;
     }
     .hero-subtitle {
         font-size: 1rem;
