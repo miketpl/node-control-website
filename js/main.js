@@ -108,10 +108,13 @@
     }
 
     // ── License API Configuration ────────────────────────────────
-    // Change this to your VPS URL in production
-    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:5000'
-        : 'https://api.nodecontrol.io';  // Update to your API domain
+    // Local previews talk to the live API. Run the Flask backend locally
+    // (flask --app app run --port 5001) and add ?localapi=1 to the URL to
+    // target it instead. Port 5001 because macOS AirPlay squats 5000.
+    const useLocalApi = new URLSearchParams(window.location.search).get('localapi') === '1';
+    const API_BASE = useLocalApi
+        ? 'http://localhost:5001'
+        : 'https://api.nodecontrol.io';
 
     // Helper: show result message in a container
     function showResult(container, message, type) {
