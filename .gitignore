@@ -1,2 +1,11 @@
 .DS_Store
 .claude/
+
+backend/.venv/
+venv/
+__pycache__/
+.env
+*.db
+*.deb
+images/new_screenshots/
+images/screenshots/sanitise_mapping.json
