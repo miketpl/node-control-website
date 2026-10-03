@@ -78,7 +78,7 @@ def get_db():
 
 
 def init_db():
-    """Create tables if they don't exist."""
+    """Create tables if they don't exist, and add any newly-introduced columns."""
     db = get_db()
     db.executescript("""
         CREATE TABLE IF NOT EXISTS licenses (
@@ -101,6 +101,19 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_licenses_email ON licenses(email);
         CREATE INDEX IF NOT EXISTS idx_licenses_status ON licenses(status);
     """)
+
+    # Additive columns for sign-up channel tracking. SQLite has no
+    # "ADD COLUMN IF NOT EXISTS" — check existing columns instead.
+    existing = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+    for col, ddl in (
+        ("utm_source",   "utm_source TEXT DEFAULT ''"),
+        ("utm_medium",   "utm_medium TEXT DEFAULT ''"),
+        ("utm_campaign", "utm_campaign TEXT DEFAULT ''"),
+        ("issued_at",    "issued_at TEXT"),
+    ):
+        if col not in existing:
+            db.execute(f"ALTER TABLE licenses ADD COLUMN {ddl}")
+
     db.commit()
     db.close()
 
@@ -119,13 +132,34 @@ def generate_verify_code():
     return ''.join(secrets.choice(string.digits) for _ in range(6))
 
 
+def _redact_email(email: str) -> str:
+    """Return an email safe to log at INFO: first char + domain only."""
+    if not email or "@" not in email:
+        return "<redacted>"
+    local, _, domain = email.partition("@")
+    prefix = local[0] if local else "?"
+    return f"{prefix}***@{domain}"
+
+
+def _clean_utm(value) -> str:
+    """Normalise a single UTM value for storage. Cap length; strip control chars."""
+    if not value:
+        return ""
+    s = str(value).strip()[:128]
+    return "".join(ch for ch in s if ch.isprintable())
+
+
 def send_verification_email(to_email, to_name, verify_code, download_code):
     """Send verification email with the download code."""
     cfg = app.config
 
     if not cfg["SMTP_USER"] or not cfg["SMTP_PASS"]:
         logger.warning("SMTP not configured — skipping email send")
-        logger.info(f"Would send to {to_email}: verify={verify_code}, download={download_code}")
+        # Full values only at DEBUG. INFO must not carry email or codes.
+        logger.debug(
+            "Would send to %s: verify=%s, download=%s",
+            to_email, verify_code, download_code,
+        )
         return True
 
     msg = MIMEMultipart("alternative")
@@ -191,10 +225,10 @@ https://nodecontrol.io
             server.starttls()
             server.login(cfg["SMTP_USER"], cfg["SMTP_PASS"])
             server.send_message(msg)
-        logger.info(f"Verification email sent to {to_email}")
+        logger.info("Verification email sent to %s", _redact_email(to_email))
         return True
     except Exception as e:
-        logger.error(f"Failed to send email to {to_email}: {e}")
+        logger.error("Failed to send email to %s: %s", _redact_email(to_email), e)
         return False
 
 
@@ -301,9 +335,10 @@ def _put_licenses_json(content: dict, sha: str | None, message: str):
     )
     with urlopen(req, timeout=15) as resp:
         if resp.status in (200, 201):
-            logger.info(f"GitHub licenses.json updated: {message}")
+            logger.info("GitHub licenses.json updated")
+            logger.debug("Commit message: %s", message)
         else:
-            logger.error(f"GitHub sync returned {resp.status}")
+            logger.error("GitHub sync returned %s", resp.status)
 
 
 def _add_code_to_licenses(new_code: str):
@@ -327,27 +362,49 @@ def _add_code_to_licenses(new_code: str):
         current["updated"] = datetime.utcnow().isoformat()
         _put_licenses_json(current, sha, f"Add code {new_code}")
     else:
-        logger.info(f"Code {new_code} already in licenses.json — skipping")
+        logger.debug("Code already in licenses.json — skipping add")
 
 
 def _remove_code_from_licenses(code: str):
-    """Remove a revoked license code from licenses.json in GitHub."""
+    """Remove a single revoked license code from licenses.json in GitHub."""
+    return _remove_codes_from_licenses([code])
+
+
+def _remove_codes_from_licenses(codes_to_remove: list) -> int:
+    """Remove multiple codes from licenses.json in one GitHub write.
+
+    Returns the number of codes actually removed (0 if none were present).
+    """
+    codes_to_remove = [c for c in codes_to_remove if c]
+    if not codes_to_remove:
+        return 0
+
     pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
         logger.warning("No GitHub PAT configured — skipping license sync")
-        return
+        return 0
 
     current, sha = _get_licenses_json()
     if current is None:
-        return
+        return 0
 
     codes = current.get("codes", [])
-    if code in codes:
-        codes.remove(code)
-        current["updated"] = datetime.utcnow().isoformat()
-        _put_licenses_json(current, sha, f"Revoke code {code}")
-    else:
-        logger.info(f"Code {code} not in licenses.json — nothing to remove")
+    remove_set = set(codes_to_remove)
+    kept = [c for c in codes if c not in remove_set]
+    removed_count = len(codes) - len(kept)
+    if removed_count == 0:
+        logger.debug("No matching codes in licenses.json — nothing to remove")
+        return 0
+
+    current["codes"] = kept
+    current["updated"] = datetime.utcnow().isoformat()
+    msg = (
+        f"Revoke code {codes_to_remove[0]}"
+        if removed_count == 1
+        else f"Revoke {removed_count} codes"
+    )
+    _put_licenses_json(current, sha, msg)
+    return removed_count
 
 
 # ── API Routes ───────────────────────────────────────────────
@@ -372,6 +429,9 @@ def request_access():
     email = (data.get("email") or "").strip().lower()
     company = (data.get("company") or "").strip()
     platform = (data.get("platform") or "").strip()
+    utm_source = _clean_utm(data.get("utm_source"))
+    utm_medium = _clean_utm(data.get("utm_medium"))
+    utm_campaign = _clean_utm(data.get("utm_campaign"))
 
     if not name or not email:
         return jsonify({"error": "Name and email are required"}), 400
@@ -401,26 +461,41 @@ def request_access():
     ip = request.remote_addr or ""
 
     if existing and existing["status"] == "pending":
-        # Update existing pending request with new codes
+        # Update existing pending request with new codes. Overwrite UTM fields
+        # only when the new request actually carries them, so a UTM-less resend
+        # doesn't erase the channel captured on the first attempt.
         db.execute("""
             UPDATE licenses SET
                 name = ?, company = ?, platform = ?,
-                code = ?, created_at = ?, ip_address = ?
+                code = ?, created_at = ?, issued_at = ?, ip_address = ?,
+                verified_at = ?,
+                utm_source   = CASE WHEN ? != '' THEN ? ELSE utm_source   END,
+                utm_medium   = CASE WHEN ? != '' THEN ? ELSE utm_medium   END,
+                utm_campaign = CASE WHEN ? != '' THEN ? ELSE utm_campaign END
             WHERE id = ?
-        """, (name, company, platform, download_code, now, ip, existing["id"]))
-
-        # Store verify code in a separate field (we reuse ip_address temporarily,
-        # or better, add a verify_code column)
-        db.execute("""
-            UPDATE licenses SET verified_at = ?
-            WHERE id = ?
-        """, (f"PENDING:{verify_code}", existing["id"]))
+        """, (
+            name, company, platform,
+            download_code, now, now, ip,
+            f"PENDING:{verify_code}",
+            utm_source,   utm_source,
+            utm_medium,   utm_medium,
+            utm_campaign, utm_campaign,
+            existing["id"],
+        ))
     else:
         # Create new license record
         db.execute("""
-            INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address)
-            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?)
-        """, (download_code, name, email, company, platform, now, f"PENDING:{verify_code}", ip))
+            INSERT INTO licenses (
+                code, name, email, company, platform, tier, status,
+                created_at, issued_at, verified_at, ip_address,
+                utm_source, utm_medium, utm_campaign
+            )
+            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            download_code, name, email, company, platform,
+            now, now, f"PENDING:{verify_code}", ip,
+            utm_source, utm_medium, utm_campaign,
+        ))
 
     db.commit()
     db.close()
@@ -449,6 +524,9 @@ def verify_code():
 
     email = (data.get("email") or "").strip().lower()
     code = (data.get("code") or "").strip()
+    utm_source = _clean_utm(data.get("utm_source"))
+    utm_medium = _clean_utm(data.get("utm_medium"))
+    utm_campaign = _clean_utm(data.get("utm_campaign"))
 
     if not email or not code:
         return jsonify({"error": "Email and verification code are required"}), 400
@@ -483,20 +561,40 @@ def verify_code():
         db.close()
         return jsonify({"error": "Verification code expired. Please request a new one."}), 400
 
-    # Activate the license
-    now = datetime.utcnow().isoformat()
-    db.execute("""
-        UPDATE licenses SET status = 'active', verified_at = ?
-        WHERE id = ?
-    """, (now, license_row["id"]))
-    db.commit()
-    db.close()
-
-    # Push the new code to licenses.json in GitHub so the app can validate
+    # Sync to GitHub FIRST. If the app can't validate the code (because the
+    # write failed), we must not hand it to the user — the row stays pending
+    # and the user can retry verify. This is required so a failed write never
+    # issues a code the desktop app rejects.
     try:
         _add_code_to_licenses(license_row["code"])
     except Exception as exc:
-        logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+        db.close()
+        logger.error("License GitHub sync failed for id=%s: %s", license_row["id"], exc)
+        return jsonify({
+            "error": "Temporary problem issuing your code. Please try verifying again in a moment.",
+        }), 503
+
+    # Sync succeeded — activate the row. Only overwrite UTM columns when the
+    # verify call actually carried them (covers the new-tab click-through case
+    # without erasing values captured at request-access time).
+    now = datetime.utcnow().isoformat()
+    db.execute("""
+        UPDATE licenses SET
+            status = 'active',
+            verified_at = ?,
+            utm_source   = CASE WHEN ? != '' THEN ? ELSE utm_source   END,
+            utm_medium   = CASE WHEN ? != '' THEN ? ELSE utm_medium   END,
+            utm_campaign = CASE WHEN ? != '' THEN ? ELSE utm_campaign END
+        WHERE id = ?
+    """, (
+        now,
+        utm_source,   utm_source,
+        utm_medium,   utm_medium,
+        utm_campaign, utm_campaign,
+        license_row["id"],
+    ))
+    db.commit()
+    db.close()
 
     return jsonify({
         "success": True,
@@ -604,6 +702,72 @@ def revoke_license(license_id):
             logger.error(f"License GitHub sync failed (non-fatal): {exc}")
 
     return jsonify({"success": True, "message": "License revoked"})
+
+
+@app.route("/api/admin/licenses/by-email", methods=["DELETE"])
+@require_admin
+def delete_by_email():
+    """Delete all sign-up records for an email and revoke any live codes.
+
+    This is the data-deletion path: the email is fully removed from the
+    site's store, and any codes it issued are removed from licenses.json
+    (revoking them in the desktop app after the next re-validation).
+
+    Idempotent: succeeds for an email with no records, and for a code that
+    is already absent from licenses.json.
+    """
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+
+    if not email or "@" not in email:
+        return jsonify({"error": "A valid email is required"}), 400
+
+    db = get_db()
+    rows = db.execute(
+        "SELECT id, code FROM licenses WHERE email = ?", (email,)
+    ).fetchall()
+
+    if not rows:
+        db.close()
+        logger.info("Delete-by-email: no records for %s", _redact_email(email))
+        return jsonify({
+            "success": True,
+            "records_removed": 0,
+            "codes_revoked": 0,
+        })
+
+    codes = [r["code"] for r in rows if r["code"]]
+
+    # Revoke on GitHub first. If it fails, do NOT delete the SQLite rows —
+    # otherwise the local store loses the record while codes stay valid in
+    # licenses.json, and we've lost the link between them.
+    codes_revoked = 0
+    if codes:
+        try:
+            codes_revoked = _remove_codes_from_licenses(codes)
+        except Exception as exc:
+            db.close()
+            logger.error(
+                "Delete-by-email: GitHub sync failed for %s: %s",
+                _redact_email(email), exc,
+            )
+            return jsonify({
+                "error": "Could not revoke codes upstream. Nothing was deleted.",
+            }), 503
+
+    db.execute("DELETE FROM licenses WHERE email = ?", (email,))
+    db.commit()
+    db.close()
+
+    logger.info(
+        "Delete-by-email: removed %d record(s), revoked %d code(s) for %s",
+        len(rows), codes_revoked, _redact_email(email),
+    )
+    return jsonify({
+        "success": True,
+        "records_removed": len(rows),
+        "codes_revoked": codes_revoked,
+    })
 
 
 @app.route("/api/admin/stats", methods=["GET"])

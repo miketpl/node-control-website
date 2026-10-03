@@ -113,6 +113,31 @@
         ? 'http://localhost:5000'
         : 'https://api.nodecontrol.io';  // Update to your API domain
 
+    // ── UTM capture (survives the request → email → verify roundtrip) ──
+    // First visit that carries any utm_* wins for this browser session;
+    // later visits without UTMs won't overwrite the captured channel.
+    const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
+    (function captureUtm() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const incoming = {};
+            let hasAny = false;
+            UTM_KEYS.forEach(k => {
+                const v = params.get(k);
+                if (v) { incoming[k] = v.slice(0, 128); hasAny = true; }
+            });
+            if (hasAny && !sessionStorage.getItem('nc_utm')) {
+                sessionStorage.setItem('nc_utm', JSON.stringify(incoming));
+            }
+        } catch (_) { /* sessionStorage disabled — silently skip */ }
+    })();
+
+    function getUtm() {
+        try {
+            return JSON.parse(sessionStorage.getItem('nc_utm') || '{}');
+        } catch (_) { return {}; }
+    }
+
     // Helper: show result message in a container
     function showResult(container, message, type) {
         container.className = 'redeem-result visible ' + type;
@@ -162,7 +187,7 @@
             reqResult.className = 'redeem-result';
 
             try {
-                const { status, data } = await apiCall('/api/request-access', { name, email, company, platform });
+                const { status, data } = await apiCall('/api/request-access', { name, email, company, platform, ...getUtm() });
 
                 if (data.success) {
                     // Show verification step
@@ -204,7 +229,7 @@
             verifyBtn.style.opacity = '0.6';
 
             try {
-                const { status, data } = await apiCall('/api/verify', { email: pendingEmail, code });
+                const { status, data } = await apiCall('/api/verify', { email: pendingEmail, code, ...getUtm() });
 
                 if (data.success) {
                     // Show the download code
@@ -249,7 +274,7 @@
                 const name = document.getElementById('reqName').value.trim();
                 const platform = document.getElementById('reqPlatform').value;
                 const company = document.getElementById('reqCompany').value.trim();
-                await apiCall('/api/request-access', { name, email: pendingEmail, company, platform });
+                await apiCall('/api/request-access', { name, email: pendingEmail, company, platform, ...getUtm() });
                 this.textContent = 'Code resent! Check your inbox.';
                 this.style.color = '#00e8ff';
             } catch (err) {
