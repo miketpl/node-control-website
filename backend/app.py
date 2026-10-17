@@ -825,9 +825,9 @@ def _send_mail(to_email, subject, text_body, html_body):
 def _send_pro_welcome(row):
     site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
     if row["plan"] == "annual":
-        plan_text = "Professional, £255/year (£21.25/mo billed annually, save 15%)"
+        plan_text = "Professional, £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%)"
     else:
-        plan_text = "Professional, £25/month"
+        plan_text = "Professional, £25/month ex VAT"
     session_id = row["stripe_checkout_session_id"] or ""
     if session_id:
         download_text = f"{site}/pro-success.html?session_id={session_id}"

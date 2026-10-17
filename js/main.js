@@ -86,11 +86,11 @@
         const note = document.getElementById('proPriceNote');
         if (!price || !note) return;
         if (selectedProPlan() === 'annual') {
-            price.innerHTML = '£21.25<span>/mo</span>';
-            note.textContent = '£21.25/mo billed annually, save 15%. £255/year.';
+            price.innerHTML = '£21.25<span>/mo ex VAT</span>';
+            note.textContent = '£21.25/mo billed annually, ex VAT. £255/year ex VAT. Save 15%.';
         } else {
-            price.innerHTML = '£25<span>/month</span>';
-            note.textContent = 'Or £255/year (£21.25/mo billed annually, save 15%).';
+            price.innerHTML = '£25<span>/month ex VAT</span>';
+            note.textContent = 'Or £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%).';
         }
     }
 

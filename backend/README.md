@@ -53,7 +53,7 @@ cd backend && python3 -m unittest test_app test_pro -v
 
 ## Professional subscriptions
 
-Pro is a Stripe subscription: £25 a month (`STRIPE_PRICE_PRO_MONTHLY`) or £255 a year (`STRIPE_PRICE_PRO_ANNUAL`). Checkout is created by `POST /api/checkout`. The site button stays hidden until `PRO_CHECKOUT_LIVE` in `js/main.js` is set to `true`.
+Pro is a Stripe subscription: £25/month ex VAT (`STRIPE_PRICE_PRO_MONTHLY`) or £255/year ex VAT (`STRIPE_PRICE_PRO_ANNUAL`). UK VAT (20%) is added at checkout where applicable. Checkout is created by `POST /api/checkout`. The site button stays hidden until `PRO_CHECKOUT_LIVE` in `js/main.js` is set to `true`.
 
 The webhook is `https://api.nodecontrol.io/api/stripe/webhook`. In the Stripe Dashboard, send these events:
 
@@ -81,8 +81,8 @@ The allow-list token is `GITHUB_PAT_REGISTRATIONS` if set, otherwise `GITHUB_PAT
 |---|---|
 | `STRIPE_SECRET_KEY` | Secret key. Test mode until checkout is switched on. |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/stripe/webhook`. |
-| `STRIPE_PRICE_PRO_MONTHLY` | Price id for £25/month. |
-| `STRIPE_PRICE_PRO_ANNUAL` | Price id for £255/year. |
+| `STRIPE_PRICE_PRO_MONTHLY` | Price id for £25/month ex VAT. |
+| `STRIPE_PRICE_PRO_ANNUAL` | Price id for £255/year ex VAT. |
 | `GITHUB_PAT_REGISTRATIONS` | Optional. Falls back to `GITHUB_PAT_WRITE`. |
 | `PRO_ALLOWLIST_REPO` | Default `miketpl/node-control-registrations`. |
 | `PRO_ALLOWLIST_PATH` | Default `allowlist.json`. |
