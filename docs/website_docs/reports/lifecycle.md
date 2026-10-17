@@ -16,7 +16,7 @@ The report uses the scope you set on the Reports page, not only the devices Cata
 
 ## Catalyst Center in Settings
 
-**Settings → API Platforms**, group **Cisco DNA Center / Catalyst Center**:
+**Settings → API Platforms**, group **Catalyst Center**:
 
 - **Enable**
 - **Base URL:** placeholder `https://dnac.example.com`

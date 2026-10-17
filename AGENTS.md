@@ -26,7 +26,7 @@ The site's job is to convert working network engineers into Free Edition
 downloads, and some of those into Professional subscriptions.
 
 - **Lead with the concrete value**: an L2 map of your switching estate, from
-  SSH, in minutes. Privacy and self-containment (no DNA Center, no agents,
+  SSH, in minutes. Privacy and self-containment (no Catalyst Center, no agents,
   no cloud) are the differentiators.
 - **The Free Edition is the hook**: up to 25 devices, no time limit, not a
   trial. Say so plainly and often.
@@ -102,4 +102,9 @@ sentences. If a claim can't be made concretely, don't make it.
 - `images/hero-banner.png` still has the old "AUTOMATE EVERYTHING" tagline
   baked into the image; awaiting a re-export. Don't try to fix this in HTML.
 - The Pro/AI tier download links point at private GitHub repos and 404 for
-  customers; a decision on those is pending. Leave them alone.
+  customers. The visible buy and download controls are hidden with the
+  `payment-pending` class until payment is live. Do not delete the Stripe
+  attributes, the Stripe handler, or `js/main.js`. Prices stay as they are.
+  An HTML comment in `index.html` says how to show the buttons again.
+- `privacy.html` and `terms.html` are drafts pending review. Do not remove
+  the draft notice or fill `[PLACEHOLDER]` markers without Mike.
