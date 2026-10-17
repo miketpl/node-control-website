@@ -284,6 +284,11 @@
     }
 }
 
+/* Mobile docs menu. Hidden on desktop; the sidebar stays in the column. */
+.docs-menu-toggle {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .docs-layout {
         flex-direction: column;
@@ -306,5 +311,57 @@
     }
     .docs-content h1 {
         font-size: 1.5rem;
+    }
+
+    /* Collapse the sidebar until "Docs menu" is opened, so the article
+       is what a phone shows after a sidebar link loads a new page.
+       Without JS the long sidebar stays in the page, as before. */
+    html.docs-js .docs-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        margin: 0;
+        padding: 14px 20px;
+        min-height: 48px;
+        position: sticky;
+        top: var(--nav-height);
+        z-index: 20;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: none;
+        border-bottom: 1px solid var(--border);
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: left;
+        cursor: pointer;
+    }
+    html.docs-js .docs-menu-toggle::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        flex-shrink: 0;
+        border-right: 2px solid var(--cyan);
+        border-bottom: 2px solid var(--cyan);
+        transform: rotate(45deg) translateY(-2px);
+    }
+    html.docs-js .docs-menu-toggle[aria-expanded="true"]::after {
+        transform: rotate(-135deg) translateY(-2px);
+    }
+    html.docs-js .docs-menu-toggle:focus-visible {
+        outline: 2px solid var(--cyan);
+        outline-offset: -2px;
+    }
+    html.docs-js .docs-sidebar {
+        display: none;
+    }
+    html.docs-js .docs-sidebar.is-open {
+        display: block;
+        max-height: 70vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
