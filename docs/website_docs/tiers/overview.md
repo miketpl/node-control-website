@@ -85,7 +85,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Find Device across a site or a fabric, with Meraki wireless lookup
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
-- Scripts under Settings → Scripts, and Change ISE Password
+- [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
 - Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that. The Firewall Analyser AI advisory checkbox is the AI edition
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 

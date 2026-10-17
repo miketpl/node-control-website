@@ -72,7 +72,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Settings overview](settings/overview.md)
 - [Site detection rules](settings/site-detection.md)
 - [Custom command catalogs](settings/custom-commands.md)
-- [Scripts](settings/scripts.md)
+- [Custom scripts](settings/scripts.md) — Pro and the AI edition. On Free the task is greyed
 - [Safe Mode](settings/safe-mode.md)
 - [AI provider](settings/ai.md)
 

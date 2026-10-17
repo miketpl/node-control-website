@@ -26,7 +26,7 @@ Settings is organised by section. Pick the one you need.
 | **Monitor** | SSH keepalive, sample persistence, default polling interval |
 | **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
-| **Scripts** | [Python scripts that run as tasks](scripts.md), Pro and AI |
+| **Scripts** | [Custom scripts](scripts.md) that run as tasks. Pro and the AI edition. On Free the page is there, and the task is greyed |
 | **AI / LLM** | Anthropic API key or an Ollama server, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
 | **Advanced** | Crash log location, telemetry opt-in, debug logging |
 
@@ -70,7 +70,7 @@ A future release may add named settings profiles to skip the manual copy — let
 - [Site detection rules](site-detection.md)
 - [Custom command catalogs](custom-commands.md)
 - [Safe Mode](safe-mode.md)
-- [Scripts](scripts.md)
+- [Custom scripts](scripts.md)
 - [AI provider](ai.md)
 
 ## Common configurations
