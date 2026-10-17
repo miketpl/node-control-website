@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -168,13 +169,8 @@
 <li>The dialog closes and the main app window appears
 </li>
 </ol>
-<p>After this, you won&#x27;t be asked for the code again unless:</p>
-<ul>
-<li>The code is later revoked (e.g., you violate terms of use), OR
-</li>
-<li>You haven&#x27;t been online for more than 7 days <em>and</em> your offline grace period has expired
-</li>
-</ul>
+<p>The Free code is checked online. If that check cannot run, you get a <strong>7-day offline grace period</strong>. While the grace period still has days left, the app opens. When the grace period runs out, the app is blocked until it can check the code again.</p>
+<p>You will also be stopped if the code is later revoked.</p>
 <h3 id="code-format-rules">Code format rules</h3>
 <ul>
 <li>Always starts with <code>NC-</code>
@@ -213,8 +209,13 @@
 </tr>
 <tr>
 <td>&quot;Offline grace period: N days remaining&quot;</td>
-<td>Network failure but you&#x27;ve successfully activated before — you can continue offline for the remaining days</td>
-<td>Just close the message; the app will retry next launch</td>
+<td>The online check failed, and you still have grace left</td>
+<td>Close the message. The app retries on the next launch</td>
+</tr>
+<tr>
+<td>App blocked after days offline</td>
+<td>The 7-day grace period has run out</td>
+<td>Connect so the app can check the code again</td>
 </tr>
 </tbody>
 </table>

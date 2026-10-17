@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -145,8 +146,10 @@
 <h2 id="open-the-add-device-dialog">Open the Add Device dialog</h2>
 <p>In the <strong>Engineer</strong> tab:</p>
 <ul>
-<li>Right-click anywhere in the device table → <strong>Add Device</strong></li>
-<li>OR click the <strong>+ Add Device</strong> toolbar button</li>
+<li>Right-click anywhere in the device table → <strong>Add Device</strong>
+</li>
+<li>OR click the <strong>+ Add Device</strong> toolbar button
+</li>
 </ul>
 <h2 id="fill-in-the-form">Fill in the form</h2>
 <table>
@@ -191,7 +194,7 @@
 <tr>
 <td><strong>Notes</strong></td>
 <td>No</td>
-<td>Free-text — anything useful for context (e.g., "Replacement scheduled Q3").</td>
+<td>Free-text — anything useful for context (e.g., &quot;Replacement scheduled Q3&quot;).</td>
 </tr>
 </tbody>
 </table>
@@ -199,27 +202,42 @@
 <h2 id="test-the-connection">Test the connection</h2>
 <p>To confirm credentials work and detect the device type:</p>
 <ol>
-<li>Right-click the new device → <strong>Test Connection</strong></li>
-<li>Node Control opens an SSH session, attempts authentication, runs <code>show version</code></li>
-<li>Result appears in a popup:</li>
-<li>✅ "Connected as cisco_ios. Hostname: ACME-CORE-01"</li>
-<li>❌ Auth failure / connection error with diagnostic text</li>
+<li>Right-click the new device → <strong>Test Connection</strong>
+</li>
+<li>Node Control opens an SSH session, attempts authentication, runs <code>show version</code>
+</li>
+<li>Result appears in a popup:
+<ul>
+<li>✅ &quot;Connected as cisco_ios. Hostname: ACME-CORE-01&quot;
+</li>
+<li>❌ Auth failure / connection error with diagnostic text
+</li>
+</ul>
+</li>
 </ol>
 <p>Successful tests update the <strong>Hostname</strong> and <strong>Device type</strong> columns automatically.</p>
 <h2 id="device-type-auto-detect-vs-manual">Device type — auto-detect vs manual</h2>
 <p>If you leave <strong>Device type</strong> blank, Node Control will:</p>
 <ol>
-<li>Look up any previously-known device type for this IP (stored locally)</li>
-<li>Sniff the SSH banner for vendor hints (<code>SSH-2.0-HP</code>, <code>SSH-2.0-Cisco</code>, <code>OpenSSH_for_Junos</code> etc.)</li>
-<li>Try the most likely Netmiko driver</li>
-<li>If that connects, run <code>show version</code> and look at the output for vendor signatures</li>
-<li>Run opportunistic probes to catch ambiguous cases — e.g., HP ProCurve accepts the <code>cisco_ios</code> driver silently, so a probe for HP-specific commands is run</li>
+<li>Look up any previously-known device type for this IP (stored locally)
+</li>
+<li>Sniff the SSH banner for vendor hints (<code>SSH-2.0-HP</code>, <code>SSH-2.0-Cisco</code>, <code>OpenSSH_for_Junos</code> etc.)
+</li>
+<li>Try the most likely Netmiko driver
+</li>
+<li>If that connects, run <code>show version</code> and look at the output for vendor signatures
+</li>
+<li>Run opportunistic probes to catch ambiguous cases — e.g., HP ProCurve accepts the <code>cisco_ios</code> driver silently, so a probe for HP-specific commands is run
+</li>
 </ol>
 <p>Pick a specific driver from the dropdown only if:</p>
 <ul>
-<li>You know the device type and want to skip the detection</li>
-<li>A previous detection got it wrong and you want to override permanently</li>
-<li>Detection is failing and you want to force a specific driver</li>
+<li>You know the device type and want to skip the detection
+</li>
+<li>A previous detection got it wrong and you want to override permanently
+</li>
+<li>Detection is failing and you want to force a specific driver
+</li>
 </ul>
 <p>When you manually set a device type, the <strong>Device type locked</strong> flag is set in the database — auto-detect can never overwrite it. Right-click → <strong>Unlock Device Type</strong> to re-enable auto-detect.</p>
 <h2 id="common-driver-names">Common driver names</h2>
@@ -289,13 +307,17 @@
 <h2 id="bulk-adding-from-a-list">Bulk-adding from a list</h2>
 <p>If you have a list of IPs in a spreadsheet:</p>
 <ol>
-<li>Save the IPs as a CSV with columns: <code>ip, hostname, tab, site_code</code></li>
-<li><strong>Tools → Import Library → From CSV</strong></li>
-<li>Pick the file → preview → <strong>Import</strong></li>
+<li>Save the IPs as a CSV with columns: <code>ip, hostname, tab, site_code</code>
+</li>
+<li><strong>Tools → Import Library → From CSV</strong>
+</li>
+<li>Pick the file → preview → <strong>Import</strong>
+</li>
 </ol>
 <p>The CSV columns are mapped to device fields. Missing columns are left blank.</p>
+<p>On Free, a workbook import is cut to the first 25 devices, and a manual add refuses the 26th. The table shows 25.</p>
 <h2 id="bulk-adding-from-a-subnet">Bulk-adding from a subnet</h2>
-<p>If you don't have a list — just a known subnet range — use <a href="subnet-scan.html">Subnet scan</a> instead. It pings every IP in the range and auto-adds responding devices.</p>
+<p>If you don&#x27;t have a list — just a known subnet range — use <a href="subnet-scan.html">Subnet scan</a> instead. It pings every IP in the range and auto-adds responding devices.</p>
 <h2 id="editing-a-device-after-adding">Editing a device after adding</h2>
 <p>Double-click any cell in the table to edit inline. Or right-click → <strong>Edit Device</strong> for a full-field dialog.</p>
 <h2 id="right-click-menu-full-options">Right-click menu — full options</h2>
@@ -351,9 +373,12 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="subnet-scan.html">Subnet scan for bulk add</a></li>
-<li><a href="sites.html">Organise devices by site</a></li>
-<li><a href="../tasks/topology-l2.html">Test the connection by running a topology</a></li>
+<li><a href="subnet-scan.html">Subnet scan for bulk add</a>
+</li>
+<li><a href="sites.html">Organise devices by site</a>
+</li>
+<li><a href="../tasks/topology-l2.html">Test the connection by running a topology</a>
+</li>
 </ul>
             </div>
         </main>

@@ -1,6 +1,6 @@
 # Config Push
 
-> Available on **Pro** and the **AI** edition.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 **Config Push** pushes a per-port template: interface configuration, captures, ACLs, or clears. It used to be called **Interface Config Push**. The old name still runs.
 

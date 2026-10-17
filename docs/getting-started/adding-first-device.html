@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -223,7 +224,7 @@
 <p>Typical timing: a /24 with ~30 devices takes 2–5 minutes.</p>
 <p>See <a href="../library/subnet-scan.html">Library Updater details</a> for advanced options (which Netmiko driver to try first, parallelism, retry behaviour).</p>
 <h2 id="free-tier-device-limit">Free tier device limit</h2>
-<p>Free holds <strong>25 devices</strong>. There is no time limit. The cap is in the library database. A larger library left over from Pro is not deleted.</p>
+<p>Free holds <strong>25 devices</strong>. There is no time limit. Adding another device by hand refuses the 26th. A workbook import, a subnet scan import, and a GitHub import are cut to the first 25. The table shows 25 even when an older database holds more. Those extra rows are not deleted.</p>
 <p>To remove this cap, <a href="../tiers/overview.html">upgrade to Pro</a>.</p>
 <h2 id="library-tabs">Library tabs</h2>
 <p>Devices are organised into tabs based on their role:</p>

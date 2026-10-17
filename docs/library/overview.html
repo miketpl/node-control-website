@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -253,11 +254,20 @@
 </li>
 <li><strong>Subnet scan</strong> — Library Updater walks an IP range and adds what it finds (<a href="subnet-scan.html">details</a>)
 </li>
-<li><strong>GitHub library sync</strong> — pull a shared library from a GitHub repo (<a href="github-sync.html">details</a>). This is on Free as well as Pro.
+<li><strong>GitHub library import</strong> — pull a shared library from a GitHub repo (<a href="github-sync.html">details</a>). The import runs on Free as well as Pro. On Free it keeps the first 25.
 </li>
 </ol>
 <h2 id="free-tier-device-cap">Free tier device cap</h2>
-<p>Free holds <strong>25 devices</strong>. There is no time limit. The cap is in the library database. Installing Free does not delete a larger library left behind by Pro.</p>
+<p>Free holds <strong>25 devices</strong>. There is no time limit.</p>
+<ul>
+<li>A manual add refuses the 26th device
+</li>
+<li>A workbook import, a subnet scan import, and a GitHub import are cut to the first 25
+</li>
+<li>The table shows 25 even when an older database, for example one left by Pro, holds more
+</li>
+</ul>
+<p>Those extra rows are not deleted. They show again if you move back to Pro.</p>
 <p>To remove the cap, <a href="../tiers/upgrading.html">upgrade to Pro</a>.</p>
 <h2 id="sites">Sites</h2>
 <p>A <strong>site</strong> groups devices that share physical location, ownership, or credentials. Site codes drive a lot of Node Control&#x27;s behaviour:</p>
@@ -266,7 +276,7 @@
 </li>
 <li>Reports and tasks can be run &quot;for this site only&quot; instead of all devices
 </li>
-<li>Find Device walks each site&#x27;s cores in parallel
+<li>On Pro and the AI edition, Find Device walks each site&#x27;s cores in parallel. Free has no site or cores model
 </li>
 <li>Topology maps draw a separate map per site
 </li>
@@ -281,7 +291,7 @@
 <pre><code>copy &quot;%APPDATA%\netOps\netOps.db&quot; %USERPROFILE%\Desktop\netOps-backup.db
 </code></pre>
 <p>To restore, just copy it back. Node Control reads the file on launch.</p>
-<p><a href="github-sync.html">GitHub library sync</a> keeps a remote copy and tracks every change in commit history. It is available on Free as well as Pro.</p>
+<p><a href="github-sync.html">GitHub library import</a> pulls a remote copy. The import runs on Free as well as Pro, and on Free it keeps the first 25. Whether Free can push the library back is not confirmed.</p>
 <h2 id="editing-devices">Editing devices</h2>
 <p>Double-click any field in the device table to edit it inline. Press Enter to save, Escape to cancel.</p>
 <p>For multi-field edits, right-click → <strong>Edit Device</strong> opens a dialog with all fields visible.</p>
@@ -298,7 +308,7 @@
 <tbody>
 <tr>
 <td>Free</td>
-<td>25 devices (enforced)</td>
+<td>25 shown. Manual add refuses the 26th. Imports keep the first 25</td>
 </tr>
 <tr>
 <td>Pro / AI</td>

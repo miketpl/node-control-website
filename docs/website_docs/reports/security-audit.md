@@ -1,6 +1,6 @@
 # Security Audit report
 
-> Available on **Pro** and the **AI** edition. Free does not run this report.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 The Security Audit report connects to each device in scope, reads the running software, and lists published Cisco security advisories for that version. Advisories are grouped by severity. Each advisory names the devices it applies to.
 

@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="topology-l2.html" class="docs-nav-link active">L2 Topology</a>
+      <a href="topology-l2.html" class="docs-nav-link active">L2 Topology Builder</a>
+      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -141,13 +142,11 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Layer 2 topology map
                 </div>
                 <h1 id="layer-2-topology-map">Layer 2 topology map</h1>
-<blockquote>
-<p>Available on <strong>Pro</strong> and <strong>AI</strong> tiers only.</p>
-</blockquote>
-<p>The L2 topology map walks every switch in a site, reads its MAC address table and CDP/LLDP neighbours, and renders an interactive HTML map of switch-to-switch connectivity.</p>
+<p><strong>L2 Topology Builder</strong> runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. On Free it is one of the five tasks that are not greyed out.</p>
+<p>The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.</p>
 <h2 id="open-the-task">Open the task</h2>
 <ul>
-<li>Engineer command bar → <strong>Task</strong> → <strong>Topology (L2)</strong> → <strong>Run</strong>
+<li>Engineer command bar → <strong>Task</strong> → <strong>L2 Topology Builder</strong> → <strong>Run</strong>
 </li>
 </ul>
 <p>An optional AI summary of the map (structure, single points of failure, failed devices) is on Pro and the AI edition. Tick it for that run. See <a href="../settings/ai.html">AI provider</a>.</p>
@@ -324,7 +323,7 @@
 </li>
 <li><a href="topology-wan.html">WAN topology</a> — across-site view
 </li>
-<li><a href="discovery.html">Network Discovery</a> — live walk without needing the library pre-populated
+<li><a href="discovery.html">Discover</a> — live walk without needing the library pre-populated. Pro and AI; not on Free
 </li>
 </ul>
             </div>

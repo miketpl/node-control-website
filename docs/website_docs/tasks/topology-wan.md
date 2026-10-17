@@ -1,6 +1,6 @@
 # WAN topology map
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 The WAN topology map renders the cross-site connectivity between your sites — the routers, firewalls, and SD-WAN edges that link locations together.
 

@@ -1,6 +1,6 @@
 # Lifecycle and EoX
 
-> Available on **Pro** and the **AI** edition.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 This report answers a plain question: which hardware and which software in scope are at end of sale or end of life, and when.
 
@@ -51,7 +51,7 @@ The assessment exports and emails as its own document. An optional AI briefing c
 
 ## Update page
 
-The **Update** page shows the same end-of-life columns. Click a header to sort, including the date columns. A filter box narrows every device table on that page at once. You can export the tables to HTML or CSV.
+The **Update** page is on Pro and the AI edition. Free does not show it. It lists the same end-of-life columns. Click a header to sort, including the date columns. A filter box narrows every device table on that page at once. You can export the tables to HTML or CSV.
 
 ## Next steps
 

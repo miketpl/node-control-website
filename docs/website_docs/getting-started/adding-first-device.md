@@ -64,7 +64,7 @@ See [Library Updater details](../library/subnet-scan.md) for advanced options (w
 
 ## Free tier device limit
 
-Free holds **25 devices**. There is no time limit. The cap is in the library database. A larger library left over from Pro is not deleted.
+Free holds **25 devices**. There is no time limit. Adding another device by hand refuses the 26th. A workbook import, a subnet scan import, and a GitHub import are cut to the first 25. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 

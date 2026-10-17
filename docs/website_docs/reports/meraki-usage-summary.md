@@ -1,6 +1,6 @@
 # Meraki Usage Summary report
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 For each Meraki organisation your API key can access, generates a per-network usage summary — total clients, total bandwidth, top consumers, and per-network breakdown.
 

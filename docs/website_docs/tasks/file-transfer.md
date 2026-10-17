@@ -1,8 +1,6 @@
 # File Transfer
 
-The File Transfer page is a server your devices can copy to, and, on Pro and the AI edition, a client that reaches out to a remote SFTP server.
-
-The local server is in Free as well as Pro. The remote client is Pro and AI.
+**File Transfer** is a sidebar page on **Free**, **Pro**, and the **AI** edition. Free shows this page. It does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, Update, or AI.
 
 ## Local server
 
@@ -24,9 +22,9 @@ If the switch says SCP is administratively disabled, the task tells you the swit
 
 ## Remote client
 
-On Pro and the AI edition, the **Remote client** section takes a host, a port, and a login. It uploads or downloads files or folders. Each file is logged with its outcome and its size.
+The Pro release notes describe a **Remote client** section: a host, a port, and a login, then upload or download of files or folders. Each file is logged with its outcome and its size.
 
-Those fields accept typing. If they look greyed out, you are on a build before that fix.
+Whether that section is hidden on Free is not confirmed. The page itself is on Free.
 
 ## Next steps
 

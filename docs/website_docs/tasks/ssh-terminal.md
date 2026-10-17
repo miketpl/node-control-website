@@ -2,7 +2,7 @@
 
 Interactive SSH access to any device in your library, embedded directly in Node Control. No need to drop out to PuTTY, iTerm, or a separate terminal app — you can run topology and reports against a device, then jump into a shell on the same device without switching tools.
 
-Available on **Free**, **Pro**, and **AI**.
+The SSH session is on **Free**, **Pro**, and the **AI** edition. You open it by right-clicking a device. It is not an Engineer task. On Free the tasks that run are **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device**.
 
 ## Open a session
 

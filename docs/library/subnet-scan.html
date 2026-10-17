@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -259,7 +260,8 @@
 </code></pre>
 <p>All run in sequence. Total time scales linearly with subnet count.</p>
 <h2 id="free-tier-behaviour">Free tier behaviour</h2>
-<p>The subnet scan runs on Free. The library still holds 25 devices. Review the result list and keep the devices you want inside that cap.</p>
+<p>Subnet scan is the Library Updater. It is not the <strong>Discover</strong> page. Discover is Pro, and Free does not show it.</p>
+<p>The scan&#x27;s import runs on Free. Free keeps the first 25 devices from that import. A manual add still refuses the 26th. The library table shows 25.</p>
 <h2 id="re-scanning">Re-scanning</h2>
 <p>Running the Library Updater on the same subnet later:</p>
 <ul>

@@ -1,6 +1,6 @@
 # Monitor
 
-> Available on **Pro** and **AI** tiers only.
+> **Monitor** is a sidebar page on **Pro** and the **AI** edition. Free does not show it.
 
 The Monitor tab is a continuous-polling dashboard for one or more devices — it samples interface counters, CPU, memory, and environmental data on a configurable interval and renders graphs and threshold alerts.
 

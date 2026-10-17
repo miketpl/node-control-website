@@ -60,10 +60,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -139,8 +140,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; File Transfer
                 </div>
                 <h1 id="file-transfer">File Transfer</h1>
-<p>The File Transfer page is a server your devices can copy to, and, on Pro and the AI edition, a client that reaches out to a remote SFTP server.</p>
-<p>The local server is in Free as well as Pro. The remote client is Pro and AI.</p>
+<p><strong>File Transfer</strong> is a sidebar page on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. Free shows this page. It does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, Update, or AI.</p>
 <h2 id="local-server">Local server</h2>
 <p>The server speaks SFTP and SCP. Device-initiated SCP, such as <code>copy running-config scp://...</code>, used to hang because only SFTP was implemented. SCP is implemented now.</p>
 <h3 id="which-address-it-listens-on">Which address it listens on</h3>
@@ -151,8 +151,8 @@
 <p>A port already in use, a blocked bind, or anything else that stops the server is written to the log and shown on screen. It does not fail silently.</p>
 <p>If the switch says SCP is administratively disabled, the task tells you the switch&#x27;s SCP server is off and names <code>ip scp server enable</code>.</p>
 <h2 id="remote-client">Remote client</h2>
-<p>On Pro and the AI edition, the <strong>Remote client</strong> section takes a host, a port, and a login. It uploads or downloads files or folders. Each file is logged with its outcome and its size.</p>
-<p>Those fields accept typing. If they look greyed out, you are on a build before that fix.</p>
+<p>The Pro release notes describe a <strong>Remote client</strong> section: a host, a port, and a login, then upload or download of files or folders. Each file is logged with its outcome and its size.</p>
+<p>Whether that section is hidden on Free is not confirmed. The page itself is on Free.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="packet-capture.html">Packet Capture</a>

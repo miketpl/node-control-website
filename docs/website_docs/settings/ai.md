@@ -1,8 +1,10 @@
 # AI provider
 
-Feature-level AI runs on **Pro** and the **AI** edition, on a provider you configure. The AI dashboard, the chat tabs, and the backend assistant are the **AI** edition only. Free never sends a payload.
+Feature-level AI runs on **Pro** and the **AI** edition, on a provider you configure. The AI dashboard, the chat tabs, and the backend assistant are the **AI** edition only. Free does not show an AI page.
 
-I do not lead with this. The maps, the reports, and the compliance checks all work with no provider configured. The AI options then say there is no provider, and the deterministic output is what you get.
+On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.
+
+The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.
 
 ## Settings → AI / LLM
 
@@ -19,7 +21,7 @@ If you tick an AI option and nothing is configured, the app prompts immediately 
 
 Nothing is sent unless you tick the option for that run. With **Preview AI** on, you approve the anonymised payload before it leaves the machine. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.
 
-On Free, you can review what would have been sent. It is not sent.
+On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.
 
 The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.
 

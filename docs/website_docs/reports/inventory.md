@@ -42,11 +42,9 @@ Hidden by default but available: Last config save, Mgmt MAC, License state, Note
 
 The HTML export includes a header with run timestamp, scope, and total device count — useful for compliance reporting.
 
-## Free tier — scope behaviour
+## Free
 
-On Free, the Inventory scope selector is locked to **INDIVIDUAL** only (single device pick). All Devices and per-site scopes are Pro features.
-
-Workaround for Free users who want a multi-device inventory: run [Library Updater](../library/subnet-scan.md) first (which is not capped on Free) — it produces device-list output as it scans, which serves as a quick inventory snapshot.
+Inventory is the report that runs on Free. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).
 
 ## Vendor-specific quirks
 

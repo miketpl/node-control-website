@@ -1,6 +1,6 @@
 # Packet Capture
 
-> Available on **Pro** and the **AI** edition.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 Packet capture on a switch is a sequence of commands: define, filter, start, stop, export. Each one logs what the switch answers.
 

@@ -83,6 +83,8 @@ If you have a list of IPs in a spreadsheet:
 
 The CSV columns are mapped to device fields. Missing columns are left blank.
 
+On Free, a workbook import is cut to the first 25 devices, and a manual add refuses the 26th. The table shows 25.
+
 ## Bulk-adding from a subnet
 
 If you don't have a list — just a known subnet range — use [Subnet scan](subnet-scan.md) instead. It pings every IP in the range and auto-adds responding devices.

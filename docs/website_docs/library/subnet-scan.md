@@ -94,7 +94,9 @@ All run in sequence. Total time scales linearly with subnet count.
 
 ## Free tier behaviour
 
-The subnet scan runs on Free. The library still holds 25 devices. Review the result list and keep the devices you want inside that cap.
+Subnet scan is the Library Updater. It is not the **Discover** page. Discover is Pro, and Free does not show it.
+
+The scan's import runs on Free. Free keeps the first 25 devices from that import. A manual add still refuses the 26th. The library table shows 25.
 
 ## Re-scanning
 

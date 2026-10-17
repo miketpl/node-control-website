@@ -8,43 +8,33 @@ Feature-level AI (summaries, the lifecycle briefing, the firewall advisor) is on
 
 | Feature | Free | Pro | AI |
 |---|:---:|:---:|:---:|
-| Device library | 25 max | Unlimited | Unlimited |
-| Activation | Free code from nodecontrol.io | Paid licence | Paid licence |
+| Device library | 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
+| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again | Paid licence | Paid licence |
+| FREE VERSION badge in the status bar | ✓ | — | — |
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
+| **Sidebar** | | | |
+| Home, Engineer, Reports, File Transfer | ✓ | ✓ | ✓ |
+| Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser, Update | — | ✓ | ✓ |
+| AI page | — | — | ✓ |
 | **Library** | | | |
-| Add devices manually | ✓ | ✓ | ✓ |
-| Subnet scan (Library Updater) | ✓ | ✓ | ✓ |
-| GitHub library sync | ✓ | ✓ | ✓ |
-| **Tasks and pages** | | | |
-| Find Device (single switch) | ✓ | ✓ | ✓ |
-| Find Device (whole fabric, plus Meraki wireless) | — | ✓ | ✓ |
-| Network Discovery | — | ✓ | ✓ |
-| Layer 2 / Layer 3 / WAN topology | — | ✓ | ✓ |
-| Verify Device Types | — | ✓ | ✓ |
-| SSH Terminal | ✓ | ✓ | ✓ |
-| File Transfer server (SFTP and SCP) | ✓ | ✓ | ✓ |
-| File Transfer remote client | — | ✓ | ✓ |
-| Monitor | — | ✓ | ✓ |
-| Config Push | — | ✓ | ✓ |
-| Packet Capture | — | ✓ | ✓ |
-| Config Compliance audit and remediate | — | ✓ | ✓ |
-| Firewall Rule Analyser (PAN-OS) | — | ✓ | ✓ |
-| Change ISE Password | — | ✓ | ✓ |
-| IPAM | — | ✓ | ✓ |
-| Meraki Configurator | — | ✓ | ✓ |
-| Custom scripts (Settings → Scripts) | — | ✓ | ✓ |
+| Add devices manually | ✓, until 25 | ✓ | ✓ |
+| Subnet scan import (Library Updater, not Discover) | ✓, first 25 | ✓ | ✓ |
+| Workbook import | ✓, first 25 | ✓ | ✓ |
+| GitHub library import | ✓, first 25 | ✓ | ✓ |
+| **Engineer tasks** | | | |
+| None | ✓ | ✓ | ✓ |
+| L2 Topology Builder | ✓ | ✓ | ✓ |
+| Config Backup | ✓ | ✓ | ✓ |
+| Save Config | ✓ | ✓ | ✓ |
+| Find Device | one switch, single thread, no site or cores model | site and cores, plus Meraki wireless | site and cores, plus Meraki wireless |
+| Every other task | greyed, reads Upgrade to Pro | ✓ | ✓ |
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
-| Port Utilisation, Bandwidth, VLAN Port Finder, Meraki Usage Summary | — | ✓ | ✓ |
-| Security Audit, Lifecycle / EoX, Change Summary, Site Subnets | — | ✓ | ✓ |
-| CSV export and report email | ✓ | ✓ | ✓ |
+| Every other report | — | ✓ | ✓ |
 | **AI** | | | |
-| Feature-level AI on your own provider | preview only, nothing sent | ✓ | ✓ |
+| Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
+| A provider you can configure for sending | — | ✓ | ✓ |
 | AI dashboard, chat, and backend assistant | — | — | ✓ |
-| **Other** | | | |
-| Custom command catalogs | ✓ | ✓ | ✓ |
-| Safe Mode | ✓ | ✓ | ✓ |
-| Four themes (Dark Hacker, Dark Blue, Light, High Contrast) | ✓ | ✓ | ✓ |
 
 ## Free
 
@@ -52,27 +42,24 @@ Free is a working copy for a small estate, not a timed demo.
 
 ### What you get
 
-- Up to 25 devices in the library. No time limit
-- Find Device against one switch at a time
-- The Inventory report, with CSV export and email
-- The SSH terminal
-- The File Transfer server
-- GitHub library sync
-- Custom command catalogs, Safe Mode, and the same vendor drivers as Pro
-- The Home page, the sidebar, and the Engineer command bar
+- 25 devices in the library table. No time limit. The status bar shows **FREE VERSION**
+- Sidebar: Home, Engineer, Reports, File Transfer
+- Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
+- The Inventory report
+- Subnet scan import, workbook import, and GitHub import, each cut to the first 25
+- An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
+- The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 
 ### What is on Pro instead
 
-- A library past 25 devices
-- Topology maps, Discovery, and Monitor
+- A library past 25 devices, and a table that shows all of them
+- Every task that Free greys out with **Upgrade to Pro**, including L3 topology, WAN topology, Verify Device Types, Config Push, and config compliance
+- Discover, Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
 - Reports other than Inventory
 - Find Device across a site or a fabric, including Meraki wireless
-- Config Push, packet capture, compliance remediation, the firewall analyser
-- IPAM, the Meraki Configurator, custom scripts, Change ISE Password
-- Lifecycle, Security Audit, and the rest of the report set
-- Feature-level AI, once you add your own provider
+- Feature-level AI on a provider you configure
 
-The library database enforces the 25-device cap. Devices already stored are not deleted if you install Free on a machine that already has a larger library.
+A larger library left by Pro is not deleted when you install Free. The Free table shows 25 of those devices.
 
 ### How to get it
 
@@ -89,19 +76,15 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 
 ### What you get beyond Free
 
-- Unlimited devices
-- L2, L3, WAN, and live Discovery
+- Unlimited devices, shown in full
+- L3 and WAN topology, Discover, and Verify Device Types. L2 Topology Builder is already on Free
 - The full report list, including Security Audit, Lifecycle, and Change Summary
 - Find Device across a site or a fabric, with Meraki wireless lookup
-- Verify Device Types
-- Monitor
-- GitHub library sync was already on Free; on Pro it is the same mechanism, with room for the larger library
-- Config Push with revert, packet capture, the remote file-transfer client
-- Config compliance with guided remediation
-- The firewall rule analyser
-- IPAM, the Meraki Configurator, and scripts under Settings → Scripts
-- Change ISE Password
+- Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
+- Config Push, packet capture, and config compliance with guided remediation
+- Scripts under Settings → Scripts, and Change ISE Password
 - Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that
+- GitHub import without the 25-device cut
 
 ### How to get it
 
@@ -137,7 +120,7 @@ Pro and Free install side by side. They are separate apps, with separate Gatekee
 
 | You are | Pick |
 |---|---|
-| An engineer with a handful of devices who wants a free SSH tool and an inventory | Free |
-| Managing more than 25 devices, or you need maps, compliance, or pushes | Pro |
+| An engineer with up to 25 devices who wants an L2 map, Find Device, config backup, and an inventory | Free |
+| Managing more than 25 devices, or you need L3/WAN maps, Discover, compliance, or pushes | Pro |
 | You want the dashboard and the backend assistant as well as Pro | AI edition |
 | Trying the tool before you buy | Free, then upgrade |

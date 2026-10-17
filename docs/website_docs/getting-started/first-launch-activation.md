@@ -21,10 +21,9 @@ When you launch Node Control Free for the first time, an **Activate Node Control
 3. The app contacts the license server (~1–2 seconds), confirms the code is valid, and stores it locally
 4. The dialog closes and the main app window appears
 
-After this, you won't be asked for the code again unless:
+The Free code is checked online. If that check cannot run, you get a **7-day offline grace period**. While the grace period still has days left, the app opens. When the grace period runs out, the app is blocked until it can check the code again.
 
-- The code is later revoked (e.g., you violate terms of use), OR
-- You haven't been online for more than 7 days *and* your offline grace period has expired
+You will also be stopped if the code is later revoked.
 
 ### Code format rules
 
@@ -40,7 +39,8 @@ After this, you won't be asked for the code again unless:
 | "Code must be in the format NC-XXXX-XXXX" | The code is malformed or wrong length | Re-paste from the website / email |
 | "This license code is not active" | The code wasn't found in our active licenses list | Confirm you copied it correctly; if so, request a fresh code at nodecontrol.io |
 | "Unable to verify your license" with no prior check | Network failure on first activation — your machine can't reach `api.github.com` | Check your internet connection, firewall, proxy settings |
-| "Offline grace period: N days remaining" | Network failure but you've successfully activated before — you can continue offline for the remaining days | Just close the message; the app will retry next launch |
+| "Offline grace period: N days remaining" | The online check failed, and you still have grace left | Close the message. The app retries on the next launch |
+| App blocked after days offline | The 7-day grace period has run out | Connect so the app can check the code again |
 
 ## Pro / AI tier — email registration
 

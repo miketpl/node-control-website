@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -156,20 +157,50 @@
 <tbody>
 <tr>
 <td>Device library</td>
-<td style="text-align: center;">25 max</td>
+<td style="text-align: center;">25 shown. Manual add refuses the 26th. Imports keep the first 25</td>
 <td style="text-align: center;">Unlimited</td>
 <td style="text-align: center;">Unlimited</td>
 </tr>
 <tr>
-<td>Activation</td>
-<td style="text-align: center;">Free code from nodecontrol.io</td>
+<td>Licence check</td>
+<td style="text-align: center;">Online, then a 7-day offline grace, then the app is blocked until it can check again</td>
 <td style="text-align: center;">Paid licence</td>
 <td style="text-align: center;">Paid licence</td>
+</tr>
+<tr>
+<td>FREE VERSION badge in the status bar</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 </tr>
 <tr>
 <td>Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme)</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Sidebar</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Home, Engineer, Reports, File Transfer</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser, Update</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>AI page</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
@@ -180,127 +211,67 @@
 </tr>
 <tr>
 <td>Add devices manually</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Subnet scan (Library Updater)</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓, until 25</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>GitHub library sync</td>
-<td style="text-align: center;">✓</td>
+<td>Subnet scan import (Library Updater, not Discover)</td>
+<td style="text-align: center;">✓, first 25</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td><strong>Tasks and pages</strong></td>
+<td>Workbook import</td>
+<td style="text-align: center;">✓, first 25</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>GitHub library import</td>
+<td style="text-align: center;">✓, first 25</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Engineer tasks</strong></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr>
-<td>Find Device (single switch)</td>
+<td>None</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Find Device (whole fabric, plus Meraki wireless)</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Network Discovery</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Layer 2 / Layer 3 / WAN topology</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Verify Device Types</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>SSH Terminal</td>
+<td>L2 Topology Builder</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>File Transfer server (SFTP and SCP)</td>
+<td>Config Backup</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>File Transfer remote client</td>
-<td style="text-align: center;">—</td>
+<td>Save Config</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Monitor</td>
-<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Config Push</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
+<td>Find Device</td>
+<td style="text-align: center;">one switch, single thread, no site or cores model</td>
+<td style="text-align: center;">site and cores, plus Meraki wireless</td>
+<td style="text-align: center;">site and cores, plus Meraki wireless</td>
 </tr>
 <tr>
-<td>Packet Capture</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Config Compliance audit and remediate</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Firewall Rule Analyser (PAN-OS)</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Change ISE Password</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>IPAM</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Meraki Configurator</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Custom scripts (Settings → Scripts)</td>
-<td style="text-align: center;">—</td>
+<td>Every other task</td>
+<td style="text-align: center;">greyed, reads Upgrade to Pro</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -317,20 +288,8 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Port Utilisation, Bandwidth, VLAN Port Finder, Meraki Usage Summary</td>
+<td>Every other report</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Security Audit, Lifecycle / EoX, Change Summary, Site Subnets</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>CSV export and report email</td>
-<td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -341,8 +300,14 @@
 <td style="text-align: center;"></td>
 </tr>
 <tr>
-<td>Feature-level AI on your own provider</td>
-<td style="text-align: center;">preview only, nothing sent</td>
+<td>Payload dialog</td>
+<td style="text-align: center;">opens, nothing is sent</td>
+<td style="text-align: center;">opt-in, your provider</td>
+<td style="text-align: center;">opt-in, your provider</td>
+</tr>
+<tr>
+<td>A provider you can configure for sending</td>
+<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -352,73 +317,43 @@
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr>
-<td><strong>Other</strong></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr>
-<td>Custom command catalogs</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Safe Mode</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Four themes (Dark Hacker, Dark Blue, Light, High Contrast)</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
 </tbody>
 </table>
 <h2 id="free">Free</h2>
 <p>Free is a working copy for a small estate, not a timed demo.</p>
 <h3 id="what-you-get">What you get</h3>
 <ul>
-<li>Up to 25 devices in the library. No time limit
+<li>25 devices in the library table. No time limit. The status bar shows <strong>FREE VERSION</strong>
 </li>
-<li>Find Device against one switch at a time
+<li>Sidebar: Home, Engineer, Reports, File Transfer
 </li>
-<li>The Inventory report, with CSV export and email
+<li>Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
 </li>
-<li>The SSH terminal
+<li>The Inventory report
 </li>
-<li>The File Transfer server
+<li>Subnet scan import, workbook import, and GitHub import, each cut to the first 25
 </li>
-<li>GitHub library sync
+<li>An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
 </li>
-<li>Custom command catalogs, Safe Mode, and the same vendor drivers as Pro
-</li>
-<li>The Home page, the sidebar, and the Engineer command bar
+<li>The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 </li>
 </ul>
 <h3 id="what-is-on-pro-instead">What is on Pro instead</h3>
 <ul>
-<li>A library past 25 devices
+<li>A library past 25 devices, and a table that shows all of them
 </li>
-<li>Topology maps, Discovery, and Monitor
+<li>Every task that Free greys out with <strong>Upgrade to Pro</strong>, including L3 topology, WAN topology, Verify Device Types, Config Push, and config compliance
+</li>
+<li>Discover, Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
 </li>
 <li>Reports other than Inventory
 </li>
 <li>Find Device across a site or a fabric, including Meraki wireless
 </li>
-<li>Config Push, packet capture, compliance remediation, the firewall analyser
-</li>
-<li>IPAM, the Meraki Configurator, custom scripts, Change ISE Password
-</li>
-<li>Lifecycle, Security Audit, and the rest of the report set
-</li>
-<li>Feature-level AI, once you add your own provider
+<li>Feature-level AI on a provider you configure
 </li>
 </ul>
-<p>The library database enforces the 25-device cap. Devices already stored are not deleted if you install Free on a machine that already has a larger library.</p>
+<p>A larger library left by Pro is not deleted when you install Free. The Free table shows 25 of those devices.</p>
 <h3 id="how-to-get-it">How to get it</h3>
 <ol>
 <li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a>
@@ -438,31 +373,23 @@
 <p>Pro is the tier for an engineer who needs the whole estate: maps, reports, compliance, and pushes.</p>
 <h3 id="what-you-get-beyond-free">What you get beyond Free</h3>
 <ul>
-<li>Unlimited devices
+<li>Unlimited devices, shown in full
 </li>
-<li>L2, L3, WAN, and live Discovery
+<li>L3 and WAN topology, Discover, and Verify Device Types. L2 Topology Builder is already on Free
 </li>
 <li>The full report list, including Security Audit, Lifecycle, and Change Summary
 </li>
 <li>Find Device across a site or a fabric, with Meraki wireless lookup
 </li>
-<li>Verify Device Types
+<li>Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
 </li>
-<li>Monitor
+<li>Config Push, packet capture, and config compliance with guided remediation
 </li>
-<li>GitHub library sync was already on Free; on Pro it is the same mechanism, with room for the larger library
-</li>
-<li>Config Push with revert, packet capture, the remote file-transfer client
-</li>
-<li>Config compliance with guided remediation
-</li>
-<li>The firewall rule analyser
-</li>
-<li>IPAM, the Meraki Configurator, and scripts under Settings → Scripts
-</li>
-<li>Change ISE Password
+<li>Scripts under Settings → Scripts, and Change ISE Password
 </li>
 <li>Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that
+</li>
+<li>GitHub import without the 25-device cut
 </li>
 </ul>
 <h3 id="how-to-get-it">How to get it</h3>
@@ -499,11 +426,11 @@
 </thead>
 <tbody>
 <tr>
-<td>An engineer with a handful of devices who wants a free SSH tool and an inventory</td>
+<td>An engineer with up to 25 devices who wants an L2 map, Find Device, config backup, and an inventory</td>
 <td>Free</td>
 </tr>
 <tr>
-<td>Managing more than 25 devices, or you need maps, compliance, or pushes</td>
+<td>Managing more than 25 devices, or you need L3/WAN maps, Discover, compliance, or pushes</td>
 <td>Pro</td>
 </tr>
 <tr>

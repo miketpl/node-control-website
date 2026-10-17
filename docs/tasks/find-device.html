@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link active">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -141,7 +142,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Find Device
                 </div>
                 <h1 id="find-device">Find Device</h1>
-<p>The &quot;where is this MAC / IP?&quot; tool. Give Find Device one or more MAC addresses or IPs, and it&#x27;ll tell you which switch port (or AP) each one is connected to.</p>
+<p>The &quot;where is this MAC / IP?&quot; tool. Give Find Device a MAC address or an IP, and it tells you which switch port it is on. On Pro and the AI edition it can also name the Meraki AP.</p>
 <h2 id="tier-differences">Tier differences</h2>
 <table>
 <thead>
@@ -153,7 +154,7 @@
 <tbody>
 <tr>
 <td>Free</td>
-<td>Pick <strong>one</strong> library switch as the seed; Find Device walks only that switch&#x27;s MAC table</td>
+<td>One switch at a time, single thread. No site model and no cores model. It walks that switch&#x27;s MAC table</td>
 </tr>
 <tr>
 <td>Pro / AI</td>
@@ -352,16 +353,14 @@
 <h2 id="free-tier-behaviour">Free tier behaviour</h2>
 <p>On Free, Find Device:</p>
 <ul>
-<li>Shows a single-switch dropdown (populated from your 25-device-capped library, sorted by IP) instead of the per-site cores picker
+<li>Runs one switch at a time, on a single thread
 </li>
-<li>Walks only that one switch&#x27;s MAC table — no recursion
+<li>Has no site model and no cores model
 </li>
-<li>No Meraki lookup
-</li>
-<li>A small hint underneath the picker spells out the limitation and links to the <a href="../tiers/upgrading.html">Pro upgrade</a>
+<li>Walks that switch&#x27;s MAC table
 </li>
 </ul>
-<p>Free is enough for &quot;I know roughly which switch the device is on, what port is it?&quot; — most useful for spot-checks in a small environment.</p>
+<p>It is one of the five tasks that run on Free. See <a href="../tiers/overview.html">tier comparison</a>.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
 <thead>
@@ -396,7 +395,7 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="discovery.html">Network Discovery</a> — for live walks without library setup
+<li><a href="discovery.html">Discover</a> — for live walks without library setup. Pro and AI; not on Free
 </li>
 <li><a href="topology-l2.html">L2 topology</a> — for the bigger picture of where devices are connected
 </li>

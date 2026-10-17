@@ -1,6 +1,6 @@
 # Verify Device Types
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 A bulk sweep that re-runs device type detection across every device (or a subset) in your library. Useful when:
 

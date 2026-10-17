@@ -1,6 +1,6 @@
 # Meraki Configurator
 
-> Available on **Pro** and the **AI** edition.
+> The **Meraki Configurator** is a sidebar page on **Pro** and the **AI** edition. Free does not show it.
 
 The Meraki Configurator changes SSIDs and RF profiles across many Meraki networks in one pass. It uses the Dashboard API. It does not SSH to the access points.
 

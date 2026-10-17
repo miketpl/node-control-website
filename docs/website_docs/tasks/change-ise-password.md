@@ -1,6 +1,6 @@
 # Change ISE Password
 
-> Available on **Pro** and the **AI** edition.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 **Change ISE Password** is an Engineer task. It changes your own Cisco ISE network-access password. It does not need a separate browser session to ISE.
 

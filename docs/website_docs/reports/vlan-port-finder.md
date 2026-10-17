@@ -1,6 +1,6 @@
 # VLAN Port Finder
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 Find every port on every switch in scope that's a member of a given VLAN (or matches a VLAN filter).
 

@@ -54,11 +54,17 @@ Three ways, in increasing automation:
 
 1. **Manual** — right-click in the table → **Add Device** ([details](adding-devices.md))
 2. **Subnet scan** — Library Updater walks an IP range and adds what it finds ([details](subnet-scan.md))
-3. **GitHub library sync** — pull a shared library from a GitHub repo ([details](github-sync.md)). This is on Free as well as Pro.
+3. **GitHub library import** — pull a shared library from a GitHub repo ([details](github-sync.md)). The import runs on Free as well as Pro. On Free it keeps the first 25.
 
 ## Free tier device cap
 
-Free holds **25 devices**. There is no time limit. The cap is in the library database. Installing Free does not delete a larger library left behind by Pro.
+Free holds **25 devices**. There is no time limit.
+
+- A manual add refuses the 26th device
+- A workbook import, a subnet scan import, and a GitHub import are cut to the first 25
+- The table shows 25 even when an older database, for example one left by Pro, holds more
+
+Those extra rows are not deleted. They show again if you move back to Pro.
 
 To remove the cap, [upgrade to Pro](../tiers/upgrading.md).
 
@@ -68,7 +74,7 @@ A **site** groups devices that share physical location, ownership, or credential
 
 - The **Site filter** dropdown filters the library view
 - Reports and tasks can be run "for this site only" instead of all devices
-- Find Device walks each site's cores in parallel
+- On Pro and the AI edition, Find Device walks each site's cores in parallel. Free has no site or cores model
 - Topology maps draw a separate map per site
 
 Site codes are usually 2–4 characters derived from hostname patterns. See [Site detection](sites.md) for how Node Control extracts them.
@@ -89,7 +95,7 @@ copy "%APPDATA%\netOps\netOps.db" %USERPROFILE%\Desktop\netOps-backup.db
 
 To restore, just copy it back. Node Control reads the file on launch.
 
-[GitHub library sync](github-sync.md) keeps a remote copy and tracks every change in commit history. It is available on Free as well as Pro.
+[GitHub library import](github-sync.md) pulls a remote copy. The import runs on Free as well as Pro, and on Free it keeps the first 25. Whether Free can push the library back is not confirmed.
 
 ## Editing devices
 
@@ -105,7 +111,7 @@ Right-click → **Delete**. Confirms before deletion. Doesn't remove the SSH hos
 
 | Tier | Library size |
 |---|---|
-| Free | 25 devices (enforced) |
+| Free | 25 shown. Manual add refuses the 26th. Imports keep the first 25 |
 | Pro / AI | Practical limit ~10,000 devices (no enforced cap, but the Engineer tab gets slow above that) |
 
 Beyond ~10,000, the Library Updater subnet-scan flow is slow and Find Device starts struggling — use multiple libraries (one per region/customer) instead of one giant one.

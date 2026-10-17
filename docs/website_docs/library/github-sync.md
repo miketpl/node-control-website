@@ -1,6 +1,6 @@
 # Sharing libraries via GitHub
 
-GitHub library sync is on **Free**, **Pro**, and the **AI** edition. A pull on Free still has to fit the 25-device library cap.
+A GitHub library import runs on **Free**, **Pro**, and the **AI** edition. On Free that import is cut to the first 25 devices. The table shows those 25, even if the file you pulled contains more. Whether Free can push the library back to GitHub is not confirmed here.
 
 Node Control can synchronise your device library with a private GitHub repository. Useful when:
 

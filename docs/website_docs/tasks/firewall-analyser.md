@@ -1,6 +1,6 @@
 # Firewall Rule Analyser
 
-> Available on **Pro** and the **AI** edition. This is a PAN-OS tool.
+> On **Pro** and the **AI** edition. Free does not show this page. This is a PAN-OS tool.
 
 The analyser reads a Palo Alto policy export, or a pull straight from Panorama, and checks it against your YAML standards. The checks are deterministic. An empty or unrecognised export fails clearly. It does not pass every check.
 

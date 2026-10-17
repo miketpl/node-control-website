@@ -62,10 +62,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -218,9 +219,8 @@
 </li>
 </ul>
 <p>The HTML export includes a header with run timestamp, scope, and total device count — useful for compliance reporting.</p>
-<h2 id="free-tier-scope-behaviour">Free tier — scope behaviour</h2>
-<p>On Free, the Inventory scope selector is locked to <strong>INDIVIDUAL</strong> only (single device pick). All Devices and per-site scopes are Pro features.</p>
-<p>Workaround for Free users who want a multi-device inventory: run <a href="../library/subnet-scan.html">Library Updater</a> first (which is not capped on Free) — it produces device-list output as it scans, which serves as a quick inventory snapshot.</p>
+<h2 id="free">Free</h2>
+<p>Inventory is the report that runs on Free. Every other report is on Pro and the AI edition. See <a href="overview.html">Reports overview</a>.</p>
 <h2 id="vendor-specific-quirks">Vendor-specific quirks</h2>
 <p>Different vendors expose different inventory data:</p>
 <table>

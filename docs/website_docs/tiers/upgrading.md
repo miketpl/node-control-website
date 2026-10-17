@@ -1,6 +1,6 @@
 # Upgrading from Free to Pro
 
-Once your network outgrows Free's 25-device cap or you need topology maps and reports, upgrading to Pro is straightforward.
+Once your network outgrows Free's 25-device cap, or you need the tasks and reports Free greys out, upgrading to Pro is straightforward.
 
 ## What you'll keep
 
@@ -95,7 +95,7 @@ If you want to switch back to Free (e.g., no longer working with large networks)
 
 1. Install Node Control Free
 2. Activate with an `NC-XXXX-XXXX` code from nodecontrol.io
-3. Your library file is preserved. Free holds 25 devices. The downgrade does not delete the extra devices
+3. Your library file is preserved. The Free table shows 25 devices even when the database holds more. A manual add refuses the 26th. A workbook import, a subnet scan import, and a GitHub import are cut to the first 25. The extra rows are not deleted
 4. You can uninstall Pro at any time
 
 If you later re-upgrade, all devices become visible again.

@@ -1,6 +1,6 @@
 # Change Summary report
 
-> Available on **Pro** and the **AI** edition.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 Change Summary reports what was configured, not only that a change happened. The timeline lists the commands and who entered them.
 

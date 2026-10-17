@@ -1,12 +1,12 @@
 # Find Device
 
-The "where is this MAC / IP?" tool. Give Find Device one or more MAC addresses or IPs, and it'll tell you which switch port (or AP) each one is connected to.
+The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and it tells you which switch port it is on. On Pro and the AI edition it can also name the Meraki AP.
 
 ## Tier differences
 
 | Tier | What works |
 |---|---|
-| Free | Pick **one** library switch as the seed; Find Device walks only that switch's MAC table |
+| Free | One switch at a time, single thread. No site model and no cores model. It walks that switch's MAC table |
 | Pro / AI | Pick a site (or All); Find Device walks every site's cores in parallel, recursively follows CDP/LLDP into the fabric, and includes Meraki wireless lookup |
 
 ## Open the task
@@ -148,12 +148,11 @@ When Find Device exhausts its search and locates nothing, the progress dialog en
 
 On Free, Find Device:
 
-- Shows a single-switch dropdown (populated from your 25-device-capped library, sorted by IP) instead of the per-site cores picker
-- Walks only that one switch's MAC table — no recursion
-- No Meraki lookup
-- A small hint underneath the picker spells out the limitation and links to the [Pro upgrade](../tiers/upgrading.md)
+- Runs one switch at a time, on a single thread
+- Has no site model and no cores model
+- Walks that switch's MAC table
 
-Free is enough for "I know roughly which switch the device is on, what port is it?" — most useful for spot-checks in a small environment.
+It is one of the five tasks that run on Free. See [tier comparison](../tiers/overview.md).
 
 ## Troubleshooting
 
@@ -166,6 +165,6 @@ Free is enough for "I know roughly which switch the device is on, what port is i
 
 ## Next steps
 
-- [Network Discovery](discovery.md) — for live walks without library setup
+- [Discover](discovery.md) — for live walks without library setup. Pro and AI; not on Free
 - [L2 topology](topology-l2.md) — for the bigger picture of where devices are connected
 - [Safe Mode](../settings/safe-mode.md) — when to enable/disable it for port actions

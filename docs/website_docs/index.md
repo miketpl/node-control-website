@@ -23,22 +23,23 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 ## Tasks
 
-- [Layer 2 topology map](tasks/topology-l2.md)
-- [Layer 3 topology map](tasks/topology-l3.md)
-- [WAN topology map](tasks/topology-wan.md)
-- [Network Discovery](tasks/discovery.md)
-- [Find Device](tasks/find-device.md)
-- [Verify Device Types](tasks/verify-device-types.md)
+- [L2 Topology Builder](tasks/topology-l2.md) — on Free
+- [Config Backup and Save Config](tasks/config-backup.md) — on Free
+- [Layer 3 topology map](tasks/topology-l3.md) — Pro and AI
+- [WAN topology map](tasks/topology-wan.md) — Pro and AI
+- [Discover](tasks/discovery.md) — Pro and AI; not on Free
+- [Find Device](tasks/find-device.md) — on Free, one switch at a time
+- [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
-- [Monitor](tasks/monitor.md)
-- [Config Push](tasks/config-push.md)
-- [Packet Capture](tasks/packet-capture.md)
-- [Config Compliance](tasks/config-compliance.md)
-- [Firewall Rule Analyser](tasks/firewall-analyser.md)
-- [File Transfer](tasks/file-transfer.md)
-- [Change ISE Password](tasks/change-ise-password.md)
-- [IPAM](tasks/ipam.md)
-- [Meraki Configurator](tasks/meraki-configurator.md)
+- [Monitor](tasks/monitor.md) — Pro and AI; not on Free
+- [Config Push](tasks/config-push.md) — Pro and AI
+- [Packet Capture](tasks/packet-capture.md) — Pro and AI
+- [Config Compliance](tasks/config-compliance.md) — Pro and AI
+- [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
+- [File Transfer](tasks/file-transfer.md) — on Free
+- [Change ISE Password](tasks/change-ise-password.md) — Pro and AI
+- [IPAM](tasks/ipam.md) — Pro and AI; not on Free
+- [Meraki Configurator](tasks/meraki-configurator.md) — Pro and AI; not on Free
 
 ## Reports
 
@@ -46,7 +47,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Port Utilisation](reports/port-utilisation.md)
 - [Bandwidth](reports/bandwidth.md)
 - [VLAN Port Finder](reports/vlan-port-finder.md)
-- [Inventory](reports/inventory.md)
+- [Inventory](reports/inventory.md) — the report that runs on Free
 - [Meraki Usage Summary](reports/meraki-usage-summary.md)
 - [Security Audit](reports/security-audit.md)
 - [Lifecycle and EoX](reports/lifecycle.md)

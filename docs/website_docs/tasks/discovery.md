@@ -1,6 +1,6 @@
 # Network Discovery
 
-> Available on **Pro** and **AI** tiers only.
+> The sidebar page is **Discover**. It is on **Pro** and the **AI** edition. Free does not show it. This is not the [subnet scan](../library/subnet-scan.md). Subnet scan is a library import, and that import does run on Free.
 
 Network Discovery is the live, "I don't know what's out there" topology walk. Give it a seed switch and credentials, and it builds a topology map by walking CDP/LLDP neighbours hop by hop — discovering devices that aren't yet in your library.
 
@@ -18,7 +18,7 @@ Contrast with [L2 topology](topology-l2.md), which only maps devices already in 
 
 ## Open the task
 
-- **Discovery** in the left sidebar. It is its own page, not an Engineer task.
+- **Discover** in the left sidebar, on Pro and the AI edition. It is its own page, not an Engineer task.
 
 ## Configure
 

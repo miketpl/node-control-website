@@ -1,6 +1,6 @@
 # Config Compliance
 
-> Available on **Pro** and the **AI** edition. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
 
 Two tasks:
 

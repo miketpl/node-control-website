@@ -60,10 +60,11 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
       <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
@@ -139,8 +140,9 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; AI provider
                 </div>
                 <h1 id="ai-provider">AI provider</h1>
-<p>Feature-level AI runs on <strong>Pro</strong> and the <strong>AI</strong> edition, on a provider you configure. The AI dashboard, the chat tabs, and the backend assistant are the <strong>AI</strong> edition only. Free never sends a payload.</p>
-<p>I do not lead with this. The maps, the reports, and the compliance checks all work with no provider configured. The AI options then say there is no provider, and the deterministic output is what you get.</p>
+<p>Feature-level AI runs on <strong>Pro</strong> and the <strong>AI</strong> edition, on a provider you configure. The AI dashboard, the chat tabs, and the backend assistant are the <strong>AI</strong> edition only. Free does not show an AI page.</p>
+<p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.</p>
+<p>The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
 <p>Set one of:</p>
 <ul>
@@ -153,7 +155,7 @@
 <p>If you tick an AI option and nothing is configured, the app prompts immediately and offers <strong>Open Settings</strong>. It does not wait until the end of the run and then skip quietly.</p>
 <h2 id="what-is-sent">What is sent</h2>
 <p>Nothing is sent unless you tick the option for that run. With <strong>Preview AI</strong> on, you approve the anonymised payload before it leaves the machine. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.</p>
-<p>On Free, you can review what would have been sent. It is not sent.</p>
+<p>On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.</p>
 <p>The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.</p>
 <h2 id="where-it-shows-up">Where it shows up</h2>
 <p>End-of-task summaries, when you tick them, cover:</p>

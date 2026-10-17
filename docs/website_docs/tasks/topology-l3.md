@@ -1,6 +1,6 @@
 # Layer 3 topology map
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
 
 The L3 topology map walks every routing device in scope, reads its routing table, OSPF and BGP neighbours, and renders an interactive map of the L3 overlay — which routers and firewalls peer with which, across what protocols.
 
