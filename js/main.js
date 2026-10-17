@@ -108,10 +108,13 @@
     }
 
     // ── License API Configuration ────────────────────────────────
-    // Change this to your VPS URL in production
-    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:5000'
-        : 'https://api.nodecontrol.io';  // Update to your API domain
+    // Local previews talk to the live API. Run the Flask backend locally
+    // (flask --app app run --port 5001) and add ?localapi=1 to the URL to
+    // target it instead. Port 5001 because macOS AirPlay squats 5000.
+    const useLocalApi = new URLSearchParams(window.location.search).get('localapi') === '1';
+    const API_BASE = useLocalApi
+        ? 'http://localhost:5001'
+        : 'https://api.nodecontrol.io';
 
     // Helper: show result message in a container
     function showResult(container, message, type) {
@@ -270,6 +273,24 @@
     const redeemResult = document.getElementById('redeemResult');
 
     if (redeemBtn && redeemCode && redeemResult) {
+        // Trigger a file download without leaving the page. GitHub release
+        // assets are served as attachments, so navigating a hidden anchor
+        // starts the download in place.
+        function startDownload(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => a.remove(), 1000);
+        }
+
+        // True only for a direct installer URL — not the releases-page
+        // fallback the backend returns when it can't resolve assets.
+        function isInstallerUrl(url) {
+            return /\.(dmg|exe)$/i.test(url || '');
+        }
+
         async function validateCode(code) {
             const normalised = code.trim().toUpperCase().replace(/\s+/g, '-');
 
@@ -286,14 +307,36 @@
 
                 if (data.success) {
                     const urls = data.downloads;
-                    showResult(redeemResult,
-                        '<strong>' + data.label + '</strong> — choose your platform:' +
-                        '<div class="redeem-download-links">' +
-                        '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
-                        '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
-                        '</div>',
-                        'success'
-                    );
+
+                    // Platform chosen in the request form, if the user came
+                    // through the email flow this session. Returning users
+                    // with a saved code won't have one — treat as "both".
+                    const platformSelect = document.getElementById('reqPlatform');
+                    const chosen = platformSelect ? platformSelect.value : '';
+                    const key = chosen === 'macos' ? 'mac' : chosen === 'windows' ? 'win' : null;
+
+                    if (key && isInstallerUrl(urls[key])) {
+                        const other = key === 'mac' ? 'win' : 'mac';
+                        const otherLabel = key === 'mac' ? 'Windows (.exe)' : 'macOS (.dmg)';
+                        startDownload(urls[key]);
+                        showResult(redeemResult,
+                            '<strong>' + data.label + '</strong> — your download is starting.' +
+                            '<div class="redeem-download-links">' +
+                            '<a href="' + urls[key] + '" class="redeem-fallback-link">Download didn\'t start? Click here.</a>' +
+                            '</div>' +
+                            '<a href="' + urls[other] + '" class="redeem-other-link">Need ' + otherLabel + ' instead?</a>',
+                            'success'
+                        );
+                    } else {
+                        showResult(redeemResult,
+                            '<strong>' + data.label + '</strong> — choose your platform:' +
+                            '<div class="redeem-download-links">' +
+                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
+                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
+                            '</div>',
+                            'success'
+                        );
+                    }
                 } else {
                     showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
                 }

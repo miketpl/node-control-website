@@ -798,6 +798,20 @@ select.form-input {
     padding: 8px 20px;
 }
 
+.redeem-fallback-link {
+    color: var(--cyan);
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.redeem-other-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-decoration: underline;
+}
+
 /* ── Pricing ───────────────────────────────────────────────── */
 .pricing-grid {
     display: grid;
