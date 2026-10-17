@@ -1,0 +1,26 @@
+# Packet Capture
+
+> Available on **Pro** and the **AI** edition.
+
+Packet capture on a switch is a sequence of commands: define, filter, start, stop, export. Each one logs what the switch answers.
+
+A rejected define, filter, or start stops the run immediately, using the switch's own words. The run does not continue for minutes and then fail with a misleading "no file on flash" error.
+
+## Before the file is downloaded
+
+The file is checked on flash before any download:
+
+- the export reply is read
+- `dir flash:` is polled
+- a missing file, a file that is not written yet, and an empty capture are each reported as that thing
+
+A buffer with zero packets is called out before the export runs.
+
+## If SCP is disabled
+
+`SCPException: Administratively disabled` means the switch's SCP server is off. The task says so and names the missing line: `ip scp server enable`. The same message is used when a [file transfer](file-transfer.md) hits that wall.
+
+## Next steps
+
+- [Config Push](config-push.md) — per-port templates, including capture setup
+- [File Transfer](file-transfer.md)
