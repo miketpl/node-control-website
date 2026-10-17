@@ -109,10 +109,12 @@ sentences. If a claim can't be made concretely, don't make it.
 - macOS minimum version is not confirmed. Cards say "macOS (Apple silicon
   and Intel)" and do not state a version. The install doc still says macOS
   11 Big Sur or later. Confirm with the developer before changing either.
-- The Pro/AI tier download links point at private GitHub repos and 404 for
-  customers. The visible buy and download controls are hidden with the
-  `payment-pending` class until payment is live. Do not delete the Stripe
-  attributes, the Stripe handler, or `js/main.js`. Prices stay as they are.
-  An HTML comment in `index.html` says how to show the buttons again.
+- Professional is £25/month ex VAT or £255/year ex VAT (£21.25/mo billed
+  annually, ex VAT, save 15%). Prices are VAT-exclusive. UK VAT (20%) is
+  added at checkout where applicable. Checkout is built and stays off. The only switch is
+  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until Mike says to
+  turn it on. Do not point Pro buttons at a GitHub release. AI stays
+  "In development" and is not for sale. The old `?paid=true&download=`
+  redirect has been removed.
 - `privacy.html` and `terms.html` are drafts pending review. Do not remove
   the draft notice or fill `[PLACEHOLDER]` markers without Mike.

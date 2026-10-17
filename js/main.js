@@ -62,51 +62,6 @@
     window.addEventListener('scroll', setActiveLink);
     setActiveLink();
 
-    // ── Stripe Payment Link handling for paid downloads ──────
-    // When a paid download button is clicked, redirect to Stripe first.
-    // After payment, Stripe redirects back with ?session_id= and the
-    // download starts automatically.
-    //
-    // SETUP: Replace STRIPE_PRO_LINK and STRIPE_AI_LINK with your
-    // actual Stripe Payment Link URLs from the Stripe Dashboard.
-    // e.g. https://buy.stripe.com/live_xxxxxxxxxxxx
-    //
-    // Stripe Payment Links are the simplest approach — no backend needed.
-    // Create them at: https://dashboard.stripe.com/payment-links
-    //
-    // Flow:
-    // 1. User clicks "Subscribe & Download" on pricing or "Download" on Pro tier
-    // 2. JS intercepts click, redirects to Stripe Payment Link
-    // 3. After payment, Stripe redirects to your success URL
-    // 4. Success page triggers the GitHub release download
-    //
-    document.querySelectorAll('[data-stripe-link]').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            const stripeLink = this.dataset.stripeLink;
-            // If the Stripe link is still a placeholder, let the normal href work
-            if (!stripeLink || stripeLink.startsWith('STRIPE_')) return;
-
-            e.preventDefault();
-            // Redirect to Stripe Checkout — pass the download URL as metadata
-            const downloadUrl = this.getAttribute('href');
-            const returnUrl = window.location.origin + window.location.pathname
-                + '?download=' + encodeURIComponent(downloadUrl) + '&paid=true';
-            window.location.href = stripeLink + '?client_reference_id=pro&success_url=' + encodeURIComponent(returnUrl);
-        });
-    });
-
-    // Auto-trigger download after successful Stripe payment redirect
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('paid') === 'true' && urlParams.get('download')) {
-        const downloadUrl = decodeURIComponent(urlParams.get('download'));
-        // Small delay to let the page load, then trigger download
-        setTimeout(() => {
-            window.location.href = downloadUrl;
-            // Clean up the URL
-            window.history.replaceState({}, '', window.location.pathname + '#download');
-        }, 1500);
-    }
-
     // ── License API Configuration ────────────────────────────────
     // Local previews talk to the live API. Run the Flask backend locally
     // (flask --app app run --port 5001) and add ?localapi=1 to the URL to
@@ -115,6 +70,98 @@
     const API_BASE = useLocalApi
         ? 'http://localhost:5001'
         : 'https://api.nodecontrol.io';
+
+    // SINGLE SWITCH. Pro checkout stays off until Mike says it is live.
+    // true: show .pro-checkout, hide .pro-waitlist, and point the hero button at pricing.
+    // false: class "payment-pending" keeps the subscribe buttons hidden.
+    const PRO_CHECKOUT_LIVE = false;
+
+    function selectedProPlan() {
+        const checked = document.querySelector('input[name="proPlan"]:checked');
+        return checked ? checked.value : 'monthly';
+    }
+
+    function renderProPrice() {
+        const price = document.getElementById('proPriceDisplay');
+        const note = document.getElementById('proPriceNote');
+        if (!price || !note) return;
+        if (selectedProPlan() === 'annual') {
+            price.innerHTML = '£21.25<span>/mo ex VAT</span>';
+            note.textContent = '£21.25/mo billed annually, ex VAT. £255/year ex VAT. Save 15%.';
+        } else {
+            price.innerHTML = '£25<span>/month ex VAT</span>';
+            note.textContent = 'Or £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%).';
+        }
+    }
+
+    document.querySelectorAll('input[name="proPlan"]').forEach(function (input) {
+        input.addEventListener('change', renderProPrice);
+    });
+    renderProPrice();
+
+    if (PRO_CHECKOUT_LIVE) {
+        document.querySelectorAll('.pro-checkout').forEach(function (el) {
+            el.classList.remove('payment-pending');
+        });
+        document.querySelectorAll('.pro-waitlist').forEach(function (el) {
+            el.hidden = true;
+        });
+        const hero = document.querySelector('.hero-buttons a.btn-primary');
+        if (hero) {
+            hero.textContent = 'Subscribe to Pro';
+            hero.setAttribute('href', '#pricing');
+        }
+    }
+
+    async function startProCheckout(plan) {
+        const result = document.getElementById('proCheckoutResult');
+        try {
+            const res = await fetch(API_BASE + '/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan: plan })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.url) {
+                throw new Error('checkout failed');
+            }
+            window.location.href = data.url;
+        } catch (err) {
+            if (result) {
+                result.textContent = 'Checkout could not be started. Try again, or use the waitlist.';
+                result.className = 'redeem-result visible error';
+            }
+        }
+    }
+
+    document.querySelectorAll('[data-pro-checkout]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!PRO_CHECKOUT_LIVE) return;
+            startProCheckout(selectedProPlan());
+        });
+    });
+
+    const portalForm = document.getElementById('portalForm');
+    if (portalForm) {
+        portalForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('portalEmail').value.trim();
+            const box = document.getElementById('portalResult');
+            const fallback = 'If that address has a Professional subscription, we sent a link to manage it.';
+            try {
+                const res = await fetch(API_BASE + '/api/portal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                box.textContent = data.message || fallback;
+            } catch (err) {
+                box.textContent = fallback;
+            }
+            box.className = 'redeem-result visible success';
+        });
+    }
 
     // Helper: show result message in a container
     function showResult(container, message, type) {
