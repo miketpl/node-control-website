@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261017">
+    <link rel="stylesheet" href="css/style.css?v=20261017ai">
 </head>
 <body>
 
@@ -39,7 +39,7 @@
                 <li><a href="#watcher">Watcher</a></li>
                 <li><a href="#download">Download</a></li>
                 <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#ai">AI Ops</a></li>
+                <li><a href="#ai">AI</a></li>
                 <li><a href="docs/">Docs</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -53,12 +53,52 @@
             <img src="images/hero-banner.png?v=20260314d" alt="NodeControl Logo" class="hero-banner">
             <h1 class="hero-headline">Built by Network Engineers<br>for Network Engineers.</h1>
             <p class="hero-subtitle">Automate discovery, topology mapping, config backups, compliance, and changes across the network, from one desktop app. No agent on the devices. No cloud. Everything stays on the laptop.</p>
+            <p class="hero-ai-line">Professional includes your own AI. In Settings → AI / LLM you use the Anthropic API (Claude) with your key, or a local Ollama model. Node Control has no AI subscription and no markup.</p>
             <p class="hero-free-line">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
             <div class="hero-buttons">
                 <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
                 <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
             </div>
             <!-- TPL branding is part of the hero banner image -->
+        </div>
+    </section>
+
+    <!-- ═══════════════════ PRO AI ═══════════════════ -->
+    <section class="section section-alt" id="ai">
+        <div class="container">
+            <h2 class="section-title">Your AI, on <span class="cyan">Professional</span></h2>
+            <p class="section-subtitle">Bring your own account. Professional sends a task, a report, or the whole estate to the provider you chose. You opt in for that run. Free can show you the anonymised payload. It never sends it.</p>
+            <div class="ai-pro-grid">
+                <article class="ai-pro-card">
+                    <h3>Your Claude key, or local Ollama</h3>
+                    <p>In Settings → AI / LLM you bring your own Claude API key, or you point at a local Ollama model on your own machine. That is the list. Node Control does not sell an AI plan and does not add a markup.</p>
+                </article>
+                <article class="ai-pro-card">
+                    <h3>What you can hand it</h3>
+                    <p>Reports: inventory, end-of-life and lifecycle, and the Security Audit PSIRT checks. End-of-task summaries, including topologies, the compliance audit, and Find Device. The lifecycle replace or upgrade plan. The firewall analyser AI advisor. On the Monitor tab, Ask AI for one device.</p>
+                </article>
+                <article class="ai-pro-card">
+                    <h3>Written like an engineer</h3>
+                    <p>The prompts cast the model as a senior network operations analyst, a security analyst, or a principal network architect. The reply is meant to read like someone who has run a network, not a generic chatbot.</p>
+                </article>
+                <article class="ai-pro-card">
+                    <h3>Anonymised before it leaves</h3>
+                    <p>The anonymiser is on by default. It replaces IPv4 and IPv6 addresses, MAC addresses, serial numbers, and hostnames and FQDNs with tokens such as [IP_1] and [HOST_1] before anything leaves the machine, then puts the real values back locally. You read real names. The provider does not. An optional preview shows the exact payload before you approve it. Nothing is sent unless you opt in for that run. With a local Ollama model, nothing leaves your network at all.</p>
+                </article>
+                <article class="ai-pro-card">
+                    <h3>The whole estate, from 0.9.40</h3>
+                    <p>Professional can review the entire estate, or one site, the way an architect reviews a design: single points of failure, the addressing plan, design risks, and an overall architecture view. You can also chat with the AI about the whole network.</p>
+                </article>
+                <article class="ai-pro-card">
+                    <h3>Free is a preview</h3>
+                    <p>On Free you can open the anonymised payload and read what would have been sent. Nothing is ever sent. Configuring a provider, and sending, is the upgrade to Professional.</p>
+                </article>
+            </div>
+            <div class="ai-pro-actions">
+                <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
+                <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
+                <a href="docs/settings/ai-llm.html" class="btn btn-outline">How AI works on Professional</a>
+            </div>
         </div>
     </section>
 
@@ -121,8 +161,8 @@
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v2a6 6 0 0 0 3.47 5.44L6 20h12l-1.47-2.56A6 6 0 0 0 20 12v-2a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>
                     </div>
-                    <h3>AI agents <span class="ai-badge">Coming Soon</span></h3>
-                    <p>Nine specialist agents, still in development. They answer questions about the network in plain English.</p>
+                    <h3>Your own AI <span class="tier-badge">Pro</span></h3>
+                    <p>Bring your own Claude API key, or use a local Ollama model. Reports, task summaries, the firewall analyser, and an architect review of the estate. The anonymiser runs first.</p>
                 </div>
 
             </div>
@@ -383,38 +423,17 @@
             <!-- AI Edition -->
             <div class="download-tier">
                 <div class="download-tier-header">
-                    <h3 class="download-tier-title"><span class="orange">AI</span> Edition <span class="ai-badge">Coming Soon</span></h3>
-                    <p class="download-tier-desc">Everything in Professional, plus 9 specialist agents, still in development. Natural language chat, what-if analysis, and config generation.</p>
-                    <span class="download-tier-price download-tier-price-orange">&pound;49/month</span>
+                    <h3 class="download-tier-title"><span class="orange">AI</span> edition <span class="ai-badge">Coming to customers soon</span></h3>
+                    <p class="download-tier-desc">A separate product from Professional. Nine specialist agents, on infrastructure you host, so the AI runs entirely inside your network. Not yet available to buy, and not a download from this page.</p>
                 </div>
                 <!--
-                    PAYMENT NOT LIVE.
-                    Same pattern as Professional: anchors stay, class "payment-pending" hides them.
-                    To re-enable: remove "payment-pending", remove the "Coming soon" span,
-                    point the href at the current installer (the filename still says 0.9.17),
-                    and replace STRIPE_AI_LINK with a real Stripe Payment Link.
+                    The AI edition is not for sale. Do not add a price, a buy button,
+                    or a public download here. The anchors stay so the existing ids
+                    remain, and class "payment-pending" keeps them hidden.
                 -->
-                <div class="download-cards">
-                    <div class="download-card download-card-ai">
-                        <div class="download-icon">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                        </div>
-                        <h3>macOS</h3>
-                        <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/Node.Control-ai-0.9.17.dmg" class="btn btn-primary btn-primary-orange btn-download payment-pending" id="dl-ai-mac" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for macOS</a>
-                        <span class="btn btn-outline btn-outline-orange btn-download btn-disabled" aria-disabled="true">In development</span>
-                        <!-- TODO: Confirm the minimum macOS version with the developer. The install doc says macOS 11 Big Sur or later, Intel and Apple Silicon. Mike is not sure, so this card does not state a version. Do not change the install doc until that is confirmed. -->
-                        <span class="download-meta">.dmg &mdash; macOS (Apple silicon and Intel)</span>
-                    </div>
-                    <div class="download-card download-card-ai">
-                        <div class="download-icon">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-                        </div>
-                        <h3>Windows</h3>
-                        <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/NodeControl-ai-0.9.17-Setup.exe" class="btn btn-primary btn-primary-orange btn-download payment-pending" id="dl-ai-win" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for Windows</a>
-                        <span class="btn btn-outline btn-outline-orange btn-download btn-disabled" aria-disabled="true">In development</span>
-                        <span class="download-meta">.exe &mdash; Windows 10+</span>
-                    </div>
-                </div>
+                <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/Node.Control-ai-0.9.17.dmg" class="btn btn-primary btn-primary-orange btn-download payment-pending" id="dl-ai-mac" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for macOS</a>
+                <a href="https://github.com/miketpl/node-control-releases-ai/releases/latest/download/NodeControl-ai-0.9.17-Setup.exe" class="btn btn-primary btn-primary-orange btn-download payment-pending" id="dl-ai-win" data-requires-license="true" data-stripe-link="STRIPE_AI_LINK">Download for Windows</a>
+                <p class="download-tier-desc"><a href="#ai-edition" class="btn btn-outline btn-outline-orange">Coming to customers soon</a></p>
             </div>
 
         </div>
@@ -461,6 +480,9 @@
                         <li>API Explorer (Meraki, Catalyst Center, PAN-OS, Cisco ISE)</li>
                         <li>Automated backups &amp; scheduling</li>
                         <li>Device library sync</li>
+                        <li>Your own AI: bring your own Claude API key, or a local Ollama model. No AI subscription</li>
+                        <li>Anonymiser on by default. You opt in per run</li>
+                        <li>Architect review of the estate, and network-wide chat, from 0.9.40</li>
                         <li>Priority email support</li>
                     </ul>
                     <!--
@@ -585,177 +607,43 @@
                                 <td>No</td>
                                 <td>Yes</td>
                             </tr>
+                            <tr>
+                                <th>AI provider</th>
+                                <td>Preview only. You can read the anonymised payload. Nothing is sent</td>
+                                <td>Anthropic API (Claude) with your own key, or a local Ollama model. No AI subscription</td>
+                            </tr>
+                            <tr>
+                                <th>Anonymiser</th>
+                                <td>You see the tokens. Nothing leaves the machine</td>
+                                <td>On by default. IPs, MACs, serials, and hostnames become tokens such as [IP_1] and [HOST_1], then the real values are restored locally</td>
+                            </tr>
+                            <tr>
+                                <th>Architect review and network chat</th>
+                                <td>No</td>
+                                <td>Yes, from 0.9.40. The whole estate or one site</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- AI Operations tiers -->
-            <div class="pricing-tier-label pricing-tier-ai"><span class="orange">AI</span> Operations <span class="ai-badge">Coming Soon</span></div>
-            <div class="pricing-grid pricing-grid-2">
-
-                <div class="pricing-card pricing-card-ai">
-                    <div class="pricing-header">
-                        <h3>AI Pro</h3>
-                        <div class="pricing-price pricing-price-orange">&pound;49<span>/month</span></div>
-                        <p>AI-powered network operations</p>
-                    </div>
-                    <ul class="pricing-features pricing-features-ai">
-                        <li>Requires Professional or higher</li>
-                        <li>Natural language chat interface</li>
-                        <li>Cloud LLM (Anthropic Claude)</li>
-                        <li>9 specialist agents, in development</li>
-                        <li>What-if analysis &amp; risk rating</li>
-                        <li>Config generation with rollback</li>
-                    </ul>
-                    <!-- Download AI Edition removed until payment is live. There was no data-stripe-link on this control. To offer a download again, add an anchor with data-stripe-link and remove the disabled state. -->
-                    <span class="btn btn-outline btn-outline-orange btn-disabled" aria-disabled="true">In development</span>
-                </div>
-
-                <div class="pricing-card pricing-card-ai pricing-featured-ai">
-                    <div class="pricing-badge pricing-badge-ai">Full Suite</div>
-                    <div class="pricing-header">
-                        <h3>AI Enterprise</h3>
-                        <div class="pricing-price pricing-price-orange">Custom</div>
-                        <p>Self-hosted AI, total control</p>
-                    </div>
-                    <ul class="pricing-features pricing-features-ai">
-                        <li>Everything in AI Pro</li>
-                        <li>All 9 specialist agents, in development</li>
-                        <li>Self-hosted LLM (NIM, vLLM, Ollama)</li>
-                        <li>Air-gapped deployment option</li>
-                        <li>Custom agent development</li>
-                        <li>Dedicated AI engineering support</li>
-                    </ul>
-                    <a href="#contact" class="btn btn-primary btn-primary-orange">Contact Sales</a>
-                </div>
-
-            </div>
         </div>
     </section>
 
-    <!-- ═══════════════════ AI OPERATIONS ═══════════════════ -->
-    <section class="section ai-section" id="ai">
+    <!-- ═══════════════════ AI EDITION ═══════════════════ -->
+    <section class="section ai-section" id="ai-edition">
         <div class="container">
             <div class="ai-header">
                 <h2 class="ai-title">
-                    <span class="ai-title-light">AI-Powered</span> <span class="orange ai-title-bold">Operations</span>
+                    <span class="ai-title-light">Node Control</span> <span class="orange ai-title-bold">AI edition</span>
                 </h2>
-                <a href="#contact" class="ai-coming-soon">In development &mdash; Coming Soon</a>
-                <p class="section-subtitle">Nine specialist agents for the network. They are still in development. For a demo, use the contact section.</p>
+                <span class="ai-edition-badge">Coming to customers soon</span>
+                <p class="section-subtitle">A separate product from Professional. Nine specialist AI agents run on infrastructure you host, so the AI stays entirely inside your network. An NVIDIA DGX Spark is one example. Another on-prem GPU server is fine. It is not yet available to buy.</p>
             </div>
-
-            <div class="ai-agents-grid">
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    </div>
-                    <h3>Network Monitor</h3>
-                    <p>Real-time health checks, interface status, and alert prioritisation across your entire fleet.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    </div>
-                    <h3>Traffic Analysis</h3>
-                    <p>Bandwidth utilisation, bottleneck detection, and traffic pattern analysis with natural language queries.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    </div>
-                    <h3>Route Intelligence</h3>
-                    <p>BGP, OSPF, and static route analysis. Path tracing, convergence checks, and routing anomaly detection.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
-                    </div>
-                    <h3>Config Analysis</h3>
-                    <p>Compliance auditing, configuration drift detection, and security posture assessment &mdash; automatically.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                    </div>
-                    <h3>Change Advisor</h3>
-                    <p>What-if analysis with risk ratings before you push. Safe config generation with automatic rollback commands baked in.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
-                    <h3>Alert Correlation</h3>
-                    <p>Intelligent alert grouping, noise reduction, and priority scoring. Find the signal in the storm.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
-                    </div>
-                    <h3>Topology Agent</h3>
-                    <p>Blast radius analysis, single points of failure identification, and intelligent path recommendation.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
-                    <h3>Firewall Agent</h3>
-                    <p>Cross-platform security policy auditing, NAT rule analysis, and policy optimisation. Ask it to find shadowed or redundant rules across any vendor.</p>
-                </div>
-
-                <div class="ai-agent-card">
-                    <div class="ai-agent-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <h3>Log Analysis</h3>
-                    <p>Pattern detection across syslog, event correlation, and AI-driven root cause analysis. Stop scrolling through logs manually.</p>
-                </div>
-
+            <div class="ai-edition-copy">
+                <p>Professional is the product you can get today. Its AI is your Anthropic key or a local Ollama model, on the laptop. The AI edition is the nine-agent system. It does not share a price, a buy button, or a download with Professional.</p>
+                <p><a href="#contact" class="btn btn-outline btn-outline-orange">Register interest</a></p>
             </div>
-
-            <div class="ai-features-row">
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    </div>
-                    <div>
-                        <h4>Natural Language Chat</h4>
-                        <p>Ask your network questions like you'd ask a senior engineer. The AI orchestrator routes your query to the right specialist agent automatically.</p>
-                    </div>
-                </div>
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon icon-orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
-                    </div>
-                    <div>
-                        <h4>Flexible LLM Backend</h4>
-                        <p>Run on Anthropic Claude in the cloud or bring your own models &mdash; NVIDIA NIM, vLLM, Ollama. Your data, your infrastructure, your choice.</p>
-                    </div>
-                </div>
-                <div class="ai-highlight">
-                    <div class="ai-highlight-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
-                    </div>
-                    <div>
-                        <h4>Multi-Vendor Intelligence</h4>
-                        <p>Cisco, Arista, Juniper, Palo Alto, Fortinet, and more &mdash; the agents speak every dialect your network runs, regardless of vendor.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI Screenshots placeholder -->
-            <div class="ai-screenshots-placeholder" id="ai-screenshots">
-                <p class="ai-screenshots-note">AI interface screenshots are not on the site yet. <a href="#contact">Ask for a demo</a>.</p>
-            </div>
-
         </div>
     </section>
 
@@ -839,7 +727,8 @@
                     <a href="#watcher">Watcher of The WAN</a>
                     <a href="#download">Download</a>
                     <a href="#pricing">Pricing</a>
-                    <a href="#ai">AI Operations</a>
+                    <a href="#ai">AI on Professional</a>
+                    <a href="#ai-edition">AI edition</a>
                 </div>
                 <div class="footer-links">
                     <h4>Resources</h4>

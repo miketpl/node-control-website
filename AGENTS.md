@@ -33,8 +33,14 @@ section, and the form.
   is clear what Free Edition includes.
 - **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
   on the free section. Do not make the page all about Free.
-- **AI Operations is in development.** There are 9 agents. It stays labelled
-  Coming Soon, and it stays after Pricing.
+- **Professional includes bring-your-own AI.** Anthropic Claude with the
+  user's own key, or a local Ollama model. It is a headline on the landing
+  page. There is no Node Control AI subscription and no markup.
+- **The AI edition is a separate product.** Nine specialist agents on
+  infrastructure you host. It works, and it is not on sale. No price, no
+  buy button, no download. The badge is "Coming to customers soon".
+  Register interest uses the existing contact section. Do not call it
+  "in development" or "on the roadmap".
 - While payment is not live, Pro calls to action go to the Pro waitlist or
   the contact section. Do not show a live buy button.
 

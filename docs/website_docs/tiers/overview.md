@@ -1,15 +1,15 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate. The AI edition adds the dashboard and the backend assistant on top of Pro.
+Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes your own AI: the Anthropic API (Claude) with your key, or a local Ollama model. See [AI on Professional](../settings/ai-llm.md).
 
-Feature-level AI (summaries and the lifecycle briefing) is on Pro as well, using a provider you configure. The Firewall Analyser **AI advisory** checkbox is the AI edition. See [AI provider](../settings/ai.md).
+The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
 ## Quick comparison
 
 | Feature | Free | Pro | AI |
 |---|:---:|:---:|:---:|
 | Device library | 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
-| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again | Paid licence | Paid licence |
+| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again | Paid licence | Not yet available to buy |
 | FREE VERSION badge in the status bar | ✓ | — | — |
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
 | **Sidebar** | | | |
@@ -86,7 +86,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
-- Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that. The Firewall Analyser AI advisory checkbox is the AI edition
+- Your own AI. Settings → AI / LLM is the Anthropic API (Claude) with your key, or a local Ollama model. No Node Control AI subscription and no markup. The anonymiser is on by default. You opt in per run. From 0.9.40, an architect review of the whole estate or one site, and chat about the whole network. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 
 ### How to get it
@@ -97,23 +97,27 @@ Pro is licensed per user. Each licensed email can be used on as many machines as
 
 ## AI edition
 
-The AI edition is Pro, plus the parts that stay on this tier only:
+The AI edition is not Professional with a switch turned on. It is nine specialist AI agents running on infrastructure you host. An NVIDIA DGX Spark is one example. Another on-prem GPU server is fine. The AI runs entirely inside your network.
+
+It is a working product. It is not yet available to buy. There is no price and no download on the site.
+
+These parts stay on this edition, not on Pro:
 
 - the AI dashboard and chat
 - the backend assistant
 - the Update tab
 - **Vuln Plan**, a button on the Update tab, next to **Check PSIRT**. It works from that tab's PSIRT results
 
-The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. Pro has no Update tab and no Vuln Plan.
+The desktop talks to that backend over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. Pro has no Update tab and no Vuln Plan.
 
 ### How to get it
 
-Contact [info@nodecontrol.io](mailto:info@nodecontrol.io).
+Not yet available to buy. To register interest, email [info@nodecontrol.io](mailto:info@nodecontrol.io).
 
 ## Upgrading
 
 - **Free → Pro**: see [Upgrading to Pro](upgrading.md)
-- **Pro → AI**: contact [info@nodecontrol.io](mailto:info@nodecontrol.io)
+- **Pro → AI**: the AI edition is not yet available to buy. Register interest at [info@nodecontrol.io](mailto:info@nodecontrol.io)
 
 The library and the credentials carry forward. You do not re-enter devices.
 
@@ -127,5 +131,5 @@ Pro and Free install side by side. They are separate apps, with separate Gatekee
 |---|---|
 | An engineer with up to 25 devices who wants an L2 map, Find Device, config backup, and an inventory | Free |
 | Managing more than 25 devices, or you need L3/WAN maps, Discover, compliance, or pushes | Pro |
-| You want the dashboard and the backend assistant as well as Pro | AI edition |
+| You want nine specialist agents on infrastructure you host | AI edition, when it is on sale. It is not available to buy yet |
 | Trying the tool before you buy | Free, then upgrade |

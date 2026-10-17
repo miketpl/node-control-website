@@ -1,8 +1,8 @@
 # AI provider
 
-Feature-level AI runs on **Pro** and the **AI** edition, on a provider you configure. The AI dashboard, the chat tabs, and the backend assistant are the **AI** edition only. That backend runs on infrastructure you host. Free does not show an AI page.
+Feature-level AI runs on **Pro**, on a provider you configure. See [AI on Professional](ai-llm.md). Free opens the payload dialog and sends nothing.
 
-The Firewall Analyser **AI advisory** checkbox is the AI edition only.
+The Node Control AI edition is a separate product: nine specialist agents on infrastructure you host. It is not yet available to buy. It is not the provider setting on this page.
 
 On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.
 
@@ -47,7 +47,7 @@ The same provider is used for:
 - the lifecycle assessment narrative, and the emailed AI briefing (off by default)
 - Monitor, on Pro: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review
 
-The Firewall Analyser **AI advisory** checkbox is the AI edition.
+The firewall analyser AI advisor uses the same provider. Tick it for that run.
 
 **Vuln Plan** is the AI edition only. It is a button on the Update tab, next to **Check PSIRT**, and it works from that tab's PSIRT results. Pro has neither the Update tab nor Vuln Plan.
 

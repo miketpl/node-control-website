@@ -115,6 +115,7 @@
       <a href="../settings/scripts.html" class="docs-nav-link">Custom Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
       <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
+      <a href="../settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -148,7 +149,7 @@
 <p>On <strong>Pro</strong> and the <strong>AI</strong> edition. Free does not show this page. This is a PAN-OS tool.</p>
 </blockquote>
 <p>There is no standards picker and no list of named standards.</p>
-<p>The tab has <strong>Load Config File...</strong>, <strong>Edit Standards...</strong>, and <strong>Analyse</strong>. The <strong>AI advisory</strong> checkbox is on the AI edition only.</p>
+<p>The tab has <strong>Load Config File...</strong>, <strong>Edit Standards...</strong>, and <strong>Analyse</strong>. The <strong>AI advisory</strong> checkbox uses the provider in Settings → AI / LLM. On Pro you opt in for that run. See <a href="../settings/ai-llm.html">AI on Professional</a>.</p>
 <p>Inner tabs: <strong>Rulebase Analyser</strong>, <strong>Compare</strong>, <strong>Proposed Rule Tester</strong>.</p>
 <p><strong>Edit Standards...</strong> opens <strong>Firewall Rulebase Standards</strong>: one YAML editor, <strong>Reset to Default</strong>, Save / Cancel. The fields are:</p>
 <ul>
@@ -184,7 +185,7 @@
 <h2 id="proposed-rule-tester">Proposed Rule Tester</h2>
 <p>The tester is where you try a rule before you commit it anywhere. Object names autocomplete on the fields. The assessment uses the screen, rather than a small pane.</p>
 <h2 id="ai-advisory">AI advisory</h2>
-<p>The <strong>AI advisory</strong> checkbox is the AI edition. It is off unless you tick it. The deterministic findings do not need it.</p>
+<p>The <strong>AI advisory</strong> checkbox is off unless you tick it. On Pro it uses your Anthropic key or local Ollama model. The deterministic findings do not need it.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../vendors/palo-alto.html">Palo Alto</a>
