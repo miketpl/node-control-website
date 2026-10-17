@@ -26,6 +26,7 @@ Safe Mode hides these from the dropdown:
 
 - **Config Push**
 - **Config Push Script**
+- a [custom script](scripts.md) (`Script: <name>`)
 - **Config from File**
 - **Config Compliance Remediate**
 - **Save Config**

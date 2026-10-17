@@ -4,8 +4,8 @@
     <script>document.documentElement.classList.add("docs-js")</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scripts — NodeControl Docs</title>
-    <meta name="description" content="Scripts — NodeControl documentation">
+    <title>Custom Scripts — NodeControl Docs</title>
+    <meta name="description" content="Custom Scripts — register a Python file and run it as an Engineer task. Pro and the AI edition.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,7 +112,7 @@
       <a href="overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="custom-commands.html" class="docs-nav-link">Custom Commands</a>
-      <a href="scripts.html" class="docs-nav-link active">Scripts</a>
+      <a href="scripts.html" class="docs-nav-link active">Custom Scripts</a>
       <a href="safe-mode.html" class="docs-nav-link">Safe Mode</a>
       <a href="ai.html" class="docs-nav-link">AI provider</a>
     </div>
@@ -141,28 +141,102 @@
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Scripts
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Custom Scripts
                 </div>
-                <h1 id="scripts">Scripts</h1>
+                <h1 id="custom-scripts">Custom Scripts</h1>
 <blockquote>
-<p>Available on <strong>Pro</strong> and the <strong>AI</strong> edition.</p>
+<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free, <strong>Settings → Scripts</strong> is there and a script can be registered, but every <code>Script: &lt;name&gt;</code> task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>, and <strong>Run</strong> refuses. Safe Mode hides these tasks on every tier.</p>
 </blockquote>
-<p>A script registered under <strong>Settings → Scripts</strong> runs like a built-in task. It shows in the Engineer task dropdown as <code>Script: &lt;name&gt;</code>. It receives the devices you ticked in the library, and it prompts for a credential profile the same way the built-in tasks do.</p>
-<p><strong>Config Push Script</strong> is separate. It appears in the task dropdown only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. Safe Mode hides Config Push Script.</p>
-<p>This is not the <a href="custom-commands.html">command catalog</a>. The catalog picks which show command a built-in capability runs. A script is your own Python program.</p>
-<h2 id="credentials">Credentials</h2>
-<p>Credentials are handed to the script through its environment. They are not placed on the command line, and they are not written to disk.</p>
-<p>Any Python script gets those credentials, including one that already has a username and password written into it. Before the script runs, netmiko and paramiko logins are redirected to try your chosen credential sets in order. The script&#x27;s own login is kept only as a last resort. The log shows which account connected.</p>
-<h2 id="output">Output</h2>
-<p>The script is told the app&#x27;s reports folder. Its output appears there. Lines reach the log as they are printed, not in one block at the end.</p>
-<h2 id="example-upstreamportchannelpy">Example: upstream_portchannel.py</h2>
-<p>The example script finds each ticked switch&#x27;s Layer 2 uplink from the STP root port. It reports whether that uplink is a port-channel, and it lists the members, the channel-group mode, and the allowed VLANs. It writes one workbook per run, in the layout Config Push reads.</p>
-<p>It is read-only. Only show commands are sent. It does not log in to the upstream switch.</p>
+<p>A custom script is a Python file I run as an Engineer task. It is not the <a href="custom-commands.html">command catalog</a>. The catalog chooses which show command a built-in task sends. A script is the program itself.</p>
+<p><strong>Config Push Script</strong> is a different entry. It appears in the task dropdown only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. Safe Mode hides that one too.</p>
+<h2 id="register-a-script">Register a script</h2>
+<p>Open <strong>Settings → Scripts</strong> and click <strong>Add Script</strong>. Give it a name and the path to a <code>.py</code> file. <strong>Remove</strong> drops one.</p>
+<p><strong>Settings → Paths</strong> holds the Python interpreter the scripts run under. The app&#x27;s own interpreter is the default.</p>
+<h2 id="run-it">Run it</h2>
+<p>Each script appears in the Engineer task dropdown as <code>Script: &lt;name&gt;</code>. Tick the devices, pick that task, click <strong>Run</strong>, and choose a credential profile in <strong>Select Credentials</strong>. It then runs like any built-in task.</p>
+<h2 id="what-the-script-receives">What the script receives</h2>
+<p>The script gets its inputs through the environment only. I do not put them on the command line, and I do not write them to disk.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NC_TASK</code></td>
+<td>The script&#x27;s registered name</td>
+</tr>
+<tr>
+<td><code>NC_TARGETS</code></td>
+<td>The ticked devices, comma-separated IPs</td>
+</tr>
+<tr>
+<td><code>NC_TARGETS_JSON</code></td>
+<td>The same devices as a list of <code>{ip, hostname, device_type}</code></td>
+</tr>
+<tr>
+<td><code>NC_SWITCH</code></td>
+<td>The first target&#x27;s IP, for a script that talks to one device</td>
+</tr>
+<tr>
+<td><code>NC_DEVICE_TYPE</code></td>
+<td>The first target&#x27;s device type</td>
+</tr>
+<tr>
+<td><code>NC_USER</code>, <code>NC_PASS</code>, <code>NC_SECRET</code></td>
+<td>The first credential set chosen</td>
+</tr>
+<tr>
+<td><code>NC_CREDS_JSON</code></td>
+<td>Every chosen set, in the order the app would try them</td>
+</tr>
+<tr>
+<td><code>NC_OUTPUT_DIR</code></td>
+<td>The app&#x27;s reports folder. Files written there show under Home&#x27;s recent reports</td>
+</tr>
+</tbody>
+</table>
+<p>The script then runs as <code>__main__</code>, the same as if it had been started by hand: same arguments, same working directory, under the interpreter from <strong>Settings → Paths</strong>. Output streams to the app log line by line.</p>
+<h2 id="a-script-that-already-logs-in-itself">A script that already logs in itself</h2>
+<p>A script written for something else, with its own username and password hard-coded and its own device list, still runs with the credentials chosen in <strong>Select Credentials</strong>. Before the script starts, the launcher patches netmiko&#x27;s <code>ConnectHandler</code> and paramiko&#x27;s <code>SSHClient.connect</code>. Every login tries the chosen credential sets in order. The script&#x27;s own login is kept only as a last resort. The log shows which account connected.</p>
+<h2 id="do-not-print-the-credentials">Do not print the credentials</h2>
+<p>The credentials live only in the environment. Do not print <code>NC_PASS</code>, <code>NC_SECRET</code>, or <code>NC_CREDS_JSON</code> in the script&#x27;s output. The log would then hold them.</p>
+<h2 id="the-example-that-ships-upstreamportchannelpy">The example that ships: upstream_portchannel.py</h2>
+<p>I ship an example script, <code>upstream_portchannel.py</code>. It finds each ticked switch&#x27;s Layer 2 uplink from the STP root port and reports whether that uplink is a port-channel, plus its members, the channel-group mode, and the allowed VLANs. It writes one workbook per run, in the layout <a href="../tasks/config-push.html">Config Push</a> reads.</p>
+<p>It is read-only. It sends only show commands. It never logs in to the upstream switch.</p>
+<h2 id="an-illustrative-example">An illustrative example</h2>
+<p>This is an illustration, not the script that ships. It reads <code>NC_TARGETS_JSON</code>, <code>NC_USER</code>, and <code>NC_PASS</code>, runs one show command with netmiko, and writes the text under <code>NC_OUTPUT_DIR</code>. The launcher still tries the credential sets from <strong>Select Credentials</strong> first, and keeps whatever this script passes only as a last resort.</p>
+<pre><code>import json
+import os
+from pathlib import Path
+
+from netmiko import ConnectHandler
+
+targets = json.loads(os.environ[&quot;NC_TARGETS_JSON&quot;])
+device = targets[0]
+
+conn = ConnectHandler(
+    device_type=device[&quot;device_type&quot;],
+    host=device[&quot;ip&quot;],
+    username=os.environ[&quot;NC_USER&quot;],
+    password=os.environ[&quot;NC_PASS&quot;],
+)
+text = conn.send_command(&quot;show version&quot;)
+conn.disconnect()
+
+out = Path(os.environ[&quot;NC_OUTPUT_DIR&quot;]) / &quot;show-version.txt&quot;
+out.write_text(text)
+print(f&quot;Wrote {out}&quot;)
+</code></pre>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="custom-commands.html">Custom command catalogs</a>
 </li>
 <li><a href="../tasks/config-push.html">Config Push</a>
+</li>
+<li><a href="safe-mode.html">Safe Mode</a>
 </li>
 <li><a href="../getting-started/credentials.html">Setting up credentials</a>
 </li>

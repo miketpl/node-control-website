@@ -41,7 +41,7 @@ The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in
 18. **Find Device**
 19. **Change ISE Password**
 
-**Config Push Script** appears only when **Settings → Paths → Config Push Script** points at an existing file. A configured custom script appears as `Script: <name>`.
+**Config Push Script** appears only when **Settings → Paths → Config Push Script** points at an existing file. A configured [custom script](../settings/scripts.md) appears as `Script: <name>`. On Free that task is greyed, with the tooltip **Upgrade to Pro to unlock this feature**, and **Run** refuses. Safe Mode hides it on every tier.
 
 On Free only **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device** are enabled. The rest are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
 
