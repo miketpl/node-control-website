@@ -150,11 +150,13 @@
 <p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.</p>
 <p>The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
-<p>Set one of:</p>
+<p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Supported:</p>
 <ul>
-<li>an Anthropic API key
+<li>Anthropic (Claude)
 </li>
-<li>an Ollama server
+<li>OpenAI
+</li>
+<li>a local Ollama model
 </li>
 </ul>
 <p>Identity-linked keys use the <strong>Workspace ID</strong> field. The connection test names the real failure: a rejected key, a retired model, a rate limit, a proxy problem, or a timeout. It does not blame the key for all of them.</p>

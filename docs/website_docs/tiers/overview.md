@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes your own AI: the Anthropic API (Claude) with your key, or a local Ollama model. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Anthropic (Claude), OpenAI, and a local Ollama model are supported. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -86,7 +86,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
-- Your own AI. Settings → AI / LLM is the Anthropic API (Claude) with your key, or a local Ollama model. No Node Control AI subscription and no markup. The anonymiser is on by default. You opt in per run. From 0.9.40, an architect review of the whole estate or one site, and chat about the whole network. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
+- Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. Anthropic (Claude), OpenAI, and a local Ollama model are supported. The anonymiser is on by default. You opt in per run. From 0.9.40, an architect review of the whole estate or one site, and chat about the whole network. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 
 ### How to get it

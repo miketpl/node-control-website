@@ -27,7 +27,7 @@ Settings is organised by section. Pick the one you need.
 | **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
 | **Scripts** | [Custom scripts](scripts.md) that run as tasks. Pro and the AI edition. On Free the page is there, and the task is greyed |
-| **AI / LLM** | Anthropic API key or an Ollama server, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
+| **AI / LLM** | Bring your own AI provider, with your own API key. Anthropic (Claude), OpenAI, and local Ollama, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
 | **Advanced** | Crash log location, telemetry opt-in, debug logging |
 
 ## Where settings are stored

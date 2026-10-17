@@ -33,9 +33,11 @@ section, and the form.
   is clear what Free Edition includes.
 - **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
   on the free section. Do not make the page all about Free.
-- **Professional includes bring-your-own AI.** Anthropic Claude with the
-  user's own key, or a local Ollama model. It is a headline on the landing
-  page. There is no Node Control AI subscription and no markup.
+- **Professional includes bring-your-own AI.** Lead with "Bring your own
+  AI provider". It uses the user's own API key. There is no Node Control
+  AI subscription and no markup. Anthropic (Claude), OpenAI, and a local
+  Ollama model are supported. Do not make Claude the headline, and do not
+  call any of those three "coming soon".
 - **The AI edition is a separate product.** Nine specialist agents on
   infrastructure you host. It works, and it is not on sale. No price, no
   buy button, no download. The badge is "Coming to customers soon".

@@ -10,10 +10,11 @@ The maps, the Inventory report, and L2 Topology Builder all work with no provide
 
 ## Settings → AI / LLM
 
-Set one of:
+Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Supported:
 
-- an Anthropic API key
-- an Ollama server
+- Anthropic (Claude)
+- OpenAI
+- a local Ollama model
 
 Identity-linked keys use the **Workspace ID** field. The connection test names the real failure: a rejected key, a retired model, a rate limit, a proxy problem, or a timeout. It does not blame the key for all of them.
 

@@ -1,15 +1,14 @@
 # AI on Professional
 
-Professional is the product you get today. The AI in Professional is your own provider. Node Control has no AI subscription and no markup.
+Bring your own AI provider. Professional uses your own API key. There is no AI subscription and no markup.
 
 ## Settings → AI / LLM
 
-Pick one:
+Supported:
 
-- the Anthropic API (Claude), with your own API key
-- a local Ollama model running on your own machine
-
-That is the list. Do not expect another provider.
+- Anthropic (Claude), with your own API key
+- OpenAI, with your own API key
+- a local Ollama model on your own machine
 
 ## What can go to the AI
 
