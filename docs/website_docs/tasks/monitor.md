@@ -1,14 +1,14 @@
-# Monitor tab
+# Monitor
 
-> Available on **Pro** and **AI** tiers only.
+> **Monitor** is a sidebar page on **Pro** and the **AI** edition. Free does not show it.
 
 The Monitor tab is a continuous-polling dashboard for one or more devices — it samples interface counters, CPU, memory, and environmental data on a configurable interval and renders graphs and threshold alerts.
 
 Think of it as Node Control's lightweight equivalent of an SNMP poller, but using SSH instead of SNMP.
 
-## Open the Monitor tab
+## Open Monitor
 
-- Top-level **Monitor** tab (alongside Engineer, Discovery, Tasks, Reports)
+- **Monitor** in the left sidebar. It is not in the Engineer task list.
 
 ## Adding devices to monitor
 
@@ -37,6 +37,10 @@ Each monitored device gets a tile showing:
 - **Alerts** badge (red number = how many threshold breaches active)
 
 Click a tile to expand it to a full-screen detailed view.
+
+## Which interfaces are counted
+
+Interface tables list physical ports and port-channels only. VLAN interfaces, tunnels, and loopbacks are excluded. Their counters repeat traffic already counted on the ports underneath, and that made every utilisation figure suspect. Threshold alerts use the same rule, so a "link at 90%" alert cannot point at an SVI.
 
 ## Threshold alerts
 
@@ -111,6 +115,12 @@ Vendor-specific gaps are documented in [Vendors](../vendors/overview.md).
 | Tile shows "Disconnected" intermittently | SSH idle timeout on device | Lower the keepalive interval (Settings → Monitor → SSH keepalive) |
 | All tiles slow to update | Network latency or polling interval too aggressive | Increase interval to 1m or longer |
 | CPU graph showing 0% on devices that are clearly loaded | Vendor's CPU command output not parsed correctly | Open a support ticket with the device's `show processes cpu` output |
+
+## AI on Monitor
+
+On Pro and the AI edition, Monitor can use the provider in [Settings → AI / LLM](../settings/ai.md): alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review. Nothing is sent unless you ask. Free does not send.
+
+This chat is not the AI-edition dashboard. That dashboard stays on the AI edition.
 
 ## Next steps
 

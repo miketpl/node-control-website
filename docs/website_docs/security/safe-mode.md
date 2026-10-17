@@ -1,6 +1,6 @@
 # Safe Mode (security view)
 
-See [Settings → Safe Mode](../settings/safe-mode.md) for configuration and behaviour details. This page covers Safe Mode from a security and compliance perspective.
+See [Safe Mode](../settings/safe-mode.md) for how the mode is chosen and what it blocks. This page covers Safe Mode from a security and compliance perspective.
 
 ## What Safe Mode protects against
 
@@ -13,24 +13,22 @@ See [Settings → Safe Mode](../settings/safe-mode.md) for configuration and beh
 
 ## What Safe Mode does NOT protect against
 
-- **Anything done in the [SSH terminal](../tasks/ssh-terminal.md)** — Safe Mode is for automated commands, not human typing
+- **Read-only SSH** — a command that is not read-only is blocked in an SSH session while Safe Mode is on. Read-only commands still run. See [SSH Terminal](../tasks/ssh-terminal.md)
 - **Read-only data exfiltration** — `show running-config` is allowed under Safe Mode; if a config has secrets in it, they're visible
 - **Privileged credentials being used elsewhere** — Node Control reads from your keychain; if those creds are also used by other tools, those tools aren't constrained
 - **Network-level threats** (MITM, etc.) — SSH host key checking is the relevant control there
 
 ## Default state
 
-New installations: Safe Mode **ON**.
+Safe Mode is session-wide. It is not a per-tab setting.
 
-This is enforced as a sensible default — the cost of being too safe is occasionally needing to toggle it off for a port action, vs. the cost of being too permissive (silent config changes).
+The **Select Mode** dialog at startup uses the default in **Settings → General → Startup Mode**. Mid-session, the **Edit** menu or the mode badge switches it. In Safe Mode, **HTTPS** is hidden, the task list is trimmed, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked.
 
 ## Compliance use cases
 
 For organisations that need to demonstrate "we have technical controls preventing accidental change":
 
-- Safe Mode ON state is logged at every app launch
-- Toggle events (ON → OFF and OFF → ON) are recorded with timestamp
-- Per-tab override settings are exportable for audit review
+- The mode is logged when it changes
 - Custom blocklist patterns provide explicit "we always block X command" evidence
 
 The audit log can be shared with auditors as evidence — see [Audit log](audit-log.md) for format and contents.
@@ -51,12 +49,13 @@ A best-practice flow: turn off → do the one action → turn back on immediatel
 
 For high-compliance environments:
 
-- Set Safe Mode ON globally
-- Use **per-tab overrides** to keep it ON for Firewalls, WAN, and Core tabs even when off elsewhere
+- Set **Startup Mode** to Safe Mode
 - Add specific commands to the **blocklist** that should NEVER run (e.g., `reload`, `format`)
 - Periodically review the audit log for unexpected toggles
 
-For deployment to multiple machines, [export Settings](../settings/overview.md#exporting--importing-settings) so the same Safe Mode configuration applies fleet-wide.
+For deployment to multiple machines, copy `settings.json`. See [Sharing a settings file](../settings/overview.md#sharing-a-settings-file).
+
+The Engineer dropdown in Safe Mode, and the tasks it hides, are listed on [Safe Mode](../settings/safe-mode.md).
 
 ## Integration with SSH credential separation
 
@@ -71,6 +70,6 @@ Defence in depth: Safe Mode (app-level) + read-only accounts (device-level) give
 
 ## Related
 
-- [Settings → Safe Mode](../settings/safe-mode.md) — configuration UI
+- [Safe Mode](../settings/safe-mode.md) — Select Mode, Startup Mode, and what the session blocks
 - [Audit log](audit-log.md) — what gets logged
 - [Credential storage](credential-storage.md) — for the credential side of the security model

@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +135,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -153,15 +170,24 @@
 <p>For OS-Switch specifically, see the <a href="hp-procurve.html">HP ProCurve page</a>. The same parsers and notes apply.</p>
 <h2 id="aruba-cx-what-works">Aruba CX — what works</h2>
 <ul>
-<li>Detection via SSH banner sniff + post-connect probe</li>
-<li>L2 topology (CDP/LLDP + MAC table)</li>
-<li>L3 topology (OSPF + BGP + VRF)</li>
-<li>Port Utilisation</li>
-<li>Bandwidth</li>
-<li>VLAN Port Finder</li>
-<li>Find Device (full BFS walk + port shut/no-shut)</li>
-<li>Inventory</li>
-<li>Monitor</li>
+<li>Detection via SSH banner sniff + post-connect probe
+</li>
+<li>L2 topology (CDP/LLDP + MAC table)
+</li>
+<li>L3 topology (OSPF + BGP + VRF)
+</li>
+<li>Port Utilisation
+</li>
+<li>Bandwidth
+</li>
+<li>VLAN Port Finder
+</li>
+<li>Find Device (full BFS walk + port shut/no-shut)
+</li>
+<li>Inventory
+</li>
+<li>Monitor
+</li>
 </ul>
 <h2 id="detection">Detection</h2>
 <p>Aruba CX has clean detection — its <code>show version</code> output identifies the platform unambiguously. SSH banners often include <code>SSH-2.0-ARUBA</code> or <code>SSH-2.0-OpenSSH_for_Aruba</code>.</p>
@@ -170,9 +196,9 @@
 <h2 id="vsx-virtual-switching-extension">VSX (Virtual Switching Extension)</h2>
 <p>VSX-paired CX switches appear as two separate devices in topology. The peer relationship is detected via LLDP and rendered as a dedicated VSX edge in L2 topology.</p>
 <h2 id="configuration-model">Configuration model</h2>
-<p>Aruba CX uses a structured CLI with explicit <code>configure terminal</code> / <code>exit</code> boundaries. Node Control is read-only by design — won't enter config mode except for <a href="../tasks/find-device.html#port-actions">Find Device port actions</a>.</p>
+<p>Aruba CX uses a structured CLI with explicit <code>configure terminal</code> / <code>exit</code> boundaries. The write path I can confirm here is <a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device port actions</a>. Config compliance remediation is Cisco IOS, IOS-XE, and NX-OS only.</p>
 <h2 id="rest-api">REST API</h2>
-<p>Aruba CX exposes a comprehensive REST API. Node Control currently uses SSH only; REST API integration is on the roadmap if there's customer demand.</p>
+<p>Aruba CX exposes a comprehensive REST API. Node Control currently uses SSH only; REST API integration is on the roadmap if there&#x27;s customer demand.</p>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
 <thead>
@@ -203,15 +229,20 @@
 <h2 id="wireless-aruba-iap-aruba-controller">Wireless (Aruba IAP, Aruba Controller)</h2>
 <p>Wireless products (IAP, ArubaOS-controlled APs, Mobility Controllers) are partially supported:</p>
 <ul>
-<li><strong>Controllers (Mobility Master / Mobility Controller)</strong>: SSH inventory works; topology / reports limited</li>
-<li><strong>Aruba IAP</strong>: managed via cluster — inventory works through the master IAP's CLI</li>
-<li><strong>AP-205, AP-505, etc.</strong> in a CAPWAP design: managed through the controller; individual APs are not directly SSH'd</li>
+<li><strong>Controllers (Mobility Master / Mobility Controller)</strong>: SSH inventory works; topology / reports limited
+</li>
+<li><strong>Aruba IAP</strong>: managed via cluster — inventory works through the master IAP&#x27;s CLI
+</li>
+<li><strong>AP-205, AP-505, etc.</strong> in a CAPWAP design: managed through the controller; individual APs are not directly SSH&#x27;d
+</li>
 </ul>
-<p>For comprehensive Aruba wireless management, the Aruba Central / AirWave platforms are the right tools. Node Control's wireless support is best for Meraki and basic Aruba IAP — see <a href="meraki.html">Meraki</a> for the deeper wireless story.</p>
+<p>For comprehensive Aruba wireless management, the Aruba Central / AirWave platforms are the right tools. Node Control&#x27;s wireless support is best for Meraki and basic Aruba IAP — see <a href="meraki.html">Meraki</a> for the deeper wireless story.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="hp-procurve.html">HP ProCurve</a> — for OS-Switch specifically</li>
-<li><a href="meraki.html">Meraki</a> — for full wireless coverage in Node Control</li>
+<li><a href="hp-procurve.html">HP ProCurve</a> — for OS-Switch specifically
+</li>
+<li><a href="meraki.html">Meraki</a> — for full wireless coverage in Node Control
+</li>
 </ul>
             </div>
         </main>

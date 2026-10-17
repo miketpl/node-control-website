@@ -2,15 +2,15 @@
 
 Interactive SSH access to any device in your library, embedded directly in Node Control. No need to drop out to PuTTY, iTerm, or a separate terminal app — you can run topology and reports against a device, then jump into a shell on the same device without switching tools.
 
-Available on **Free**, **Pro**, and **AI**.
+The SSH session is on **Free**, **Pro**, and the **AI** edition. It is not an Engineer task. SSH opens only from a library row.
 
 ## Open a session
 
-Three ways:
+- The toolbar **SSH** button
+- A double-click on the row
+- Right-click **Connect SSH**, in Connection Manager mode
 
-1. Right-click a device in the library → **SSH**
-2. From a topology / Find Device result → right-click a node → **Open SSH**
-3. **Tools → SSH Terminal** → enter IP manually
+There is no box for a raw IP, and there is no Tools menu.
 
 A new tab opens in the terminal panel with the SSH session.
 
@@ -21,24 +21,27 @@ Each SSH session lives in its own tab. Open as many as you need:
 - One per device for comparing config
 - One per role (your "core switch", "firewall", "wireless controller" workspace)
 
-Tabs persist across app restarts (sessions reconnect automatically using the same credentials).
+## Session controls
+
+The session controls are **SSH**, **HTTPS**, **Exit**, **Exit All**, **Broadcast**, **Paginate**, **Record**, **Fullscreen**, and **Hostnames**. Each tab has **Stay in config** and **Terminal Mode**.
+
+**Esc** leaves the fullscreen terminal.
+
+The only other shortcut in the app is **Ctrl+C**, which copies a table selection as tab-separated text. There is no Ctrl+, or Cmd+, shortcut.
 
 ## Terminal features
 
 - **Full xterm emulation** via pyte — Cisco / Aruba CLI menus render correctly
 - **Mouse selection** for copy
-- **Cmd+C / Ctrl+C** to copy selected text (does NOT send Ctrl+C to the device; that's mapped to the device's interrupt key)
-- **Cmd+V / Ctrl+Shift+V** to paste
-- **Search** within scrollback (Cmd+F / Ctrl+F)
+- Output is a fixed-width font, including on Windows, so a table such as `show ip interface brief` lines up
+- The session tells the device the terminal width, per vendor, including PAN-OS, so a wrapped command edits on the column you expect
+- A pasted line that wraps can be edited and deleted normally
 - **Save scrollback** to a text file
 - **Configurable colour theme** (Settings → Terminal)
 
-## Sending Ctrl+C to the device
+## Login notices
 
-To send Ctrl+C as an interrupt to the device (e.g., to cancel a long `show tech-support`):
-
-- macOS: **Ctrl+C** sends the interrupt (Cmd+C is copy)
-- Windows / Linux: **Ctrl+Shift+C** = copy, **Ctrl+C** = interrupt
+If ISE or another TACACS+ server says at login that the password is about to expire, or that it must be changed, the terminal shows that message before the prompt. Each notice is repeated in bold yellow. The Connection Manager log keeps a `LOGIN NOTICE` line per notice. Tasks log the same notice.
 
 ## Send command to multiple sessions
 
@@ -72,17 +75,13 @@ Includes both your input and the device's output. Useful for change documentatio
 
 To disable session logging: Settings → Terminal → uncheck **Log session output**.
 
-## Reconnection
+## When a session times out
 
-If a session drops (network blip, idle timeout):
-
-- The tab shows "Disconnected" in red
-- Click **Reconnect** to re-establish using the same credentials
-- Sessions auto-reconnect after sleep/wake on macOS if you have **Auto-reconnect** enabled in Settings
+There is no Auto-reconnect checkbox. When a session times out, a red banner reads **Session timed out -** and the reason, with a **Reconnect** button. Reconnect uses the same tab and the current credential profile.
 
 ## Safe Mode and the terminal
 
-[Safe Mode](../settings/safe-mode.md) gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is **not** Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you're doing when you have a CLI prompt.
+Safe Mode is session-wide. In Safe Mode, **HTTPS** is hidden, and a command that is not read-only is blocked in the SSH session. See [Safe Mode](../settings/safe-mode.md).
 
 ## Session sharing
 
@@ -94,10 +93,10 @@ You cannot currently share an SSH session between users — each session is loca
 |---|---|---|
 | Terminal renders garbage characters | Vendor sending unsupported escape sequences | Try a different terminal type — Settings → Terminal → Terminal type: vt100 |
 | Paste truncates long commands | Some devices have small input buffer | Settings → Terminal → enable **Paste with delay** (slows pastes to one line at a time) |
-| Ctrl+C sends interrupt when you wanted to copy | macOS only — use Cmd+C for copy |
+| Ctrl+C does not interrupt the device | Ctrl+C copies a table selection. It is not a terminal-break shortcut |
 | Session locks up | Heavy command output exceeding terminal buffer | Settings → Terminal → increase scrollback size |
 
 ## Next steps
 
 - [Find Device](find-device.md) — for jumping straight to a switch port from a MAC search
-- [Safe Mode](../settings/safe-mode.md) — for terminal-vs-tasks command gating
+- [Safe Mode](../settings/safe-mode.md) — session-wide. Non-read-only commands are blocked in SSH

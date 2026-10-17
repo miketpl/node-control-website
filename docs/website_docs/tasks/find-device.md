@@ -1,17 +1,20 @@
 # Find Device
 
-The "where is this MAC / IP?" tool. Give Find Device one or more MAC addresses or IPs, and it'll tell you which switch port (or AP) each one is connected to.
+The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and it tells you which switch port it is on. On Pro and the AI edition it can also name the Meraki AP.
 
 ## Tier differences
 
 | Tier | What works |
 |---|---|
-| Free | Pick **one** library switch as the seed; Find Device walks only that switch's MAC table |
+| Free | One switch at a time, single thread. No site model and no cores model. It walks that switch's MAC table |
 | Pro / AI | Pick a site (or All); Find Device walks every site's cores in parallel, recursively follows CDP/LLDP into the fabric, and includes Meraki wireless lookup |
 
 ## Open the task
 
-- **Tasks** tab → **Find Device** → **Run**
+- Engineer command bar → **Task** → **Find Device** → **Run**
+- Home has a **Find Device** quick action
+
+Ctrl+C copies a table selection as tab-separated text. **Esc** closes the Find Device progress dialog.
 
 ## Input targets
 
@@ -88,7 +91,7 @@ Right-click a row for additional actions:
 
 - **Shut Port** / **Re-enable Port** (Phase 4 port actions, gated by Safe Mode + type-to-confirm)
 - **Copy MAC** / **Copy IP** / **Copy CSV row**
-- **Open SSH to Edge Switch**
+- SSH to that switch from its library row: the toolbar **SSH** button, a double-click, or right-click **Connect SSH**
 
 ## Port actions (shut / no-shut)
 
@@ -133,6 +136,10 @@ Find Device refuses to run if:
 - **Wireless mode** + no MACs in input → "Meraki client search is MAC-keyed. Use Unknown mode for IP→MAC."
 - **Wireless mode** + no Meraki API key configured → "Configure a Meraki Dashboard API key in Settings → Credentials → Meraki API."
 
+## When the MAC table does not contain the target
+
+If an edge switch parses its MAC table and the target is not in it, the log prints the target beside what that table actually parsed to. A mismatch then has a cause, instead of a bare miss.
+
 ## Honest "not found" reporting
 
 When Find Device exhausts its search and locates nothing, the progress dialog ends with a red "NO TARGETS LOCATED" banner — not a misleading green tick. The Meraki query breadcrumbs in the run log show exactly how many MACs were sent to Meraki and how many came back as hits.
@@ -141,12 +148,11 @@ When Find Device exhausts its search and locates nothing, the progress dialog en
 
 On Free, Find Device:
 
-- Shows a single-switch dropdown (populated from your 25-device-capped library, sorted by IP) instead of the per-site cores picker
-- Walks only that one switch's MAC table — no recursion
-- No Meraki lookup
-- A small hint underneath the picker spells out the limitation and links to the [Pro upgrade](../tiers/upgrading.md)
+- Runs one switch at a time, on a single thread
+- Has no site model and no cores model
+- Walks that switch's MAC table
 
-Free is enough for "I know roughly which switch the device is on, what port is it?" — most useful for spot-checks in a small environment.
+It is one of the five tasks that run on Free. See [tier comparison](../tiers/overview.md).
 
 ## Troubleshooting
 
@@ -155,10 +161,10 @@ Free is enough for "I know roughly which switch the device is on, what port is i
 | Wired search returns nothing but you know the device is up | Starting switches not configured for the site | Settings → Find Device → Starting Switches → pick one or more per site |
 | Meraki search returns nothing for a known wireless client | API key invalid or wrong org | Test the key in Settings → Credentials → Meraki API → Test |
 | One slow switch hangs the search | Pre-0.9.26 you'd have to Ctrl-C — now the 45s bounded timeout prevents this | Update if you're on an older version |
-| Right-click → Shut Port is greyed | Safe Mode is on, or device type doesn't support port actions | Disable Safe Mode (Settings → Safe Mode), or check device type |
+| Right-click → Shut Port is greyed | Safe Mode is on, or device type doesn't support port actions | Switch to Config Mode from the Edit menu or the mode badge, or check device type |
 
 ## Next steps
 
-- [Network Discovery](discovery.md) — for live walks without library setup
+- [Discover](discovery.md) — for live walks without library setup. Pro and AI; not on Free
 - [L2 topology](topology-l2.md) — for the bigger picture of where devices are connected
 - [Safe Mode](../settings/safe-mode.md) — when to enable/disable it for port actions

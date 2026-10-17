@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +135,7 @@
       <a href="overview.html" class="docs-nav-link active">Tier Comparison</a>
       <a href="upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -127,7 +144,8 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tiers/">Tiers</a> &rsaquo; Tier overview — Free, Pro, AI
                 </div>
                 <h1 id="tier-overview-free-pro-ai">Tier overview — Free, Pro, AI</h1>
-<p>Node Control comes in three tiers. Same codebase, different feature gates. Pick the tier that matches what you're trying to do.</p>
+<p>Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate. The AI edition adds the dashboard and the backend assistant on top of Pro.</p>
+<p>Feature-level AI (summaries and the lifecycle briefing) is on Pro as well, using a provider you configure. The Firewall Analyser <strong>AI advisory</strong> checkbox is the AI edition. See <a href="../settings/ai.html">AI provider</a>.</p>
 <h2 id="quick-comparison">Quick comparison</h2>
 <table>
 <thead>
@@ -141,20 +159,56 @@
 <tbody>
 <tr>
 <td>Device library</td>
-<td style="text-align: center;">25 max</td>
+<td style="text-align: center;">25 shown. Manual add refuses the 26th. Imports keep the first 25</td>
 <td style="text-align: center;">Unlimited</td>
 <td style="text-align: center;">Unlimited</td>
 </tr>
 <tr>
-<td>Activation</td>
-<td style="text-align: center;">Free code from nodecontrol.io</td>
+<td>Licence check</td>
+<td style="text-align: center;">Online, then a 7-day offline grace, then the app is blocked until it can check again</td>
 <td style="text-align: center;">Paid licence</td>
-<td style="text-align: center;">Paid licence + Azure backend</td>
+<td style="text-align: center;">Paid licence</td>
+</tr>
+<tr>
+<td>FREE VERSION badge in the status bar</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 </tr>
 <tr>
 <td>Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme)</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Sidebar</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Home, Engineer, Reports, File Transfer</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Update tab</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>AI page</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
@@ -165,79 +219,73 @@
 </tr>
 <tr>
 <td>Add devices manually</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Subnet scan (Library Updater)</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓, until 25</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>GitHub library sync</td>
-<td style="text-align: center;">—</td>
+<td>Library Updater (subnet scan, not Discover)</td>
+<td style="text-align: center;">greyed</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td><strong>Tasks</strong></td>
+<td>Workbook import</td>
+<td style="text-align: center;">✓, first 25</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>GitHub push and pull</td>
+<td style="text-align: center;">pull keeps the first 25, sorted by IP</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓, and a fallback repository</td>
+</tr>
+<tr>
+<td><strong>Engineer tasks</strong></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr>
-<td>Find Device (single switch)</td>
+<td>None</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Find Device (whole fabric, BFS across cores)</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Network Discovery (live topology walk)</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Layer 2 topology map</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Layer 3 topology map</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>WAN topology map</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Verify Device Types</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>SSH Terminal (interactive)</td>
+<td>L2 Topology Builder</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Monitor tab (passive watch)</td>
-<td style="text-align: center;">—</td>
+<td>Config Backup</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Save Config</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Find Device</td>
+<td style="text-align: center;">one switch, single thread, no site or cores model</td>
+<td style="text-align: center;">site and cores, plus Meraki wireless</td>
+<td style="text-align: center;">site and cores, plus Meraki wireless</td>
+</tr>
+<tr>
+<td>File Transfer task, Packet Capture</td>
+<td style="text-align: center;">greyed</td>
+<td style="text-align: center;">✓, hidden in Safe Mode</td>
+<td style="text-align: center;">✓, hidden in Safe Mode</td>
+</tr>
+<tr>
+<td>Every other task</td>
+<td style="text-align: center;">greyed, tooltip Upgrade to Pro to unlock this feature</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -254,28 +302,16 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Port Utilisation</td>
+<td>Security Audit (PSIRT), Lifecycle and EoX, and the other reports</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Bandwidth</td>
+<td>Update tab and Vuln Plan</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>VLAN Port Finder</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Meraki Usage Summary</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓. Vuln Plan is a button on the Update tab</td>
 </tr>
 <tr>
 <td><strong>AI</strong></td>
@@ -284,115 +320,127 @@
 <td style="text-align: center;"></td>
 </tr>
 <tr>
-<td>AI Dashboard chat</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
+<td>Payload dialog</td>
+<td style="text-align: center;">opens, nothing is sent</td>
+<td style="text-align: center;">opt-in, your provider</td>
+<td style="text-align: center;">opt-in, your provider</td>
 </tr>
 <tr>
-<td>Natural-language network queries</td>
+<td>A provider you can configure for sending</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Automated config analysis</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td><strong>Other</strong></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr>
-<td>Custom command catalogs</td>
-<td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Safe Mode (read-only command allowlist)</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td>Auto-updates</td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
+<td>AI dashboard, chat, and backend assistant</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 </tr>
 </tbody>
 </table>
 <h2 id="free">Free</h2>
-<p>Designed for small-shop engineers managing a handful of devices. Free is fully functional for inventory and ad-hoc lookups, with deliberate limits to differentiate from Pro.</p>
+<p>Free is a working copy for a small estate, not a timed demo.</p>
 <h3 id="what-you-get">What you get</h3>
 <ul>
-<li>Up to 25 devices in your library</li>
-<li>Find Device against one switch at a time (you pick the seed switch when running)</li>
-<li>Full Inventory report</li>
-<li>Interactive SSH terminal to any device in the library</li>
-<li>Custom command catalogs</li>
-<li>All the same vendor support as Pro</li>
+<li>25 devices in the library table. No time limit. The status bar shows <strong>FREE VERSION</strong>
+</li>
+<li>Sidebar: Home, Engineer, Reports, File Transfer
+</li>
+<li>Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
+</li>
+<li>The Inventory report
+</li>
+<li>Workbook import, cut to the first 25. GitHub push and pull, with your own repository and token. A pull keeps the first 25, sorted by IP. Library Updater is greyed out
+</li>
+<li>An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
+</li>
+<li>The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
+</li>
 </ul>
-<h3 id="whats-locked">What's locked</h3>
+<h3 id="what-is-on-pro-instead">What is on Pro instead</h3>
 <ul>
-<li>More than 25 devices in the library (additions are accepted but tools only see the first 25, sorted by IP)</li>
-<li>Topology maps (L2, L3, WAN, Discovery)</li>
-<li>Reports other than Inventory</li>
-<li>Find Device across multiple switches simultaneously</li>
-<li>Monitor tab</li>
-<li>GitHub library sync</li>
+<li>A library past 25 devices, and a table that shows all of them
+</li>
+<li>Every task that Free greys out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. That includes L3 Topology Builder, Watcher of The WAN, Verify Device Types, Config Push, Config from File, Discover Variables, and config compliance
+</li>
+<li>Discover, Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser. The Update tab is the AI edition, not Pro
+</li>
+<li>Reports other than Inventory
+</li>
+<li>Find Device across a site or a fabric, including Meraki wireless
+</li>
+<li>Feature-level AI on a provider you configure
+</li>
 </ul>
+<p>A larger library left by Pro is not deleted when you install Free. The Free table shows 25 of those devices.</p>
 <h3 id="how-to-get-it">How to get it</h3>
 <ol>
-<li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a></li>
-<li>Enter your email</li>
-<li>Verify with the 6-digit code emailed to you</li>
-<li>Receive your <code>NC-XXXX-XXXX</code> activation code</li>
-<li>Download and install the Free DMG or Setup.exe</li>
-<li>Enter your code on first launch</li>
+<li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a>
+</li>
+<li>Enter your email
+</li>
+<li>Verify with the 6-digit code emailed to you
+</li>
+<li>Receive your <code>NC-XXXX-XXXX</code> activation code
+</li>
+<li>Download and install the Free build for your platform
+</li>
+<li>Enter your code on first launch
+</li>
 </ol>
-<p>Free is forever — no time limit, no payment required.</p>
 <h2 id="pro">Pro</h2>
-<p>The standard tier for professional network engineers and managed-service providers.</p>
+<p>Pro is the tier for an engineer who needs the whole estate: maps, reports, compliance, and pushes.</p>
 <h3 id="what-you-get-beyond-free">What you get beyond Free</h3>
 <ul>
-<li>Unlimited devices in the library</li>
-<li>Full topology maps — L2, L3, WAN, and live Discovery</li>
-<li>All reports — Port Utilisation, Bandwidth, VLAN Port Finder, Meraki Usage Summary</li>
-<li>Find Device across an entire site or fabric, with cross-core pruning and Meraki wireless lookup</li>
-<li>Verify Device Types worker for keeping the library accurate</li>
-<li>Monitor tab for passive watch of one or more devices</li>
-<li>GitHub library sync — share device library across team members with separate read-only and push tokens</li>
-<li>Priority email support</li>
+<li>Unlimited devices, shown in full
+</li>
+<li>L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
+</li>
+<li>The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
+</li>
+<li>Find Device across a site or a fabric, with Meraki wireless lookup
+</li>
+<li>Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
+</li>
+<li>Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
+</li>
+<li>Scripts under Settings → Scripts, and Change ISE Password
+</li>
+<li>Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that. The Firewall Analyser AI advisory checkbox is the AI edition
+</li>
+<li>GitHub push and pull without the 25-device cut. You still set your own repository and token
+</li>
 </ul>
-<h3 id="how-to-get-it_1">How to get it</h3>
-<p>Contact us at <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> or buy directly from <a href="https://nodecontrol.io">nodecontrol.io/pro</a>.</p>
-<p>Pro is licensed per-user. Each licensed email can be used on as many machines as the user owns (laptop, desktop, lab).</p>
-<h2 id="ai">AI</h2>
-<p>For teams who want LLM-assisted network operations. Includes everything in Pro plus an AI dashboard.</p>
-<h3 id="what-you-get-beyond-pro">What you get beyond Pro</h3>
+<h3 id="how-to-get-it">How to get it</h3>
+<p>Buy from <a href="https://nodecontrol.io">nodecontrol.io</a>, or email <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a>.</p>
+<p>Pro is licensed per user. Each licensed email can be used on as many machines as that user owns.</p>
+<h2 id="ai-edition">AI edition</h2>
+<p>The AI edition is Pro, plus the parts that stay on this tier only:</p>
 <ul>
-<li><strong>AI chat</strong> — ask natural-language questions about your network ("which switches have STP issues?", "show me ports with high error counts")</li>
-<li><strong>Automated config analysis</strong> — AI flags risky configs, suggests cleanups, identifies compliance gaps</li>
-<li><strong>Live SSH proxy</strong> — AI agent can drive SSH sessions on your behalf to answer multi-step questions</li>
-<li>Backend service running on a customer-deployed Azure / NVIDIA DGX appliance (you control where your data goes)</li>
+<li>the AI dashboard and chat
+</li>
+<li>the backend assistant
+</li>
+<li>the Update tab
+</li>
+<li><strong>Vuln Plan</strong>, a button on the Update tab, next to <strong>Check PSIRT</strong>. It works from that tab&#x27;s PSIRT results
+</li>
 </ul>
-<h3 id="how-to-get-it_2">How to get it</h3>
-<p>AI is sold as an annual subscription including the backend infrastructure. Contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> for a demo and pricing.</p>
+<p>The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. Pro has no Update tab and no Vuln Plan.</p>
+<h3 id="how-to-get-it">How to get it</h3>
+<p>Contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a>.</p>
 <h2 id="upgrading">Upgrading</h2>
 <ul>
-<li><strong>Free → Pro</strong>: see <a href="upgrading.html">Upgrading to Pro</a></li>
-<li><strong>Pro → AI</strong>: contact sales</li>
+<li><strong>Free → Pro</strong>: see <a href="upgrading.html">Upgrading to Pro</a>
+</li>
+<li><strong>Pro → AI</strong>: contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a>
+</li>
 </ul>
-<p>Your library and credentials carry forward through any upgrade — no re-entry needed.</p>
-<h2 id="cross-tier-coexistence-on-the-same-machine">Cross-tier coexistence on the same machine</h2>
-<p>Pro and Free can both be installed on the same Mac or Windows machine simultaneously. They appear as separate apps in Applications / Start Menu and have separate Gatekeeper / SmartScreen registrations. Their data directories are shared, so you'll see the same library in both — useful if you want to confirm "this device is visible to Free" before recommending it to a Free user.</p>
-<h2 id="choosing-the-right-tier">Choosing the right tier</h2>
+<p>The library and the credentials carry forward. You do not re-enter devices.</p>
+<h2 id="both-editions-on-one-machine">Both editions on one machine</h2>
+<p>Pro and Free install side by side. They are separate apps, with separate Gatekeeper and signature records. They share the data directory, so the library is the same file. That is useful when you want to see what Free will show before you hand a laptop to someone on Free.</p>
+<h2 id="which-one">Which one</h2>
 <table>
 <thead>
 <tr>
@@ -402,24 +450,20 @@
 </thead>
 <tbody>
 <tr>
-<td>A network engineer with a handful of devices, want a free SSH multi-tool</td>
+<td>An engineer with up to 25 devices who wants an L2 map, Find Device, config backup, and an inventory</td>
 <td>Free</td>
 </tr>
 <tr>
-<td>Managing 25+ devices, want topology maps and reports</td>
+<td>Managing more than 25 devices, or you need L3/WAN maps, Discover, compliance, or pushes</td>
 <td>Pro</td>
 </tr>
 <tr>
-<td>Running a managed-service practice, want AI-assisted analysis</td>
-<td>AI</td>
+<td>You want the dashboard and the backend assistant as well as Pro</td>
+<td>AI edition</td>
 </tr>
 <tr>
-<td>A student / learner who wants to explore</td>
-<td>Free</td>
-</tr>
-<tr>
-<td>Evaluating Node Control before buying Pro</td>
-<td>Free (then upgrade)</td>
+<td>Trying the tool before you buy</td>
+<td>Free, then upgrade</td>
 </tr>
 </tbody>
 </table>

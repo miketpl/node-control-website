@@ -11,7 +11,7 @@ Manual is simplest for a first device; subnet scan is how you'd populate a real 
 
 ## Manual: add one device
 
-1. In the **Engineer** tab (the main library view), click **+ Add Device** (or right-click in the device table → **Add Device**)
+1. Open **Engineer** from the left sidebar (Home has an Engineer quick action). Click **+ Add Device**, or right-click in the device table → **Add Device**
 2. Fill in:
    - **IP address** — required (e.g., `10.1.1.1`)
    - **Hostname** — optional; the app will fill this from `show version` once it connects
@@ -45,26 +45,15 @@ Without credentials configured, **Test Connection** will fail with an auth error
 
 If you have a known management subnet (e.g., `10.1.1.0/24` or `192.168.10.0/24`):
 
-1. Click **Library Updater** in the toolbar (or the **Tools** menu)
-2. Enter the subnet — `10.1.1.0/24`
-3. Pick the **Tab** for discovered devices to land in
-4. Click **Start Scan**
+1. Engineer → **Task** → **Library Updater** → **Run**. On Free this task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**
+2. Under **Subnet Input:**, load an Excel file (column A is the subnet, column B is the site) or type rows of **Subnet (CIDR)** and **Site Code**
+3. Click **Start Scan**
 
-Node Control will:
-
-- Ping every host in the range (using `fping` if installed, otherwise Python ping)
-- For each ping-alive host, attempt SSH using your configured credentials
-- Run `show version` (or vendor-equivalent) to identify the device type and hostname
-- Add it to the library with all fields auto-filled
-- Detect the site code from the hostname pattern (if Site Detection is configured)
-
-Typical timing: a /24 with ~30 devices takes 2–5 minutes.
-
-See [Library Updater details](../library/subnet-scan.md) for advanced options (which Netmiko driver to try first, parallelism, retry behaviour).
+See [Library Updater](../library/subnet-scan.md) for the dialog, including the output directory and the three checkboxes.
 
 ## Free tier device limit
 
-If you're on the Free tier, your library is capped at **25 devices**. The library will still accept additions beyond 25, but tools that read from the library — Find Device, Inventory report, Reports tab — only operate on the first 25 (sorted by numeric IP).
+Free holds **25 devices**. There is no time limit. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 

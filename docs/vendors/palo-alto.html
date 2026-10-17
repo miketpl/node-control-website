@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +135,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -130,46 +147,74 @@
 <p>Palo Alto firewalls (PA-200 through PA-7000, plus VM-series) are first-class supported.</p>
 <h2 id="driver">Driver</h2>
 <ul>
-<li>Netmiko: <code>paloalto_panos</code></li>
+<li>Netmiko: <code>paloalto_panos</code>
+</li>
 </ul>
 <h2 id="what-works">What works</h2>
 <ul>
-<li>Connectivity via SSH (the CLI mode, not the API)</li>
-<li>Auto-detection from <code>show system info</code></li>
-<li>Inventory (model, serial, software version, HA peer)</li>
-<li>L3 topology — full BGP + OSPF support across all logical routers</li>
-<li>WAN topology — BGP peers + IPSec tunnel endpoints</li>
-<li>Find Device — ARP probe across virtual routers</li>
-<li>VLAN-equivalent data: Zone-to-Interface mapping (not VLAN, but similar conceptually)</li>
-<li>Monitor — CPU, memory, env, BGP/OSPF state, session count</li>
+<li>Connectivity via SSH (the CLI mode, not the API)
+</li>
+<li>Auto-detection from <code>show system info</code>
+</li>
+<li>Inventory (model, serial, software version, HA peer)
+</li>
+<li>L3 topology — full BGP + OSPF support across all logical routers
+</li>
+<li>WAN topology — BGP peers + IPSec tunnel endpoints
+</li>
+<li>Find Device — ARP probe across virtual routers
+</li>
+<li>VLAN-equivalent data: Zone-to-Interface mapping (not VLAN, but similar conceptually)
+</li>
+<li>Monitor — CPU, memory, env, BGP/OSPF state, session count
+</li>
+<li><a href="../tasks/firewall-analyser.html">Firewall Rule Analyser</a>, including a pull from Panorama and a Compare tab
+</li>
+<li>SSH reconnect after a session timeout, in the same terminal tab
+</li>
 </ul>
 <h2 id="auto-detection">Auto-detection</h2>
-<p>For <code>show system info</code>:
-- "device-name: PA-..." → paloalto_panos
-- SSH banner pattern <code>SSH-2.0-OpenSSH_for_PANOS_*</code> is a primary signal
-- Post-connect probe: if the prompt is <code>user@host&gt;</code> (PA shell prompt with <code>&gt;</code>), confirmed PA
-- Opportunistic probe runs even if the initial driver is <code>cisco_ios</code> — PA accepts the Cisco driver silently otherwise</p>
+<p>For <code>show system info</code>:</p>
+<ul>
+<li>&quot;device-name: PA-...&quot; → paloalto_panos
+</li>
+<li>SSH banner pattern <code>SSH-2.0-OpenSSH_for_PANOS_*</code> is a primary signal
+</li>
+<li>Post-connect probe: if the prompt is <code>user@host&gt;</code> (PA shell prompt with <code>&gt;</code>), confirmed PA
+</li>
+<li>Opportunistic probe runs even if the initial driver is <code>cisco_ios</code> — PA accepts the Cisco driver silently otherwise
+</li>
+</ul>
 <h2 id="logical-routers-and-multi-routing">Logical routers and multi-routing</h2>
 <p>PA firewalls have a per-virtual-router routing model. Each VR can run BGP, OSPF, EIGRP independently.</p>
-<p>Node Control's L3 topology task walks <strong>every logical router</strong> plus the special "default" router and unions the results:</p>
+<p>Node Control&#x27;s L3 topology task walks <strong>every logical router</strong> plus the special &quot;default&quot; router and unions the results:</p>
 <ul>
-<li>Each LR's BGP peers</li>
-<li>Each LR's OSPF neighbours</li>
-<li>Each LR's static + connected routes</li>
+<li>Each LR&#x27;s BGP peers
+</li>
+<li>Each LR&#x27;s OSPF neighbours
+</li>
+<li>Each LR&#x27;s static + connected routes
+</li>
 </ul>
 <p>Edges in the L3 map are tagged with the LR they came from. Hover an edge to see the per-LR breakdown.</p>
-<p><strong>Important fix in 0.9.x</strong>: previous versions only walked the first LR — multi-LR PA deployments showed only partial peer detail. The 0.9.x parsers accumulate across all command outputs and the L3 task iterates every LR explicitly. Update if you're on an older version.</p>
+<p><strong>Important fix in 0.9.x</strong>: previous versions only walked the first LR — multi-LR PA deployments showed only partial peer detail. The 0.9.x parsers accumulate across all command outputs and the L3 task iterates every LR explicitly. Update if you&#x27;re on an older version.</p>
 <h2 id="vrf-stamping">VRF stamping</h2>
-<p>In the unioned L3 map, each edge is stamped with the LR (acting as VRF) it came from. If two LRs share a BGP peer (multi-tenant edge), you'll see two edges between the same nodes, one per LR.</p>
+<p>In the unioned L3 map, each edge is stamped with the LR (acting as VRF) it came from. If two LRs share a BGP peer (multi-tenant edge), you&#x27;ll see two edges between the same nodes, one per LR.</p>
 <h2 id="inventory-specifics">Inventory specifics</h2>
 <p>For <code>show system info</code>:</p>
 <ul>
-<li>Model</li>
-<li>Serial</li>
-<li>PAN-OS version</li>
-<li>Boot software version</li>
-<li>Maintenance support state</li>
-<li>HA peer (if configured) — appears as separate Inventory row with HA state (active / passive / synced / not synced)</li>
+<li>Model
+</li>
+<li>Serial
+</li>
+<li>PAN-OS version
+</li>
+<li>Boot software version
+</li>
+<li>Maintenance support state
+</li>
+<li>HA peer (if configured) — appears as separate Inventory row with HA state (active / passive / synced / not synced)
+</li>
 </ul>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
@@ -183,7 +228,7 @@
 <tbody>
 <tr>
 <td>BGP peers missing</td>
-<td>Older Node Control parser bug (only first LR's peers captured)</td>
+<td>Older Node Control parser bug (only first LR&#x27;s peers captured)</td>
 <td>Update to 0.9.27+</td>
 </tr>
 <tr>
@@ -193,12 +238,12 @@
 </tr>
 <tr>
 <td>Detection initially flags as <code>cisco_ios</code></td>
-<td>PA's prompt looks like Cisco's at first glance</td>
+<td>PA&#x27;s prompt looks like Cisco&#x27;s at first glance</td>
 <td>The opportunistic probe (<code>show system info</code>) catches this; if detection persists wrongly, manually set + lock the device type</td>
 </tr>
 <tr>
 <td>OSPF area shown as <code>unknown</code></td>
-<td>PA's <code>show routing protocol ospf neighbor</code> output is concise</td>
+<td>PA&#x27;s <code>show routing protocol ospf neighbor</code> output is concise</td>
 <td>Hover the edge to see partial data; the LR-level config has the area detail</td>
 </tr>
 </tbody>
@@ -206,30 +251,42 @@
 <h2 id="cli-mode">CLI mode</h2>
 <p>Node Control uses PAN-OS CLI mode (NOT the web GUI, NOT the XML API):</p>
 <ul>
-<li>Commands run via SSH</li>
-<li>Read-only — no <code>commit</code> operations</li>
-<li>Disables paging on connect with <code>set cli pager off</code></li>
+<li>Commands run via SSH
+</li>
+<li>Read-only — no <code>commit</code> operations
+</li>
+<li>Disables paging on connect with <code>set cli pager off</code>
+</li>
 </ul>
 <p>For users who prefer the XML API (which has wider parsing support upstream), we may add a hybrid mode in a future release — let us know if this matters.</p>
 <h2 id="ha-pairs">HA pairs</h2>
 <p>Active/passive PA pairs are common. Node Control:</p>
 <ul>
-<li>Inventories both members separately</li>
-<li>Marks each with its HA role (Active / Passive)</li>
-<li>L3 topology shows both members but folds them into a single logical node if both peer with the same neighbours (typical for routing protocols in active/passive setups where only the active speaks)</li>
+<li>Inventories both members separately
+</li>
+<li>Marks each with its HA role (Active / Passive)
+</li>
+<li>L3 topology shows both members but folds them into a single logical node if both peer with the same neighbours (typical for routing protocols in active/passive setups where only the active speaks)
+</li>
 </ul>
 <h2 id="limitations">Limitations</h2>
 <ul>
-<li><strong>Panorama</strong>: not supported as a "device" type. Manage individual firewalls instead.</li>
-<li><strong>GlobalProtect</strong>: not specifically exposed</li>
-<li><strong>App-ID / User-ID</strong>: not surfaced in reports</li>
-<li><strong>Policy review</strong>: no built-in policy inspector</li>
+<li><strong>Panorama</strong>: not supported as a &quot;device&quot; type. Manage individual firewalls instead.
+</li>
+<li><strong>GlobalProtect</strong>: not specifically exposed
+</li>
+<li><strong>App-ID / User-ID</strong>: not surfaced in reports
+</li>
+<li><strong>Policy review</strong>: no built-in policy inspector
+</li>
 </ul>
 <p>For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud Manager, Panorama itself, third-party policy auditors) are better.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/topology-l3.html">L3 topology</a> — for full LR + multi-VR coverage</li>
-<li><a href="../tasks/find-device.html">Find Device</a> — VRF-aware ARP probes work with PA LRs</li>
+<li><a href="../tasks/topology-l3.html">L3 topology</a> — for full LR + multi-VR coverage
+</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — VRF-aware ARP probes work with PA LRs
+</li>
 </ul>
             </div>
         </main>

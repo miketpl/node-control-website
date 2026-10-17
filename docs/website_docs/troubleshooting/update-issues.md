@@ -1,6 +1,6 @@
 # Update problems
 
-When **Help → Check for Updates** doesn't work, or downloads fail, or installs hang.
+When **Help → Check for Updates...** doesn't work, or downloads fail, or installs hang.
 
 ## Symptom 1 — "No update available" when you know there's a newer version
 
@@ -8,7 +8,7 @@ Possible causes:
 
 ### You're on a different tier's update channel
 
-Pro builds check the Pro releases repo; Free builds check the Free releases repo. If you're running Free and there's a Pro v0.9.30 release, your Free install won't see it (and shouldn't — they're different products).
+Pro builds check the Pro releases repo; Free builds check the Free releases repo. A Pro release does not appear as an update for a Free install. They are different products.
 
 Confirm: Help → About → check the tier. Confirm the latest version available for THAT tier on:
 
@@ -17,7 +17,7 @@ Confirm: Help → About → check the tier. Confirm the latest version available
 
 ### The releases page hasn't been published yet
 
-Sometimes a build is internally tested before the release is published to the GitHub releases page. Check the public release page — if no v0.9.30 there, your client correctly reports no update.
+Sometimes a build is tested before the release is published. If the releases page for your tier has nothing newer, the client is right to say there is no update.
 
 ### Cached lookup
 
@@ -60,7 +60,7 @@ Cause: connection dropped mid-download.
 
 The downloader supports resume — re-trigger the download and it'll pick up where it stopped:
 
-1. Help → Check for Updates → Download
+1. Help → Check for Updates... → Download
 
 For chronic download failures:
 
@@ -87,7 +87,7 @@ If you see this on an older version, manually run the downloaded Setup.exe after
 
 ### UAC declined
 
-User clicked No on the UAC prompt. The installer doesn't run. Re-trigger from Help → Check for Updates → Install & Restart.
+User clicked No on the UAC prompt. The installer doesn't run. Re-trigger from Help → Check for Updates... → Install & Restart.
 
 ### Antivirus quarantining the installer
 
@@ -161,7 +161,7 @@ Settings → General → **Auto-check for updates**:
 
 - **Daily** (default): silent background check at app launch + every 24h while running
 - **Weekly**: same but every 7 days
-- **Never**: only checks when you explicitly use Help → Check for Updates
+- **Never**: only checks when you explicitly use Help → Check for Updates...
 
 Notifications appear in the status bar; clicking opens the download dialog.
 

@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="installation-mac.html" class="docs-nav-link active">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +135,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -130,36 +147,45 @@
 <p>Node Control is distributed as a notarized macOS application bundle. Installation is the standard Mac drag-to-Applications flow.</p>
 <h2 id="system-requirements">System requirements</h2>
 <ul>
-<li><strong>macOS</strong>: 11 Big Sur or later (Intel and Apple Silicon both supported via universal binary)</li>
-<li><strong>Disk space</strong>: ~500 MB</li>
-<li><strong>Network</strong>: SSH access from your Mac to the devices you intend to manage</li>
+<li><strong>macOS</strong>: 11 Big Sur or later (Intel and Apple Silicon both supported via universal binary)
+</li>
+<li><strong>Disk space</strong>: ~500 MB
+</li>
+<li><strong>Network</strong>: SSH access from your Mac to the devices you intend to manage
+</li>
 </ul>
 <h2 id="download">Download</h2>
 <p>Go to <a href="https://nodecontrol.io">nodecontrol.io</a> and choose your tier:</p>
 <ul>
-<li><strong>Free</strong> — sign up with your email to receive a download link and activation code</li>
-<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal to download</li>
+<li><strong>Free</strong> — sign up with your email to receive a download link and activation code
+</li>
+<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal to download
+</li>
 </ul>
-<p>The download is a <code>.dmg</code> file named like:</p>
-<ul>
-<li><code>Node Control Free-0.9.29.dmg</code></li>
-<li><code>Node Control Pro-0.9.29.dmg</code></li>
-</ul>
+<p>The download is a <code>.dmg</code> for the edition you chose (Free, Pro, or AI). The site always hands you the current build.</p>
 <h2 id="install">Install</h2>
 <ol>
-<li>Double-click the downloaded <code>.dmg</code></li>
-<li>A Finder window opens showing <strong>Node Control Free.app</strong> (or Pro / AI) and a shortcut to your <strong>Applications</strong> folder</li>
-<li>Drag the app icon onto the Applications shortcut</li>
-<li>Eject the DMG (right-click → Eject, or drag to Trash)</li>
-<li>Open <strong>Applications</strong> in Finder → double-click <strong>Node Control Free</strong> (or Pro)</li>
+<li>Double-click the downloaded <code>.dmg</code>
+</li>
+<li>A Finder window opens showing <strong>Node Control Free.app</strong> (or Pro / AI) and a shortcut to your <strong>Applications</strong> folder
+</li>
+<li>Drag the app icon onto the Applications shortcut
+</li>
+<li>Eject the DMG (right-click → Eject, or drag to Trash)
+</li>
+<li>Open <strong>Applications</strong> in Finder → double-click <strong>Node Control Free</strong> (or Pro)
+</li>
 </ol>
-<p>That's it — the app launches. On first run you'll be asked to <a href="first-launch-activation.html">activate</a> (Free) or <a href="first-launch-activation.html">register</a> (Pro / AI).</p>
-<h2 id="apple-cannot-check-it-for-malicious-software-warning">"Apple cannot check it for malicious software" warning</h2>
+<p>That&#x27;s it — the app launches. On first run you&#x27;ll be asked to <a href="first-launch-activation.html">activate</a> (Free) or <a href="first-launch-activation.html">register</a> (Pro / AI).</p>
+<h2 id="apple-cannot-check-it-for-malicious-software-warning">&quot;Apple cannot check it for malicious software&quot; warning</h2>
 <p>You should <em>not</em> see this dialog — Node Control is signed with a Developer ID certificate and notarized by Apple. If you do see it:</p>
 <ul>
-<li>Check that you downloaded the file from <code>nodecontrol.io</code> (not a mirror)</li>
-<li>Right-click the app in Applications → <strong>Open</strong> → click <strong>Open</strong> in the dialog</li>
-<li>If problems persist, contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> with the macOS version you're running</li>
+<li>Check that you downloaded the file from <code>nodecontrol.io</code> (not a mirror)
+</li>
+<li>Right-click the app in Applications → <strong>Open</strong> → click <strong>Open</strong> in the dialog
+</li>
+<li>If problems persist, contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a> with the macOS version you&#x27;re running
+</li>
 </ul>
 <h2 id="where-your-data-is-stored">Where your data is stored</h2>
 <p>Node Control stores its database, settings, and credentials at:</p>
@@ -167,13 +193,16 @@
 </code></pre>
 <p>This includes:</p>
 <ul>
-<li><code>netOps.db</code> — the device library, settings, and credential references</li>
-<li><code>settings.json</code> — per-tab UI state</li>
-<li>Credential <strong>secrets</strong> are stored separately in the macOS <strong>Keychain</strong>, not in this folder</li>
+<li><code>netOps.db</code> — the device library, settings, and credential references
+</li>
+<li><code>settings.json</code> — per-tab UI state
+</li>
+<li>Credential <strong>secrets</strong> are stored separately in the macOS <strong>Keychain</strong>, not in this folder
+</li>
 </ul>
 <p><strong>Uninstalling</strong>: drag the app from Applications to Trash. To fully remove your data, also delete <code>~/Library/Application Support/netOps/</code> and clear any Node Control entries from Keychain Access.</p>
 <h2 id="updating">Updating</h2>
-<p>Use <strong>Help → Check for Updates</strong> inside the app. Node Control will tell you when a newer version is available and offer to download the updated DMG.</p>
+<p>Use <strong>Help → Check for Updates...</strong> inside the app. On a Mac, <strong>Settings...</strong> lives in the application menu. Qt puts it there. There is no separate shortcut. Node Control will tell you when a newer version is available and offer to download the updated DMG.</p>
 <p>You can also manually re-download from <a href="https://nodecontrol.io">nodecontrol.io</a> — the new version installs over the old one with no data loss.</p>
 <h2 id="crash-logs">Crash logs</h2>
 <p>If Node Control crashes, a log file is written to:</p>
@@ -182,8 +211,10 @@
 <p>Attach this file when reporting a crash to support. See <a href="../troubleshooting/crash-logs.html">Reading the crash log</a> for what to look for.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="first-launch-activation.html">First launch and activation</a></li>
-<li><a href="adding-first-device.html">Adding your first device</a></li>
+<li><a href="first-launch-activation.html">First launch and activation</a>
+</li>
+<li><a href="adding-first-device.html">Adding your first device</a>
+</li>
 </ul>
             </div>
         </main>

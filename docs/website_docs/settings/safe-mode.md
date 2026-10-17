@@ -1,14 +1,61 @@
 # Safe Mode
 
-Safe Mode is a global setting that restricts what commands Node Control sends to your devices. When ON, only commands in the read-only allowlist are sent — config-mode commands, port shut/no-shut, and any custom commands not explicitly allowed are blocked.
+Safe Mode is session-wide. It is not a per-tab setting.
 
-Default state: **ON** for new installs. Most users keep it on.
+At startup the **Select Mode** dialog asks which mode to use. **Settings → General → Startup Mode** is what that dialog defaults to.
+
+Mid-session, switch it from the **Edit** menu (**Switch to Safe Mode** / **Switch to Config Mode**) or from the mode badge.
+
+## The task list in Safe Mode
+
+In Safe Mode the Engineer dropdown is cut to:
+
+- **None**
+- **L2 Topology Builder**
+- **L3 Topology Builder**
+- **Watcher of The WAN**
+- **Config Backup**
+- **Library Updater**
+- **VLAN Port Finder**
+- **Refresh Hostnames**
+- **Verify Device Types**
+- **Discover Variables**
+- **Find Device**
+
+Safe Mode hides these from the dropdown:
+
+- **Config Push**
+- **Config Push Script**
+- **Config from File**
+- **Config Compliance Remediate**
+- **Save Config**
+- **File Transfer** (the task, not the File Transfer sidebar page)
+- **Packet Capture**
+- **Change ISE Password**
+
+**Config Compliance Audit** is not in the reduced list, so it is not offered in Safe Mode either.
+
+When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip **Upgrade to Pro to unlock this feature**.
+
+While Safe Mode is on:
+
+- **HTTPS** is hidden
+- the task list is the reduced list above
+- a command that is not read-only is blocked in an SSH session
+- a [Meraki Configurator](../tasks/meraki-configurator.md) push is blocked
+
+Safe Mode also restricts what automated commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.
 
 ## Why Safe Mode exists
 
-Node Control was built primarily as a read-only operations tool. The few write actions it supports (port shut/no-shut via [Find Device](../tasks/find-device.md#port-actions)) are dangerous if triggered accidentally — a misclick could disable a port carrying critical traffic.
+Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:
 
-Safe Mode provides a global "I'm just looking, no changes" guarantee. Toggle it off only when you intentionally need to use a write action.
+- [Find Device](../tasks/find-device.md#port-actions-shut-no-shut) port shut and re-enable
+- [Config Push](../tasks/config-push.md) and its revert
+- [Config Compliance](../tasks/config-compliance.md) remediation (type `REMEDIATE`)
+- [Meraki Configurator](../tasks/meraki-configurator.md) push (type `PUSH`). Safe Mode blocks that push
+
+Safe Mode blocks compliance remediation. It also blocks a Meraki Configurator push. Leave it on until you mean to change something.
 
 ## What's allowed under Safe Mode
 
@@ -40,31 +87,15 @@ When a blocked command is attempted, Node Control:
 - Logs the attempt in the audit log
 - Shows a UI warning
 
-## The SSH terminal exception
+## SSH sessions
 
-Safe Mode does **not** apply to the interactive [SSH terminal](../tasks/ssh-terminal.md). What you type in a terminal is sent verbatim. The reasoning:
+In Safe Mode, a command that is not read-only is blocked in the [SSH terminal](../tasks/ssh-terminal.md). **HTTPS** is hidden for the session.
 
-- The terminal is a CLI prompt — you're a human typing commands and you know what they do
-- Safe Mode protects against automated / programmatic commands, not against intentional human input
-- Blocking config commands in the terminal would make the terminal useless
+## Switching mode
 
-If you want a fully read-only terminal, log into the device with a read-only user account.
+Use the **Edit** menu or the mode badge. The next launch follows **Settings → General → Startup Mode**, which you confirm in the **Select Mode** dialog.
 
-## Disabling Safe Mode
-
-1. **Settings → Safe Mode** → toggle **OFF**
-2. A confirmation dialog: "Disable Safe Mode? Write commands will be allowed."
-3. Confirm
-
-Once off, write commands are allowed (subject to per-action confirmation dialogs like the type-to-confirm port shut).
-
-## Per-tab Safe Mode
-
-You can selectively enable Safe Mode for specific library tabs (e.g., Firewalls always Safe Mode, Switches can have it off). Configure in:
-
-- Settings → Safe Mode → **Per-tab overrides**
-
-Useful for: "I'm comfortable shutting switch ports, but never touching firewalls."
+Once you are in Config Mode, write commands are allowed, subject to the confirmation the action already asks for (such as the type-to-confirm port shut).
 
 ## Customising the allowlist
 
@@ -113,13 +144,13 @@ For everyday operations (topology, reports, troubleshooting), Safe Mode should s
 
 ## Best practice
 
-- **Leave Safe Mode ON by default**
-- **Turn it off only for the specific action you need**, then turn it back on
-- **Per-tab overrides** are a good compromise — keep it on for the high-risk tabs (Firewalls, WAN routers) always
-- **Audit log is your friend** — periodically review it to see if anyone disabled Safe Mode unexpectedly
+- Set **Startup Mode** to the mode you want the **Select Mode** dialog to offer
+- Switch with the **Edit** menu or the mode badge for one session, then switch back
+- The mode applies to the whole session, including SSH
+- Review the audit log when you need to see that the mode changed
 
 ## Next steps
 
-- [Find Device port actions](../tasks/find-device.md#port-actions) — the main use case for temporarily disabling Safe Mode
+- [Find Device port actions](../tasks/find-device.md#port-actions-shut-no-shut) — the main use case for temporarily disabling Safe Mode
 - [Audit log](../security/audit-log.md)
 - [Credential storage](../security/credential-storage.md)

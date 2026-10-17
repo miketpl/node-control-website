@@ -1,21 +1,37 @@
 # Subnet scan (Library Updater)
 
+> The task name is **Library Updater**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list. It is not the **Discover** page.
+
 The Library Updater walks an IP range, attempts SSH on each responding host, and adds discovered devices to your library — auto-filling the device type, hostname, and site code along the way.
 
 This is the fastest way to populate a new library, or to keep an existing one accurate as devices change.
 
 ## Open the Library Updater
 
-- **Tools → Library Updater** (or the toolbar button)
+- Engineer command bar → **Task** → **Library Updater** → **Run**
 
-## Configure the scan
+## The Library Updater dialog
 
-| Field | What it controls |
-|---|---|
-| **Subnet** | IP range to scan, in CIDR notation (e.g., `10.1.1.0/24`, `192.168.10.0/24`). Multiple subnets can be added — they'll be scanned in sequence. |
-| **Default tab** | Where discovered devices land (Switches / Routers / Firewalls / etc.). The classifier may reassign based on hostname patterns. |
-| **Credentials** | Which credential profile(s) to try. If you have two profiles configured, both are tried per device. |
-| **Parallelism** | How many SSH connections to attempt at once. Default 10 — bump to 20-30 if you have a fast machine and good network. |
+The dialog title is **Library Updater**.
+
+**Subnet Input:** is a pair of radios:
+
+- **Load from Excel file**
+- **Enter manually below**
+
+The Excel path placeholder says column A is the subnet and column B is the site.
+
+The manual table has columns **Subnet (CIDR)** and **Site Code**, and buttons **Add Row** and **Remove Selected**.
+
+**Output Directory:** is on the dialog.
+
+Three checkboxes are ticked by default:
+
+- load what the scan finds into the library
+- also write a JSON file for Git sync
+- show the hosts that answered, and wait, before any SSH login
+
+**Start Scan** runs it. **Cancel** closes the dialog.
 
 ## Click Start Scan
 
@@ -47,7 +63,7 @@ For each successfully-classified device:
 1. **New device**: added to the library with all fields filled
 2. **Existing device** (IP already in library): updates hostname and device type if changed, leaves other fields alone
 
-The **Default tab** chosen at config time is overridden by the classifier when the hostname matches certain patterns:
+The site code comes from the dialog: column B of the Excel file, or the **Site Code** column. The classifier can still move a device by hostname:
 
 | Hostname pattern | Goes to tab |
 |---|---|
@@ -57,7 +73,7 @@ The **Default tab** chosen at config time is overridden by the classifier when t
 | `sw-*`, `csw-*`, `dsw-*`, `asw-*`, `stk-*` | Switches |
 | `sdwan-*`, `velocloud-*`, `viptela-*` | SD-WAN |
 
-Hostnames that don't match any pattern land in the Default tab.
+Hostnames that don't match any pattern keep the site code from the dialog.
 
 ### Phase 4 — Summary
 
@@ -80,25 +96,9 @@ Every scan writes a session log to:
 
 Useful for tracking why a specific IP wasn't classified (auth failure, unsupported vendor, etc.).
 
-## Scanning multiple subnets
+## Free
 
-The Library Updater accepts multiple subnets per scan. Click **+ Add Subnet** to chain them:
-
-```
-10.1.1.0/24
-10.1.2.0/24
-192.168.50.0/24
-```
-
-All run in sequence. Total time scales linearly with subnet count.
-
-## Free tier behaviour
-
-The subnet scan itself works on Free, but:
-
-- Devices added beyond the 25-device cap are accepted into the library but won't be visible to other tools
-- This is **intentional** — subnet scan is the escape hatch for free users who want to inventory devices that aren't yet in their library, without being blocked by the cap
-- After scanning, you can review the full result list and decide which 25 are most important to keep — the rest can be ignored or deleted
+On Free, **Library Updater** is greyed out. A manual add still refuses the 26th device. The library table shows 25.
 
 ## Re-scanning
 
@@ -111,12 +111,7 @@ Running the Library Updater on the same subnet later:
 
 ## Scheduling regular scans
 
-There's no built-in scheduler. For weekly/monthly automated scans:
-
-- **Mac**: `launchd` with a script that opens the app and triggers `Tools → Library Updater` via AppleScript
-- **Windows**: Task Scheduler running the app with command-line args
-
-We're considering native scheduling in a future release — let us know if this matters to you.
+There is no built-in scheduler, and there is no Tools menu.
 
 ## Troubleshooting
 

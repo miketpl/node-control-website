@@ -1,12 +1,12 @@
 # Layer 3 topology map
 
-> Available on **Pro** and **AI** tiers only.
+> The task name is **L3 Topology Builder**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 The L3 topology map walks every routing device in scope, reads its routing table, OSPF and BGP neighbours, and renders an interactive map of the L3 overlay — which routers and firewalls peer with which, across what protocols.
 
 ## Open the task
 
-- **Tasks** tab → **Topology (L3)** → click **Run**
+- Engineer command bar → **Task** → **L3 Topology Builder** → **Run**
 
 ## Configure
 

@@ -16,6 +16,8 @@ Palo Alto firewalls (PA-200 through PA-7000, plus VM-series) are first-class sup
 - Find Device — ARP probe across virtual routers
 - VLAN-equivalent data: Zone-to-Interface mapping (not VLAN, but similar conceptually)
 - Monitor — CPU, memory, env, BGP/OSPF state, session count
+- [Firewall Rule Analyser](../tasks/firewall-analyser.md), including a pull from Panorama and a Compare tab
+- SSH reconnect after a session timeout, in the same terminal tab
 
 ## Auto-detection
 

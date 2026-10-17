@@ -28,7 +28,9 @@ Everything Node Control does works on Cisco:
 - Inventory (stack members, line cards, transceivers)
 - Verify Device Types
 - Monitor (CPU, memory, environmental, BGP/OSPF peers)
-- AI chat (interpreting `show` output and configs)
+- [Config Push](../tasks/config-push.md), [packet capture](../tasks/packet-capture.md), and [config compliance](../tasks/config-compliance.md) (remediation is IOS, IOS-XE, and NX-OS)
+- [Security Audit](../reports/security-audit.md) and [Lifecycle / EoX](../reports/lifecycle.md)
+- Feature-level AI summaries, on Pro and the AI edition, with your own provider. The AI dashboard is the AI edition only. See [AI provider](../settings/ai.md)
 
 ## Auto-detection signature
 
@@ -95,11 +97,15 @@ The Catalyst 9000 series runs IOS-XE which has minor CLI differences from IOS cl
 - TrustSec / SGT data is not exposed in any report
 - Embedded IPS sensors (IPS-4000 / IDS) — limited support, basic Inventory only
 
-## Configuration management
+## Changes it will push
 
-Node Control is read-only by design for everything except [Find Device port actions](../tasks/find-device.md#port-actions). It doesn't push configs, doesn't backup configs, doesn't restore.
+Maps, inventory, and the show-command reports are read-only. On Cisco the write paths are:
 
-For config management workflows, integrate with a dedicated tool (NetBox / Nautobot / RANCID / Oxidized). Node Control complements rather than replaces those.
+- [Find Device](../tasks/find-device.md#port-actions-shut-no-shut) port shut and re-enable
+- [Config Push](../tasks/config-push.md) — a per-port template, on Pro and the AI edition
+- [Config Compliance](../tasks/config-compliance.md) remediation — IOS, IOS-XE, and NX-OS, on Pro and the AI edition
+
+Each one asks you to confirm before it sends anything. Safe Mode blocks compliance remediation.
 
 ## Next steps
 

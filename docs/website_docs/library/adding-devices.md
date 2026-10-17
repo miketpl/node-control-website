@@ -78,10 +78,12 @@ A full list of supported drivers is available in **Settings → Device Types →
 If you have a list of IPs in a spreadsheet:
 
 1. Save the IPs as a CSV with columns: `ip, hostname, tab, site_code`
-2. **Tools → Import Library → From CSV**
+2. Import that file as a workbook import
 3. Pick the file → preview → **Import**
 
 The CSV columns are mapped to device fields. Missing columns are left blank.
+
+On Free, a workbook import is cut to the first 25 devices, and a manual add refuses the 26th. The table shows 25.
 
 ## Bulk-adding from a subnet
 

@@ -1,12 +1,12 @@
 # Bandwidth report
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 Per-interface bandwidth statistics across one or more devices. Like Port Utilisation, but focused on traffic volumes and top-talkers rather than per-port capacity.
 
 ## Open the report
 
-- **Reports** tab → **Bandwidth** → set Scope → **Run**
+- **Reports** in the left sidebar → **Bandwidth** → set Scope → **Run**
 
 ## What's collected
 

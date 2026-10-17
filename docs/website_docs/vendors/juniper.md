@@ -48,7 +48,7 @@ Junos-based SRX firewalls:
 
 ## Configuration mode
 
-Junos has a commit-based config model with `commit` / `commit and-quit`. Node Control is read-only by default and doesn't enter config mode except for port shut/no-shut actions which use a single-line operational mode (`set interfaces <port> disable`).
+Junos has a commit-based config model with `commit` / `commit and-quit`. The write path I can confirm here is Find Device port shut, which uses a single operational-mode line (`set interfaces <port> disable`). Config compliance remediation is Cisco IOS, IOS-XE, and NX-OS only.
 
 ## Limitations
 

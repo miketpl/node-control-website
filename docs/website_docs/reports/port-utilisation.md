@@ -1,12 +1,12 @@
 # Port Utilisation report
 
-> Available on **Pro** and **AI** tiers only.
+> On **Pro** and the **AI** edition. Free does not run this report.
 
 For each switch in scope, lists every port with its status, VLAN, MAC count, and traffic counters. Useful for capacity planning, finding unused ports, and spotting interface errors.
 
 ## Open the report
 
-- **Reports** tab → **Port Utilisation** → set Scope → **Run**
+- **Reports** in the left sidebar → **Port Utilisation** → set Scope → **Run**
 
 ## What's collected per port
 

@@ -1,13 +1,21 @@
 # Settings overview
 
-The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control's configuration. Organised by tab — pick the section relevant to what you're configuring.
+Open **Settings** from the navigation footer, or **Edit → Settings...**. On macOS, **Settings...** is in the application menu. There is no Tools menu and no Ctrl+, or Cmd+, shortcut.
+
+The **Edit** menu holds only **Switch to Config Mode** / **Switch to Safe Mode**, and **Settings...**.
+
+Settings is organised by section. Pick the one you need.
+
+## API Platforms
+
+**Settings → API Platforms** holds **Cisco DNA Center / Catalyst Center** and **Cisco ISE (Identity Services Engine)**. The fields are on the [Lifecycle](../reports/lifecycle.md) and [Change ISE Password](../tasks/change-ise-password.md) pages. There is no verify-SSL control. Certificate verification is off for all API clients.
 
 ## Settings tabs
 
 | Tab | What it controls |
 |---|---|
-| **General** | Theme, font size, startup mode, default library, auto-update behaviour |
-| **Credentials** | Username/password profiles, default profile, per-tab assignments, Meraki API key |
+| **General** | Theme, font size, **Startup Mode** (what the Select Mode dialog defaults to), default library, auto-update behaviour |
+| **Credentials** | Profiles, try order, and the device-type map. No star, and no per-tab memory. See [Credentials](../getting-started/credentials.md) |
 | **Library** | Library file path, [GitHub sync](../library/github-sync.md), import/export defaults |
 | **Site Detection** | [Hostname-to-site-code regex](site-detection.md) |
 | **Find Device** | [Per-site starting switches](../tasks/find-device.md), parallelism, timeout, infrastructure gate patterns |
@@ -16,8 +24,10 @@ The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control
 | **Topology (L2/L3/WAN)** | Endpoint filter patterns, layout preferences, render style |
 | **Terminal** | Colour theme, scrollback size, paste-with-delay toggle, session logging |
 | **Monitor** | SSH keepalive, sample persistence, default polling interval |
-| **Safe Mode** | [Command allowlist / blocklist](safe-mode.md) |
+| **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
+| **Scripts** | [Python scripts that run as tasks](scripts.md), Pro and AI |
+| **AI / LLM** | Anthropic API key or an Ollama server, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
 | **Advanced** | Crash log location, telemetry opt-in, debug logging |
 
 ## Where settings are stored
@@ -27,7 +37,9 @@ The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control
 %APPDATA%\netOps\settings.json                        (Windows)
 ```
 
-Settings are read on launch and saved on dismiss. Changes take effect immediately for most settings; some (theme changes) require restart.
+Settings are read on launch and saved on dismiss. Changes take effect immediately for most settings.
+
+Four themes share the layout: **Dark Hacker**, **Dark Blue**, **Light**, and **High Contrast**. High Contrast keeps strong borders. Changing theme tells you a restart is required. It does not pretend to apply in place.
 
 ## Resetting to defaults
 
@@ -38,14 +50,9 @@ To reset all settings (without losing your library or credentials):
 3. Launch — a fresh default `settings.json` is created
 4. Reconfigure as needed; you can copy specific keys from `.bak` if helpful
 
-## Exporting / importing settings
+## Sharing a settings file
 
-For sharing a baseline across team members:
-
-- **Tools → Export Settings** → produces a JSON file you can email or commit to a repo
-- **Tools → Import Settings** → loads from JSON, prompts before overwriting current values
-
-Useful when standardising "everyone uses these site detection rules" across an org.
+There is no Tools menu, and no Export Settings command under one. `settings.json` is the file. Copy it if you want the same settings on another machine.
 
 ## Per-environment settings
 
@@ -63,12 +70,14 @@ A future release may add named settings profiles to skip the manual copy — let
 - [Site detection rules](site-detection.md)
 - [Custom command catalogs](custom-commands.md)
 - [Safe Mode](safe-mode.md)
+- [Scripts](scripts.md)
+- [AI provider](ai.md)
 
 ## Common configurations
 
 | Goal | Settings to touch |
 |---|---|
-| Save typing of credentials | **Credentials** → set a default profile |
+| Save typing of credentials | **Credentials** dropdown → **All**, with the profiles in try order |
 | Find Device knows my cores | **Find Device** → Starting Switches per site |
 | Topology maps look right | **Topology** → Endpoint filter patterns |
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |

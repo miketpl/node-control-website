@@ -15,10 +15,7 @@ From [nodecontrol.io](https://nodecontrol.io):
 - **Free** — sign up with your email to receive a download link and activation code
 - **Pro** / **AI** — log in to your customer portal
 
-The download is named like:
-
-- `Node Control Free-0.9.29-Setup.exe`
-- `Node Control Pro-0.9.29-Setup.exe`
+The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI). The site always hands you the current build. Do not bookmark an old filename.
 
 ## Install
 
@@ -32,16 +29,11 @@ The download is named like:
 
 You'll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., "Node Control Free").
 
-## "Windows protected your PC" SmartScreen warning (Free / Pro builds before late 2026)
+## The installer is signed
 
-This appears because our Windows code-signing certificate is in the SmartScreen reputation-building phase. To proceed:
+The installer and the app are signed. They show **The Promised Lan Limited** as the verified publisher, in the UAC prompt and in the installer's properties. The **Unknown publisher** block is gone.
 
-1. Click **More info** on the SmartScreen dialog
-2. Click **Run anyway**
-
-The warning disappears entirely once enough downloads have built up the SmartScreen reputation for our publisher. We're also actively working through Microsoft's Trusted Signing programme to eliminate it sooner.
-
-You can verify the installer is genuinely from us by right-clicking the `Setup.exe` → **Properties** → **Digital Signatures** tab → confirm "The Promised LAN" appears as the signer.
+SmartScreen reputation builds with downloads, so an early download may still show a **More info** prompt.
 
 ## Pro and Free side-by-side
 
@@ -68,7 +60,7 @@ Typically expands to `C:\Users\<you>\AppData\Roaming\netOps\`. Contains:
 
 ## Updating
 
-Use **Help → Check for Updates** inside the app. When an update is available:
+Use **Help → Check for Updates...** inside the app. When an update is available:
 
 1. Click **Download**
 2. The new installer downloads to your `%TEMP%` folder

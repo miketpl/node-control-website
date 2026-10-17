@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="../tasks/discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="inventory.html" class="docs-nav-link">Inventory</a>
       <a href="meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +135,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -127,11 +144,8 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/reports/">Reports</a> &rsaquo; Reports overview
                 </div>
                 <h1 id="reports-overview">Reports overview</h1>
-<p>Reports run a specific data-collection workflow across one or more devices and render a structured result — typically a table, sometimes an interactive map.</p>
-<h2 id="open-the-reports-tab">Open the Reports tab</h2>
-<ul>
-<li>Top-level <strong>Reports</strong> tab (alongside Engineer, Discovery, Tasks, Monitor)</li>
-</ul>
+<p>A report collects from one or more devices and renders a result, usually a table.</p>
+<p>Open <strong>Reports</strong> in the left sidebar. It is its own page, not a task in the Engineer command bar.</p>
 <h2 id="report-types">Report types</h2>
 <table>
 <thead>
@@ -147,109 +161,94 @@
 <td><a href="inventory.html">Inventory</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
-<td>List devices with hardware model, OS version, serial number</td>
+<td>Hardware model, OS version, serial number</td>
 </tr>
 <tr>
 <td><a href="port-utilisation.html">Port Utilisation</a></td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
-<td>For each port: status, VLAN, MAC count, in/out traffic</td>
+<td>Per port: status, VLAN, MAC count, in/out traffic</td>
 </tr>
 <tr>
 <td><a href="bandwidth.html">Bandwidth</a></td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
-<td>Aggregate in/out bandwidth per interface, top talkers</td>
+<td>Aggregate in/out bandwidth per interface</td>
 </tr>
 <tr>
 <td><a href="vlan-port-finder.html">VLAN Port Finder</a></td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
-<td>"Which ports are on VLAN X?" across the fleet</td>
+<td>Which ports are on a VLAN, across the devices in scope</td>
 </tr>
 <tr>
 <td><a href="meraki-usage-summary.html">Meraki Usage Summary</a></td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
-<td>Per-org and per-network Meraki usage stats</td>
+<td>Per-org and per-network Meraki usage</td>
+</tr>
+<tr>
+<td><a href="security-audit.html">Security Audit</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>Cisco advisories by severity, plus an optional baseline check</td>
+</tr>
+<tr>
+<td><a href="lifecycle.html">Lifecycle and EoX</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>End-of-sale and end-of-life dates, and a replacement plan</td>
+</tr>
+<tr>
+<td><a href="change-summary.html">Change Summary</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>Commands that were entered, and who entered them</td>
+</tr>
+<tr>
+<td>Site Subnets</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>The subnet list <a href="../tasks/ipam.html">IPAM</a> is filled from</td>
 </tr>
 </tbody>
 </table>
-<h2 id="free-tier-inventory-only">Free tier — Inventory only</h2>
-<p>On Free, only <strong>Inventory</strong> is enabled. All other rows in the Reports list are greyed with an "Upgrade to Pro" tooltip. The site scope selector is locked to <strong>INDIVIDUAL</strong> (single device) — All Devices and per-site scopes are Pro features.</p>
+<p>The Reports page is on Free. The only report that runs there is Inventory, and it covers the whole library, up to 25 devices. Every other report is Pro and the AI edition.</p>
 <h2 id="running-a-report">Running a report</h2>
 <ol>
-<li><strong>Reports</strong> tab → pick a report from the list on the left</li>
-<li>Set <strong>Scope</strong>:</li>
-<li><strong>Individual</strong> — pick one device</li>
-<li><strong>Site X</strong> — every device in a site</li>
-<li><strong>All Devices</strong> — entire library</li>
-<li>Set <strong>Filters</strong> if the report has them (e.g., interface name patterns for Port Utilisation)</li>
-<li>Click <strong>Run</strong></li>
+<li><strong>Reports</strong> → pick a report from the list
+</li>
+<li>Set the scope: one device, a site, or all devices
+</li>
+<li>Set any filters the report has
+</li>
+<li>Click <strong>Run</strong>
+</li>
 </ol>
-<p>A progress dialog tracks SSH connections and command runs. When complete, results render in the main panel.</p>
-<h2 id="results-format">Results format</h2>
-<p>Most reports produce a sortable, filterable table:</p>
-<ul>
-<li><strong>Click column headers</strong> to sort</li>
-<li><strong>Filter bar</strong> at the top for substring search</li>
-<li><strong>Export</strong> button — CSV, XLSX, or HTML</li>
-<li><strong>Right-click row</strong> for context actions (open SSH, view device details)</li>
-</ul>
-<p>The HTML export is a self-contained file with embedded styles — easy to email or attach to tickets.</p>
+<p>When the run finishes, the result is in the main panel.</p>
+<h2 id="tables-csv-and-email">Tables, CSV, and email</h2>
+<p>Most reports give you a sortable, filterable table. Click a column header to sort. The filter bar is a substring search.</p>
+<p>Every HTML report has an <strong>Export CSV</strong> button above each table. You can also export HTML. The HTML file is self-contained.</p>
+<p>Report email sends in the background, with a timeout long enough for a slow relay. The app does not freeze while it waits. If the email is skipped, the log says why: the option was unticked, or there were no recipients. A report email can carry a headline summary.</p>
+<p>An optional AI executive summary uses your own provider and only runs if you tick it. See <a href="../settings/ai.html">AI provider</a>.</p>
 <h2 id="caching">Caching</h2>
-<p>Same 10-minute output cache as topology tasks. Re-running a report within the cache window reuses SSH output rather than re-walking devices. Force a fresh walk with <strong>Skip cache</strong>.</p>
-<h2 id="subnet-scan-as-an-inventory-escape-hatch-free">Subnet scan as an inventory escape hatch (Free)</h2>
-<p>If you're on Free and want an Inventory across devices not yet in your 25-device library, run <a href="../library/subnet-scan.html">Library Updater</a> on a subnet first — that ping-sweep + classify flow is unrestricted, and the subsequent Inventory report works on the discovered devices (subject to the cap on display).</p>
-<h2 id="run-history">Run history</h2>
-<p>Each run's results are saved to:</p>
+<p>Report runs cache device output for about 10 minutes, same as the topology tasks. Inside that window a re-run reuses the output. <strong>Skip cache</strong> forces a fresh walk.</p>
+<h2 id="where-results-are-saved">Where results are saved</h2>
 <pre><code>~/Library/Application Support/netOps/reports/&lt;report&gt;_&lt;scope&gt;_&lt;timestamp&gt;.html
 %APPDATA%\netOps\reports\&lt;report&gt;_&lt;scope&gt;_&lt;timestamp&gt;.html
 </code></pre>
-<p>Useful for before-and-after comparisons (e.g., "what was the port utilisation last month?").</p>
-<h2 id="performance">Performance</h2>
-<table>
-<thead>
-<tr>
-<th>Report</th>
-<th>Typical timing</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Inventory, individual</td>
-<td>5–10 sec</td>
-</tr>
-<tr>
-<td>Inventory, 50-device site</td>
-<td>1–2 min</td>
-</tr>
-<tr>
-<td>Port Utilisation, 50-device site</td>
-<td>2–4 min</td>
-</tr>
-<tr>
-<td>Bandwidth, 50-device site</td>
-<td>2–4 min</td>
-</tr>
-<tr>
-<td>VLAN Port Finder, 100-device site</td>
-<td>3–6 min</td>
-</tr>
-<tr>
-<td>Meraki Usage Summary, 10 orgs</td>
-<td>2–5 min (depends on API quotas)</td>
-</tr>
-</tbody>
-</table>
-<p>Parallelism is configurable in Settings → Reports → Workers (default 8).</p>
+<h2 id="workers">Workers</h2>
+<p>Parallelism is set under Settings → Reports → Workers.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="inventory.html">Inventory</a></li>
-<li><a href="port-utilisation.html">Port Utilisation</a></li>
-<li><a href="bandwidth.html">Bandwidth</a></li>
-<li><a href="vlan-port-finder.html">VLAN Port Finder</a></li>
-<li><a href="meraki-usage-summary.html">Meraki Usage Summary</a></li>
+<li><a href="inventory.html">Inventory</a>
+</li>
+<li><a href="security-audit.html">Security Audit</a>
+</li>
+<li><a href="lifecycle.html">Lifecycle and EoX</a>
+</li>
+<li><a href="vlan-port-finder.html">VLAN Port Finder</a>
+</li>
 </ul>
             </div>
         </main>

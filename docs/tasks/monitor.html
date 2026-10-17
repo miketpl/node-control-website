@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor tab — NodeControl Docs</title>
-    <meta name="description" content="Monitor tab — NodeControl documentation">
+    <title>Monitor — NodeControl Docs</title>
+    <meta name="description" content="Monitor — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -61,14 +62,25 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="topology-l2.html" class="docs-nav-link">L2 Topology</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
-      <a href="discovery.html" class="docs-nav-link">Network Discovery</a>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="monitor.html" class="docs-nav-link active">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +90,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +112,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,73 +135,102 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Monitor tab
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Monitor
                 </div>
-                <h1 id="monitor-tab">Monitor tab</h1>
+                <h1 id="monitor">Monitor</h1>
 <blockquote>
-<p>Available on <strong>Pro</strong> and <strong>AI</strong> tiers only.</p>
+<p><strong>Monitor</strong> is a sidebar page on <strong>Pro</strong> and the <strong>AI</strong> edition. Free does not show it.</p>
 </blockquote>
 <p>The Monitor tab is a continuous-polling dashboard for one or more devices — it samples interface counters, CPU, memory, and environmental data on a configurable interval and renders graphs and threshold alerts.</p>
-<p>Think of it as Node Control's lightweight equivalent of an SNMP poller, but using SSH instead of SNMP.</p>
-<h2 id="open-the-monitor-tab">Open the Monitor tab</h2>
+<p>Think of it as Node Control&#x27;s lightweight equivalent of an SNMP poller, but using SSH instead of SNMP.</p>
+<h2 id="open-monitor">Open Monitor</h2>
 <ul>
-<li>Top-level <strong>Monitor</strong> tab (alongside Engineer, Discovery, Tasks, Reports)</li>
+<li><strong>Monitor</strong> in the left sidebar. It is not in the Engineer task list.
+</li>
 </ul>
 <h2 id="adding-devices-to-monitor">Adding devices to monitor</h2>
 <ol>
-<li>Click <strong>+ Add Device</strong> in the Monitor tab</li>
-<li>Pick from your library</li>
-<li>Choose which metrics to poll:</li>
-<li><strong>Interface counters</strong> (in/out octets, errors, drops)</li>
-<li><strong>CPU utilisation</strong></li>
-<li><strong>Memory utilisation</strong></li>
-<li><strong>Environmental</strong> (temperature, fans, PSU)</li>
-<li><strong>PoE</strong> (per-port power draw, total budget)</li>
-<li><strong>BGP / OSPF peer state</strong></li>
-<li>Set polling interval (15s, 30s, 1m, 5m)</li>
-<li>Click <strong>Start</strong></li>
+<li>Click <strong>+ Add Device</strong> in the Monitor tab
+</li>
+<li>Pick from your library
+</li>
+<li>Choose which metrics to poll:
+<ul>
+<li><strong>Interface counters</strong> (in/out octets, errors, drops)
+</li>
+<li><strong>CPU utilisation</strong>
+</li>
+<li><strong>Memory utilisation</strong>
+</li>
+<li><strong>Environmental</strong> (temperature, fans, PSU)
+</li>
+<li><strong>PoE</strong> (per-port power draw, total budget)
+</li>
+<li><strong>BGP / OSPF peer state</strong>
+</li>
+</ul>
+</li>
+<li>Set polling interval (15s, 30s, 1m, 5m)
+</li>
+<li>Click <strong>Start</strong>
+</li>
 </ol>
 <p>The device appears as a tile in the Monitor tab with live-updating graphs.</p>
 <h2 id="tile-layout">Tile layout</h2>
 <p>Each monitored device gets a tile showing:</p>
 <ul>
-<li><strong>Hostname + IP</strong> header</li>
-<li><strong>CPU / Memory</strong> sparkline</li>
-<li><strong>Interface error rate</strong> graph</li>
-<li><strong>Up/down indicator</strong> with last-successful-poll timestamp</li>
-<li><strong>Alerts</strong> badge (red number = how many threshold breaches active)</li>
+<li><strong>Hostname + IP</strong> header
+</li>
+<li><strong>CPU / Memory</strong> sparkline
+</li>
+<li><strong>Interface error rate</strong> graph
+</li>
+<li><strong>Up/down indicator</strong> with last-successful-poll timestamp
+</li>
+<li><strong>Alerts</strong> badge (red number = how many threshold breaches active)
+</li>
 </ul>
 <p>Click a tile to expand it to a full-screen detailed view.</p>
+<h2 id="which-interfaces-are-counted">Which interfaces are counted</h2>
+<p>Interface tables list physical ports and port-channels only. VLAN interfaces, tunnels, and loopbacks are excluded. Their counters repeat traffic already counted on the ports underneath, and that made every utilisation figure suspect. Threshold alerts use the same rule, so a &quot;link at 90%&quot; alert cannot point at an SVI.</p>
 <h2 id="threshold-alerts">Threshold alerts</h2>
 <p>For each metric, set:</p>
 <ul>
-<li><strong>Warning</strong> threshold (e.g., CPU &gt; 80%)</li>
-<li><strong>Critical</strong> threshold (e.g., CPU &gt; 95%)</li>
-<li><strong>Recovery</strong> threshold (the value the metric must drop below to clear the alert)</li>
+<li><strong>Warning</strong> threshold (e.g., CPU &gt; 80%)
+</li>
+<li><strong>Critical</strong> threshold (e.g., CPU &gt; 95%)
+</li>
+<li><strong>Recovery</strong> threshold (the value the metric must drop below to clear the alert)
+</li>
 </ul>
 <p>When a threshold is breached:</p>
 <ul>
-<li>The tile turns yellow (warning) or red (critical)</li>
-<li>An entry appears in the <strong>Alerts</strong> sub-panel</li>
-<li>Optionally: a desktop notification fires</li>
+<li>The tile turns yellow (warning) or red (critical)
+</li>
+<li>An entry appears in the <strong>Alerts</strong> sub-panel
+</li>
+<li>Optionally: a desktop notification fires
+</li>
 </ul>
 <p>Alert history is logged to:</p>
 <pre><code>~/Library/Application Support/netOps/monitor_alerts.log
 </code></pre>
 <h2 id="polling-interval-and-ssh-usage">Polling interval and SSH usage</h2>
-<p>Each polled device opens an SSH session and reuses it across polls — Monitor doesn't reconnect on every interval, which would be heavy. The session is kept alive with periodic keepalives.</p>
+<p>Each polled device opens an SSH session and reuses it across polls — Monitor doesn&#x27;t reconnect on every interval, which would be heavy. The session is kept alive with periodic keepalives.</p>
 <p>A typical poll runs 3–8 SSH commands and takes ~2 seconds per device. Polling 20 devices at 30-second intervals is comfortable; 100 devices at 30s starts to strain the SSH connection pool.</p>
 <p>For larger-scale monitoring, increase the interval to 1m or 5m, or split devices across multiple Monitor sessions.</p>
 <h2 id="what-gets-graphed">What gets graphed</h2>
 <ul>
-<li><strong>Time series</strong>: in-memory rolling window of the last N samples (configurable, default 1 hour)</li>
-<li><strong>Long-term storage</strong>: optional persistence to SQLite for historical lookback (Settings → Monitor → Persist samples)</li>
+<li><strong>Time series</strong>: in-memory rolling window of the last N samples (configurable, default 1 hour)
+</li>
+<li><strong>Long-term storage</strong>: optional persistence to SQLite for historical lookback (Settings → Monitor → Persist samples)
+</li>
 </ul>
 <p>Graphs are zoomable and pannable. Click and drag to select a time range for closer inspection.</p>
 <h2 id="vendor-coverage">Vendor coverage</h2>
@@ -262,9 +308,12 @@
 <p>Vendor-specific gaps are documented in <a href="../vendors/overview.html">Vendors</a>.</p>
 <h2 id="stopping-removing">Stopping / removing</h2>
 <ul>
-<li><strong>Pause</strong> a tile to stop polling without removing it</li>
-<li><strong>Remove</strong> to delete the tile (clears its history if not persisted)</li>
-<li><strong>Pause all</strong> stops polling across every tile (useful when you need to free SSH sessions for other tasks)</li>
+<li><strong>Pause</strong> a tile to stop polling without removing it
+</li>
+<li><strong>Remove</strong> to delete the tile (clears its history if not persisted)
+</li>
+<li><strong>Pause all</strong> stops polling across every tile (useful when you need to free SSH sessions for other tasks)
+</li>
 </ul>
 <h2 id="when-to-use-monitor-vs-reports">When to use Monitor vs Reports</h2>
 <table>
@@ -276,7 +325,7 @@
 </thead>
 <tbody>
 <tr>
-<td>One-off snapshot ("what's the CPU now?")</td>
+<td>One-off snapshot (&quot;what&#x27;s the CPU now?&quot;)</td>
 <td>Reports → Port Utilisation</td>
 </tr>
 <tr>
@@ -288,8 +337,8 @@
 <td>Monitor with <strong>Persist samples</strong> ON</td>
 </tr>
 <tr>
-<td>Historical analysis ("how loaded was this port last month?")</td>
-<td>Not currently supported — Monitor's persistence is a rolling window, not a full TSDB. For long-term, use a dedicated NMS</td>
+<td>Historical analysis (&quot;how loaded was this port last month?&quot;)</td>
+<td>Not currently supported — Monitor&#x27;s persistence is a rolling window, not a full TSDB. For long-term, use a dedicated NMS</td>
 </tr>
 </tbody>
 </table>
@@ -304,7 +353,7 @@
 </thead>
 <tbody>
 <tr>
-<td>Tile shows "Disconnected" intermittently</td>
+<td>Tile shows &quot;Disconnected&quot; intermittently</td>
 <td>SSH idle timeout on device</td>
 <td>Lower the keepalive interval (Settings → Monitor → SSH keepalive)</td>
 </tr>
@@ -315,15 +364,20 @@
 </tr>
 <tr>
 <td>CPU graph showing 0% on devices that are clearly loaded</td>
-<td>Vendor's CPU command output not parsed correctly</td>
-<td>Open a support ticket with the device's <code>show processes cpu</code> output</td>
+<td>Vendor&#x27;s CPU command output not parsed correctly</td>
+<td>Open a support ticket with the device&#x27;s <code>show processes cpu</code> output</td>
 </tr>
 </tbody>
 </table>
+<h2 id="ai-on-monitor">AI on Monitor</h2>
+<p>On Pro and the AI edition, Monitor can use the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review. Nothing is sent unless you ask. Free does not send.</p>
+<p>This chat is not the AI-edition dashboard. That dashboard stays on the AI edition.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../reports/overview.html">Reports</a> — for point-in-time snapshots</li>
-<li><a href="find-device.html">Find Device</a> — for "who's plugged into where" type questions</li>
+<li><a href="../reports/overview.html">Reports</a> — for point-in-time snapshots
+</li>
+<li><a href="find-device.html">Find Device</a> — for &quot;who&#x27;s plugged into where&quot; type questions
+</li>
 </ul>
             </div>
         </main>

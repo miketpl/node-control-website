@@ -1,12 +1,14 @@
 # Layer 2 topology map
 
-> Available on **Pro** and **AI** tiers only.
+**L2 Topology Builder** runs on **Free**, **Pro**, and the **AI** edition. On Free it is one of the five tasks that are not greyed out. Safe Mode leaves it in the list.
 
-The L2 topology map walks every switch in a site, reads its MAC address table and CDP/LLDP neighbours, and renders an interactive HTML map of switch-to-switch connectivity.
+The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.
 
 ## Open the task
 
-- **Tasks** tab → **Topology (L2)** in the task picker → click **Run**
+- Engineer command bar → **Task** → **L2 Topology Builder** → **Run**
+
+An optional AI summary of the map (structure, single points of failure, failed devices) is on Pro and the AI edition. Tick it for that run. See [AI provider](../settings/ai.md).
 
 ## Configure
 
@@ -48,7 +50,7 @@ Interactions:
 - **Hover** a node — shows interface details
 - **Click** a node — opens the [Port Connections](#right-click-port-connections) dialog
 - **Drag** a node — repositions it; the force-directed layout adjusts
-- **Right-click** a node — context menu with options (Port Connections, Show Device Type, Open SSH)
+- **Right-click** a node — context menu with options (Port Connections, Show Device Type)
 
 ## Right-click → Port Connections
 
@@ -118,4 +120,4 @@ You can copy it elsewhere or attach to support tickets — it's a self-contained
 
 - [Layer 3 topology](topology-l3.md) — adds routing info, OSPF/BGP peers
 - [WAN topology](topology-wan.md) — across-site view
-- [Network Discovery](discovery.md) — live walk without needing the library pre-populated
+- [Discover](discovery.md) — live walk without needing the library pre-populated. Pro and AI; not on Free

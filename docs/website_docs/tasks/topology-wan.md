@@ -1,12 +1,12 @@
 # WAN topology map
 
-> Available on **Pro** and **AI** tiers only.
+> The task name is **Watcher of The WAN**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 The WAN topology map renders the cross-site connectivity between your sites — the routers, firewalls, and SD-WAN edges that link locations together.
 
 ## Open the task
 
-- **Tasks** tab → **Topology (WAN)** → **Run**
+- Engineer command bar → **Task** → **Watcher of The WAN** → **Run**
 
 ## Configure
 

@@ -21,14 +21,16 @@ The Test button confirms the key can fetch your org list. If it returns "Success
 |---|---|
 | Find Device (wireless lookup) | ✓ |
 | Meraki Usage Summary report | ✓ |
+| [Meraki Configurator](../tasks/meraki-configurator.md) (SSIDs and RF profiles) | ✓ on Pro and AI |
 | Inventory (Meraki devices) | partial — basic info from Dashboard |
 | Topology integration | partial — Meraki devices appear as "endpoint" nodes in L2 maps where seen via CDP/LLDP from non-Meraki switches |
 
-## What doesn't work (yet)
+## What doesn't work
 
-- SSH-style direct device management (Meraki doesn't expose CLI for managed devices)
-- Live config push (use Dashboard API directly for that)
-- Topology maps purely between Meraki devices (would require Meraki's own topology API; on roadmap)
+- SSH to a managed Meraki device. Meraki does not expose that CLI
+- A topology made only of Meraki-to-Meraki links. Meraki devices still show up as endpoints on an L2 map when a non-Meraki switch sees them by CDP or LLDP
+
+SSID and RF profile changes are the [Meraki Configurator](../tasks/meraki-configurator.md), on Pro and the AI edition. Safe Mode blocks a push. The older line on this page that said to use the Dashboard by hand for any config push is out of date for those two objects.
 
 ## Find Device — wireless lookup
 
