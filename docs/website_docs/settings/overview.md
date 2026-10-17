@@ -8,7 +8,7 @@ Settings is organised by section. Pick the one you need.
 
 ## API Platforms
 
-**Settings → API Platforms** holds **Cisco DNA Center / Catalyst Center** and **Cisco ISE (Identity Services Engine)**. The fields are on the [Lifecycle](../reports/lifecycle.md) and [Change ISE Password](../tasks/change-ise-password.md) pages. There is no verify-SSL control. Certificate verification is off for all API clients.
+**Settings → API Platforms** holds **Catalyst Center** and **Cisco ISE (Identity Services Engine)**. The fields are on the [Lifecycle](../reports/lifecycle.md) and [Change ISE Password](../tasks/change-ise-password.md) pages. There is no verify-SSL control. Certificate verification is off for all API clients.
 
 ## Settings tabs
 
