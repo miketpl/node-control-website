@@ -96,11 +96,9 @@ sentences. If a claim can't be made concretely, don't make it.
 
 ## Current state / known issues (2026-10-17)
 
-- Branch `launch-copy` (unmerged): launch copy rewrite — new hero, Free
-  Edition feature list, AI section moved below Pricing. The copy direction in
-  "What we are trying to achieve" above reflects it.
-- Branch `direct-download` (unmerged): redeemed codes auto-start the installer
-  download with a fallback link.
+- The launch copy rewrite (new hero, Free Edition feature list, AI section
+  below Pricing) and the direct-download redeem flow (auto-start installer
+  with fallback link) are both merged to `main` and live.
 - `images/hero-banner.png` still has the old "AUTOMATE EVERYTHING" tagline
   baked into the image; awaiting a re-export. Don't try to fix this in HTML.
 - The Pro/AI tier download links point at private GitHub repos and 404 for
