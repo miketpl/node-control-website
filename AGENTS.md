@@ -53,7 +53,7 @@ sentences. If a claim can't be made concretely, don't make it.
 |---|---|---|
 | `index.html` | The entire landing page | Yes — content changes |
 | `css/style.css` | All landing-page styles | Yes — bump the `?v=` cache-buster in `index.html` when you change it |
-| `js/main.js` | Nav, scroll-spy, download/verification flow, Stripe | **Only with explicit instruction** |
+| `js/main.js` | Nav, scroll-spy, download/verification flow, Stripe | **Only with explicit instruction** — and bump its `?v=` cache-buster in `index.html` when it changes, or Cloudflare keeps serving the old file |
 | `docs/` | Documentation site (generated from markdown sources) | Yes — content changes |
 | `images/` | Logos, screenshots, banners | Yes — adding/replacing images |
 | `backend/` | Flask license API **source**. Runs on a separate VPS; editing it here does not deploy it | **No** |
