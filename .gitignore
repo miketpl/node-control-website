@@ -9,3 +9,5 @@ __pycache__/
 *.deb
 images/new_screenshots/
 images/screenshots/sanitise_mapping.json
+*.db-shm
+*.db-wal
