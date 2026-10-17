@@ -15,7 +15,7 @@ The Test button confirms the key can fetch the org list.
 
 ## Open the report
 
-- **Reports** tab → **Meraki Usage Summary** → **Run**
+- **Reports** in the left sidebar → **Meraki Usage Summary** → **Run**
 
 The scope selector applies at the org level — pick all orgs, or specific orgs your key has access to.
 

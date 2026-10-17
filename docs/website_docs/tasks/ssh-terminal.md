@@ -9,8 +9,7 @@ Available on **Free**, **Pro**, and **AI**.
 Three ways:
 
 1. Right-click a device in the library → **SSH**
-2. From a topology / Find Device result → right-click a node → **Open SSH**
-3. **Tools → SSH Terminal** → enter IP manually
+2. From a topology or Find Device result → right-click a node → **Open SSH**
 
 A new tab opens in the terminal panel with the SSH session.
 
@@ -27,18 +26,24 @@ Tabs persist across app restarts (sessions reconnect automatically using the sam
 
 - **Full xterm emulation** via pyte — Cisco / Aruba CLI menus render correctly
 - **Mouse selection** for copy
-- **Cmd+C / Ctrl+C** to copy selected text (does NOT send Ctrl+C to the device; that's mapped to the device's interrupt key)
+- **Ctrl+C** copies the selection. With nothing selected, Ctrl+C still interrupts the device
+- On a Mac, **Cmd+C** copies as well
 - **Cmd+V / Ctrl+Shift+V** to paste
+- Output is a fixed-width font, including on Windows, so a table such as `show ip interface brief` lines up
+- The session tells the device the terminal width, per vendor, including PAN-OS, so a wrapped command edits on the column you expect
+- A pasted line that wraps can be edited and deleted normally
+- You can switch between command mode and terminal mode while a command is still running
 - **Search** within scrollback (Cmd+F / Ctrl+F)
 - **Save scrollback** to a text file
 - **Configurable colour theme** (Settings → Terminal)
 
 ## Sending Ctrl+C to the device
 
-To send Ctrl+C as an interrupt to the device (e.g., to cancel a long `show tech-support`):
+Ctrl+C copies when text is selected. Click somewhere with no selection, then Ctrl+C, to interrupt the device (for example to cancel a long `show tech-support`).
 
-- macOS: **Ctrl+C** sends the interrupt (Cmd+C is copy)
-- Windows / Linux: **Ctrl+Shift+C** = copy, **Ctrl+C** = interrupt
+## Login notices
+
+If ISE or another TACACS+ server says at login that the password is about to expire, or that it must be changed, the terminal shows that message before the prompt. Each notice is repeated in bold yellow. The Connection Manager log keeps a `LOGIN NOTICE` line per notice. Tasks log the same notice.
 
 ## Send command to multiple sessions
 
@@ -74,11 +79,12 @@ To disable session logging: Settings → Terminal → uncheck **Log session outp
 
 ## Reconnection
 
-If a session drops (network blip, idle timeout):
+If an SSH session times out or drops:
 
-- The tab shows "Disconnected" in red
-- Click **Reconnect** to re-establish using the same credentials
-- Sessions auto-reconnect after sleep/wake on macOS if you have **Auto-reconnect** enabled in Settings
+- The tab shows a **Session Timed Out** banner. It does not sit there frozen
+- **Reconnect** opens the session again in the same tab, with the same credential profile
+- If you were in terminal mode, you land back in terminal mode, ready for input
+- Reconnect works on Palo Alto firewalls as well as on Cisco switches
 
 ## Safe Mode and the terminal
 
@@ -94,7 +100,7 @@ You cannot currently share an SSH session between users — each session is loca
 |---|---|---|
 | Terminal renders garbage characters | Vendor sending unsupported escape sequences | Try a different terminal type — Settings → Terminal → Terminal type: vt100 |
 | Paste truncates long commands | Some devices have small input buffer | Settings → Terminal → enable **Paste with delay** (slows pastes to one line at a time) |
-| Ctrl+C sends interrupt when you wanted to copy | macOS only — use Cmd+C for copy |
+| Ctrl+C interrupts when you wanted to copy | A selection has to be active. Select the text, then Ctrl+C. On a Mac, Cmd+C copies as well |
 | Session locks up | Heavy command output exceeding terminal buffer | Settings → Terminal → increase scrollback size |
 
 ## Next steps

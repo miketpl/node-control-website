@@ -11,7 +11,7 @@ Manual is simplest for a first device; subnet scan is how you'd populate a real 
 
 ## Manual: add one device
 
-1. In the **Engineer** tab (the main library view), click **+ Add Device** (or right-click in the device table → **Add Device**)
+1. Open **Engineer** from the left sidebar (Home has an Engineer quick action). Click **+ Add Device**, or right-click in the device table → **Add Device**
 2. Fill in:
    - **IP address** — required (e.g., `10.1.1.1`)
    - **Hostname** — optional; the app will fill this from `show version` once it connects
@@ -64,7 +64,7 @@ See [Library Updater details](../library/subnet-scan.md) for advanced options (w
 
 ## Free tier device limit
 
-If you're on the Free tier, your library is capped at **25 devices**. The library will still accept additions beyond 25, but tools that read from the library — Find Device, Inventory report, Reports tab — only operate on the first 25 (sorted by numeric IP).
+Free holds **25 devices**. There is no time limit. The cap is in the library database. A larger library left over from Pro is not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 

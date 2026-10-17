@@ -58,6 +58,20 @@ Useful when a single switch in your library has a different password from everyt
 
 For environments where Firewalls have different creds from Switches, you can assign a profile per library tab in the Credentials settings.
 
+## The profile you select is the one that is used
+
+A saved per-device-type mapping used to be able to outrank an explicit choice, so a device could log in with an account you had not selected. That no longer happens. If you pick a profile, that profile is the one that is tried.
+
+You can reorder profiles in Settings. **All** tries them from the top down and stops at the first one that authenticates. The connection log names the account that actually got in.
+
+The credential prompt remembers the profile you accepted, per task. Config Push and Change ISE Password can each keep their own. The log says why a profile was pre-selected: it was remembered, it came from the dropdown, or it no longer exists.
+
+## Login notices
+
+When ISE (TACACS+) says at login that your password is about to expire, or that you must change it, Node Control shows that message. The terminal replays it before the prompt and repeats each notice in bold yellow. Tasks log it as well. See [SSH Terminal](../tasks/ssh-terminal.md).
+
+Changing your own ISE network-access password is a Pro task: [Change ISE Password](../tasks/change-ise-password.md).
+
 ## Two-credential fallback
 
 Node Control supports trying *two* credential profiles on each connection — useful if you're migrating from old passwords to new ones. Set up both as profiles and pick them in the per-device dropdown; the app tries the first, falls back to the second if the first fails authentication.

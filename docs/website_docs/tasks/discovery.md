@@ -18,7 +18,7 @@ Contrast with [L2 topology](topology-l2.md), which only maps devices already in 
 
 ## Open the task
 
-- **Discovery** tab (separate top-level tab)
+- **Discovery** in the left sidebar. It is its own page, not an Engineer task.
 
 ## Configure
 

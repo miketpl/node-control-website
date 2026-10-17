@@ -6,9 +6,14 @@ Default state: **ON** for new installs. Most users keep it on.
 
 ## Why Safe Mode exists
 
-Node Control was built primarily as a read-only operations tool. The few write actions it supports (port shut/no-shut via [Find Device](../tasks/find-device.md#port-actions)) are dangerous if triggered accidentally — a misclick could disable a port carrying critical traffic.
+Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:
 
-Safe Mode provides a global "I'm just looking, no changes" guarantee. Toggle it off only when you intentionally need to use a write action.
+- [Find Device](../tasks/find-device.md#port-actions-shut-no-shut) port shut and re-enable
+- [Config Push](../tasks/config-push.md) and its revert
+- [Config Compliance](../tasks/config-compliance.md) remediation (type `REMEDIATE`)
+- [Meraki Configurator](../tasks/meraki-configurator.md) push and revert (type `PUSH`)
+
+Safe Mode blocks compliance remediation. It also blocks a Meraki push and a Meraki revert. Leave it on until you mean to change something.
 
 ## What's allowed under Safe Mode
 
@@ -120,6 +125,6 @@ For everyday operations (topology, reports, troubleshooting), Safe Mode should s
 
 ## Next steps
 
-- [Find Device port actions](../tasks/find-device.md#port-actions) — the main use case for temporarily disabling Safe Mode
+- [Find Device port actions](../tasks/find-device.md#port-actions-shut-no-shut) — the main use case for temporarily disabling Safe Mode
 - [Audit log](../security/audit-log.md)
 - [Credential storage](../security/credential-storage.md)

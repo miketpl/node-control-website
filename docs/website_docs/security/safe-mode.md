@@ -22,7 +22,7 @@ See [Settings → Safe Mode](../settings/safe-mode.md) for configuration and beh
 
 New installations: Safe Mode **ON**.
 
-This is enforced as a sensible default — the cost of being too safe is occasionally needing to toggle it off for a port action, vs. the cost of being too permissive (silent config changes).
+New installs start with Safe Mode on. You turn it off for a port action or a push you intend to send, then turn it back on.
 
 ## Compliance use cases
 
@@ -56,7 +56,7 @@ For high-compliance environments:
 - Add specific commands to the **blocklist** that should NEVER run (e.g., `reload`, `format`)
 - Periodically review the audit log for unexpected toggles
 
-For deployment to multiple machines, [export Settings](../settings/overview.md#exporting--importing-settings) so the same Safe Mode configuration applies fleet-wide.
+For deployment to multiple machines, [export Settings](../settings/overview.md#exporting-importing-settings) so the same Safe Mode configuration applies fleet-wide.
 
 ## Integration with SSH credential separation
 

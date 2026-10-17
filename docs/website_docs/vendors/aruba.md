@@ -37,7 +37,7 @@ VSX-paired CX switches appear as two separate devices in topology. The peer rela
 
 ## Configuration model
 
-Aruba CX uses a structured CLI with explicit `configure terminal` / `exit` boundaries. Node Control is read-only by design — won't enter config mode except for [Find Device port actions](../tasks/find-device.md#port-actions).
+Aruba CX uses a structured CLI with explicit `configure terminal` / `exit` boundaries. The write path I can confirm here is [Find Device port actions](../tasks/find-device.md#port-actions-shut-no-shut). Config compliance remediation is Cisco IOS, IOS-XE, and NX-OS only.
 
 ## REST API
 

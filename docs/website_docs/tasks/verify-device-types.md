@@ -11,7 +11,7 @@ A bulk sweep that re-runs device type detection across every device (or a subset
 
 ## Open the task
 
-- **Tasks** tab → **Verify Device Types** → **Run**
+- Engineer command bar → **Task** → **Verify Device Types** → **Run**
 
 ## Configure
 

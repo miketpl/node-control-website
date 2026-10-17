@@ -94,11 +94,7 @@ All run in sequence. Total time scales linearly with subnet count.
 
 ## Free tier behaviour
 
-The subnet scan itself works on Free, but:
-
-- Devices added beyond the 25-device cap are accepted into the library but won't be visible to other tools
-- This is **intentional** — subnet scan is the escape hatch for free users who want to inventory devices that aren't yet in their library, without being blocked by the cap
-- After scanning, you can review the full result list and decide which 25 are most important to keep — the rest can be ignored or deleted
+The subnet scan runs on Free. The library still holds 25 devices. Review the result list and keep the devices you want inside that cap.
 
 ## Re-scanning
 

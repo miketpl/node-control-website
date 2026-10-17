@@ -11,7 +11,10 @@ The "where is this MAC / IP?" tool. Give Find Device one or more MAC addresses o
 
 ## Open the task
 
-- **Tasks** tab → **Find Device** → **Run**
+- Engineer command bar → **Task** → **Find Device** → **Run**
+- Home has a **Find Device** quick action
+
+Copy from the result tables with Ctrl+C, or right-click → **Copy**. The clipboard gets tab-separated rows, so a paste lands in a spreadsheet as columns and in an email as text. **Copy with headers** includes the column headings.
 
 ## Input targets
 
@@ -132,6 +135,10 @@ Find Device refuses to run if:
 
 - **Wireless mode** + no MACs in input → "Meraki client search is MAC-keyed. Use Unknown mode for IP→MAC."
 - **Wireless mode** + no Meraki API key configured → "Configure a Meraki Dashboard API key in Settings → Credentials → Meraki API."
+
+## When the MAC table does not contain the target
+
+If an edge switch parses its MAC table and the target is not in it, the log prints the target beside what that table actually parsed to. A mismatch then has a cause, instead of a bare miss.
 
 ## Honest "not found" reporting
 

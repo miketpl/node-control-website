@@ -79,7 +79,7 @@ The license check exists to:
 
 - Track active users for support and update notifications
 - Allow rapid response if a code or account is misused
-- Give us a feedback channel ("we noticed v0.9.29 is crashing for 3 customers — let's investigate")
+- Give me a way to see which build is actually in use when a crash report comes in
 
 We do *not* use your email or activation data for marketing. Our [privacy policy](https://nodecontrol.io/privacy) covers full details.
 

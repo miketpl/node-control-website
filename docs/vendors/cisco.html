@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -127,7 +141,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
                 </div>
                 <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA</h1>
-<p>Node Control's most comprehensive vendor coverage. All Cisco platforms are first-class supported.</p>
+<p>Node Control&#x27;s most comprehensive vendor coverage. All Cisco platforms are first-class supported.</p>
 <h2 id="driver-mapping">Driver mapping</h2>
 <table>
 <thead>
@@ -170,55 +184,88 @@
 <h2 id="what-works">What works</h2>
 <p>Everything Node Control does works on Cisco:</p>
 <ul>
-<li>L2 topology with full CDP/LLDP + MAC table</li>
-<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF</li>
-<li>WAN topology with BGP + IPSec tunnel detection</li>
-<li>Port Utilisation (including PoE)</li>
-<li>Bandwidth (5-min averages, peaks)</li>
-<li>VLAN Port Finder (access + trunk + voice)</li>
-<li>Find Device (wired walk + ARP probe + port shut/no-shut)</li>
-<li>Inventory (stack members, line cards, transceivers)</li>
-<li>Verify Device Types</li>
-<li>Monitor (CPU, memory, environmental, BGP/OSPF peers)</li>
-<li>AI chat (interpreting <code>show</code> output and configs)</li>
+<li>L2 topology with full CDP/LLDP + MAC table
+</li>
+<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF
+</li>
+<li>WAN topology with BGP + IPSec tunnel detection
+</li>
+<li>Port Utilisation (including PoE)
+</li>
+<li>Bandwidth (5-min averages, peaks)
+</li>
+<li>VLAN Port Finder (access + trunk + voice)
+</li>
+<li>Find Device (wired walk + ARP probe + port shut/no-shut)
+</li>
+<li>Inventory (stack members, line cards, transceivers)
+</li>
+<li>Verify Device Types
+</li>
+<li>Monitor (CPU, memory, environmental, BGP/OSPF peers)
+</li>
+<li><a href="../tasks/config-push.html">Config Push</a>, <a href="../tasks/packet-capture.html">packet capture</a>, and <a href="../tasks/config-compliance.html">config compliance</a> (remediation is IOS, IOS-XE, and NX-OS)
+</li>
+<li><a href="../reports/security-audit.html">Security Audit</a> and <a href="../reports/lifecycle.html">Lifecycle / EoX</a>
+</li>
+<li>Feature-level AI summaries, on Pro and the AI edition, with your own provider. The AI dashboard is the AI edition only. See <a href="../settings/ai.html">AI provider</a>
+</li>
 </ul>
 <h2 id="auto-detection-signature">Auto-detection signature</h2>
 <p>For type detection, Node Control looks for in <code>show version</code>:</p>
 <ul>
-<li>"Cisco IOS Software" → cisco_ios</li>
-<li>"Cisco IOS XE Software" → cisco_xe</li>
-<li>"Cisco Nexus Operating System" → cisco_nxos</li>
-<li>"Cisco IOS XR" → cisco_xr</li>
-<li>"Cisco Adaptive Security Appliance" → cisco_asa</li>
+<li>&quot;Cisco IOS Software&quot; → cisco_ios
+</li>
+<li>&quot;Cisco IOS XE Software&quot; → cisco_xe
+</li>
+<li>&quot;Cisco Nexus Operating System&quot; → cisco_nxos
+</li>
+<li>&quot;Cisco IOS XR&quot; → cisco_xr
+</li>
+<li>&quot;Cisco Adaptive Security Appliance&quot; → cisco_asa
+</li>
 </ul>
 <h2 id="nx-os">NX-OS</h2>
 <p>NX-OS has subtle CLI differences from IOS-XE:</p>
 <ul>
-<li><code>show interface</code> (no plural) instead of <code>show interfaces</code></li>
-<li><code>show ip route vrf &lt;vrf&gt;</code> includes VRF as a separate context</li>
-<li>VPC and FEX add their own commands (<code>show vpc</code>, <code>show fex</code>) — Node Control includes these in the catalog</li>
+<li><code>show interface</code> (no plural) instead of <code>show interfaces</code>
+</li>
+<li><code>show ip route vrf &lt;vrf&gt;</code> includes VRF as a separate context
+</li>
+<li>VPC and FEX add their own commands (<code>show vpc</code>, <code>show fex</code>) — Node Control includes these in the catalog
+</li>
 </ul>
 <h2 id="asa">ASA</h2>
 <p>Cisco ASA firewalls are supported with these caveats:</p>
 <ul>
-<li><code>show interface</code> works but counters differ from IOS</li>
-<li>VPN / IPSec inspection via <code>show crypto ipsec sa</code></li>
-<li>No L3 routing protocol parsing beyond BGP (ASA's OSPF is rarely used at scale)</li>
-<li>Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged</li>
+<li><code>show interface</code> works but counters differ from IOS
+</li>
+<li>VPN / IPSec inspection via <code>show crypto ipsec sa</code>
+</li>
+<li>No L3 routing protocol parsing beyond BGP (ASA&#x27;s OSPF is rarely used at scale)
+</li>
+<li>Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
+</li>
 </ul>
 <h2 id="ios-xr">IOS-XR</h2>
 <p>For service-provider-grade ASR9k / NCS gear:</p>
 <ul>
-<li>Most "show" commands match IOS conventions</li>
-<li>Configuration commit model is different but Node Control is read-only in tasks (won't see this difference)</li>
-<li>BGP at SP scale — full peer enumeration</li>
+<li>Most &quot;show&quot; commands match IOS conventions
+</li>
+<li>Configuration commit model is different but Node Control is read-only in tasks (won&#x27;t see this difference)
+</li>
+<li>BGP at SP scale — full peer enumeration
+</li>
 </ul>
 <h2 id="stack-and-vss">Stack and VSS</h2>
 <p>Cisco stacks (3850 stack, 9300 stack) and VSS pairs (4500/6500/6800):</p>
 <ul>
-<li>Each member appears as a separate Inventory row tagged with the master</li>
-<li>L2/L3 topology shows the stack as one logical device</li>
-<li>Port names include the member number (e.g., <code>Gi1/0/1</code>, <code>Gi2/0/1</code>)</li>
+<li>Each member appears as a separate Inventory row tagged with the master
+</li>
+<li>L2/L3 topology shows the stack as one logical device
+</li>
+<li>Port names include the member number (e.g., <code>Gi1/0/1</code>, <code>Gi2/0/1</code>)
+</li>
 </ul>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
@@ -237,8 +284,8 @@
 </tr>
 <tr>
 <td><code>show vlan brief</code> empty on routers</td>
-<td>Routers without integrated switching don't have VLAN tables</td>
-<td>Expected — VLAN Port Finder shows them as "no VLAN data"</td>
+<td>Routers without integrated switching don&#x27;t have VLAN tables</td>
+<td>Expected — VLAN Port Finder shows them as &quot;no VLAN data&quot;</td>
 </tr>
 <tr>
 <td>ISR4451 / ASR9001 not detected after fresh import</td>
@@ -250,23 +297,39 @@
 <h2 id="catalyst-9000-ios-xe-differences">Catalyst 9000 — IOS-XE differences</h2>
 <p>The Catalyst 9000 series runs IOS-XE which has minor CLI differences from IOS classic:</p>
 <ul>
-<li><code>show running-config</code> works the same</li>
-<li><code>show platform</code> exposes more detail on bootstrap state</li>
-<li>LISP, SD-Access overlays add commands that aren't in the standard catalog (Settings → Custom Commands if you need them)</li>
+<li><code>show running-config</code> works the same
+</li>
+<li><code>show platform</code> exposes more detail on bootstrap state
+</li>
+<li>LISP, SD-Access overlays add commands that aren&#x27;t in the standard catalog (Settings → Custom Commands if you need them)
+</li>
 </ul>
 <h2 id="known-limitations">Known limitations</h2>
 <ul>
-<li>SD-Access overlays (LISP-based) are not specially handled — they appear as standard IOS-XE devices in topology</li>
-<li>TrustSec / SGT data is not exposed in any report</li>
-<li>Embedded IPS sensors (IPS-4000 / IDS) — limited support, basic Inventory only</li>
+<li>SD-Access overlays (LISP-based) are not specially handled — they appear as standard IOS-XE devices in topology
+</li>
+<li>TrustSec / SGT data is not exposed in any report
+</li>
+<li>Embedded IPS sensors (IPS-4000 / IDS) — limited support, basic Inventory only
+</li>
 </ul>
-<h2 id="configuration-management">Configuration management</h2>
-<p>Node Control is read-only by design for everything except <a href="../tasks/find-device.html#port-actions">Find Device port actions</a>. It doesn't push configs, doesn't backup configs, doesn't restore.</p>
-<p>For config management workflows, integrate with a dedicated tool (NetBox / Nautobot / RANCID / Oxidized). Node Control complements rather than replaces those.</p>
+<h2 id="changes-it-will-push">Changes it will push</h2>
+<p>Maps, inventory, and the show-command reports are read-only. On Cisco the write paths are:</p>
+<ul>
+<li><a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device</a> port shut and re-enable
+</li>
+<li><a href="../tasks/config-push.html">Config Push</a> — a per-port template, on Pro and the AI edition
+</li>
+<li><a href="../tasks/config-compliance.html">Config Compliance</a> remediation — IOS, IOS-XE, and NX-OS, on Pro and the AI edition
+</li>
+</ul>
+<p>Each one asks you to confirm before it sends anything. Safe Mode blocks compliance remediation.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/topology-l3.html">Topology L3</a> — full BGP / OSPF detail for Cisco</li>
-<li><a href="../tasks/find-device.html">Find Device</a> — VRF-aware ARP probe works across Cisco VRFs</li>
+<li><a href="../tasks/topology-l3.html">Topology L3</a> — full BGP / OSPF detail for Cisco
+</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — VRF-aware ARP probe works across Cisco VRFs
+</li>
 </ul>
             </div>
         </main>

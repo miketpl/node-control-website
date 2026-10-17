@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="custom-commands.html" class="docs-nav-link active">Custom Commands</a>
+      <a href="scripts.html" class="docs-nav-link">Scripts</a>
       <a href="safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -127,21 +141,28 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Custom command catalogs
                 </div>
                 <h1 id="custom-command-catalogs">Custom command catalogs</h1>
-<p>Node Control's command catalog maps vendor-and-capability to a specific command (or list of variants to try). For most users, the default catalog covers everything. For unusual firmware or non-standard vendor builds, you can override or add commands per device.</p>
-<h2 id="whats-in-the-catalog">What's in the catalog</h2>
+<p>This page is the show-command catalog. A Python program you want to run against ticked devices is a <a href="scripts.html">script</a>, under <strong>Settings → Scripts</strong>, and that is Pro and the AI edition.</p>
+<p>Node Control&#x27;s command catalog maps vendor-and-capability to a specific command (or list of variants to try). For most users, the default catalog covers everything. For unusual firmware or non-standard vendor builds, you can override or add commands per device.</p>
+<h2 id="whats-in-the-catalog">What&#x27;s in the catalog</h2>
 <p>For each (vendor, capability) pair, the catalog stores:</p>
 <ul>
-<li><strong>Primary command</strong> — what to run first</li>
-<li><strong>Alternative variants</strong> — fallbacks if the primary fails</li>
-<li><strong>Output parser</strong> — how to interpret the result</li>
+<li><strong>Primary command</strong> — what to run first
+</li>
+<li><strong>Alternative variants</strong> — fallbacks if the primary fails
+</li>
+<li><strong>Output parser</strong> — how to interpret the result
+</li>
 </ul>
 <p>Example for <code>(cisco_ios, MAC_TABLE)</code>:</p>
 <ul>
-<li>Primary: <code>show mac address-table</code></li>
-<li>Alternative: <code>show mac-address-table</code></li>
-<li>Alternative: <code>show mac address</code></li>
+<li>Primary: <code>show mac address-table</code>
+</li>
+<li>Alternative: <code>show mac-address-table</code>
+</li>
+<li>Alternative: <code>show mac address</code>
+</li>
 </ul>
-<p>The first one that returns parseable output wins. The successful variant is recorded per-device so next time, it's tried first.</p>
+<p>The first one that returns parseable output wins. The successful variant is recorded per-device so next time, it&#x27;s tried first.</p>
 <h2 id="where-the-catalog-lives">Where the catalog lives</h2>
 <p>The catalog is bundled with Node Control (<code>core/vendors/command_catalog.py</code> in the source). Updates ship with each release.</p>
 <p>Per-device learned preferences are in:</p>
@@ -171,69 +192,101 @@
 </tr>
 <tr>
 <td>Diagnostic / additional data</td>
-<td>You want to add a capability that doesn't exist in default catalog</td>
+<td>You want to add a capability that doesn&#x27;t exist in default catalog</td>
 </tr>
 </tbody>
 </table>
 <h2 id="adding-a-custom-command">Adding a custom command</h2>
 <ol>
-<li><strong>Settings → Custom Commands</strong></li>
-<li>Click <strong>+ Add Override</strong></li>
-<li>Fill in:</li>
-<li><strong>Vendor / Driver</strong> — pick from dropdown</li>
-<li><strong>Capability</strong> — pick (INTERFACES, MAC_TABLE, BGP_PEERS, etc.) or <strong>Custom</strong></li>
-<li><strong>Command</strong> — the actual CLI string</li>
-<li><strong>Priority</strong> — Primary / Alternative</li>
-<li><strong>Per-device scope</strong> — Apply to all devices of this vendor, or only to specific IPs</li>
-<li>Save — takes effect on the next task run</li>
+<li><strong>Settings → Custom Commands</strong>
+</li>
+<li>Click <strong>+ Add Override</strong>
+</li>
+<li>Fill in:
+<ul>
+<li><strong>Vendor / Driver</strong> — pick from dropdown
+</li>
+<li><strong>Capability</strong> — pick (INTERFACES, MAC_TABLE, BGP_PEERS, etc.) or <strong>Custom</strong>
+</li>
+<li><strong>Command</strong> — the actual CLI string
+</li>
+<li><strong>Priority</strong> — Primary / Alternative
+</li>
+<li><strong>Per-device scope</strong> — Apply to all devices of this vendor, or only to specific IPs
+</li>
+</ul>
+</li>
+<li>Save — takes effect on the next task run
+</li>
 </ol>
 <h2 id="per-device-overrides">Per-device overrides</h2>
 <p>If only one device needs a special command (not the whole vendor):</p>
 <ol>
-<li>Right-click device in library → <strong>Commands</strong> → <strong>Override</strong></li>
-<li>Pick a capability → enter the custom command</li>
-<li>Future runs against this device use the override</li>
+<li>Right-click device in library → <strong>Commands</strong> → <strong>Override</strong>
+</li>
+<li>Pick a capability → enter the custom command
+</li>
+<li>Future runs against this device use the override
+</li>
 </ol>
 <h2 id="self-learning-behaviour">Self-learning behaviour</h2>
 <p>Even without custom commands, Node Control tunes itself:</p>
 <ul>
-<li>Runs the catalog's primary command first</li>
-<li>If that fails (syntax error, empty output, error keywords), tries the next variant</li>
-<li>Records the winning variant in <code>device_command_prefs</code></li>
-<li>Next time the same capability is needed on that device, tries the recorded winner first</li>
-<li>Variants that have failed are skipped</li>
+<li>Runs the catalog&#x27;s primary command first
+</li>
+<li>If that fails (syntax error, empty output, error keywords), tries the next variant
+</li>
+<li>Records the winning variant in <code>device_command_prefs</code>
+</li>
+<li>Next time the same capability is needed on that device, tries the recorded winner first
+</li>
+<li>Variants that have failed are skipped
+</li>
 </ul>
 <p>This means a fresh subnet scan against firmware variations self-tunes — older switches get older syntax, newer ones get newer syntax, no manual intervention.</p>
-<p>To inspect what's been learned:</p>
+<p>To inspect what&#x27;s been learned:</p>
 <ol>
-<li>Settings → Custom Commands → <strong>View per-device preferences</strong> button</li>
-<li>Filter to a specific IP</li>
-<li>See which command variant won for each capability</li>
+<li>Settings → Custom Commands → <strong>View per-device preferences</strong> button
+</li>
+<li>Filter to a specific IP
+</li>
+<li>See which command variant won for each capability
+</li>
 </ol>
 <h2 id="resetting-learned-preferences">Resetting learned preferences</h2>
 <p>If a device upgrades firmware and the previously-learned command no longer works:</p>
 <ol>
-<li>Settings → Custom Commands → <strong>Reset per-device preferences</strong></li>
-<li>Confirms — clears <code>device_command_prefs</code> for the selected device(s)</li>
-<li>Next task run re-tries the catalog's primary command, re-learns</li>
+<li>Settings → Custom Commands → <strong>Reset per-device preferences</strong>
+</li>
+<li>Confirms — clears <code>device_command_prefs</code> for the selected device(s)
+</li>
+<li>Next task run re-tries the catalog&#x27;s primary command, re-learns
+</li>
 </ol>
 <h2 id="adding-a-brand-new-capability">Adding a brand-new capability</h2>
 <p>If you want to add a custom capability not in the default catalog:</p>
 <ol>
-<li>Settings → Custom Commands → <strong>+ Add Capability</strong> (advanced)</li>
-<li>Name it — e.g., <code>MY_CUSTOM_REPORT</code></li>
-<li>Add commands for each vendor</li>
-<li>The capability appears in the Reports tab as a custom report</li>
+<li>Settings → Custom Commands → <strong>+ Add Capability</strong> (advanced)
+</li>
+<li>Name it — e.g., <code>MY_CUSTOM_REPORT</code>
+</li>
+<li>Add commands for each vendor
+</li>
+<li>The capability appears in the Reports tab as a custom report
+</li>
 </ol>
 <p>This is power-user territory and rarely needed. Most useful for organisations with custom firmware variants or proprietary network OSes built on top of vendor stacks.</p>
 <h2 id="sharing-custom-catalogs">Sharing custom catalogs</h2>
 <p>Custom command overrides are stored in <code>settings.json</code> and <code>device_command_prefs</code> in the local DB. To share with a colleague:</p>
 <ol>
-<li>Export your custom commands via <strong>Settings → Custom Commands → Export</strong></li>
-<li>Email the resulting JSON file</li>
-<li>Colleague imports via <strong>Settings → Custom Commands → Import</strong></li>
+<li>Export your custom commands via <strong>Settings → Custom Commands → Export</strong>
+</li>
+<li>Email the resulting JSON file
+</li>
+<li>Colleague imports via <strong>Settings → Custom Commands → Import</strong>
+</li>
 </ol>
-<p>Per-device preferences are tied to specific IPs in your library — they don't transfer cleanly across networks. The catalog-level overrides do.</p>
+<p>Per-device preferences are tied to specific IPs in your library — they don&#x27;t transfer cleanly across networks. The catalog-level overrides do.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
 <thead>
@@ -245,7 +298,7 @@
 </thead>
 <tbody>
 <tr>
-<td>Custom command doesn't run</td>
+<td>Custom command doesn&#x27;t run</td>
 <td>Capability name typo</td>
 <td>Check the capability constant in the dropdown — must match exactly</td>
 </tr>
@@ -263,8 +316,10 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../vendors/overview.html">Vendor support overview</a></li>
-<li><a href="overview.html">Settings overview</a></li>
+<li><a href="../vendors/overview.html">Vendor support overview</a>
+</li>
+<li><a href="overview.html">Settings overview</a>
+</li>
 </ul>
             </div>
         </main>

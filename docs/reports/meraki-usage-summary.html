@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="inventory.html" class="docs-nav-link">Inventory</a>
       <a href="meraki-usage-summary.html" class="docs-nav-link active">Meraki Usage Summary</a>
+      <a href="security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -134,45 +148,63 @@
 <p>A lightweight Meraki dashboard inside Node Control, without needing to log into dashboard.meraki.com.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>A Meraki Dashboard API key with read access to one or more orgs</li>
-<li>Configure the key in <strong>Settings → Credentials → Meraki API</strong> → paste key → <strong>Test</strong></li>
+<li>A Meraki Dashboard API key with read access to one or more orgs
+</li>
+<li>Configure the key in <strong>Settings → Credentials → Meraki API</strong> → paste key → <strong>Test</strong>
+</li>
 </ul>
 <p>The Test button confirms the key can fetch the org list.</p>
 <h2 id="open-the-report">Open the report</h2>
 <ul>
-<li><strong>Reports</strong> tab → <strong>Meraki Usage Summary</strong> → <strong>Run</strong></li>
+<li><strong>Reports</strong> in the left sidebar → <strong>Meraki Usage Summary</strong> → <strong>Run</strong>
+</li>
 </ul>
 <p>The scope selector applies at the org level — pick all orgs, or specific orgs your key has access to.</p>
-<h2 id="whats-collected">What's collected</h2>
+<h2 id="whats-collected">What&#x27;s collected</h2>
 <p><strong>Per organisation</strong>:</p>
 <ul>
-<li>Total networks</li>
-<li>Total clients (last 24h)</li>
-<li>Total bandwidth used (last 24h, last 7 days)</li>
-<li>Network count by product type (wireless / switch / appliance / camera)</li>
+<li>Total networks
+</li>
+<li>Total clients (last 24h)
+</li>
+<li>Total bandwidth used (last 24h, last 7 days)
+</li>
+<li>Network count by product type (wireless / switch / appliance / camera)
+</li>
 </ul>
 <p><strong>Per network</strong>:</p>
 <ul>
-<li>Network name</li>
-<li>Product type</li>
-<li>Client count</li>
-<li>Bandwidth used</li>
-<li>Top 5 clients by usage</li>
+<li>Network name
+</li>
+<li>Product type
+</li>
+<li>Client count
+</li>
+<li>Bandwidth used
+</li>
+<li>Top 5 clients by usage
+</li>
 </ul>
 <h2 id="api-quota-awareness">API quota awareness</h2>
-<p>Meraki's Dashboard API has rate limits — 5 requests per second per organisation. Node Control's collector:</p>
+<p>Meraki&#x27;s Dashboard API has rate limits — 5 requests per second per organisation. Node Control&#x27;s collector:</p>
 <ul>
-<li>Throttles to stay within the per-org limit</li>
-<li>Uses the cheap-overview endpoints first</li>
-<li>Only hits expensive per-client endpoints on networks that pass a preflight client-count check (skip empty networks)</li>
-<li>Backs off automatically if Meraki returns 429 Too Many Requests</li>
+<li>Throttles to stay within the per-org limit
+</li>
+<li>Uses the cheap-overview endpoints first
+</li>
+<li>Only hits expensive per-client endpoints on networks that pass a preflight client-count check (skip empty networks)
+</li>
+<li>Backs off automatically if Meraki returns 429 Too Many Requests
+</li>
 </ul>
 <p>A 10-org, 50-network summary typically completes in 2–5 minutes.</p>
 <h2 id="result-format">Result format</h2>
 <p>Two tabs in the result panel:</p>
 <ul>
-<li><strong>Per-org summary</strong> — one row per org with totals</li>
-<li><strong>Per-network breakdown</strong> — one row per network with detail</li>
+<li><strong>Per-org summary</strong> — one row per org with totals
+</li>
+<li><strong>Per-network breakdown</strong> — one row per network with detail
+</li>
 </ul>
 <p>Both tabs are filterable / sortable / exportable.</p>
 <h2 id="use-cases">Use cases</h2>
@@ -185,19 +217,19 @@
 </thead>
 <tbody>
 <tr>
-<td>"Which Meraki network is busiest?"</td>
+<td>&quot;Which Meraki network is busiest?&quot;</td>
 <td>Per-network → sort by Bandwidth descending</td>
 </tr>
 <tr>
-<td>"Which org has the most clients?"</td>
+<td>&quot;Which org has the most clients?&quot;</td>
 <td>Per-org → sort by Total clients</td>
 </tr>
 <tr>
-<td>"Are any networks unused?"</td>
+<td>&quot;Are any networks unused?&quot;</td>
 <td>Per-network → filter Client count = 0</td>
 </tr>
 <tr>
-<td>"Where should I focus my next site visit?"</td>
+<td>&quot;Where should I focus my next site visit?&quot;</td>
 <td>Per-network → top bandwidth = where activity is</td>
 </tr>
 </tbody>
@@ -205,13 +237,16 @@
 <h2 id="drilldown">Drilldown</h2>
 <p>Click any network row to expand:</p>
 <ul>
-<li>Per-SSID breakdown (for wireless networks)</li>
-<li>Per-device breakdown (for switch networks)</li>
-<li>Top 5 clients with hostname, OS, IP, bandwidth</li>
+<li>Per-SSID breakdown (for wireless networks)
+</li>
+<li>Per-device breakdown (for switch networks)
+</li>
+<li>Top 5 clients with hostname, OS, IP, bandwidth
+</li>
 </ul>
 <p>For deeper Meraki Dashboard investigation, right-click → <strong>Open in Dashboard</strong> (opens dashboard.meraki.com in your browser at the relevant network).</p>
 <h2 id="combining-with-find-device">Combining with Find Device</h2>
-<p>Find Device's wireless lookup uses the same Meraki API key. After running Meraki Usage Summary to find a busy network, you can run Find Device against a specific MAC to locate one client's connection details (AP, SSID, etc.).</p>
+<p>Find Device&#x27;s wireless lookup uses the same Meraki API key. After running Meraki Usage Summary to find a busy network, you can run Find Device against a specific MAC to locate one client&#x27;s connection details (AP, SSID, etc.).</p>
 <h2 id="export">Export</h2>
 <p>CSV / XLSX / HTML — same as other reports.</p>
 <p>The XLSX export has multiple sheets — one per tab — useful for ongoing reporting.</p>
@@ -226,19 +261,19 @@
 </thead>
 <tbody>
 <tr>
-<td>"API key invalid"</td>
+<td>&quot;API key invalid&quot;</td>
 <td>Wrong key or key revoked</td>
 <td>Re-test in Settings → Credentials → Meraki API</td>
 </tr>
 <tr>
 <td>Some orgs missing</td>
-<td>API key doesn't have access to those orgs</td>
+<td>API key doesn&#x27;t have access to those orgs</td>
 <td>Check Meraki Dashboard → permission to the missing orgs</td>
 </tr>
 <tr>
 <td>Bandwidth shows 0 for active networks</td>
 <td>Meraki API quota hit, rate-limit backoff in progress</td>
-<td>Wait a few minutes and re-run; it'll resume from cached partial data</td>
+<td>Wait a few minutes and re-run; it&#x27;ll resume from cached partial data</td>
 </tr>
 <tr>
 <td>Report takes a long time</td>
@@ -249,8 +284,10 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/find-device.html">Find Device</a> — for per-MAC wireless lookup using the same API key</li>
-<li><a href="../vendors/meraki.html">Meraki vendor notes</a></li>
+<li><a href="../tasks/find-device.html">Find Device</a> — for per-MAC wireless lookup using the same API key
+</li>
+<li><a href="../vendors/meraki.html">Meraki vendor notes</a>
+</li>
 </ul>
             </div>
         </main>

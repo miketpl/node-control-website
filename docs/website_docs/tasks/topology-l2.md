@@ -6,7 +6,9 @@ The L2 topology map walks every switch in a site, reads its MAC address table an
 
 ## Open the task
 
-- **Tasks** tab → **Topology (L2)** in the task picker → click **Run**
+- Engineer command bar → **Task** → **Topology (L2)** → **Run**
+
+An optional AI summary of the map (structure, single points of failure, failed devices) is on Pro and the AI edition. Tick it for that run. See [AI provider](../settings/ai.md).
 
 ## Configure
 

@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="scripts.html" class="docs-nav-link">Scripts</a>
       <a href="safe-mode.html" class="docs-nav-link active">Safe Mode</a>
+      <a href="ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -130,73 +144,113 @@
 <p>Safe Mode is a global setting that restricts what commands Node Control sends to your devices. When ON, only commands in the read-only allowlist are sent — config-mode commands, port shut/no-shut, and any custom commands not explicitly allowed are blocked.</p>
 <p>Default state: <strong>ON</strong> for new installs. Most users keep it on.</p>
 <h2 id="why-safe-mode-exists">Why Safe Mode exists</h2>
-<p>Node Control was built primarily as a read-only operations tool. The few write actions it supports (port shut/no-shut via <a href="../tasks/find-device.html#port-actions">Find Device</a>) are dangerous if triggered accidentally — a misclick could disable a port carrying critical traffic.</p>
-<p>Safe Mode provides a global "I'm just looking, no changes" guarantee. Toggle it off only when you intentionally need to use a write action.</p>
-<h2 id="whats-allowed-under-safe-mode">What's allowed under Safe Mode</h2>
+<p>Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:</p>
+<ul>
+<li><a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device</a> port shut and re-enable
+</li>
+<li><a href="../tasks/config-push.html">Config Push</a> and its revert
+</li>
+<li><a href="../tasks/config-compliance.html">Config Compliance</a> remediation (type <code>REMEDIATE</code>)
+</li>
+<li><a href="../tasks/meraki-configurator.html">Meraki Configurator</a> push and revert (type <code>PUSH</code>)
+</li>
+</ul>
+<p>Safe Mode blocks compliance remediation. It also blocks a Meraki push and a Meraki revert. Leave it on until you mean to change something.</p>
+<h2 id="whats-allowed-under-safe-mode">What&#x27;s allowed under Safe Mode</h2>
 <p>The allowlist covers every <code>show</code> command Node Control runs as part of its built-in tasks:</p>
 <ul>
-<li>Interface status, MAC tables, CDP/LLDP neighbours, routing tables, BGP/OSPF peers</li>
-<li>Inventory commands (<code>show version</code>, <code>show inventory</code>, <code>show chassis hardware</code>)</li>
-<li>Configuration display (<code>show running-config</code>, <code>show startup-config</code>)</li>
-<li>Environmental (<code>show environment</code>, <code>show power</code>)</li>
-<li>ARP probes (VRF-aware) for Find Device</li>
-<li>Custom commands you've added via Settings → Custom Commands, if you tag them as read-only</li>
+<li>Interface status, MAC tables, CDP/LLDP neighbours, routing tables, BGP/OSPF peers
+</li>
+<li>Inventory commands (<code>show version</code>, <code>show inventory</code>, <code>show chassis hardware</code>)
+</li>
+<li>Configuration display (<code>show running-config</code>, <code>show startup-config</code>)
+</li>
+<li>Environmental (<code>show environment</code>, <code>show power</code>)
+</li>
+<li>ARP probes (VRF-aware) for Find Device
+</li>
+<li>Custom commands you&#x27;ve added via Settings → Custom Commands, if you tag them as read-only
+</li>
 </ul>
-<h2 id="whats-blocked-under-safe-mode">What's blocked under Safe Mode</h2>
+<h2 id="whats-blocked-under-safe-mode">What&#x27;s blocked under Safe Mode</h2>
 <p>Anything that could modify device state:</p>
 <ul>
-<li><code>configure terminal</code> / <code>config t</code> / <code>edit</code> / <code>configure exclusive</code></li>
-<li><code>interface ... shutdown</code> / <code>interface ... no shutdown</code> (Cisco)</li>
-<li><code>disable interface ...</code> / <code>enable interface ...</code> (Aruba CX)</li>
-<li><code>set interfaces ... disable</code> (Junos)</li>
-<li><code>commit</code> (Junos, IOS-XR)</li>
-<li><code>write memory</code> / <code>copy running-config startup-config</code></li>
-<li><code>reload</code> / <code>reboot</code></li>
-<li>Any custom command you've tagged as write-required</li>
+<li><code>configure terminal</code> / <code>config t</code> / <code>edit</code> / <code>configure exclusive</code>
+</li>
+<li><code>interface ... shutdown</code> / <code>interface ... no shutdown</code> (Cisco)
+</li>
+<li><code>disable interface ...</code> / <code>enable interface ...</code> (Aruba CX)
+</li>
+<li><code>set interfaces ... disable</code> (Junos)
+</li>
+<li><code>commit</code> (Junos, IOS-XR)
+</li>
+<li><code>write memory</code> / <code>copy running-config startup-config</code>
+</li>
+<li><code>reload</code> / <code>reboot</code>
+</li>
+<li>Any custom command you&#x27;ve tagged as write-required
+</li>
 </ul>
 <p>When a blocked command is attempted, Node Control:</p>
 <ul>
-<li>Refuses to send it</li>
-<li>Logs the attempt in the audit log</li>
-<li>Shows a UI warning</li>
+<li>Refuses to send it
+</li>
+<li>Logs the attempt in the audit log
+</li>
+<li>Shows a UI warning
+</li>
 </ul>
 <h2 id="the-ssh-terminal-exception">The SSH terminal exception</h2>
 <p>Safe Mode does <strong>not</strong> apply to the interactive <a href="../tasks/ssh-terminal.html">SSH terminal</a>. What you type in a terminal is sent verbatim. The reasoning:</p>
 <ul>
-<li>The terminal is a CLI prompt — you're a human typing commands and you know what they do</li>
-<li>Safe Mode protects against automated / programmatic commands, not against intentional human input</li>
-<li>Blocking config commands in the terminal would make the terminal useless</li>
+<li>The terminal is a CLI prompt — you&#x27;re a human typing commands and you know what they do
+</li>
+<li>Safe Mode protects against automated / programmatic commands, not against intentional human input
+</li>
+<li>Blocking config commands in the terminal would make the terminal useless
+</li>
 </ul>
 <p>If you want a fully read-only terminal, log into the device with a read-only user account.</p>
 <h2 id="disabling-safe-mode">Disabling Safe Mode</h2>
 <ol>
-<li><strong>Settings → Safe Mode</strong> → toggle <strong>OFF</strong></li>
-<li>A confirmation dialog: "Disable Safe Mode? Write commands will be allowed."</li>
-<li>Confirm</li>
+<li><strong>Settings → Safe Mode</strong> → toggle <strong>OFF</strong>
+</li>
+<li>A confirmation dialog: &quot;Disable Safe Mode? Write commands will be allowed.&quot;
+</li>
+<li>Confirm
+</li>
 </ol>
 <p>Once off, write commands are allowed (subject to per-action confirmation dialogs like the type-to-confirm port shut).</p>
 <h2 id="per-tab-safe-mode">Per-tab Safe Mode</h2>
 <p>You can selectively enable Safe Mode for specific library tabs (e.g., Firewalls always Safe Mode, Switches can have it off). Configure in:</p>
 <ul>
-<li>Settings → Safe Mode → <strong>Per-tab overrides</strong></li>
+<li>Settings → Safe Mode → <strong>Per-tab overrides</strong>
+</li>
 </ul>
-<p>Useful for: "I'm comfortable shutting switch ports, but never touching firewalls."</p>
+<p>Useful for: &quot;I&#x27;m comfortable shutting switch ports, but never touching firewalls.&quot;</p>
 <h2 id="customising-the-allowlist">Customising the allowlist</h2>
 <p>For advanced users who need to allow specific custom commands:</p>
 <ol>
-<li>Settings → Safe Mode → <strong>Allowlist patterns</strong></li>
-<li>Add a regex matching the commands you want to allow</li>
-<li>Save</li>
+<li>Settings → Safe Mode → <strong>Allowlist patterns</strong>
+</li>
+<li>Add a regex matching the commands you want to allow
+</li>
+<li>Save
+</li>
 </ol>
 <p>Be careful — allowing a regex that accidentally matches a config command opens the safety net.</p>
 <h2 id="customising-the-blocklist">Customising the blocklist</h2>
 <p>The blocklist takes precedence over the allowlist. To explicitly forbid commands that might otherwise slip through:</p>
 <ol>
-<li>Settings → Safe Mode → <strong>Blocklist patterns</strong></li>
-<li>Add regex</li>
-<li>Save</li>
+<li>Settings → Safe Mode → <strong>Blocklist patterns</strong>
+</li>
+<li>Add regex
+</li>
+<li>Save
+</li>
 </ol>
-<p>Useful for: "always block <code>reload</code>, even when Safe Mode is off."</p>
+<p>Useful for: &quot;always block <code>reload</code>, even when Safe Mode is off.&quot;</p>
 <h2 id="audit-log">Audit log</h2>
 <p>Every Safe Mode decision (allow, block, override) is recorded in:</p>
 <pre><code>~/Library/Application Support/netOps/audit.log
@@ -208,23 +262,33 @@
 <p>See <a href="../security/audit-log.html">Audit log</a> for the full event taxonomy.</p>
 <h2 id="when-you-would-actually-disable-safe-mode">When you would actually disable Safe Mode</h2>
 <ul>
-<li>Doing a Find Device port action (shut/no-shut) to contain a compromised endpoint</li>
-<li>Running a custom write command you've explicitly added</li>
-<li>Performing a one-off remediation script</li>
+<li>Doing a Find Device port action (shut/no-shut) to contain a compromised endpoint
+</li>
+<li>Running a custom write command you&#x27;ve explicitly added
+</li>
+<li>Performing a one-off remediation script
+</li>
 </ul>
 <p>For everyday operations (topology, reports, troubleshooting), Safe Mode should stay on.</p>
 <h2 id="best-practice">Best practice</h2>
 <ul>
-<li><strong>Leave Safe Mode ON by default</strong></li>
-<li><strong>Turn it off only for the specific action you need</strong>, then turn it back on</li>
-<li><strong>Per-tab overrides</strong> are a good compromise — keep it on for the high-risk tabs (Firewalls, WAN routers) always</li>
-<li><strong>Audit log is your friend</strong> — periodically review it to see if anyone disabled Safe Mode unexpectedly</li>
+<li><strong>Leave Safe Mode ON by default</strong>
+</li>
+<li><strong>Turn it off only for the specific action you need</strong>, then turn it back on
+</li>
+<li><strong>Per-tab overrides</strong> are a good compromise — keep it on for the high-risk tabs (Firewalls, WAN routers) always
+</li>
+<li><strong>Audit log is your friend</strong> — periodically review it to see if anyone disabled Safe Mode unexpectedly
+</li>
 </ul>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/find-device.html#port-actions">Find Device port actions</a> — the main use case for temporarily disabling Safe Mode</li>
-<li><a href="../security/audit-log.html">Audit log</a></li>
-<li><a href="../security/credential-storage.html">Credential storage</a></li>
+<li><a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device port actions</a> — the main use case for temporarily disabling Safe Mode
+</li>
+<li><a href="../security/audit-log.html">Audit log</a>
+</li>
+<li><a href="../security/credential-storage.html">Credential storage</a>
+</li>
 </ul>
             </div>
         </main>

@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="ssh-terminal.html" class="docs-nav-link active">SSH Terminal</a>
       <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -132,45 +146,67 @@
 <h2 id="open-a-session">Open a session</h2>
 <p>Three ways:</p>
 <ol>
-<li>Right-click a device in the library → <strong>SSH</strong></li>
-<li>From a topology / Find Device result → right-click a node → <strong>Open SSH</strong></li>
-<li><strong>Tools → SSH Terminal</strong> → enter IP manually</li>
+<li>Right-click a device in the library → <strong>SSH</strong>
+</li>
+<li>From a topology or Find Device result → right-click a node → <strong>Open SSH</strong>
+</li>
 </ol>
 <p>A new tab opens in the terminal panel with the SSH session.</p>
 <h2 id="multiple-concurrent-sessions">Multiple concurrent sessions</h2>
 <p>Each SSH session lives in its own tab. Open as many as you need:</p>
 <ul>
-<li>One per device for comparing config</li>
-<li>One per role (your "core switch", "firewall", "wireless controller" workspace)</li>
+<li>One per device for comparing config
+</li>
+<li>One per role (your &quot;core switch&quot;, &quot;firewall&quot;, &quot;wireless controller&quot; workspace)
+</li>
 </ul>
 <p>Tabs persist across app restarts (sessions reconnect automatically using the same credentials).</p>
 <h2 id="terminal-features">Terminal features</h2>
 <ul>
-<li><strong>Full xterm emulation</strong> via pyte — Cisco / Aruba CLI menus render correctly</li>
-<li><strong>Mouse selection</strong> for copy</li>
-<li><strong>Cmd+C / Ctrl+C</strong> to copy selected text (does NOT send Ctrl+C to the device; that's mapped to the device's interrupt key)</li>
-<li><strong>Cmd+V / Ctrl+Shift+V</strong> to paste</li>
-<li><strong>Search</strong> within scrollback (Cmd+F / Ctrl+F)</li>
-<li><strong>Save scrollback</strong> to a text file</li>
-<li><strong>Configurable colour theme</strong> (Settings → Terminal)</li>
+<li><strong>Full xterm emulation</strong> via pyte — Cisco / Aruba CLI menus render correctly
+</li>
+<li><strong>Mouse selection</strong> for copy
+</li>
+<li><strong>Ctrl+C</strong> copies the selection. With nothing selected, Ctrl+C still interrupts the device
+</li>
+<li>On a Mac, <strong>Cmd+C</strong> copies as well
+</li>
+<li><strong>Cmd+V / Ctrl+Shift+V</strong> to paste
+</li>
+<li>Output is a fixed-width font, including on Windows, so a table such as <code>show ip interface brief</code> lines up
+</li>
+<li>The session tells the device the terminal width, per vendor, including PAN-OS, so a wrapped command edits on the column you expect
+</li>
+<li>A pasted line that wraps can be edited and deleted normally
+</li>
+<li>You can switch between command mode and terminal mode while a command is still running
+</li>
+<li><strong>Search</strong> within scrollback (Cmd+F / Ctrl+F)
+</li>
+<li><strong>Save scrollback</strong> to a text file
+</li>
+<li><strong>Configurable colour theme</strong> (Settings → Terminal)
+</li>
 </ul>
 <h2 id="sending-ctrlc-to-the-device">Sending Ctrl+C to the device</h2>
-<p>To send Ctrl+C as an interrupt to the device (e.g., to cancel a long <code>show tech-support</code>):</p>
-<ul>
-<li>macOS: <strong>Ctrl+C</strong> sends the interrupt (Cmd+C is copy)</li>
-<li>Windows / Linux: <strong>Ctrl+Shift+C</strong> = copy, <strong>Ctrl+C</strong> = interrupt</li>
-</ul>
+<p>Ctrl+C copies when text is selected. Click somewhere with no selection, then Ctrl+C, to interrupt the device (for example to cancel a long <code>show tech-support</code>).</p>
+<h2 id="login-notices">Login notices</h2>
+<p>If ISE or another TACACS+ server says at login that the password is about to expire, or that it must be changed, the terminal shows that message before the prompt. Each notice is repeated in bold yellow. The Connection Manager log keeps a <code>LOGIN NOTICE</code> line per notice. Tasks log the same notice.</p>
 <h2 id="send-command-to-multiple-sessions">Send command to multiple sessions</h2>
 <p>For ad-hoc multi-device commands:</p>
 <ol>
-<li>Open SSH sessions to each target device</li>
-<li>Right-click any tab → <strong>Send to all open sessions</strong></li>
-<li>Type a command in the dialog</li>
-<li>Click Send — the same command runs in every open SSH tab</li>
+<li>Open SSH sessions to each target device
+</li>
+<li>Right-click any tab → <strong>Send to all open sessions</strong>
+</li>
+<li>Type a command in the dialog
+</li>
+<li>Click Send — the same command runs in every open SSH tab
+</li>
 </ol>
-<p>Useful for "show clock" across the fleet, or pushing a single config line to multiple switches.</p>
+<p>Useful for &quot;show clock&quot; across the fleet, or pushing a single config line to multiple switches.</p>
 <h2 id="pagination">Pagination</h2>
-<p>Long output (e.g., <code>show running-config</code>) on Cisco gear is auto-paged with <code>--More--</code> prompts. Node Control's terminal disables paging on connect by sending <code>terminal length 0</code> (or vendor equivalent), so commands return their full output without manual paging.</p>
+<p>Long output (e.g., <code>show running-config</code>) on Cisco gear is auto-paged with <code>--More--</code> prompts. Node Control&#x27;s terminal disables paging on connect by sending <code>terminal length 0</code> (or vendor equivalent), so commands return their full output without manual paging.</p>
 <p>To re-enable paging for a specific session: in the device CLI, type <code>terminal length 24</code> (Cisco) or <code>screen-length 0 disable</code> (Aruba CX) etc.</p>
 <p>The auto-pagination-off behaviour can be toggled per-tier in Settings → Terminal — useful if you have a workflow that depends on <code>--More--</code> prompts.</p>
 <h2 id="logging-session-output">Logging session output</h2>
@@ -178,17 +214,22 @@
 <pre><code>~/Library/Application Support/netOps/sessions/&lt;device&gt;-&lt;timestamp&gt;.log  (Mac)
 %APPDATA%\netOps\sessions\&lt;device&gt;-&lt;timestamp&gt;.log                       (Windows)
 </code></pre>
-<p>Includes both your input and the device's output. Useful for change documentation or troubleshooting.</p>
+<p>Includes both your input and the device&#x27;s output. Useful for change documentation or troubleshooting.</p>
 <p>To disable session logging: Settings → Terminal → uncheck <strong>Log session output</strong>.</p>
 <h2 id="reconnection">Reconnection</h2>
-<p>If a session drops (network blip, idle timeout):</p>
+<p>If an SSH session times out or drops:</p>
 <ul>
-<li>The tab shows "Disconnected" in red</li>
-<li>Click <strong>Reconnect</strong> to re-establish using the same credentials</li>
-<li>Sessions auto-reconnect after sleep/wake on macOS if you have <strong>Auto-reconnect</strong> enabled in Settings</li>
+<li>The tab shows a <strong>Session Timed Out</strong> banner. It does not sit there frozen
+</li>
+<li><strong>Reconnect</strong> opens the session again in the same tab, with the same credential profile
+</li>
+<li>If you were in terminal mode, you land back in terminal mode, ready for input
+</li>
+<li>Reconnect works on Palo Alto firewalls as well as on Cisco switches
+</li>
 </ul>
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
-<p><a href="../settings/safe-mode.html">Safe Mode</a> gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is <strong>not</strong> Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you're doing when you have a CLI prompt.</p>
+<p><a href="../settings/safe-mode.html">Safe Mode</a> gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is <strong>not</strong> Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you&#x27;re doing when you have a CLI prompt.</p>
 <h2 id="session-sharing">Session sharing</h2>
 <p>You cannot currently share an SSH session between users — each session is local to your machine. For collaborative troubleshooting, screen-share works.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
@@ -212,9 +253,8 @@
 <td>Settings → Terminal → enable <strong>Paste with delay</strong> (slows pastes to one line at a time)</td>
 </tr>
 <tr>
-<td>Ctrl+C sends interrupt when you wanted to copy</td>
-<td>macOS only — use Cmd+C for copy</td>
-<td></td>
+<td>Ctrl+C interrupts when you wanted to copy</td>
+<td>A selection has to be active. Select the text, then Ctrl+C. On a Mac, Cmd+C copies as well</td>
 </tr>
 <tr>
 <td>Session locks up</td>
@@ -225,8 +265,10 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="find-device.html">Find Device</a> — for jumping straight to a switch port from a MAC search</li>
-<li><a href="../settings/safe-mode.html">Safe Mode</a> — for terminal-vs-tasks command gating</li>
+<li><a href="find-device.html">Find Device</a> — for jumping straight to a switch port from a MAC search
+</li>
+<li><a href="../settings/safe-mode.html">Safe Mode</a> — for terminal-vs-tasks command gating
+</li>
 </ul>
             </div>
         </main>

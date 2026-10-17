@@ -1,5 +1,7 @@
 # Custom command catalogs
 
+This page is the show-command catalog. A Python program you want to run against ticked devices is a [script](scripts.md), under **Settings → Scripts**, and that is Pro and the AI edition.
+
 Node Control's command catalog maps vendor-and-capability to a specific command (or list of variants to try). For most users, the default catalog covers everything. For unusual firmware or non-standard vendor builds, you can override or add commands per device.
 
 ## What's in the catalog

@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -127,17 +141,21 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco Meraki
                 </div>
                 <h1 id="cisco-meraki">Cisco Meraki</h1>
-<p>Meraki devices (MR wireless APs, MS switches, MX security appliances, MV cameras) are managed via the Meraki Dashboard API — Node Control doesn't SSH to them directly.</p>
+<p>Meraki devices (MR wireless APs, MS switches, MX security appliances, MV cameras) are managed via the Meraki Dashboard API — Node Control doesn&#x27;t SSH to them directly.</p>
 <h2 id="how-it-works">How it works</h2>
 <p>Instead of SSH credentials, Meraki devices need a <strong>Dashboard API key</strong> with read access to your organisation(s).</p>
 <h2 id="configure-the-api-key">Configure the API key</h2>
 <ol>
-<li>In Meraki Dashboard → top-right account icon → <strong>My profile</strong></li>
-<li>Scroll to <strong>API access</strong> → <strong>Generate API key</strong></li>
-<li>Copy the long alphanumeric key — only shown once</li>
-<li>In Node Control: <strong>Settings → Credentials → Meraki API</strong> → paste key → <strong>Test</strong></li>
+<li>In Meraki Dashboard → top-right account icon → <strong>My profile</strong>
+</li>
+<li>Scroll to <strong>API access</strong> → <strong>Generate API key</strong>
+</li>
+<li>Copy the long alphanumeric key — only shown once
+</li>
+<li>In Node Control: <strong>Settings → Credentials → Meraki API</strong> → paste key → <strong>Test</strong>
+</li>
 </ol>
-<p>The Test button confirms the key can fetch your org list. If it returns "Successfully fetched N organisations", you're set.</p>
+<p>The Test button confirms the key can fetch your org list. If it returns &quot;Successfully fetched N organisations&quot;, you&#x27;re set.</p>
 <h2 id="what-works">What works</h2>
 <table>
 <thead>
@@ -156,57 +174,75 @@
 <td>✓</td>
 </tr>
 <tr>
+<td><a href="../tasks/meraki-configurator.html">Meraki Configurator</a> (SSIDs and RF profiles)</td>
+<td>✓ on Pro and AI</td>
+</tr>
+<tr>
 <td>Inventory (Meraki devices)</td>
 <td>partial — basic info from Dashboard</td>
 </tr>
 <tr>
 <td>Topology integration</td>
-<td>partial — Meraki devices appear as "endpoint" nodes in L2 maps where seen via CDP/LLDP from non-Meraki switches</td>
+<td>partial — Meraki devices appear as &quot;endpoint&quot; nodes in L2 maps where seen via CDP/LLDP from non-Meraki switches</td>
 </tr>
 </tbody>
 </table>
-<h2 id="what-doesnt-work-yet">What doesn't work (yet)</h2>
+<h2 id="what-doesnt-work">What doesn&#x27;t work</h2>
 <ul>
-<li>SSH-style direct device management (Meraki doesn't expose CLI for managed devices)</li>
-<li>Live config push (use Dashboard API directly for that)</li>
-<li>Topology maps purely between Meraki devices (would require Meraki's own topology API; on roadmap)</li>
+<li>SSH to a managed Meraki device. Meraki does not expose that CLI
+</li>
+<li>A topology made only of Meraki-to-Meraki links. Meraki devices still show up as endpoints on an L2 map when a non-Meraki switch sees them by CDP or LLDP
+</li>
 </ul>
+<p>SSID and RF profile changes are the <a href="../tasks/meraki-configurator.html">Meraki Configurator</a>, on Pro and the AI edition. Safe Mode blocks that push and its revert. The older line on this page that said to use the Dashboard by hand for any config push is out of date for those two objects.</p>
 <h2 id="find-device-wireless-lookup">Find Device — wireless lookup</h2>
 <p>The biggest Meraki integration. When you run Find Device with MAC addresses:</p>
 <ol>
-<li>Wireless mode (or Unknown mode) queries the Meraki Dashboard for each MAC</li>
-<li>Searches every network in every org your key can access</li>
-<li>Returns: org, network, SSID, IP, status (online/offline), last seen, AP name + serial, VLAN</li>
+<li>Wireless mode (or Unknown mode) queries the Meraki Dashboard for each MAC
+</li>
+<li>Searches every network in every org your key can access
+</li>
+<li>Returns: org, network, SSID, IP, status (online/offline), last seen, AP name + serial, VLAN
+</li>
 </ol>
-<p>This makes "where is this wireless client?" answerable in seconds, even across multi-site Meraki estates.</p>
+<p>This makes &quot;where is this wireless client?&quot; answerable in seconds, even across multi-site Meraki estates.</p>
 <p>See <a href="../tasks/find-device.html">Find Device</a> for the full flow.</p>
 <h2 id="meraki-usage-summary">Meraki Usage Summary</h2>
 <p>A dedicated report covering Meraki orgs at the network level. See <a href="../reports/meraki-usage-summary.html">Meraki Usage Summary</a>.</p>
 <h2 id="adding-meraki-devices-to-the-library">Adding Meraki devices to the library</h2>
 <p>You can add Meraki devices to the library if you want them visible in the Engineer tab:</p>
 <ol>
-<li>Use the static IP each Meraki device has on its local management interface</li>
-<li>Set Device type to a custom "meraki" label (this is for your reference only — Node Control won't SSH to it)</li>
-<li>Useful for tracking which Meraki devices belong to which site</li>
+<li>Use the static IP each Meraki device has on its local management interface
+</li>
+<li>Set Device type to a custom &quot;meraki&quot; label (this is for your reference only — Node Control won&#x27;t SSH to it)
+</li>
+<li>Useful for tracking which Meraki devices belong to which site
+</li>
 </ol>
 <p>But for actual Meraki operations (Find Device, Usage Summary), the API key is what matters — not the library entries.</p>
 <h2 id="api-rate-limits">API rate limits</h2>
 <p>Meraki Dashboard API allows 5 requests per second per organisation. Node Control:</p>
 <ul>
-<li>Throttles to stay within the limit</li>
-<li>Backs off automatically on 429 Too Many Requests</li>
-<li>Uses cheap-overview endpoints first, expensive per-client endpoints only when needed</li>
+<li>Throttles to stay within the limit
+</li>
+<li>Backs off automatically on 429 Too Many Requests
+</li>
+<li>Uses cheap-overview endpoints first, expensive per-client endpoints only when needed
+</li>
 </ul>
 <p>Most operations stay within the limit. If you have a very large estate (50+ orgs, 1000+ networks), the Meraki Usage Summary can take 5-10 minutes.</p>
 <h2 id="multi-org">Multi-org</h2>
 <p>A single API key can access multiple Meraki orgs (if your Dashboard user has access to them). Node Control automatically iterates all accessible orgs.</p>
-<p>For MSPs managing many customers' Meraki environments, this means one Node Control session covers everything.</p>
+<p>For MSPs managing many customers&#x27; Meraki environments, this means one Node Control session covers everything.</p>
 <h2 id="bulk-provisioning">Bulk provisioning</h2>
-<p>Meraki's <code>POST /networks/{id}/devices/claim</code> is capped around 50 serials per call. Node Control's bulk claim:</p>
+<p>Meraki&#x27;s <code>POST /networks/{id}/devices/claim</code> is capped around 50 serials per call. Node Control&#x27;s bulk claim:</p>
 <ul>
-<li>Chunks claims into batches of 50</li>
-<li>Failed batches don't block successful ones</li>
-<li>The downstream PUT step (configure claimed devices) skips serials that didn't successfully claim, so the real claim failure surfaces rather than a misleading downstream 404</li>
+<li>Chunks claims into batches of 50
+</li>
+<li>Failed batches don&#x27;t block successful ones
+</li>
+<li>The downstream PUT step (configure claimed devices) skips serials that didn&#x27;t successfully claim, so the real claim failure surfaces rather than a misleading downstream 404
+</li>
 </ul>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
@@ -220,7 +256,7 @@
 <tbody>
 <tr>
 <td>API key not authorised on some orgs</td>
-<td>Dashboard user doesn't have access to those orgs</td>
+<td>Dashboard user doesn&#x27;t have access to those orgs</td>
 <td>Get added to those orgs in Dashboard</td>
 </tr>
 <tr>
@@ -242,8 +278,10 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/find-device.html#meraki-wireless-lookup">Find Device — wireless lookup</a></li>
-<li><a href="../reports/meraki-usage-summary.html">Meraki Usage Summary report</a></li>
+<li><a href="../tasks/find-device.html#meraki-wireless-lookup">Find Device — wireless lookup</a>
+</li>
+<li><a href="../reports/meraki-usage-summary.html">Meraki Usage Summary report</a>
+</li>
 </ul>
             </div>
         </main>

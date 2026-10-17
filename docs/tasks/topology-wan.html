@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -133,7 +147,8 @@
 <p>The WAN topology map renders the cross-site connectivity between your sites — the routers, firewalls, and SD-WAN edges that link locations together.</p>
 <h2 id="open-the-task">Open the task</h2>
 <ul>
-<li><strong>Tasks</strong> tab → <strong>Topology (WAN)</strong> → <strong>Run</strong></li>
+<li>Engineer command bar → <strong>Task</strong> → <strong>Topology (WAN)</strong> → <strong>Run</strong>
+</li>
 </ul>
 <h2 id="configure">Configure</h2>
 <table>
@@ -158,44 +173,64 @@
 </tr>
 </tbody>
 </table>
-<h2 id="whats-read">What's read</h2>
+<h2 id="whats-read">What&#x27;s read</h2>
 <p>The WAN topology task walks one router-or-firewall per site (typically the WAN edge — pickable in Settings), and on each:</p>
 <ul>
-<li><code>show ip bgp summary</code> — external BGP peers (cross-site, transit, ISP)</li>
-<li><code>show ip route</code> — wan-facing routes, default route source</li>
-<li><code>show crypto ipsec sa</code> (or equivalent) — IPSec tunnel endpoints</li>
-<li>SD-WAN-specific commands for Velocloud / Viptela / Silver Peak edges</li>
+<li><code>show ip bgp summary</code> — external BGP peers (cross-site, transit, ISP)
+</li>
+<li><code>show ip route</code> — wan-facing routes, default route source
+</li>
+<li><code>show crypto ipsec sa</code> (or equivalent) — IPSec tunnel endpoints
+</li>
+<li>SD-WAN-specific commands for Velocloud / Viptela / Silver Peak edges
+</li>
 </ul>
 <h2 id="reading-the-map">Reading the map</h2>
 <ul>
-<li><strong>Nodes</strong>: one per site (collapsed) OR one per WAN edge device (expanded)</li>
-<li><strong>Edges</strong>: BGP peering, IPSec tunnels, MPLS pseudowires</li>
-<li><strong>Edge labels</strong>: AS path for BGP, tunnel peer for IPSec, VRF name for MPLS</li>
-<li>Hover for full peer details</li>
+<li><strong>Nodes</strong>: one per site (collapsed) OR one per WAN edge device (expanded)
+</li>
+<li><strong>Edges</strong>: BGP peering, IPSec tunnels, MPLS pseudowires
+</li>
+<li><strong>Edge labels</strong>: AS path for BGP, tunnel peer for IPSec, VRF name for MPLS
+</li>
+<li>Hover for full peer details
+</li>
 </ul>
 <h2 id="best-practice">Best practice</h2>
 <p>WAN topology works best when each site has a clearly-designated WAN edge device tagged in the library — typically:</p>
 <ul>
-<li>A WAN router (<code>rtr-wan-*</code>, <code>csr-*</code>)</li>
-<li>A firewall doing edge / VPN termination</li>
-<li>An SD-WAN appliance</li>
+<li>A WAN router (<code>rtr-wan-*</code>, <code>csr-*</code>)
+</li>
+<li>A firewall doing edge / VPN termination
+</li>
+<li>An SD-WAN appliance
+</li>
 </ul>
 <p>If your library has every router tagged, the WAN task walks them all (slow, noisy). If you tag only the actual WAN edges, the map is cleaner and faster.</p>
 <h2 id="when-to-use-which-topology">When to use which topology</h2>
 <ul>
-<li><strong>L2</strong> — switch-to-switch view of a single site's fabric</li>
-<li><strong>L3</strong> — routing protocol overlay (OSPF, BGP) for a site or full network</li>
-<li><strong>WAN</strong> — cross-site connections only, your transport view</li>
+<li><strong>L2</strong> — switch-to-switch view of a single site&#x27;s fabric
+</li>
+<li><strong>L3</strong> — routing protocol overlay (OSPF, BGP) for a site or full network
+</li>
+<li><strong>WAN</strong> — cross-site connections only, your transport view
+</li>
 </ul>
-<p>For "where does this packet go?" type questions, L3 + WAN together usually answers it.</p>
+<p>For &quot;where does this packet go?&quot; type questions, L3 + WAN together usually answers it.</p>
 <h2 id="vendor-support">Vendor support</h2>
 <ul>
-<li>Cisco IOS / IOS-XE — full BGP + IPSec</li>
-<li>Cisco ASA — IPSec only (no BGP unless licensed)</li>
-<li>Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels</li>
-<li>Velocloud, Viptela — SD-WAN overlay</li>
-<li>Juniper — BGP, IPSec, MPLS pseudowires</li>
-<li>Arista — BGP, EVPN</li>
+<li>Cisco IOS / IOS-XE — full BGP + IPSec
+</li>
+<li>Cisco ASA — IPSec only (no BGP unless licensed)
+</li>
+<li>Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels
+</li>
+<li>Velocloud, Viptela — SD-WAN overlay
+</li>
+<li>Juniper — BGP, IPSec, MPLS pseudowires
+</li>
+<li>Arista — BGP, EVPN
+</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
@@ -214,7 +249,7 @@
 </tr>
 <tr>
 <td>IPSec tunnels not showing</td>
-<td>Firewall's <code>show crypto</code> output couldn't be parsed</td>
+<td>Firewall&#x27;s <code>show crypto</code> output couldn&#x27;t be parsed</td>
 <td>Check vendor + version; report to support with the raw output</td>
 </tr>
 <tr>

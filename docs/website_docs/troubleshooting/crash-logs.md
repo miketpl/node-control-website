@@ -19,7 +19,7 @@ Each crash block has:
 
 ```
 === Crash at <ISO-8601 timestamp> ===
-Node Control version: 0.9.29
+Node Control version: <the version you are running>
 Platform: macOS 14.5 (Darwin 23.5.0)
 Python: 3.10.13
 

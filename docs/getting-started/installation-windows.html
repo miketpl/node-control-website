@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link active">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -130,63 +144,85 @@
 <p>Node Control ships as a standard Windows installer (<code>.exe</code>) built with NSIS.</p>
 <h2 id="system-requirements">System requirements</h2>
 <ul>
-<li><strong>Windows</strong>: 10 or 11 (64-bit)</li>
-<li><strong>Disk space</strong>: ~500 MB</li>
-<li><strong>Network</strong>: SSH access from your PC to the devices you intend to manage</li>
+<li><strong>Windows</strong>: 10 or 11 (64-bit)
+</li>
+<li><strong>Disk space</strong>: ~500 MB
+</li>
+<li><strong>Network</strong>: SSH access from your PC to the devices you intend to manage
+</li>
 </ul>
 <h2 id="download">Download</h2>
 <p>From <a href="https://nodecontrol.io">nodecontrol.io</a>:</p>
 <ul>
-<li><strong>Free</strong> — sign up with your email to receive a download link and activation code</li>
-<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal</li>
+<li><strong>Free</strong> — sign up with your email to receive a download link and activation code
+</li>
+<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal
+</li>
 </ul>
-<p>The download is named like:</p>
-<ul>
-<li><code>Node Control Free-0.9.29-Setup.exe</code></li>
-<li><code>Node Control Pro-0.9.29-Setup.exe</code></li>
-</ul>
+<p>The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI). The site always hands you the current build. Do not bookmark an old filename.</p>
 <h2 id="install">Install</h2>
 <ol>
-<li>Double-click the downloaded <code>Setup.exe</code></li>
-<li>Windows User Account Control (UAC) prompts for permission — click <strong>Yes</strong></li>
-<li>The installer opens. Click <strong>Next</strong> through:</li>
-<li>Welcome screen</li>
-<li>Install location (default: <code>C:\Program Files\Node Control Free\</code> or <code>Node Control Pro\</code>)</li>
-<li>Click <strong>Install</strong> — files copy in ~30 seconds</li>
-<li><strong>Finish</strong>. Tick "Launch Node Control" to start it immediately</li>
+<li>Double-click the downloaded <code>Setup.exe</code>
+</li>
+<li>Windows User Account Control (UAC) prompts for permission — click <strong>Yes</strong>
+</li>
+<li>The installer opens. Click <strong>Next</strong> through:
+<ul>
+<li>Welcome screen
+</li>
+<li>Install location (default: <code>C:\Program Files\Node Control Free\</code> or <code>Node Control Pro\</code>)
+</li>
+</ul>
+</li>
+<li>Click <strong>Install</strong> — files copy in ~30 seconds
+</li>
+<li><strong>Finish</strong>. Tick &quot;Launch Node Control&quot; to start it immediately
+</li>
 </ol>
-<p>You'll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., "Node Control Free").</p>
-<h2 id="windows-protected-your-pc-smartscreen-warning-free-pro-builds-before-late-2026">"Windows protected your PC" SmartScreen warning (Free / Pro builds before late 2026)</h2>
-<p>This appears because our Windows code-signing certificate is in the SmartScreen reputation-building phase. To proceed:</p>
+<p>You&#x27;ll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., &quot;Node Control Free&quot;).</p>
+<h2 id="the-installer-is-signed">The installer is signed</h2>
+<p>The Windows build is an NSIS installer signed with Azure Artifact Signing.</p>
+<p>Before you run it:</p>
 <ol>
-<li>Click <strong>More info</strong> on the SmartScreen dialog</li>
-<li>Click <strong>Run anyway</strong></li>
+<li>Right-click the <code>Setup.exe</code>
+</li>
+<li><strong>Properties</strong> → <strong>Digital Signatures</strong>
+</li>
+<li>Confirm a signature is present and the publisher is <strong>The Promised LAN</strong>
+</li>
 </ol>
-<p>The warning disappears entirely once enough downloads have built up the SmartScreen reputation for our publisher. We're also actively working through Microsoft's Trusted Signing programme to eliminate it sooner.</p>
-<p>You can verify the installer is genuinely from us by right-clicking the <code>Setup.exe</code> → <strong>Properties</strong> → <strong>Digital Signatures</strong> tab → confirm "The Promised LAN" appears as the signer.</p>
+<p>Confirm the signature, then run the installer. If SmartScreen still appears, stop and check the Digital Signatures tab again. A missing signature means the file is not the build I ship.</p>
 <h2 id="pro-and-free-side-by-side">Pro and Free side-by-side</h2>
 <p>Pro and Free install as fully separate Windows apps. You can have both on the same machine without conflict:</p>
 <ul>
-<li><strong>Pro</strong>: <code>C:\Program Files\Node Control Pro\</code>, registry under <code>HKLM\Software\Node Control Pro</code></li>
-<li><strong>Free</strong>: <code>C:\Program Files\Node Control Free\</code>, registry under <code>HKLM\Software\Node Control Free</code></li>
+<li><strong>Pro</strong>: <code>C:\Program Files\Node Control Pro\</code>, registry under <code>HKLM\Software\Node Control Pro</code>
+</li>
+<li><strong>Free</strong>: <code>C:\Program Files\Node Control Free\</code>, registry under <code>HKLM\Software\Node Control Free</code>
+</li>
 </ul>
-<p>They appear as separate entries in <strong>Settings → Apps</strong> and have separate Start Menu folders. Their data directories are shared (see below) so the device library is visible to both — useful if you're testing the upgrade path.</p>
+<p>They appear as separate entries in <strong>Settings → Apps</strong> and have separate Start Menu folders. Their data directories are shared (see below) so the device library is visible to both — useful if you&#x27;re testing the upgrade path.</p>
 <h2 id="where-your-data-is-stored">Where your data is stored</h2>
 <pre><code>%APPDATA%\netOps\
 </code></pre>
 <p>Typically expands to <code>C:\Users\&lt;you&gt;\AppData\Roaming\netOps\</code>. Contains:</p>
 <ul>
-<li><code>netOps.db</code> — device library, settings, credential references</li>
-<li><code>settings.json</code> — UI state</li>
-<li>Credential <strong>secrets</strong> live in <strong>Windows Credential Manager</strong>, not in this folder</li>
+<li><code>netOps.db</code> — device library, settings, credential references
+</li>
+<li><code>settings.json</code> — UI state
+</li>
+<li>Credential <strong>secrets</strong> live in <strong>Windows Credential Manager</strong>, not in this folder
+</li>
 </ul>
 <p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
 <h2 id="updating">Updating</h2>
 <p>Use <strong>Help → Check for Updates</strong> inside the app. When an update is available:</p>
 <ol>
-<li>Click <strong>Download</strong></li>
-<li>The new installer downloads to your <code>%TEMP%</code> folder</li>
-<li>Click <strong>Install &amp; Restart</strong> — Node Control closes, a UAC prompt appears, the installer runs silently and re-launches the app on the new version</li>
+<li>Click <strong>Download</strong>
+</li>
+<li>The new installer downloads to your <code>%TEMP%</code> folder
+</li>
+<li>Click <strong>Install &amp; Restart</strong> — Node Control closes, a UAC prompt appears, the installer runs silently and re-launches the app on the new version
+</li>
 </ol>
 <p>Your library, settings, and credentials carry over.</p>
 <h2 id="crash-logs">Crash logs</h2>
@@ -196,8 +232,10 @@
 <p>Typically <code>C:\Users\&lt;you&gt;\NodeControl_crash.log</code>. Attach this file when reporting a crash to support.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="first-launch-activation.html">First launch and activation</a></li>
-<li><a href="adding-first-device.html">Adding your first device</a></li>
+<li><a href="first-launch-activation.html">First launch and activation</a>
+</li>
+<li><a href="adding-first-device.html">Adding your first device</a>
+</li>
 </ul>
             </div>
         </main>

@@ -6,7 +6,7 @@ The Inventory report walks each device in scope and collects hardware/software i
 
 ## Open the report
 
-- **Reports** tab → **Inventory** → set Scope → **Run**
+- **Reports** in the left sidebar → **Inventory** → set Scope → **Run**
 
 ## What's collected per device
 

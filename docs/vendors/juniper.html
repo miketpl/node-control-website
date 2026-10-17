@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -130,18 +144,27 @@
 <p>Juniper switches, routers, and SRX firewalls are supported via the standard Junos CLI.</p>
 <h2 id="driver">Driver</h2>
 <ul>
-<li>Netmiko: <code>juniper_junos</code></li>
+<li>Netmiko: <code>juniper_junos</code>
+</li>
 </ul>
 <h2 id="what-works">What works</h2>
 <ul>
-<li>L2 topology with LLDP (Juniper doesn't do CDP)</li>
-<li>L3 topology with OSPF + BGP</li>
-<li>Port Utilisation</li>
-<li>Bandwidth</li>
-<li>VLAN Port Finder</li>
-<li>Find Device (full BFS walk + port disable)</li>
-<li>Inventory (chassis, modules, virtual chassis members)</li>
-<li>Monitor (CPU, memory, alarms)</li>
+<li>L2 topology with LLDP (Juniper doesn&#x27;t do CDP)
+</li>
+<li>L3 topology with OSPF + BGP
+</li>
+<li>Port Utilisation
+</li>
+<li>Bandwidth
+</li>
+<li>VLAN Port Finder
+</li>
+<li>Find Device (full BFS walk + port disable)
+</li>
+<li>Inventory (chassis, modules, virtual chassis members)
+</li>
+<li>Monitor (CPU, memory, alarms)
+</li>
 </ul>
 <h2 id="detection">Detection</h2>
 <p><code>show version</code> output identifies Junos cleanly. SSH banner often <code>SSH-2.0-OpenSSH_for_Junos</code>.</p>
@@ -152,10 +175,14 @@
 <h2 id="srx-firewalls">SRX firewalls</h2>
 <p>Junos-based SRX firewalls:</p>
 <ul>
-<li>Detected as <code>juniper_junos</code></li>
-<li>Inventory works</li>
-<li>L3 topology covers OSPF + BGP within the chosen routing-instances</li>
-<li>IPSec tunnels (used heavily on SRX) are covered in the WAN topology task</li>
+<li>Detected as <code>juniper_junos</code>
+</li>
+<li>Inventory works
+</li>
+<li>L3 topology covers OSPF + BGP within the chosen routing-instances
+</li>
+<li>IPSec tunnels (used heavily on SRX) are covered in the WAN topology task
+</li>
 </ul>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
@@ -174,28 +201,33 @@
 </tr>
 <tr>
 <td>LLDP-only neighbours</td>
-<td>Junos doesn't support CDP</td>
+<td>Junos doesn&#x27;t support CDP</td>
 <td>Expected — neighbours appear via LLDP</td>
 </tr>
 <tr>
 <td>Stack members not enumerated</td>
-<td>VC didn't detect as a stack</td>
+<td>VC didn&#x27;t detect as a stack</td>
 <td><code>show virtual-chassis status</code> should appear in Inventory — check raw output</td>
 </tr>
 </tbody>
 </table>
 <h2 id="configuration-mode">Configuration mode</h2>
-<p>Junos has a commit-based config model with <code>commit</code> / <code>commit and-quit</code>. Node Control is read-only by default and doesn't enter config mode except for port shut/no-shut actions which use a single-line operational mode (<code>set interfaces &lt;port&gt; disable</code>).</p>
+<p>Junos has a commit-based config model with <code>commit</code> / <code>commit and-quit</code>. The write path I can confirm here is Find Device port shut, which uses a single operational-mode line (<code>set interfaces &lt;port&gt; disable</code>). Config compliance remediation is Cisco IOS, IOS-XE, and NX-OS only.</p>
 <h2 id="limitations">Limitations</h2>
 <ul>
-<li><strong>Mist</strong> (Juniper's cloud wireless): not currently supported — like Meraki, would require API integration. On the roadmap.</li>
-<li><strong>EVPN-VXLAN underlay</strong>: visible in L3 topology as BGP peers, but the VXLAN overlay isn't separately rendered</li>
-<li><strong>Junos PyEZ</strong>: Node Control uses SSH directly; PyEZ-based integration isn't planned</li>
+<li><strong>Mist</strong> (Juniper&#x27;s cloud wireless): not currently supported — like Meraki, would require API integration. On the roadmap.
+</li>
+<li><strong>EVPN-VXLAN underlay</strong>: visible in L3 topology as BGP peers, but the VXLAN overlay isn&#x27;t separately rendered
+</li>
+<li><strong>Junos PyEZ</strong>: Node Control uses SSH directly; PyEZ-based integration isn&#x27;t planned
+</li>
 </ul>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/topology-l3.html">Topology L3</a> — for OSPF/BGP detail</li>
-<li><a href="../tasks/find-device.html">Find Device</a> — works with Junos VRF probes</li>
+<li><a href="../tasks/topology-l3.html">Topology L3</a> — for OSPF/BGP detail
+</li>
+<li><a href="../tasks/find-device.html">Find Device</a> — works with Junos VRF probes
+</li>
 </ul>
             </div>
         </main>

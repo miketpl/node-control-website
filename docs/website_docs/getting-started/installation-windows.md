@@ -15,10 +15,7 @@ From [nodecontrol.io](https://nodecontrol.io):
 - **Free** — sign up with your email to receive a download link and activation code
 - **Pro** / **AI** — log in to your customer portal
 
-The download is named like:
-
-- `Node Control Free-0.9.29-Setup.exe`
-- `Node Control Pro-0.9.29-Setup.exe`
+The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI). The site always hands you the current build. Do not bookmark an old filename.
 
 ## Install
 
@@ -32,16 +29,17 @@ The download is named like:
 
 You'll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., "Node Control Free").
 
-## "Windows protected your PC" SmartScreen warning (Free / Pro builds before late 2026)
+## The installer is signed
 
-This appears because our Windows code-signing certificate is in the SmartScreen reputation-building phase. To proceed:
+The Windows build is an NSIS installer signed with Azure Artifact Signing.
 
-1. Click **More info** on the SmartScreen dialog
-2. Click **Run anyway**
+Before you run it:
 
-The warning disappears entirely once enough downloads have built up the SmartScreen reputation for our publisher. We're also actively working through Microsoft's Trusted Signing programme to eliminate it sooner.
+1. Right-click the `Setup.exe`
+2. **Properties** → **Digital Signatures**
+3. Confirm a signature is present and the publisher is **The Promised LAN**
 
-You can verify the installer is genuinely from us by right-clicking the `Setup.exe` → **Properties** → **Digital Signatures** tab → confirm "The Promised LAN" appears as the signer.
+Confirm the signature, then run the installer. If SmartScreen still appears, stop and check the Digital Signatures tab again. A missing signature means the file is not the build I ship.
 
 ## Pro and Free side-by-side
 

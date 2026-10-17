@@ -6,7 +6,7 @@ The WAN topology map renders the cross-site connectivity between your sites — 
 
 ## Open the task
 
-- **Tasks** tab → **Topology (WAN)** → **Run**
+- Engineer command bar → **Task** → **Topology (WAN)** → **Run**
 
 ## Configure
 

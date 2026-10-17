@@ -6,7 +6,7 @@ The L3 topology map walks every routing device in scope, reads its routing table
 
 ## Open the task
 
-- **Tasks** tab → **Topology (L3)** → click **Run**
+- Engineer command bar → **Task** → **Topology (L3)** → **Run**
 
 ## Configure
 

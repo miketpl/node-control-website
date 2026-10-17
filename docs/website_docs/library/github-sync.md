@@ -1,6 +1,6 @@
 # Sharing libraries via GitHub
 
-> Available on **Pro** and **AI** tiers only.
+GitHub library sync is on **Free**, **Pro**, and the **AI** edition. A pull on Free still has to fit the 25-device library cap.
 
 Node Control can synchronise your device library with a private GitHub repository. Useful when:
 
@@ -50,14 +50,14 @@ You'll typically generate **two** tokens:
 
 If the repo is empty:
 
-1. **Tools → Library → Push to GitHub**
+1. **Library** menu → **Push to GitHub**
 2. Confirm — your local library JSON is committed to the repo
 3. The commit message records the action and your machine name
 
 ### 5. First pull (on another machine)
 
-1. Install Node Control Pro / AI with the same Library repo configured
-2. **Tools → Library → Pull from GitHub**
+1. Install Node Control with the same Library repo configured
+2. **Library** menu → **Pull from GitHub** (on the Engineer status strip; older builds used **Tools → Library**)
 3. A diff dialog appears showing:
    - **New sites**: sites in the remote library but not yours
    - **Removed sites**: sites in yours but not the remote
@@ -67,11 +67,13 @@ If the repo is empty:
 
 The diff-and-confirm flow is intentional — you won't accidentally nuke your local library on a fetch.
 
+Only one fetch runs at a time. A startup sync and a manual pull used to overlap, and the second one showed the same diff again after you clicked Apply. That stale diff is gone.
+
 ## Conflict resolution
 
 If two engineers edit and push at the same time, the second push fails with a Git conflict. Resolution:
 
-1. The losing engineer pulls (Tools → Library → Pull)
+1. The losing engineer pulls (**Library** menu → **Pull from GitHub**)
 2. Reviews the diff to see what changed
 3. Re-applies their local edits on top
 4. Pushes again
@@ -113,7 +115,7 @@ Most teams turn auto-sync **off** and push manually at end-of-session.
 If you manage networks for several customers, you can have a separate library repo per customer:
 
 1. Switch the **Library repo** field in Settings to point at a different repo
-2. **Tools → Library → Pull from GitHub** to load that customer's library
+2. **Library** menu → **Pull from GitHub** to load that customer's library
 3. Your local library DB is fully replaced with the pulled contents
 
 Switching libraries effectively "checks out" a different customer's network. Your previous local edits are gone unless they were pushed first — be deliberate about the order.

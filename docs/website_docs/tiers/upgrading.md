@@ -30,8 +30,8 @@ Once paid, your email is added to the Pro allowed-users list within ~5 minutes. 
 
 From the email or your customer portal, download:
 
-- **Mac**: `Node Control Pro-X.Y.Z.dmg`
-- **Windows**: `Node Control Pro-X.Y.Z-Setup.exe`
+- **Mac**: the Pro disk image from the download link in that email
+- **Windows**: the Pro NSIS installer from the same link. It is signed with Azure Artifact Signing
 
 ### 3. Install Pro alongside Free (optional)
 
@@ -53,7 +53,7 @@ On first launch of Pro:
 
 ### 5. Verify your library transferred
 
-Open the **Engineer** tab. You should see all the devices that were in your Free library — and now without the 25-device cap. The library is stored in `~/Library/Application Support/netOps/netOps.db` (Mac) or `%APPDATA%\netOps\` (Windows), shared across all tiers on the same machine.
+Open **Engineer** from the sidebar. You should see the devices that were in your Free library, without the 25-device cap. The library is stored in `~/Library/Application Support/netOps/netOps.db` (Mac) or `%APPDATA%\netOps\` (Windows), shared across all tiers on the same machine.
 
 ### 6. Uninstall Free (optional)
 
@@ -95,7 +95,7 @@ If you want to switch back to Free (e.g., no longer working with large networks)
 
 1. Install Node Control Free
 2. Activate with an `NC-XXXX-XXXX` code from nodecontrol.io
-3. Your library is preserved. Tools that respect Free's 25-device cap will only see the first 25 devices (sorted by IP) — but the rest aren't deleted; they're just hidden
+3. Your library file is preserved. Free holds 25 devices. The downgrade does not delete the extra devices
 4. You can uninstall Pro at any time
 
 If you later re-upgrade, all devices become visible again.

@@ -6,7 +6,7 @@ For each switch in scope, lists every port with its status, VLAN, MAC count, and
 
 ## Open the report
 
-- **Reports** tab → **Port Utilisation** → set Scope → **Run**
+- **Reports** in the left sidebar → **Port Utilisation** → set Scope → **Run**
 
 ## What's collected per port
 

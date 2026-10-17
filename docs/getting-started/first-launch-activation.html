@@ -40,7 +40,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">v0.9.28</span>
+    <span class="docs-version">v0.9.39</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -48,6 +48,7 @@
       <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link active">First Launch &amp; Activation</a>
+      <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
     </div>
@@ -69,6 +70,14 @@
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -78,6 +87,9 @@
       <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
@@ -97,7 +109,9 @@
       <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
       <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
       <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
@@ -118,7 +132,7 @@
       <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
       <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
     </div>
-  </nav>
+</nav>
 </aside>
 
         <main class="docs-content">
@@ -132,30 +146,45 @@
 <p>When you launch Node Control Free for the first time, an <strong>Activate Node Control Free</strong> dialog appears.</p>
 <h3 id="where-the-code-comes-from">Where the code comes from</h3>
 <ol>
-<li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a> and click <strong>Get Free</strong></li>
-<li>Enter your email</li>
-<li>Check your inbox for a 6-digit verification code; enter it on the website</li>
-<li>The website then generates your activation code in the format <code>NC-XXXX-XXXX</code> (e.g., <code>NC-TH7G-6VNI</code>)</li>
-<li>Save the code somewhere safe — your password manager is ideal</li>
+<li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a> and click <strong>Get Free</strong>
+</li>
+<li>Enter your email
+</li>
+<li>Check your inbox for a 6-digit verification code; enter it on the website
+</li>
+<li>The website then generates your activation code in the format <code>NC-XXXX-XXXX</code> (e.g., <code>NC-TH7G-6VNI</code>)
+</li>
+<li>Save the code somewhere safe — your password manager is ideal
+</li>
 </ol>
 <h3 id="entering-the-code-in-the-app">Entering the code in the app</h3>
 <ol>
-<li>Type or paste the code into the <strong>Activation code</strong> field</li>
-<li>Click <strong>Activate</strong></li>
-<li>The app contacts the license server (~1–2 seconds), confirms the code is valid, and stores it locally</li>
-<li>The dialog closes and the main app window appears</li>
+<li>Type or paste the code into the <strong>Activation code</strong> field
+</li>
+<li>Click <strong>Activate</strong>
+</li>
+<li>The app contacts the license server (~1–2 seconds), confirms the code is valid, and stores it locally
+</li>
+<li>The dialog closes and the main app window appears
+</li>
 </ol>
-<p>After this, you won't be asked for the code again unless:</p>
+<p>After this, you won&#x27;t be asked for the code again unless:</p>
 <ul>
-<li>The code is later revoked (e.g., you violate terms of use), OR</li>
-<li>You haven't been online for more than 7 days <em>and</em> your offline grace period has expired</li>
+<li>The code is later revoked (e.g., you violate terms of use), OR
+</li>
+<li>You haven&#x27;t been online for more than 7 days <em>and</em> your offline grace period has expired
+</li>
 </ul>
 <h3 id="code-format-rules">Code format rules</h3>
 <ul>
-<li>Always starts with <code>NC-</code></li>
-<li>Eight characters after the prefix, split as <code>NC-XXXX-XXXX</code></li>
-<li>Uppercase letters and digits only (the app auto-uppercases lowercase input)</li>
-<li>The dashes are required</li>
+<li>Always starts with <code>NC-</code>
+</li>
+<li>Eight characters after the prefix, split as <code>NC-XXXX-XXXX</code>
+</li>
+<li>Uppercase letters and digits only (the app auto-uppercases lowercase input)
+</li>
+<li>The dashes are required
+</li>
 </ul>
 <h3 id="if-activation-fails">If activation fails</h3>
 <table>
@@ -168,23 +197,23 @@
 </thead>
 <tbody>
 <tr>
-<td>"Code must be in the format NC-XXXX-XXXX"</td>
+<td>&quot;Code must be in the format NC-XXXX-XXXX&quot;</td>
 <td>The code is malformed or wrong length</td>
 <td>Re-paste from the website / email</td>
 </tr>
 <tr>
-<td>"This license code is not active"</td>
-<td>The code wasn't found in our active licenses list</td>
+<td>&quot;This license code is not active&quot;</td>
+<td>The code wasn&#x27;t found in our active licenses list</td>
 <td>Confirm you copied it correctly; if so, request a fresh code at nodecontrol.io</td>
 </tr>
 <tr>
-<td>"Unable to verify your license" with no prior check</td>
-<td>Network failure on first activation — your machine can't reach <code>api.github.com</code></td>
+<td>&quot;Unable to verify your license&quot; with no prior check</td>
+<td>Network failure on first activation — your machine can&#x27;t reach <code>api.github.com</code></td>
 <td>Check your internet connection, firewall, proxy settings</td>
 </tr>
 <tr>
-<td>"Offline grace period: N days remaining"</td>
-<td>Network failure but you've successfully activated before — you can continue offline for the remaining days</td>
+<td>&quot;Offline grace period: N days remaining&quot;</td>
+<td>Network failure but you&#x27;ve successfully activated before — you can continue offline for the remaining days</td>
 <td>Just close the message; the app will retry next launch</td>
 </tr>
 </tbody>
@@ -194,40 +223,58 @@
 <h3 id="registration-form">Registration form</h3>
 <p>Fill in:</p>
 <ul>
-<li><strong>Name</strong> — your full name</li>
-<li><strong>Email</strong> — the email address associated with your Pro purchase or beta access</li>
-<li><strong>Organisation</strong> (optional) — your company name</li>
-<li><strong>Role</strong> (optional) — e.g., Network Engineer, IT Manager</li>
+<li><strong>Name</strong> — your full name
+</li>
+<li><strong>Email</strong> — the email address associated with your Pro purchase or beta access
+</li>
+<li><strong>Organisation</strong> (optional) — your company name
+</li>
+<li><strong>Role</strong> (optional) — e.g., Network Engineer, IT Manager
+</li>
 </ul>
 <p>Click <strong>Submit</strong>. The app:</p>
 <ol>
-<li>Records your registration locally</li>
-<li>Submits the details to our private registrations system on GitHub (used for support, not for marketing)</li>
-<li>Checks your email against the allowed Pro user list</li>
-<li>If your email is on the list — you're in</li>
-<li>If not — a "not approved" message appears with contact info for support</li>
+<li>Records your registration locally
+</li>
+<li>Submits the details to our private registrations system on GitHub (used for support, not for marketing)
+</li>
+<li>Checks your email against the allowed Pro user list
+</li>
+<li>If your email is on the list — you&#x27;re in
+</li>
+<li>If not — a &quot;not approved&quot; message appears with contact info for support
+</li>
 </ol>
-<h3 id="when-youll-see-this-again">When you'll see this again</h3>
+<h3 id="when-youll-see-this-again">When you&#x27;ll see this again</h3>
 <ul>
-<li>After installing on a new machine</li>
-<li>After a clean uninstall + reinstall</li>
-<li>If you cancel the registration and re-open the app</li>
+<li>After installing on a new machine
+</li>
+<li>After a clean uninstall + reinstall
+</li>
+<li>If you cancel the registration and re-open the app
+</li>
 </ul>
 <h3 id="license-re-check">License re-check</h3>
-<p>On every launch, Pro / AI rechecks your email against the allowed user list. Same 7-day offline grace period applies — useful if you're on a customer site without internet for a few days.</p>
+<p>On every launch, Pro / AI rechecks your email against the allowed user list. Same 7-day offline grace period applies — useful if you&#x27;re on a customer site without internet for a few days.</p>
 <h2 id="why-we-check-at-all">Why we check at all</h2>
 <p>The license check exists to:</p>
 <ul>
-<li>Track active users for support and update notifications</li>
-<li>Allow rapid response if a code or account is misused</li>
-<li>Give us a feedback channel ("we noticed v0.9.29 is crashing for 3 customers — let's investigate")</li>
+<li>Track active users for support and update notifications
+</li>
+<li>Allow rapid response if a code or account is misused
+</li>
+<li>Give me a way to see which build is actually in use when a crash report comes in
+</li>
 </ul>
 <p>We do <em>not</em> use your email or activation data for marketing. Our <a href="https://nodecontrol.io/privacy">privacy policy</a> covers full details.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="adding-first-device.html">Adding your first device</a></li>
-<li><a href="credentials.html">Setting up credentials</a></li>
-<li><a href="../tiers/overview.html">Tier comparison</a></li>
+<li><a href="adding-first-device.html">Adding your first device</a>
+</li>
+<li><a href="credentials.html">Setting up credentials</a>
+</li>
+<li><a href="../tiers/overview.html">Tier comparison</a>
+</li>
 </ul>
             </div>
         </main>

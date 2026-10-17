@@ -15,10 +15,7 @@ Go to [nodecontrol.io](https://nodecontrol.io) and choose your tier:
 - **Free** — sign up with your email to receive a download link and activation code
 - **Pro** / **AI** — log in to your customer portal to download
 
-The download is a `.dmg` file named like:
-
-- `Node Control Free-0.9.29.dmg`
-- `Node Control Pro-0.9.29.dmg`
+The download is a `.dmg` for the edition you chose (Free, Pro, or AI). The site always hands you the current build.
 
 ## Install
 

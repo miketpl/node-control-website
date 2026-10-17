@@ -8,7 +8,7 @@ Possible causes:
 
 ### You're on a different tier's update channel
 
-Pro builds check the Pro releases repo; Free builds check the Free releases repo. If you're running Free and there's a Pro v0.9.30 release, your Free install won't see it (and shouldn't — they're different products).
+Pro builds check the Pro releases repo; Free builds check the Free releases repo. A Pro release does not appear as an update for a Free install. They are different products.
 
 Confirm: Help → About → check the tier. Confirm the latest version available for THAT tier on:
 
@@ -17,7 +17,7 @@ Confirm: Help → About → check the tier. Confirm the latest version available
 
 ### The releases page hasn't been published yet
 
-Sometimes a build is internally tested before the release is published to the GitHub releases page. Check the public release page — if no v0.9.30 there, your client correctly reports no update.
+Sometimes a build is tested before the release is published. If the releases page for your tier has nothing newer, the client is right to say there is no update.
 
 ### Cached lookup
 

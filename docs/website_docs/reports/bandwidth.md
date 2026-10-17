@@ -6,7 +6,7 @@ Per-interface bandwidth statistics across one or more devices. Like Port Utilisa
 
 ## Open the report
 
-- **Reports** tab → **Bandwidth** → set Scope → **Run**
+- **Reports** in the left sidebar → **Bandwidth** → set Scope → **Run**
 
 ## What's collected
 

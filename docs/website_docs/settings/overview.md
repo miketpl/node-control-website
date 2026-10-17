@@ -1,6 +1,8 @@
 # Settings overview
 
-The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control's configuration. Organised by tab — pick the section relevant to what you're configuring.
+Open **Settings** from the bottom of the left sidebar. It is also in the **Edit** menu.
+
+Settings is organised by section. Pick the one you need.
 
 ## Settings tabs
 
@@ -18,6 +20,8 @@ The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control
 | **Monitor** | SSH keepalive, sample persistence, default polling interval |
 | **Safe Mode** | [Command allowlist / blocklist](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
+| **Scripts** | [Python scripts that run as tasks](scripts.md), Pro and AI |
+| **AI / LLM** | Anthropic API key or an Ollama server, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
 | **Advanced** | Crash log location, telemetry opt-in, debug logging |
 
 ## Where settings are stored
@@ -27,7 +31,9 @@ The Settings dialog (Tools menu → Settings, or Cmd/Ctrl+,) houses Node Control
 %APPDATA%\netOps\settings.json                        (Windows)
 ```
 
-Settings are read on launch and saved on dismiss. Changes take effect immediately for most settings; some (theme changes) require restart.
+Settings are read on launch and saved on dismiss. Changes take effect immediately for most settings.
+
+Four themes share the layout: **Dark Hacker**, **Dark Blue**, **Light**, and **High Contrast**. High Contrast keeps strong borders. Changing theme tells you a restart is required. It does not pretend to apply in place.
 
 ## Resetting to defaults
 
@@ -63,6 +69,8 @@ A future release may add named settings profiles to skip the manual copy — let
 - [Site detection rules](site-detection.md)
 - [Custom command catalogs](custom-commands.md)
 - [Safe Mode](safe-mode.md)
+- [Scripts](scripts.md)
+- [AI provider](ai.md)
 
 ## Common configurations
 

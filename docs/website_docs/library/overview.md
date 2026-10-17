@@ -18,9 +18,11 @@ Each entry holds:
 
 The library lives in `~/Library/Application Support/netOps/netOps.db` (Mac) or `%APPDATA%\netOps\netOps.db` (Windows) — a single SQLite database.
 
-## The Engineer tab — main library view
+## The Engineer page
 
-The **Engineer** tab is your default library view. It's a sortable, filterable table:
+Open **Engineer** from the left sidebar. It is the library table, and it is where tasks run. See [Where things are](../getting-started/navigation.md).
+
+The table is sortable and filterable:
 
 - **Filter by site** — top-left dropdown narrows the table to one site
 - **Search** — top-right box does live substring matching across all columns
@@ -52,13 +54,11 @@ Three ways, in increasing automation:
 
 1. **Manual** — right-click in the table → **Add Device** ([details](adding-devices.md))
 2. **Subnet scan** — Library Updater walks an IP range and adds what it finds ([details](subnet-scan.md))
-3. **GitHub library sync** — pull a shared library from a GitHub repo ([details](github-sync.md), Pro/AI only)
+3. **GitHub library sync** — pull a shared library from a GitHub repo ([details](github-sync.md)). This is on Free as well as Pro.
 
 ## Free tier device cap
 
-Free tier limits the library to **25 devices**. Additional devices can be added but won't appear in the device picker, won't be scanned by Inventory, and won't be visible to the (single-switch) Find Device picker.
-
-The cap is enforced at the database-read boundary — even if your library has 251 devices left over from a Pro install, the Free build only operates on 25.
+Free holds **25 devices**. There is no time limit. The cap is in the library database. Installing Free does not delete a larger library left behind by Pro.
 
 To remove the cap, [upgrade to Pro](../tiers/upgrading.md).
 
@@ -89,7 +89,7 @@ copy "%APPDATA%\netOps\netOps.db" %USERPROFILE%\Desktop\netOps-backup.db
 
 To restore, just copy it back. Node Control reads the file on launch.
 
-Pro/AI users have a better option: [GitHub library sync](github-sync.md) keeps a remote copy and tracks every change in commit history.
+[GitHub library sync](github-sync.md) keeps a remote copy and tracks every change in commit history. It is available on Free as well as Pro.
 
 ## Editing devices
 
