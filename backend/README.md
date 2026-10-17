@@ -48,5 +48,47 @@ On the VPS, the process is `nodecontrol-api` (gunicorn on `127.0.0.1:5000`), wit
 No secrets required. SMTP and GitHub are mocked.
 
 ```bash
-cd backend && python3 -m unittest test_app -v
+cd backend && python3 -m unittest test_app test_pro -v
 ```
+
+## Professional subscriptions
+
+Pro is a Stripe subscription: £25 a month (`STRIPE_PRICE_PRO_MONTHLY`) or £255 a year (`STRIPE_PRICE_PRO_ANNUAL`). Checkout is created by `POST /api/checkout`. The site button stays hidden until `PRO_CHECKOUT_LIVE` in `js/main.js` is set to `true`.
+
+The webhook is `https://api.nodecontrol.io/api/stripe/webhook`. In the Stripe Dashboard, send these events:
+
+- `checkout.session.completed`
+- `invoice.paid`
+- `invoice.payment_failed`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+
+`STRIPE_WEBHOOK_SECRET` is the signing secret for that endpoint. A bad signature is rejected. A handler failure returns a non-2xx status so Stripe retries. Event ids are stored after a successful handler, so a retry does not add the email twice or send a second welcome email.
+
+Stripe Tax is on (`automatic_tax`, billing address required, tax ID collection). The Promised Lan Limited is VAT registered. Set the Stripe Tax origin address in the Dashboard before taking live payments.
+
+Access is `allowlist.json` on `main` in `miketpl/node-control-registrations`. The file is already live and includes beta addresses added by hand. The API preserves every other key (including `grace_period_days`). It lowercases and dedupes `allowed_emails` only when it adds or removes a Stripe subscriber. It writes with the file sha and retries a 409.
+
+It removes an email only when a `pro_subscriptions` row has `added_to_allowlist` set, that subscription is the one that ended, and no other subscription for the address is `active` or `trialing`. A hand-added address is not removed, including when that person later subscribes and then cancels. `cancel_at_period_end` leaves the address in place until the subscription actually ends. A failed invoice removes it only once Stripe marks the subscription `past_due`, `unpaid`, or `canceled`.
+
+The allow-list token is `GITHUB_PAT_REGISTRATIONS` if set, otherwise `GITHUB_PAT_WRITE`. It needs contents:write on `miketpl/node-control-registrations`. Reuse the existing write token when that token already has this scope. A missing file is an error. The API does not create a new allow-list.
+
+`PRO_RELEASES_PAT` reads the private installer repo `miketpl/node-control-releases-pro`. `GET /api/pro/download?token=` checks a short-lived signed token and an active subscription, then redirects to GitHub's asset URL. The PAT is not put in the redirect.
+
+`POST /api/portal` emails a Customer Portal link when the address has a subscription. The JSON response is the same when it does not. Turn on the Customer Portal in Stripe, allow cancel and payment-method updates, and set the return URL to `https://nodecontrol.io/#manage`.
+
+| Key | What it is |
+|---|---|
+| `STRIPE_SECRET_KEY` | Secret key. Test mode until checkout is switched on. |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/stripe/webhook`. |
+| `STRIPE_PRICE_PRO_MONTHLY` | Price id for £25/month. |
+| `STRIPE_PRICE_PRO_ANNUAL` | Price id for £255/year. |
+| `GITHUB_PAT_REGISTRATIONS` | Optional. Falls back to `GITHUB_PAT_WRITE`. |
+| `PRO_ALLOWLIST_REPO` | Default `miketpl/node-control-registrations`. |
+| `PRO_ALLOWLIST_PATH` | Default `allowlist.json`. |
+| `PRO_RELEASES_REPO` | Default `miketpl/node-control-releases-pro`. |
+| `PRO_RELEASES_PAT` | Read access to that private repo's release assets. |
+| `PRO_DOWNLOAD_SECRET` | Signs download tokens. Falls back to `SECRET_KEY`. |
+| `SITE_URL` | `https://nodecontrol.io`. Used for Checkout return URLs. |
+
+Deploy step, after the free-tier copy: install `stripe` from `requirements.txt`, add the keys above to the live `.env`, restart `nodecontrol-api`, then `curl -s http://127.0.0.1:5000/api/health`. Do not set `PRO_CHECKOUT_LIVE` until a test-mode subscription has been checked end to end.

@@ -10,6 +10,7 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 import base64
 import hmac
+import html
 import json
 import os
 import secrets
@@ -17,15 +18,18 @@ import string
 import sqlite3
 import smtplib
 import logging
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from functools import wraps
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
+import stripe
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 # ── Configuration ────────────────────────────────────────────
 app = Flask(__name__)
@@ -64,6 +68,24 @@ app.config.update(
     LICENSE_FILE=os.environ.get("LICENSE_FILE", "licenses.json"),
     GITHUB_PAT=os.environ.get("GITHUB_PAT", ""),          # read-only (app license check)
     GITHUB_PAT_WRITE=os.environ.get("GITHUB_PAT_WRITE", ""),  # read/write (license sync)
+
+    # Pro subscription. Prices are Stripe Price IDs, not amounts.
+    SITE_URL=os.environ.get("SITE_URL", "https://nodecontrol.io"),
+    STRIPE_SECRET_KEY=os.environ.get("STRIPE_SECRET_KEY", ""),
+    STRIPE_WEBHOOK_SECRET=os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
+    STRIPE_PRICE_PRO_MONTHLY=os.environ.get("STRIPE_PRICE_PRO_MONTHLY", ""),
+    STRIPE_PRICE_PRO_ANNUAL=os.environ.get("STRIPE_PRICE_PRO_ANNUAL", ""),
+    # Optional. Empty falls back to GITHUB_PAT_WRITE. That token needs
+    # contents:write on miketpl/node-control-registrations.
+    GITHUB_PAT_REGISTRATIONS=os.environ.get("GITHUB_PAT_REGISTRATIONS", ""),
+    PRO_ALLOWLIST_REPO=os.environ.get("PRO_ALLOWLIST_REPO") or "miketpl/node-control-registrations",
+    PRO_ALLOWLIST_PATH=os.environ.get("PRO_ALLOWLIST_PATH") or "allowlist.json",
+    PRO_RELEASES_REPO=os.environ.get("PRO_RELEASES_REPO") or "miketpl/node-control-releases-pro",
+    PRO_RELEASES_PAT=os.environ.get("PRO_RELEASES_PAT", ""),
+    # Falls back to SECRET_KEY when unset. Used to sign Pro download links.
+    PRO_DOWNLOAD_SECRET=os.environ.get("PRO_DOWNLOAD_SECRET", ""),
+    # Upper bound for a download token. The payload also carries its own exp.
+    PRO_DOWNLOAD_TOKEN_MAX_AGE=int(os.environ.get("PRO_DOWNLOAD_TOKEN_MAX_AGE", 7 * 24 * 3600)),
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -114,6 +136,31 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
         CREATE INDEX IF NOT EXISTS idx_licenses_email ON licenses(email);
         CREATE INDEX IF NOT EXISTS idx_licenses_status ON licenses(status);
+
+        CREATE TABLE IF NOT EXISTS pro_subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            name TEXT DEFAULT '',
+            stripe_customer_id TEXT DEFAULT '',
+            stripe_subscription_id TEXT UNIQUE,
+            stripe_checkout_session_id TEXT DEFAULT '',
+            plan TEXT DEFAULT '',
+            status TEXT DEFAULT '',
+            cancel_at_period_end INTEGER DEFAULT 0,
+            current_period_end TEXT DEFAULT '',
+            added_to_allowlist INTEGER DEFAULT 0,
+            welcomed_at TEXT DEFAULT '',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_pro_sub_email ON pro_subscriptions(email);
+
+        CREATE TABLE IF NOT EXISTS stripe_events (
+            event_id TEXT PRIMARY KEY,
+            event_type TEXT NOT NULL,
+            processed_at TEXT NOT NULL
+        );
     """)
     db.commit()
     db.close()
@@ -373,6 +420,937 @@ def _remove_code_from_licenses(code: str):
         _put_licenses_json(current, sha, f"Revoke code {code}")
     else:
         logger.info(f"Code {code} not in licenses.json — nothing to remove")
+
+
+# ── Pro subscriptions ────────────────────────────────────────
+# Professional is a Stripe subscription. Access is an email on
+# allowlist.json in miketpl/node-control-registrations.
+# That file is already live and contains hand-added beta users.
+# This code only removes an email when a pro_subscriptions row says
+# this system added it, the subscription that added it has ended,
+# and no other subscription for that email is still active.
+
+ACTIVE_SUB_STATUSES = ("active", "trialing")
+ENDING_SUB_STATUSES = ("past_due", "unpaid", "canceled", "incomplete_expired")
+PORTAL_STATUSES = ("active", "trialing", "past_due", "unpaid")
+DOWNLOAD_PAGE_TTL = 30 * 60
+DOWNLOAD_EMAIL_TTL = 24 * 3600
+
+
+class AllowlistError(RuntimeError):
+    pass
+
+
+class AllowlistConflict(Exception):
+    pass
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _header_map(headers):
+    if not headers:
+        return {}
+    try:
+        return {key: value for key, value in headers.items()}
+    except Exception:
+        return {}
+
+
+def _github_request(req, timeout=15, follow_redirects=True):
+    """Return (status, headers, body). Does not follow redirects when asked not to."""
+    try:
+        if follow_redirects:
+            opener_cm = urlopen(req, timeout=timeout)
+        else:
+            opener_cm = build_opener(_NoRedirect).open(req, timeout=timeout)
+        with opener_cm as resp:
+            status = getattr(resp, "status", None) or resp.getcode()
+            return status, _header_map(resp.headers), resp.read()
+    except HTTPError as exc:
+        raw = b""
+        if exc.fp is not None:
+            try:
+                raw = exc.read()
+            except Exception:
+                raw = b""
+        return exc.code, _header_map(exc.headers), raw
+
+
+def _github_req(url, pat, accept="application/vnd.github+json", data=None, method=None):
+    headers = {
+        "Authorization": f"Bearer {pat}",
+        "Accept": accept,
+        "User-Agent": "nodecontrol-license-api",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if data is not None and method is None:
+        method = "PUT"
+    return Request(url, data=data, headers=headers, method=method)
+
+
+def _as_mapping(obj):
+    if obj is None:
+        return {}
+    if isinstance(obj, dict):
+        return obj
+    to_dict = getattr(obj, "to_dict", None)
+    if callable(to_dict):
+        return to_dict()
+    return dict(obj)
+
+
+def _stripe_id(value):
+    if not value:
+        return ""
+    if isinstance(value, str):
+        return value
+    return _as_mapping(value).get("id") or ""
+
+
+def _registrations_pat():
+    """Token for allowlist.json. Prefer the dedicated PAT, else the existing write PAT."""
+    pat = (app.config.get("GITHUB_PAT_REGISTRATIONS") or "").strip()
+    if not pat:
+        pat = (app.config.get("GITHUB_PAT_WRITE") or "").strip()
+    if not pat:
+        raise AllowlistError(
+            "No GitHub token for the Pro allow-list. Set GITHUB_PAT_REGISTRATIONS, "
+            "or reuse GITHUB_PAT_WRITE if that token has contents:write on "
+            "miketpl/node-control-registrations."
+        )
+    return pat
+
+
+def _allowlist_target():
+    repo = (app.config.get("PRO_ALLOWLIST_REPO") or "").strip()
+    path = (app.config.get("PRO_ALLOWLIST_PATH") or "").strip()
+    if not repo or not path:
+        raise AllowlistError("PRO_ALLOWLIST_REPO and PRO_ALLOWLIST_PATH must be set.")
+    return repo, path
+
+
+def _normalize_emails(emails):
+    out = []
+    seen = set()
+    for item in emails or []:
+        if not isinstance(item, str):
+            continue
+        norm = item.strip().lower()
+        if not norm or norm in seen:
+            continue
+        seen.add(norm)
+        out.append(norm)
+    return out
+
+
+def _get_allowlist():
+    repo, path = _allowlist_target()
+    status, _headers, body = _github_request(_github_req(
+        f"https://api.github.com/repos/{repo}/contents/{path}?ref=main",
+        _registrations_pat(),
+    ))
+    if status == 404:
+        raise AllowlistError(
+            f"Allow-list file {repo}/{path} was not found on main. "
+            "Refusing to create a new file, because the live list must not be replaced."
+        )
+    if status != 200:
+        raise AllowlistError(f"Could not read the Pro allow-list: HTTP {status}")
+    payload = json.loads(body.decode("utf-8"))
+    content = json.loads(base64.b64decode(payload["content"]).decode("utf-8"))
+    if not isinstance(content, dict):
+        raise AllowlistError("Pro allow-list JSON must be an object.")
+    sha = payload.get("sha") or ""
+    if not sha:
+        raise AllowlistError("Pro allow-list response had no sha.")
+    return content, sha
+
+
+def _put_allowlist(content, sha, message):
+    repo, path = _allowlist_target()
+    encoded = base64.b64encode(
+        json.dumps(content, indent=2).encode("utf-8")
+    ).decode("utf-8")
+    body = json.dumps({
+        "message": message,
+        "content": encoded,
+        "sha": sha,
+        "branch": "main",
+    }).encode("utf-8")
+    status, _headers, _resp = _github_request(_github_req(
+        f"https://api.github.com/repos/{repo}/contents/{path}",
+        _registrations_pat(),
+        data=body,
+        method="PUT",
+    ))
+    if status == 409:
+        raise AllowlistConflict()
+    if status not in (200, 201):
+        raise AllowlistError(f"Could not write the Pro allow-list: HTTP {status}")
+
+
+def _mutate_allowlist(mutator, message):
+    last_error = None
+    for _attempt in range(4):
+        doc, sha = _get_allowlist()
+        if not mutator(doc):
+            return doc
+        try:
+            _put_allowlist(doc, sha, message)
+            return doc
+        except AllowlistConflict as exc:
+            last_error = exc
+            logger.warning("Pro allow-list write conflicted. Retrying.")
+    raise AllowlistError("Pro allow-list update conflicted too many times.") from last_error
+
+
+def _allowlist_contains(email):
+    doc, _sha = _get_allowlist()
+    return email.strip().lower() in _normalize_emails(doc.get("allowed_emails") or [])
+
+
+def _add_email_to_allowlist(email):
+    """Add one subscriber. Other keys, including grace_period_days, stay as they are."""
+    email = email.strip().lower()
+
+    def mutator(doc):
+        emails = _normalize_emails(doc.get("allowed_emails") or [])
+        if email in emails:
+            return False
+        emails.append(email)
+        doc["allowed_emails"] = emails
+        return True
+
+    _mutate_allowlist(mutator, f"Add Pro subscriber {email}")
+
+
+def _remove_email_from_allowlist(email):
+    email = email.strip().lower()
+
+    def mutator(doc):
+        emails = _normalize_emails(doc.get("allowed_emails") or [])
+        if email not in emails:
+            return False
+        doc["allowed_emails"] = [item for item in emails if item != email]
+        return True
+
+    _mutate_allowlist(mutator, f"Remove Pro subscriber {email}")
+
+
+def _get_pro_row_by_subscription(subscription_id):
+    if not subscription_id:
+        return None
+    db = get_db()
+    row = db.execute(
+        "SELECT * FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+        (subscription_id,),
+    ).fetchone()
+    db.close()
+    return row
+
+
+def _rows_for_email(email):
+    db = get_db()
+    rows = db.execute(
+        "SELECT * FROM pro_subscriptions WHERE email = ?",
+        (email.strip().lower(),),
+    ).fetchall()
+    db.close()
+    return rows
+
+
+def _should_remove_from_allowlist(email, ending_subscription_id):
+    """Remove only an email this system added for Stripe.
+
+    A hand-added beta address has no added_to_allowlist flag, so a later
+    subscription for that same address must not take it off the list.
+    A second active subscription for an address we did add also keeps it.
+    """
+    rows = _rows_for_email(email)
+    if not rows or not any(row["added_to_allowlist"] for row in rows):
+        return False
+    for row in rows:
+        if row["stripe_subscription_id"] == ending_subscription_id:
+            continue
+        if row["status"] in ACTIVE_SUB_STATUSES:
+            return False
+    return True
+
+
+def _upsert_pro_subscription(fields):
+    now = datetime.utcnow().isoformat()
+    subscription_id = fields["stripe_subscription_id"]
+    db = get_db()
+    existing = db.execute(
+        "SELECT * FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+        (subscription_id,),
+    ).fetchone()
+    if existing:
+        added = 1 if existing["added_to_allowlist"] or fields.get("added_to_allowlist") else 0
+        welcomed = existing["welcomed_at"] or fields.get("welcomed_at") or ""
+        db.execute(
+            """UPDATE pro_subscriptions SET
+                email = ?, name = ?, stripe_customer_id = ?,
+                stripe_checkout_session_id = ?, plan = ?, status = ?,
+                cancel_at_period_end = ?, current_period_end = ?,
+                added_to_allowlist = ?, welcomed_at = ?, updated_at = ?
+               WHERE id = ?""",
+            (
+                fields.get("email") or existing["email"],
+                fields.get("name") or existing["name"] or "",
+                fields.get("stripe_customer_id") or existing["stripe_customer_id"] or "",
+                fields.get("stripe_checkout_session_id") or existing["stripe_checkout_session_id"] or "",
+                fields.get("plan") or existing["plan"] or "",
+                fields.get("status") or existing["status"],
+                1 if fields.get("cancel_at_period_end") else 0,
+                fields.get("current_period_end") or existing["current_period_end"] or "",
+                added,
+                welcomed,
+                now,
+                existing["id"],
+            ),
+        )
+    else:
+        db.execute(
+            """INSERT INTO pro_subscriptions (
+                email, name, stripe_customer_id, stripe_subscription_id,
+                stripe_checkout_session_id, plan, status, cancel_at_period_end,
+                current_period_end, added_to_allowlist, welcomed_at,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                fields["email"],
+                fields.get("name") or "",
+                fields.get("stripe_customer_id") or "",
+                subscription_id,
+                fields.get("stripe_checkout_session_id") or "",
+                fields.get("plan") or "",
+                fields.get("status") or "",
+                1 if fields.get("cancel_at_period_end") else 0,
+                fields.get("current_period_end") or "",
+                1 if fields.get("added_to_allowlist") else 0,
+                fields.get("welcomed_at") or "",
+                now,
+                now,
+            ),
+        )
+    db.commit()
+    row = db.execute(
+        "SELECT * FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+        (subscription_id,),
+    ).fetchone()
+    db.close()
+    return row
+
+
+def _set_welcomed(row_id):
+    now = datetime.utcnow().isoformat()
+    db = get_db()
+    db.execute(
+        "UPDATE pro_subscriptions SET welcomed_at = ?, updated_at = ? WHERE id = ?",
+        (now, now, row_id),
+    )
+    db.commit()
+    db.close()
+
+
+def _period_end_iso(sub):
+    end = sub.get("current_period_end")
+    if not end:
+        items = ((sub.get("items") or {}).get("data") or [])
+        if items:
+            end = items[0].get("current_period_end")
+    if not end:
+        return ""
+    return datetime.utcfromtimestamp(int(end)).isoformat()
+
+
+def _plan_from(sub, fallback=""):
+    meta = sub.get("metadata") or {}
+    plan = (meta.get("plan") or fallback or "").strip()
+    if plan in ("monthly", "annual"):
+        return plan
+    price_id = ""
+    items = ((sub.get("items") or {}).get("data") or [])
+    if items:
+        price = items[0].get("price") or {}
+        price_id = price if isinstance(price, str) else (price.get("id") or "")
+    if price_id and price_id == (app.config.get("STRIPE_PRICE_PRO_ANNUAL") or ""):
+        return "annual"
+    if price_id and price_id == (app.config.get("STRIPE_PRICE_PRO_MONTHLY") or ""):
+        return "monthly"
+    return "monthly"
+
+
+def _customer_email_from_stripe(customer_id):
+    if not customer_id or not (app.config.get("STRIPE_SECRET_KEY") or ""):
+        return ""
+    stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+    customer = _as_mapping(stripe.Customer.retrieve(customer_id))
+    return (customer.get("email") or "").strip().lower()
+
+
+def _email_for_subscription(subscription_id, stripe_sub):
+    row = _get_pro_row_by_subscription(subscription_id)
+    if row and row["email"]:
+        return row["email"]
+    return _customer_email_from_stripe(_stripe_id((stripe_sub or {}).get("customer")))
+
+
+def _send_mail(to_email, subject, text_body, html_body):
+    cfg = app.config
+    if not cfg.get("SMTP_USER") or not cfg.get("SMTP_PASS"):
+        logger.error("SMTP not configured — email to %s was not sent", to_email)
+        return False
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f'{cfg["SMTP_FROM_NAME"]} <{cfg["SMTP_FROM"]}>'
+    msg["To"] = to_email
+    msg.attach(MIMEText(text_body, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+    try:
+        with smtplib.SMTP(cfg["SMTP_HOST"], cfg["SMTP_PORT"]) as server:
+            server.starttls()
+            server.login(cfg["SMTP_USER"], cfg["SMTP_PASS"])
+            server.send_message(msg)
+        return True
+    except Exception as exc:
+        logger.error("Failed to send email to %s: %s", to_email, exc)
+        return False
+
+
+def _send_pro_welcome(row):
+    site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    if row["plan"] == "annual":
+        plan_text = "Professional, £255/year (£21.25/mo billed annually, save 15%)"
+    else:
+        plan_text = "Professional, £25/month"
+    session_id = row["stripe_checkout_session_id"] or ""
+    if session_id:
+        download_text = f"{site}/pro-success.html?session_id={session_id}"
+    else:
+        mac = _make_download_token(
+            row["email"], row["stripe_subscription_id"], "mac", DOWNLOAD_EMAIL_TTL
+        )
+        win = _make_download_token(
+            row["email"], row["stripe_subscription_id"], "win", DOWNLOAD_EMAIL_TTL
+        )
+        download_text = (
+            "macOS: https://api.nodecontrol.io/api/pro/download?token=" + mac + "\n"
+            "Windows: https://api.nodecontrol.io/api/pro/download?token=" + win + "\n"
+            "These links last 24 hours and only work while the subscription is active."
+        )
+    text = (
+        f"Hi {row['name'] or 'there'},\n\n"
+        "Your Node Control Professional subscription is active.\n"
+        f"Plan: {plan_text}\n\n"
+        "In the app, open Welcome to Node Control and enter this email address:\n"
+        f"{row['email']}\n\n"
+        "Download Pro:\n"
+        f"{download_text}\n\n"
+        "To cancel or update the card, request a link here:\n"
+        f"{site}/#manage\n\n"
+        "Cancelling stops the next renewal. Access continues until the end of the "
+        "period already paid. After that the app blocks, once its 7-day offline "
+        "grace runs out if it cannot check in.\n\n"
+        "---\n"
+        "Node Control by The Promised LAN\n"
+        f"{site}\n"
+    )
+    html_body = (
+        '<pre style="font-family: sans-serif; white-space: pre-wrap;">'
+        + html.escape(text)
+        + "</pre>"
+    )
+    return _send_mail(
+        row["email"], "Your Node Control Professional subscription", text, html_body
+    )
+
+
+def _send_portal_email(email, portal_url):
+    site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    text = (
+        "Hi,\n\n"
+        "Use this link to cancel Node Control Professional or update the card:\n"
+        f"{portal_url}\n\n"
+        f"The link expires. If it does, request another from {site}/#manage\n\n"
+        "---\n"
+        "Node Control by The Promised LAN\n"
+        f"{site}\n"
+    )
+    return _send_mail(
+        email,
+        "Manage your Node Control subscription",
+        text,
+        "<pre>" + html.escape(text) + "</pre>",
+    )
+
+
+def _grant_pro_access(
+    email, name, customer_id, subscription_id, session_id, plan, status,
+    period_end, cancel_at_period_end,
+):
+    email = (email or "").strip().lower()
+    if not email or "@" not in email:
+        raise AllowlistError("Stripe event had no customer email")
+    if not subscription_id:
+        raise AllowlistError("Stripe event had no subscription id")
+    existing = _get_pro_row_by_subscription(subscription_id)
+    if existing and existing["added_to_allowlist"]:
+        ours = 1
+    else:
+        # Decide before the GitHub write. An address already on the list
+        # was put there by hand, or by an earlier subscription, and this
+        # row must not claim it.
+        ours = 0 if _allowlist_contains(email) else 1
+    _upsert_pro_subscription({
+        "email": email,
+        "name": name or "",
+        "stripe_customer_id": customer_id or "",
+        "stripe_subscription_id": subscription_id,
+        "stripe_checkout_session_id": session_id or "",
+        "plan": plan,
+        "status": status or "active",
+        "cancel_at_period_end": cancel_at_period_end,
+        "current_period_end": period_end or "",
+        "added_to_allowlist": ours,
+    })
+    if ours:
+        _add_email_to_allowlist(email)
+    row = _get_pro_row_by_subscription(subscription_id)
+    if not row["welcomed_at"]:
+        if not _send_pro_welcome(row):
+            raise RuntimeError("Welcome email was not sent")
+        _set_welcomed(row["id"])
+    return _get_pro_row_by_subscription(subscription_id)
+
+
+def _end_pro_access(email, subscription_id, status, cancel_at_period_end, period_end):
+    existing = _get_pro_row_by_subscription(subscription_id)
+    if not existing:
+        logger.error(
+            "No pro_subscriptions row for %s. The allow-list was not changed.",
+            subscription_id,
+        )
+        return
+    email = (email or existing["email"] or "").strip().lower()
+    removed = False
+    try:
+        if email and _should_remove_from_allowlist(email, subscription_id):
+            _remove_email_from_allowlist(email)
+            removed = True
+        _upsert_pro_subscription({
+            "email": email,
+            "name": existing["name"],
+            "stripe_customer_id": existing["stripe_customer_id"],
+            "stripe_subscription_id": subscription_id,
+            "stripe_checkout_session_id": existing["stripe_checkout_session_id"],
+            "plan": existing["plan"],
+            "status": status or "canceled",
+            "cancel_at_period_end": cancel_at_period_end,
+            "current_period_end": period_end or existing["current_period_end"],
+            "added_to_allowlist": existing["added_to_allowlist"],
+        })
+    except Exception:
+        if removed:
+            try:
+                _add_email_to_allowlist(email)
+            except Exception:
+                logger.exception("Could not restore %s on the allow-list", email)
+        raise
+
+
+def _load_subscription(subscription_id):
+    stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+    return _as_mapping(stripe.Subscription.retrieve(subscription_id))
+
+
+def _handle_checkout_completed(session):
+    session = _as_mapping(session)
+    if session.get("mode") not in (None, "subscription"):
+        return
+    if session.get("payment_status") not in ("paid", "no_payment_required"):
+        logger.info("Checkout %s is not paid yet", session.get("id"))
+        return
+    subscription_id = _stripe_id(session.get("subscription"))
+    if not subscription_id:
+        raise RuntimeError("Checkout session has no subscription")
+    sub = _load_subscription(subscription_id)
+    details = session.get("customer_details") or {}
+    email = (session.get("customer_email") or details.get("email") or "").strip().lower()
+    _grant_pro_access(
+        email=email,
+        name=details.get("name") or "",
+        customer_id=_stripe_id(session.get("customer")),
+        subscription_id=subscription_id,
+        session_id=session.get("id") or "",
+        plan=_plan_from(sub, (session.get("metadata") or {}).get("plan")),
+        status=sub.get("status") or "active",
+        period_end=_period_end_iso(sub),
+        cancel_at_period_end=bool(sub.get("cancel_at_period_end")),
+    )
+
+
+def _handle_invoice_paid(invoice):
+    invoice = _as_mapping(invoice)
+    subscription_id = _stripe_id(invoice.get("subscription"))
+    if not subscription_id:
+        return
+    sub = _load_subscription(subscription_id)
+    if sub.get("status") not in ACTIVE_SUB_STATUSES:
+        raise RuntimeError("Paid invoice did not leave the subscription active")
+    existing = _get_pro_row_by_subscription(subscription_id)
+    email = (invoice.get("customer_email") or "").strip().lower()
+    if not email:
+        email = _email_for_subscription(subscription_id, sub)
+    _grant_pro_access(
+        email=email,
+        name=(existing["name"] if existing else ""),
+        customer_id=_stripe_id(invoice.get("customer")) or _stripe_id(sub.get("customer")),
+        subscription_id=subscription_id,
+        session_id=(existing["stripe_checkout_session_id"] if existing else ""),
+        plan=_plan_from(sub, existing["plan"] if existing else ""),
+        status=sub.get("status") or "active",
+        period_end=_period_end_iso(sub),
+        cancel_at_period_end=bool(sub.get("cancel_at_period_end")),
+    )
+
+
+def _handle_subscription_change(sub, deleted=False):
+    sub = _as_mapping(sub)
+    subscription_id = sub.get("id") or ""
+    status = "canceled" if deleted else (sub.get("status") or "")
+    cancel_at_period_end = bool(sub.get("cancel_at_period_end"))
+    period_end = _period_end_iso(sub)
+    email = _email_for_subscription(subscription_id, sub)
+    if status in ACTIVE_SUB_STATUSES:
+        # cancel_at_period_end stays active until Stripe ends the subscription.
+        existing = _get_pro_row_by_subscription(subscription_id)
+        if not existing:
+            raise RuntimeError(f"No local row for active subscription {subscription_id}")
+        if existing["added_to_allowlist"] and email:
+            _add_email_to_allowlist(email)
+        _upsert_pro_subscription({
+            "email": email or existing["email"],
+            "stripe_subscription_id": subscription_id,
+            "status": status,
+            "cancel_at_period_end": cancel_at_period_end,
+            "current_period_end": period_end,
+            "added_to_allowlist": existing["added_to_allowlist"],
+            "stripe_customer_id": _stripe_id(sub.get("customer")) or existing["stripe_customer_id"],
+            "plan": _plan_from(sub, existing["plan"]),
+        })
+        return
+    if status not in ENDING_SUB_STATUSES and not deleted:
+        existing = _get_pro_row_by_subscription(subscription_id)
+        if existing:
+            _upsert_pro_subscription({
+                "email": existing["email"],
+                "stripe_subscription_id": subscription_id,
+                "status": status or existing["status"],
+                "cancel_at_period_end": cancel_at_period_end,
+                "current_period_end": period_end,
+                "added_to_allowlist": existing["added_to_allowlist"],
+            })
+        return
+    _end_pro_access(email, subscription_id, status or "canceled", cancel_at_period_end, period_end)
+
+
+def _handle_payment_failed(invoice):
+    invoice = _as_mapping(invoice)
+    subscription_id = _stripe_id(invoice.get("subscription"))
+    if not subscription_id:
+        return
+    sub = _load_subscription(subscription_id)
+    if sub.get("status") in ENDING_SUB_STATUSES:
+        _handle_subscription_change(sub, deleted=False)
+        return
+    logger.info(
+        "Payment failed for %s but status is %s. Access stays.",
+        subscription_id,
+        sub.get("status"),
+    )
+
+
+def _event_processed(event_id):
+    db = get_db()
+    row = db.execute(
+        "SELECT event_id FROM stripe_events WHERE event_id = ?",
+        (event_id,),
+    ).fetchone()
+    db.close()
+    return row is not None
+
+
+def _mark_event(event_id, event_type):
+    db = get_db()
+    db.execute(
+        "INSERT OR IGNORE INTO stripe_events (event_id, event_type, processed_at) VALUES (?, ?, ?)",
+        (event_id, event_type, datetime.utcnow().isoformat()),
+    )
+    db.commit()
+    db.close()
+
+
+def _download_serializer():
+    secret = (app.config.get("PRO_DOWNLOAD_SECRET") or "").strip()
+    if not secret:
+        secret = (app.config.get("SECRET_KEY") or "").strip()
+    if not secret:
+        raise RuntimeError("PRO_DOWNLOAD_SECRET is not set")
+    return URLSafeTimedSerializer(secret, salt="nodecontrol-pro-download")
+
+
+def _make_download_token(email, subscription_id, platform, ttl_seconds=DOWNLOAD_PAGE_TTL):
+    payload = {
+        "email": email,
+        "sub": subscription_id,
+        "platform": platform,
+        "exp": int(time.time()) + int(ttl_seconds),
+    }
+    return _download_serializer().dumps(payload)
+
+
+def _read_download_token(token):
+    ceiling = int(app.config.get("PRO_DOWNLOAD_TOKEN_MAX_AGE") or (7 * 24 * 3600))
+    try:
+        data = _download_serializer().loads(token, max_age=ceiling)
+    except SignatureExpired:
+        return None, "expired"
+    except BadSignature:
+        return None, "invalid"
+    if int(data.get("exp") or 0) < int(time.time()):
+        return None, "expired"
+    return data, ""
+
+
+def _pro_asset_redirect(platform):
+    pat = (app.config.get("PRO_RELEASES_PAT") or "").strip()
+    repo = (app.config.get("PRO_RELEASES_REPO") or "").strip()
+    if not pat or not repo:
+        raise RuntimeError("PRO_RELEASES_PAT or PRO_RELEASES_REPO is not set")
+    ext = ".dmg" if platform == "mac" else ".exe"
+    status, _headers, body = _github_request(_github_req(
+        f"https://api.github.com/repos/{repo}/releases/latest",
+        pat,
+    ))
+    if status != 200:
+        raise RuntimeError(f"Pro releases/latest returned HTTP {status}")
+    release = json.loads(body.decode("utf-8"))
+    asset = None
+    for item in release.get("assets") or []:
+        if (item.get("name") or "").lower().endswith(ext):
+            asset = item
+            break
+    if not asset:
+        raise RuntimeError(f"No {ext} asset on the latest Pro release")
+    status, headers, _body = _github_request(
+        _github_req(
+            f"https://api.github.com/repos/{repo}/releases/assets/{asset['id']}",
+            pat,
+            accept="application/octet-stream",
+        ),
+        follow_redirects=False,
+    )
+    if status not in (301, 302, 303, 307, 308):
+        raise RuntimeError(f"Pro asset redirect returned HTTP {status}")
+    location = ""
+    for key, value in headers.items():
+        if str(key).lower() == "location":
+            location = value
+    if not location or pat in location:
+        raise RuntimeError("Pro asset redirect was missing a usable URL")
+    return location
+
+
+@app.route("/api/checkout", methods=["POST"])
+def pro_checkout():
+    """Start a Professional subscription Checkout Session."""
+    data = request.get_json(silent=True) or {}
+    plan = (data.get("plan") or "").strip()
+    if plan not in ("monthly", "annual"):
+        return jsonify({"error": "plan must be monthly or annual"}), 400
+    price = (
+        app.config.get("STRIPE_PRICE_PRO_MONTHLY")
+        if plan == "monthly"
+        else app.config.get("STRIPE_PRICE_PRO_ANNUAL")
+    )
+    if not (app.config.get("STRIPE_SECRET_KEY") or "").strip() or not (price or "").strip():
+        logger.error("Stripe checkout is not configured")
+        return jsonify({"error": "Checkout is not configured"}), 503
+    email = (data.get("email") or "").strip().lower()
+    site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    params = {
+        "mode": "subscription",
+        "line_items": [{"price": price, "quantity": 1}],
+        "success_url": site + "/pro-success.html?session_id={CHECKOUT_SESSION_ID}",
+        "cancel_url": site + "/#pricing",
+        "automatic_tax": {"enabled": True},
+        "billing_address_collection": "required",
+        "tax_id_collection": {"enabled": True},
+        "metadata": {"plan": plan},
+        "subscription_data": {"metadata": {"plan": plan}},
+    }
+    if email and "@" in email:
+        params["customer_email"] = email
+    try:
+        stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+        session = _as_mapping(stripe.checkout.Session.create(**params))
+    except Exception:
+        logger.exception("Stripe checkout session failed")
+        return jsonify({"error": "Checkout could not be started"}), 502
+    url = session.get("url") or ""
+    if not url:
+        return jsonify({"error": "Checkout could not be started"}), 502
+    return jsonify({"url": url})
+
+
+@app.route("/api/stripe/webhook", methods=["POST"])
+def stripe_webhook():
+    """Stripe subscription events. Signature required. Fail closed so Stripe retries."""
+    secret = (app.config.get("STRIPE_WEBHOOK_SECRET") or "").strip()
+    if not secret:
+        logger.error("STRIPE_WEBHOOK_SECRET is not set")
+        return jsonify({"error": "Webhook is not configured"}), 503
+    payload = request.get_data()
+    sig = request.headers.get("Stripe-Signature", "")
+    try:
+        event = stripe.Webhook.construct_event(payload, sig, secret)
+    except (stripe.SignatureVerificationError, ValueError) as exc:
+        logger.warning("Rejected Stripe webhook: %s", exc)
+        return jsonify({"error": "Invalid signature"}), 400
+    event = _as_mapping(event)
+    event_id = event.get("id") or ""
+    event_type = event.get("type") or ""
+    if not event_id:
+        return jsonify({"error": "Event has no id"}), 400
+    if _event_processed(event_id):
+        return jsonify({"received": True})
+    try:
+        obj = (event.get("data") or {}).get("object") or {}
+        if event_type == "checkout.session.completed":
+            _handle_checkout_completed(obj)
+        elif event_type == "invoice.paid":
+            _handle_invoice_paid(obj)
+        elif event_type == "customer.subscription.updated":
+            _handle_subscription_change(obj, deleted=False)
+        elif event_type == "customer.subscription.deleted":
+            _handle_subscription_change(obj, deleted=True)
+        elif event_type == "invoice.payment_failed":
+            _handle_payment_failed(obj)
+        _mark_event(event_id, event_type)
+    except Exception:
+        logger.exception("Stripe webhook %s (%s) failed", event_id, event_type)
+        return jsonify({"error": "Handler failed"}), 500
+    return jsonify({"received": True})
+
+
+@app.route("/api/pro/session", methods=["GET"])
+def pro_session():
+    """Success page: confirm the Checkout Session is paid, then mint download tokens."""
+    session_id = (request.args.get("session_id") or "").strip()
+    if not session_id:
+        return jsonify({"error": "session_id is required"}), 400
+    if not (app.config.get("STRIPE_SECRET_KEY") or "").strip():
+        return jsonify({"error": "Checkout is not configured"}), 503
+    try:
+        stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+        session = _as_mapping(stripe.checkout.Session.retrieve(session_id))
+    except Exception:
+        logger.exception("Could not retrieve checkout session")
+        return jsonify({"error": "Could not read that checkout session"}), 400
+    paid = session.get("payment_status") in ("paid", "no_payment_required")
+    if session.get("status") != "complete" or not paid:
+        return jsonify({"status": "unpaid"})
+    subscription_id = _stripe_id(session.get("subscription"))
+    row = _get_pro_row_by_subscription(subscription_id) if subscription_id else None
+    if not row or row["status"] not in ACTIVE_SUB_STATUSES:
+        return jsonify({"status": "processing"})
+    try:
+        downloads = {
+            "mac": _make_download_token(row["email"], row["stripe_subscription_id"], "mac"),
+            "win": _make_download_token(row["email"], row["stripe_subscription_id"], "win"),
+        }
+    except Exception:
+        logger.exception("Could not sign download tokens")
+        return jsonify({"error": "Downloads are not configured"}), 503
+    return jsonify({
+        "status": "active",
+        "email": row["email"],
+        "plan": row["plan"],
+        "downloads": downloads,
+    })
+
+
+@app.route("/api/pro/download", methods=["GET"])
+def pro_download():
+    """Redeem a short-lived token for a redirect to the private Pro installer."""
+    data, err = _read_download_token(request.args.get("token", ""))
+    if err == "expired":
+        return jsonify({
+            "error": "This download link has expired. Open the link in your email again.",
+        }), 403
+    if not data or data.get("platform") not in ("mac", "win"):
+        return jsonify({"error": "Invalid download link"}), 403
+    row = _get_pro_row_by_subscription(data.get("sub"))
+    if (
+        not row
+        or row["email"] != data.get("email")
+        or row["status"] not in ACTIVE_SUB_STATUSES
+    ):
+        return jsonify({"error": "This subscription is not active"}), 403
+    try:
+        location = _pro_asset_redirect(data["platform"])
+    except Exception:
+        logger.exception("Pro download failed")
+        return jsonify({"error": "The installer is not available right now"}), 503
+    return redirect(location, code=302)
+
+
+@app.route("/api/portal", methods=["POST"])
+def pro_portal():
+    """Email a Customer Portal link. The response does not say whether the address exists."""
+    generic = {
+        "success": True,
+        "message": "If that address has a Professional subscription, we sent a link to manage it.",
+    }
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    if not email or "@" not in email:
+        return jsonify(generic)
+    try:
+        db = get_db()
+        row = db.execute(
+            """SELECT stripe_customer_id FROM pro_subscriptions
+               WHERE email = ?
+                 AND status IN ('active', 'trialing', 'past_due', 'unpaid')
+                 AND stripe_customer_id != ''
+               ORDER BY id DESC LIMIT 1""",
+            (email,),
+        ).fetchone()
+        db.close()
+        if not row or not (app.config.get("STRIPE_SECRET_KEY") or "").strip():
+            if row and not (app.config.get("STRIPE_SECRET_KEY") or "").strip():
+                logger.error("STRIPE_SECRET_KEY is not set")
+            return jsonify(generic)
+        stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+        site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+        portal = _as_mapping(stripe.billing_portal.Session.create(
+            customer=row["stripe_customer_id"],
+            return_url=site + "/#manage",
+        ))
+        url = portal.get("url") or ""
+        if url:
+            sent = _send_portal_email(email, url)
+            if not sent:
+                logger.error("Portal link for a subscriber was not emailed")
+    except Exception:
+        logger.exception("Customer portal link failed")
+    return jsonify(generic)
+
 
 
 # ── API Routes ───────────────────────────────────────────────
