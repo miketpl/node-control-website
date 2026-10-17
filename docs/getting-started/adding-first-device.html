@@ -203,28 +203,12 @@
 <ol>
 <li>Engineer → <strong>Task</strong> → <strong>Library Updater</strong> → <strong>Run</strong>. On Free this task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>
 </li>
-<li>Enter the subnet — <code>10.1.1.0/24</code>
-</li>
-<li>Pick the <strong>Tab</strong> for discovered devices to land in
+<li>Under <strong>Subnet Input:</strong>, load an Excel file (column A is the subnet, column B is the site) or type rows of <strong>Subnet (CIDR)</strong> and <strong>Site Code</strong>
 </li>
 <li>Click <strong>Start Scan</strong>
 </li>
 </ol>
-<p>Node Control will:</p>
-<ul>
-<li>Ping every host in the range (using <code>fping</code> if installed, otherwise Python ping)
-</li>
-<li>For each ping-alive host, attempt SSH using your configured credentials
-</li>
-<li>Run <code>show version</code> (or vendor-equivalent) to identify the device type and hostname
-</li>
-<li>Add it to the library with all fields auto-filled
-</li>
-<li>Detect the site code from the hostname pattern (if Site Detection is configured)
-</li>
-</ul>
-<p>Typical timing: a /24 with ~30 devices takes 2–5 minutes.</p>
-<p>See <a href="../library/subnet-scan.html">Library Updater details</a> for advanced options (which Netmiko driver to try first, parallelism, retry behaviour).</p>
+<p>See <a href="../library/subnet-scan.html">Library Updater</a> for the dialog, including the output directory and the three checkboxes.</p>
 <h2 id="free-tier-device-limit">Free tier device limit</h2>
 <p>Free holds <strong>25 devices</strong>. There is no time limit. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. <strong>Library Updater</strong> does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.</p>
 <p>To remove this cap, <a href="../tiers/overview.html">upgrade to Pro</a>.</p>

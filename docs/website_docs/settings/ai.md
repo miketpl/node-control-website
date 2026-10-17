@@ -47,7 +47,9 @@ The same provider is used for:
 - the lifecycle assessment narrative, and the emailed AI briefing (off by default)
 - Monitor, on Pro: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review
 
-The Firewall Analyser **AI advisory** checkbox is the AI edition, not Pro. Vuln Plan is not a Pro feature.
+The Firewall Analyser **AI advisory** checkbox is the AI edition.
+
+**Vuln Plan** is the AI edition only. It is a button on the Update tab, next to **Check PSIRT**, and it works from that tab's PSIRT results. Pro has neither the Update tab nor Vuln Plan.
 
 That Monitor chat is the feature on Pro. It is not the AI-edition dashboard.
 

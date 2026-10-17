@@ -144,7 +144,9 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Safe Mode
                 </div>
                 <h1 id="safe-mode">Safe Mode</h1>
-<p>Safe Mode is a global setting. Switch it from the <strong>Edit</strong> menu: <strong>Switch to Safe Mode</strong> or <strong>Switch to Config Mode</strong>.</p>
+<p>Safe Mode is session-wide. It is not a per-tab setting.</p>
+<p>At startup the <strong>Select Mode</strong> dialog asks which mode to use. <strong>Settings → General → Startup Mode</strong> is what that dialog defaults to.</p>
+<p>Mid-session, switch it from the <strong>Edit</strong> menu (<strong>Switch to Safe Mode</strong> / <strong>Switch to Config Mode</strong>) or from the mode badge.</p>
 <h2 id="the-task-list-in-safe-mode">The task list in Safe Mode</h2>
 <p>In Safe Mode the Engineer dropdown is cut to:</p>
 <ul>
@@ -192,8 +194,18 @@
 </ul>
 <p><strong>Config Compliance Audit</strong> is not in the reduced list, so it is not offered in Safe Mode either.</p>
 <p>When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
-<p>Safe Mode also restricts what commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.</p>
-<p>Default state: <strong>ON</strong> for new installs.</p>
+<p>While Safe Mode is on:</p>
+<ul>
+<li><strong>HTTPS</strong> is hidden
+</li>
+<li>the task list is the reduced list above
+</li>
+<li>a command that is not read-only is blocked in an SSH session
+</li>
+<li>a <a href="../tasks/meraki-configurator.html">Meraki Configurator</a> push is blocked
+</li>
+</ul>
+<p>Safe Mode also restricts what automated commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.</p>
 <h2 id="why-safe-mode-exists">Why Safe Mode exists</h2>
 <p>Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:</p>
 <ul>
@@ -203,10 +215,10 @@
 </li>
 <li><a href="../tasks/config-compliance.html">Config Compliance</a> remediation (type <code>REMEDIATE</code>)
 </li>
-<li><a href="../tasks/meraki-configurator.html">Meraki Configurator</a> push and revert (type <code>PUSH</code>)
+<li><a href="../tasks/meraki-configurator.html">Meraki Configurator</a> push (type <code>PUSH</code>). Safe Mode blocks that push
 </li>
 </ul>
-<p>Safe Mode blocks compliance remediation. It also blocks a Meraki push and a Meraki revert. Leave it on until you mean to change something.</p>
+<p>Safe Mode blocks compliance remediation. It also blocks a Meraki Configurator push. Leave it on until you mean to change something.</p>
 <h2 id="whats-allowed-under-safe-mode">What&#x27;s allowed under Safe Mode</h2>
 <p>The allowlist covers every <code>show</code> command Node Control runs as part of its built-in tasks:</p>
 <ul>
@@ -252,34 +264,11 @@
 <li>Shows a UI warning
 </li>
 </ul>
-<h2 id="the-ssh-terminal-exception">The SSH terminal exception</h2>
-<p>Safe Mode does <strong>not</strong> apply to the interactive <a href="../tasks/ssh-terminal.html">SSH terminal</a>. What you type in a terminal is sent verbatim. The reasoning:</p>
-<ul>
-<li>The terminal is a CLI prompt — you&#x27;re a human typing commands and you know what they do
-</li>
-<li>Safe Mode protects against automated / programmatic commands, not against intentional human input
-</li>
-<li>Blocking config commands in the terminal would make the terminal useless
-</li>
-</ul>
-<p>If you want a fully read-only terminal, log into the device with a read-only user account.</p>
-<h2 id="disabling-safe-mode">Disabling Safe Mode</h2>
-<ol>
-<li><strong>Settings → Safe Mode</strong> → toggle <strong>OFF</strong>
-</li>
-<li>A confirmation dialog: &quot;Disable Safe Mode? Write commands will be allowed.&quot;
-</li>
-<li>Confirm
-</li>
-</ol>
-<p>Once off, write commands are allowed (subject to per-action confirmation dialogs like the type-to-confirm port shut).</p>
-<h2 id="per-tab-safe-mode">Per-tab Safe Mode</h2>
-<p>You can selectively enable Safe Mode for specific library tabs (e.g., Firewalls always Safe Mode, Switches can have it off). Configure in:</p>
-<ul>
-<li>Settings → Safe Mode → <strong>Per-tab overrides</strong>
-</li>
-</ul>
-<p>Useful for: &quot;I&#x27;m comfortable shutting switch ports, but never touching firewalls.&quot;</p>
+<h2 id="ssh-sessions">SSH sessions</h2>
+<p>In Safe Mode, a command that is not read-only is blocked in the <a href="../tasks/ssh-terminal.html">SSH terminal</a>. <strong>HTTPS</strong> is hidden for the session.</p>
+<h2 id="switching-mode">Switching mode</h2>
+<p>Use the <strong>Edit</strong> menu or the mode badge. The next launch follows <strong>Settings → General → Startup Mode</strong>, which you confirm in the <strong>Select Mode</strong> dialog.</p>
+<p>Once you are in Config Mode, write commands are allowed, subject to the confirmation the action already asks for (such as the type-to-confirm port shut).</p>
 <h2 id="customising-the-allowlist">Customising the allowlist</h2>
 <p>For advanced users who need to allow specific custom commands:</p>
 <ol>
@@ -323,13 +312,13 @@
 <p>For everyday operations (topology, reports, troubleshooting), Safe Mode should stay on.</p>
 <h2 id="best-practice">Best practice</h2>
 <ul>
-<li><strong>Leave Safe Mode ON by default</strong>
+<li>Set <strong>Startup Mode</strong> to the mode you want the <strong>Select Mode</strong> dialog to offer
 </li>
-<li><strong>Turn it off only for the specific action you need</strong>, then turn it back on
+<li>Switch with the <strong>Edit</strong> menu or the mode badge for one session, then switch back
 </li>
-<li><strong>Per-tab overrides</strong> are a good compromise — keep it on for the high-risk tabs (Firewalls, WAN routers) always
+<li>The mode applies to the whole session, including SSH
 </li>
-<li><strong>Audit log is your friend</strong> — periodically review it to see if anyone disabled Safe Mode unexpectedly
+<li>Review the audit log when you need to see that the mode changed
 </li>
 </ul>
 <h2 id="next-steps">Next steps</h2>

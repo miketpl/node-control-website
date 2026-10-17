@@ -46,21 +46,10 @@ Without credentials configured, **Test Connection** will fail with an auth error
 If you have a known management subnet (e.g., `10.1.1.0/24` or `192.168.10.0/24`):
 
 1. Engineer → **Task** → **Library Updater** → **Run**. On Free this task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**
-2. Enter the subnet — `10.1.1.0/24`
-3. Pick the **Tab** for discovered devices to land in
-4. Click **Start Scan**
+2. Under **Subnet Input:**, load an Excel file (column A is the subnet, column B is the site) or type rows of **Subnet (CIDR)** and **Site Code**
+3. Click **Start Scan**
 
-Node Control will:
-
-- Ping every host in the range (using `fping` if installed, otherwise Python ping)
-- For each ping-alive host, attempt SSH using your configured credentials
-- Run `show version` (or vendor-equivalent) to identify the device type and hostname
-- Add it to the library with all fields auto-filled
-- Detect the site code from the hostname pattern (if Site Detection is configured)
-
-Typical timing: a /24 with ~30 devices takes 2–5 minutes.
-
-See [Library Updater details](../library/subnet-scan.md) for advanced options (which Netmiko driver to try first, parallelism, retry behaviour).
+See [Library Updater](../library/subnet-scan.md) for the dialog, including the output directory and the three checkboxes.
 
 ## Free tier device limit
 

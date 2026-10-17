@@ -154,33 +154,28 @@
 <li>Engineer command bar → <strong>Task</strong> → <strong>Library Updater</strong> → <strong>Run</strong>
 </li>
 </ul>
-<h2 id="configure-the-scan">Configure the scan</h2>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>What it controls</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Subnet</strong></td>
-<td>IP range to scan, in CIDR notation (e.g., <code>10.1.1.0/24</code>, <code>192.168.10.0/24</code>). Multiple subnets can be added — they&#x27;ll be scanned in sequence.</td>
-</tr>
-<tr>
-<td><strong>Default tab</strong></td>
-<td>Where discovered devices land (Switches / Routers / Firewalls / etc.). The classifier may reassign based on hostname patterns.</td>
-</tr>
-<tr>
-<td><strong>Credentials</strong></td>
-<td>Which credential profile(s) to try. If you have two profiles configured, both are tried per device.</td>
-</tr>
-<tr>
-<td><strong>Parallelism</strong></td>
-<td>How many SSH connections to attempt at once. Default 10 — bump to 20-30 if you have a fast machine and good network.</td>
-</tr>
-</tbody>
-</table>
+<h2 id="the-library-updater-dialog">The Library Updater dialog</h2>
+<p>The dialog title is <strong>Library Updater</strong>.</p>
+<p><strong>Subnet Input:</strong> is a pair of radios:</p>
+<ul>
+<li><strong>Load from Excel file</strong>
+</li>
+<li><strong>Enter manually below</strong>
+</li>
+</ul>
+<p>The Excel path placeholder says column A is the subnet and column B is the site.</p>
+<p>The manual table has columns <strong>Subnet (CIDR)</strong> and <strong>Site Code</strong>, and buttons <strong>Add Row</strong> and <strong>Remove Selected</strong>.</p>
+<p><strong>Output Directory:</strong> is on the dialog.</p>
+<p>Three checkboxes are ticked by default:</p>
+<ul>
+<li>load what the scan finds into the library
+</li>
+<li>also write a JSON file for Git sync
+</li>
+<li>show the hosts that answered, and wait, before any SSH login
+</li>
+</ul>
+<p><strong>Start Scan</strong> runs it. <strong>Cancel</strong> closes the dialog.</p>
 <h2 id="click-start-scan">Click Start Scan</h2>
 <p>The Library Updater runs through four phases:</p>
 <h3 id="phase-1-ping-sweep">Phase 1 — Ping sweep</h3>
@@ -214,7 +209,7 @@
 <li><strong>Existing device</strong> (IP already in library): updates hostname and device type if changed, leaves other fields alone
 </li>
 </ol>
-<p>The <strong>Default tab</strong> chosen at config time is overridden by the classifier when the hostname matches certain patterns:</p>
+<p>The site code comes from the dialog: column B of the Excel file, or the <strong>Site Code</strong> column. The classifier can still move a device by hostname:</p>
 <table>
 <thead>
 <tr>
@@ -245,7 +240,7 @@
 </tr>
 </tbody>
 </table>
-<p>Hostnames that don&#x27;t match any pattern land in the Default tab.</p>
+<p>Hostnames that don&#x27;t match any pattern keep the site code from the dialog.</p>
 <h3 id="phase-4-summary">Phase 4 — Summary</h3>
 <p>When the scan completes, you&#x27;ll see a summary:</p>
 <pre><code>Scan complete: 47 hosts pinged, 32 SSH-classified, 28 new, 4 updated, 0 errors
@@ -257,13 +252,6 @@
 %APPDATA%\netOps\library_updater.log                       (Windows)
 </code></pre>
 <p>Useful for tracking why a specific IP wasn&#x27;t classified (auth failure, unsupported vendor, etc.).</p>
-<h2 id="scanning-multiple-subnets">Scanning multiple subnets</h2>
-<p>The Library Updater accepts multiple subnets per scan. Click <strong>+ Add Subnet</strong> to chain them:</p>
-<pre><code>10.1.1.0/24
-10.1.2.0/24
-192.168.50.0/24
-</code></pre>
-<p>All run in sequence. Total time scales linearly with subnet count.</p>
 <h2 id="free">Free</h2>
 <p>On Free, <strong>Library Updater</strong> is greyed out. A manual add still refuses the 26th device. The library table shows 25.</p>
 <h2 id="re-scanning">Re-scanning</h2>

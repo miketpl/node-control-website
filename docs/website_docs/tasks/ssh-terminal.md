@@ -81,7 +81,7 @@ There is no Auto-reconnect checkbox. When a session times out, a red banner read
 
 ## Safe Mode and the terminal
 
-[Safe Mode](../settings/safe-mode.md) gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is **not** Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you're doing when you have a CLI prompt.
+Safe Mode is session-wide. In Safe Mode, **HTTPS** is hidden, and a command that is not read-only is blocked in the SSH session. See [Safe Mode](../settings/safe-mode.md).
 
 ## Session sharing
 
@@ -99,4 +99,4 @@ You cannot currently share an SSH session between users — each session is loca
 ## Next steps
 
 - [Find Device](find-device.md) — for jumping straight to a switch port from a MAC search
-- [Safe Mode](../settings/safe-mode.md) — for terminal-vs-tasks command gating
+- [Safe Mode](../settings/safe-mode.md) — session-wide. Non-read-only commands are blocked in SSH

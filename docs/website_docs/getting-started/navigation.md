@@ -45,7 +45,7 @@ The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in
 
 On Free only **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device** are enabled. The rest are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
 
-In Safe Mode the list is cut to **None**, **L2 Topology Builder**, **L3 Topology Builder**, **Watcher of The WAN**, **Config Backup**, **Library Updater**, **VLAN Port Finder**, **Refresh Hostnames**, **Verify Device Types**, **Discover Variables**, and **Find Device**. See [Safe Mode](../settings/safe-mode.md).
+Safe Mode is session-wide. It is not a per-tab setting. The **Select Mode** dialog at startup uses **Settings → General → Startup Mode**. The **Edit** menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to **None**, **L2 Topology Builder**, **L3 Topology Builder**, **Watcher of The WAN**, **Config Backup**, **Library Updater**, **VLAN Port Finder**, **Refresh Hostnames**, **Verify Device Types**, **Discover Variables**, and **Find Device**. **HTTPS** is hidden, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See [Safe Mode](../settings/safe-mode.md).
 
 The bar across the top is a command bar, in labelled groups:
 

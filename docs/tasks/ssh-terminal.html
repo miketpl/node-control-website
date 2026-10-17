@@ -215,7 +215,7 @@
 <h2 id="when-a-session-times-out">When a session times out</h2>
 <p>There is no Auto-reconnect checkbox. When a session times out, a red banner reads <strong>Session timed out -</strong> and the reason, with a <strong>Reconnect</strong> button. Reconnect uses the same tab and the current credential profile.</p>
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
-<p><a href="../settings/safe-mode.html">Safe Mode</a> gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is <strong>not</strong> Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you&#x27;re doing when you have a CLI prompt.</p>
+<p>Safe Mode is session-wide. In Safe Mode, <strong>HTTPS</strong> is hidden, and a command that is not read-only is blocked in the SSH session. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <h2 id="session-sharing">Session sharing</h2>
 <p>You cannot currently share an SSH session between users — each session is local to your machine. For collaborative troubleshooting, screen-share works.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
@@ -253,7 +253,7 @@
 <ul>
 <li><a href="find-device.html">Find Device</a> — for jumping straight to a switch port from a MAC search
 </li>
-<li><a href="../settings/safe-mode.html">Safe Mode</a> — for terminal-vs-tasks command gating
+<li><a href="../settings/safe-mode.html">Safe Mode</a> — session-wide. Non-read-only commands are blocked in SSH
 </li>
 </ul>
             </div>

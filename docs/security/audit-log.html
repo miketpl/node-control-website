@@ -163,56 +163,82 @@
 <h2 id="event-types">Event types</h2>
 <h3 id="authentication-credentials">Authentication &amp; credentials</h3>
 <ul>
-<li><code>CREDENTIAL_ADDED</code> — new credential profile saved</li>
-<li><code>CREDENTIAL_UPDATED</code> — existing profile modified</li>
-<li><code>CREDENTIAL_DELETED</code> — profile removed</li>
-<li><code>KEYCHAIN_PROMPT_DENIED</code> — OS keychain access was denied by user</li>
+<li><code>CREDENTIAL_ADDED</code> — new credential profile saved
+</li>
+<li><code>CREDENTIAL_UPDATED</code> — existing profile modified
+</li>
+<li><code>CREDENTIAL_DELETED</code> — profile removed
+</li>
+<li><code>KEYCHAIN_PROMPT_DENIED</code> — OS keychain access was denied by user
+</li>
 </ul>
 <h3 id="device-write-actions">Device write actions</h3>
 <ul>
-<li><code>PORT_ACTION_SHUT</code> — port shut/down command sent (Find Device → right-click → Shut Port)</li>
-<li><code>PORT_ACTION_NOSHUT</code> — port enable command sent</li>
-<li><code>CUSTOM_WRITE_COMMAND</code> — a user-added write command was executed</li>
+<li><code>PORT_ACTION_SHUT</code> — port shut/down command sent (Find Device → right-click → Shut Port)
+</li>
+<li><code>PORT_ACTION_NOSHUT</code> — port enable command sent
+</li>
+<li><code>CUSTOM_WRITE_COMMAND</code> — a user-added write command was executed
+</li>
 </ul>
 <h3 id="safe-mode">Safe Mode</h3>
 <ul>
-<li><code>SAFE_MODE_BLOCK</code> — a command was blocked by Safe Mode</li>
-<li><code>SAFE_MODE_OVERRIDE_OFF</code> — Safe Mode globally disabled</li>
-<li><code>SAFE_MODE_OVERRIDE_ON</code> — Safe Mode globally re-enabled</li>
-<li><code>SAFE_MODE_PER_TAB_CHANGED</code> — per-tab override modified</li>
+<li><code>SAFE_MODE_BLOCK</code> — a command was blocked by Safe Mode
+</li>
+<li><code>SAFE_MODE_OVERRIDE_OFF</code> — Safe Mode globally disabled
+</li>
+<li><code>SAFE_MODE_OVERRIDE_ON</code> — Safe Mode re-enabled for the session
+</li>
 </ul>
 <h3 id="sessions">Sessions</h3>
 <ul>
-<li><code>SESSION_OPEN</code> — SSH session opened</li>
-<li><code>SESSION_CLOSE</code> — SSH session closed</li>
-<li><code>SESSION_FAILED</code> — SSH connection failed (with reason)</li>
+<li><code>SESSION_OPEN</code> — SSH session opened
+</li>
+<li><code>SESSION_CLOSE</code> — SSH session closed
+</li>
+<li><code>SESSION_FAILED</code> — SSH connection failed (with reason)
+</li>
 </ul>
 <h3 id="license-registration">License &amp; registration</h3>
 <ul>
-<li><code>LICENSE_CHECK_OK</code> — successful re-validation</li>
-<li><code>LICENSE_CHECK_DENIED</code> — code/email rejected</li>
-<li><code>LICENSE_CHECK_GRACE</code> — offline grace period invoked</li>
-<li><code>REGISTRATION_SUBMITTED</code> — user registered</li>
+<li><code>LICENSE_CHECK_OK</code> — successful re-validation
+</li>
+<li><code>LICENSE_CHECK_DENIED</code> — code/email rejected
+</li>
+<li><code>LICENSE_CHECK_GRACE</code> — offline grace period invoked
+</li>
+<li><code>REGISTRATION_SUBMITTED</code> — user registered
+</li>
 </ul>
 <h3 id="library">Library</h3>
 <ul>
-<li><code>DEVICE_ADDED</code> — new device added to library</li>
-<li><code>DEVICE_DELETED</code> — device removed</li>
-<li><code>DEVICE_TYPE_CHANGED</code> — device type changed (manual or auto)</li>
-<li><code>DEVICE_TYPE_LOCKED</code> — type lock enabled</li>
-<li><code>LIBRARY_IMPORTED</code> — bulk import via CSV</li>
-<li><code>LIBRARY_GITHUB_PUSH</code> — library pushed to GitHub</li>
-<li><code>LIBRARY_GITHUB_PULL</code> — library pulled from GitHub (with diff summary)</li>
+<li><code>DEVICE_ADDED</code> — new device added to library
+</li>
+<li><code>DEVICE_DELETED</code> — device removed
+</li>
+<li><code>DEVICE_TYPE_CHANGED</code> — device type changed (manual or auto)
+</li>
+<li><code>DEVICE_TYPE_LOCKED</code> — type lock enabled
+</li>
+<li><code>LIBRARY_IMPORTED</code> — bulk import via CSV
+</li>
+<li><code>LIBRARY_GITHUB_PUSH</code> — library pushed to GitHub
+</li>
+<li><code>LIBRARY_GITHUB_PULL</code> — library pulled from GitHub (with diff summary)
+</li>
 </ul>
 <h3 id="updates">Updates</h3>
 <ul>
-<li><code>UPDATE_CHECK_OK</code> — update check ran successfully</li>
-<li><code>UPDATE_DOWNLOADED</code> — new version downloaded</li>
-<li><code>UPDATE_INSTALLED</code> — install initiated</li>
+<li><code>UPDATE_CHECK_OK</code> — update check ran successfully
+</li>
+<li><code>UPDATE_DOWNLOADED</code> — new version downloaded
+</li>
+<li><code>UPDATE_INSTALLED</code> — install initiated
+</li>
 </ul>
 <h2 id="filtering-and-analysis">Filtering and analysis</h2>
 <p>The audit log is plain text — <code>grep</code>, <code>awk</code>, and standard log analysis tools work directly:</p>
-<pre><code class="language-bash"># All port shut/no-shut actions in May
+<pre><code># All port shut/no-shut actions in May
 grep &quot;PORT_ACTION&quot; audit.log | grep &quot;^2026-05&quot;
 
 # Safe Mode bypasses
@@ -222,56 +248,77 @@ grep &quot;SAFE_MODE_OVERRIDE_OFF&quot; audit.log
 grep &quot;SESSION_FAILED&quot; audit.log | grep &quot;device=10.1.1.5&quot;
 </code></pre>
 <p>For Splunk / ELK ingestion, the format is parseable as key=value pairs.</p>
-<h2 id="whats-deliberately-not-logged">What's deliberately NOT logged</h2>
+<h2 id="whats-deliberately-not-logged">What&#x27;s deliberately NOT logged</h2>
 <ul>
-<li><strong>Credential content</strong> (passwords, API keys) — only the event of a credential change, not the secret itself</li>
-<li><strong>Full command output</strong> — only the fact that a command was run</li>
-<li><strong>SSH session contents</strong> — those go to per-session logs (<code>sessions/</code> directory), with their own opt-out</li>
-<li><strong>User keystrokes in the SSH terminal</strong> — only that a session was opened/closed</li>
+<li><strong>Credential content</strong> (passwords, API keys) — only the event of a credential change, not the secret itself
+</li>
+<li><strong>Full command output</strong> — only the fact that a command was run
+</li>
+<li><strong>SSH session contents</strong> — those go to per-session logs (<code>sessions/</code> directory), with their own opt-out
+</li>
+<li><strong>User keystrokes in the SSH terminal</strong> — only that a session was opened/closed
+</li>
 </ul>
 <h2 id="rotation">Rotation</h2>
 <p>When the audit log exceeds 100 MB:</p>
 <ol>
-<li>Renamed to <code>audit-&lt;timestamp&gt;.log.gz</code> and gzipped</li>
-<li>New empty <code>audit.log</code> is created</li>
-<li>Old logs retained for 1 year by default (configurable in Settings → Advanced → Audit log retention)</li>
+<li>Renamed to <code>audit-&lt;timestamp&gt;.log.gz</code> and gzipped
+</li>
+<li>New empty <code>audit.log</code> is created
+</li>
+<li>Old logs retained for 1 year by default (configurable in Settings → Advanced → Audit log retention)
+</li>
 </ol>
 <p>To keep audit logs longer for compliance, set retention to 0 (never delete) or 7 years.</p>
 <h2 id="tampering-detection">Tampering detection</h2>
-<p>The audit log is append-only by design — Node Control's code only opens it in append mode. The OS file system permissions are standard (your user can edit it if they want to), so we don't claim tamper-proofness at the file level.</p>
+<p>The audit log is append-only by design — Node Control&#x27;s code only opens it in append mode. The OS file system permissions are standard (your user can edit it if they want to), so we don&#x27;t claim tamper-proofness at the file level.</p>
 <p>For tamper-evident audit:</p>
 <ul>
-<li>Ship the log to a remote syslog / SIEM</li>
-<li>Use OS-level forensic tools (e.g., FSEvents on macOS, USN journal on Windows)</li>
-<li>Sign the log file periodically with a separate key</li>
+<li>Ship the log to a remote syslog / SIEM
+</li>
+<li>Use OS-level forensic tools (e.g., FSEvents on macOS, USN journal on Windows)
+</li>
+<li>Sign the log file periodically with a separate key
+</li>
 </ul>
 <p>Roadmap: a built-in option to ship audit events to remote syslog over TCP/UDP. Let us know if this matters for your compliance posture.</p>
 <h2 id="gdpr-data-residency">GDPR / data residency</h2>
 <p>The audit log contains:</p>
 <ul>
-<li>IP addresses of devices in your library (potentially location-identifying)</li>
-<li>Hostnames (potentially location-identifying)</li>
-<li>Your local user account name</li>
+<li>IP addresses of devices in your library (potentially location-identifying)
+</li>
+<li>Hostnames (potentially location-identifying)
+</li>
+<li>Your local user account name
+</li>
 </ul>
 <p>It does NOT contain:</p>
 <ul>
-<li>Personal data of network end-users</li>
-<li>Customer PII</li>
-<li>Credentials</li>
+<li>Personal data of network end-users
+</li>
+<li>Customer PII
+</li>
+<li>Credentials
+</li>
 </ul>
 <p>For organisations with GDPR concerns: the log is stored locally on your machine, never sent to Node Control servers. Treat it like any other operational log under your data residency policy.</p>
 <h2 id="disabling-the-audit-log">Disabling the audit log</h2>
 <p>Possible but strongly discouraged:</p>
 <ul>
-<li>Settings → Advanced → uncheck <strong>Enable audit log</strong></li>
-<li>The file stops being written</li>
-<li>Existing log entries remain on disk</li>
+<li>Settings → Advanced → uncheck <strong>Enable audit log</strong>
+</li>
+<li>The file stops being written
+</li>
+<li>Existing log entries remain on disk
+</li>
 </ul>
 <p>If you do this for development / testing, remember to re-enable for production use.</p>
 <h2 id="related">Related</h2>
 <ul>
-<li><a href="safe-mode.html">Safe Mode</a> — the primary control whose events get audited</li>
-<li><a href="credential-storage.html">Credential storage</a> — credential events go in the audit log</li>
+<li><a href="safe-mode.html">Safe Mode</a> — the primary control whose events get audited
+</li>
+<li><a href="credential-storage.html">Credential storage</a> — credential events go in the audit log
+</li>
 </ul>
             </div>
         </main>

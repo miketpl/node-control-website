@@ -30,7 +30,7 @@ The Test button confirms the key can fetch your org list. If it returns "Success
 - SSH to a managed Meraki device. Meraki does not expose that CLI
 - A topology made only of Meraki-to-Meraki links. Meraki devices still show up as endpoints on an L2 map when a non-Meraki switch sees them by CDP or LLDP
 
-SSID and RF profile changes are the [Meraki Configurator](../tasks/meraki-configurator.md), on Pro and the AI edition. Safe Mode blocks that push and its revert. The older line on this page that said to use the Dashboard by hand for any config push is out of date for those two objects.
+SSID and RF profile changes are the [Meraki Configurator](../tasks/meraki-configurator.md), on Pro and the AI edition. Safe Mode blocks a push. The older line on this page that said to use the Dashboard by hand for any config push is out of date for those two objects.
 
 ## Find Device — wireless lookup
 

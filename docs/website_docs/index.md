@@ -26,7 +26,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [L2 Topology Builder](tasks/topology-l2.md) — on Free
 - [L3 Topology Builder](tasks/topology-l3.md) — Pro and AI
 - [Watcher of The WAN](tasks/topology-wan.md) — Pro and AI
-- [Config Backup and Save Config](tasks/config-backup.md) — on Free. Save Config steps after Run are not written up
+- [Config Backup and Save Config](tasks/config-backup.md) — on Free
 - [Config Compliance](tasks/config-compliance.md) — Pro and AI
 - [Config from File](tasks/config-from-file.md) — Pro and AI; hidden in Safe Mode
 - [Discover Variables](tasks/discover-variables.md) — Pro and AI; inventory enrichment

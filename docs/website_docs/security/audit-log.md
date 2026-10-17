@@ -47,8 +47,7 @@ Values containing spaces or special characters are quoted.
 
 - `SAFE_MODE_BLOCK` — a command was blocked by Safe Mode
 - `SAFE_MODE_OVERRIDE_OFF` — Safe Mode globally disabled
-- `SAFE_MODE_OVERRIDE_ON` — Safe Mode globally re-enabled
-- `SAFE_MODE_PER_TAB_CHANGED` — per-tab override modified
+- `SAFE_MODE_OVERRIDE_ON` — Safe Mode re-enabled for the session
 
 ### Sessions
 

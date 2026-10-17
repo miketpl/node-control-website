@@ -65,6 +65,8 @@ The assessment exports and emails as its own document. An optional AI briefing c
 
 The **Update** tab is the AI edition. It is not on Pro, and it is not on Free. The end-of-sale and end-of-life columns in this Lifecycle report are on Pro.
 
+**Vuln Plan** is a button on that Update tab, next to **Check PSIRT**. It works from the tab's PSIRT results. Pro does not have the button.
+
 ## Next steps
 
 - [Security Audit](security-audit.md)

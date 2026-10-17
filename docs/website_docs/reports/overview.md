@@ -18,7 +18,7 @@ Open **Reports** in the left sidebar. It is its own page, not a task in the Engi
 | [Change Summary](change-summary.md) | — | ✓ | Commands that were entered, and who entered them |
 | Site Subnets | — | ✓ | The subnet list [IPAM](../tasks/ipam.md) is filled from |
 
-The Reports page is on Free. The only report that runs there is Inventory. Every other report is Pro and the AI edition.
+The Reports page is on Free. The only report that runs there is Inventory, and it covers the whole library, up to 25 devices. Every other report is Pro and the AI edition.
 
 ## Running a report
 

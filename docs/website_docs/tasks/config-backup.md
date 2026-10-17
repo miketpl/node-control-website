@@ -31,9 +31,12 @@ One timestamp covers the whole run. A row shows **Backed up** or FAIL. The summa
 
 ## Save Config
 
-**Save Config** is the separate task that writes the running configuration into the device's saved config. Config Backup does not do that, and [Config from File](config-from-file.md) does not either.
+**Save Config** writes the running configuration into the saved config on the devices that are ticked or highlighted in the library. Config Backup does not do that, and [Config from File](config-from-file.md) does not either.
 
-The screens after you click **Run** on Save Config are not written up here. Those steps still need a check against the current build.
+1. Tick or highlight the devices. Select **Save Config**. Click **Run**.
+2. **Select Credentials**.
+
+There is no further dialog. The task saves the config on each device. The log window reports success or failure.
 
 ## Next steps
 

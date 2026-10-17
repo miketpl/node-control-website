@@ -22,7 +22,7 @@ The editor is a whitelist. Every field has its own tick. Only ticked fields are 
 
 **Review & push** re-reads the ticked networks first. The plan you sign is the plan against the networks at that moment, not against the grid from when you loaded it.
 
-Type `PUSH` to arm the button. An empty plan cannot be armed. Safe Mode blocks push and revert.
+Type `PUSH` to arm the button. An empty plan cannot be armed. Safe Mode blocks a push.
 
 ## Revert
 

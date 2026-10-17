@@ -161,7 +161,7 @@ It is one of the five tasks that run on Free. See [tier comparison](../tiers/ove
 | Wired search returns nothing but you know the device is up | Starting switches not configured for the site | Settings → Find Device → Starting Switches → pick one or more per site |
 | Meraki search returns nothing for a known wireless client | API key invalid or wrong org | Test the key in Settings → Credentials → Meraki API → Test |
 | One slow switch hangs the search | Pre-0.9.26 you'd have to Ctrl-C — now the 45s bounded timeout prevents this | Update if you're on an older version |
-| Right-click → Shut Port is greyed | Safe Mode is on, or device type doesn't support port actions | Disable Safe Mode (Settings → Safe Mode), or check device type |
+| Right-click → Shut Port is greyed | Safe Mode is on, or device type doesn't support port actions | Switch to Config Mode from the Edit menu or the mode badge, or check device type |
 
 ## Next steps
 

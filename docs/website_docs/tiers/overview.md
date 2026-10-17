@@ -33,7 +33,7 @@ Feature-level AI (summaries and the lifecycle briefing) is on Pro as well, using
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
 | Security Audit (PSIRT), Lifecycle and EoX, and the other reports | — | ✓ | ✓ |
-| Update tab, Vuln Plan | — | — | Update tab only. Vuln Plan is not in Pro |
+| Update tab and Vuln Plan | — | — | ✓. Vuln Plan is a button on the Update tab |
 | **AI** | | | |
 | Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
 | A provider you can configure for sending | — | ✓ | ✓ |
@@ -81,7 +81,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 
 - Unlimited devices, shown in full
 - L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
-- The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Vuln Plan is not in Pro. The Update tab is not in Pro
+- The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
 - Find Device across a site or a fabric, with Meraki wireless lookup
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
@@ -101,8 +101,10 @@ The AI edition is Pro, plus the parts that stay on this tier only:
 
 - the AI dashboard and chat
 - the backend assistant
+- the Update tab
+- **Vuln Plan**, a button on the Update tab, next to **Check PSIRT**. It works from that tab's PSIRT results
 
-The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. The Update tab is on this edition. It is not on Pro.
+The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. Pro has no Update tab and no Vuln Plan.
 
 ### How to get it
 

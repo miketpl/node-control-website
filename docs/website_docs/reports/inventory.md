@@ -44,7 +44,7 @@ The HTML export includes a header with run timestamp, scope, and total device co
 
 ## Free
 
-Inventory is the report that runs on Free. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).
+Inventory is the report that runs on Free. It covers the whole library, up to 25 devices. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).
 
 ## Vendor-specific quirks
 

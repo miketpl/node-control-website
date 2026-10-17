@@ -163,7 +163,8 @@
 <p>Cisco indexes many advisories by software release alone. An advisory written for other hardware on that same release is not hidden. It is marked <strong>platform mismatch</strong>, sorted below the confirmed matches, and kept out of the confirmed High, Medium, and Low counts.</p>
 <p>The product list is filled in from the advisory detail when the version query omits it. An advisory with no product data at all is called out in the report. It is not treated as a clean pass.</p>
 <p>If the product list is only &quot;Cisco IOS XE Software&quot; but the title names hardware (for example Catalyst 3650 and 3850), the title is what gets checked. Those advisories do not pass as train-wide on an unrelated model.</p>
-<p>These are the PSIRT checks. They are on Pro and the AI edition. Vuln Plan is not part of Pro.</p>
+<p>These are the PSIRT checks. They are on Pro and the AI edition.</p>
+<p><strong>Vuln Plan</strong> is the AI edition only. It is a button on the Update tab, next to <strong>Check PSIRT</strong>, and it works from that tab&#x27;s PSIRT results. Pro does not have it.</p>
 <h2 id="export-and-email">Export and email</h2>
 <p>The HTML report has an <strong>Export CSV</strong> button above each table. You can email the report. The send runs in the background. If the email is skipped, the log says why: the option was unticked, or there were no recipients.</p>
 <p>An AI executive summary is optional, and off unless you tick it for that run. It uses the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>. Nothing is sent if you leave the box unticked.</p>

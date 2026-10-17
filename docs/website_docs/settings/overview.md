@@ -14,7 +14,7 @@ Settings is organised by section. Pick the one you need.
 
 | Tab | What it controls |
 |---|---|
-| **General** | Theme, font size, startup mode, default library, auto-update behaviour |
+| **General** | Theme, font size, **Startup Mode** (what the Select Mode dialog defaults to), default library, auto-update behaviour |
 | **Credentials** | Profiles, try order, and the device-type map. No star, and no per-tab memory. See [Credentials](../getting-started/credentials.md) |
 | **Library** | Library file path, [GitHub sync](../library/github-sync.md), import/export defaults |
 | **Site Detection** | [Hostname-to-site-code regex](site-detection.md) |
@@ -24,7 +24,7 @@ Settings is organised by section. Pick the one you need.
 | **Topology (L2/L3/WAN)** | Endpoint filter patterns, layout preferences, render style |
 | **Terminal** | Colour theme, scrollback size, paste-with-delay toggle, session logging |
 | **Monitor** | SSH keepalive, sample persistence, default polling interval |
-| **Safe Mode** | [Command allowlist / blocklist](safe-mode.md) |
+| **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
 | **Scripts** | [Python scripts that run as tasks](scripts.md), Pro and AI |
 | **AI / LLM** | Anthropic API key or an Ollama server, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |

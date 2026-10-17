@@ -181,8 +181,14 @@
 <p>One timestamp covers the whole run. A row shows <strong>Backed up</strong> or FAIL. The summary is <code>Complete - X saved, Y failed. Output: &lt;dir&gt;</code>.</p>
 <p><strong>Dry run</strong> logs the commands and the file it would write. <strong>Stop</strong> cancels the run.</p>
 <h2 id="save-config">Save Config</h2>
-<p><strong>Save Config</strong> is the separate task that writes the running configuration into the device&#x27;s saved config. Config Backup does not do that, and <a href="config-from-file.html">Config from File</a> does not either.</p>
-<p>The screens after you click <strong>Run</strong> on Save Config are not written up here. Those steps still need a check against the current build.</p>
+<p><strong>Save Config</strong> writes the running configuration into the saved config on the devices that are ticked or highlighted in the library. Config Backup does not do that, and <a href="config-from-file.html">Config from File</a> does not either.</p>
+<ol>
+<li>Tick or highlight the devices. Select <strong>Save Config</strong>. Click <strong>Run</strong>.
+</li>
+<li><strong>Select Credentials</strong>.
+</li>
+</ol>
+<p>There is no further dialog. The task saves the config on each device. The log window reports success or failure.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="config-from-file.html">Config from File</a>

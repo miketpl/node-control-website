@@ -23,7 +23,9 @@ The product list is filled in from the advisory detail when the version query om
 
 If the product list is only "Cisco IOS XE Software" but the title names hardware (for example Catalyst 3650 and 3850), the title is what gets checked. Those advisories do not pass as train-wide on an unrelated model.
 
-These are the PSIRT checks. They are on Pro and the AI edition. Vuln Plan is not part of Pro.
+These are the PSIRT checks. They are on Pro and the AI edition.
+
+**Vuln Plan** is the AI edition only. It is a button on the Update tab, next to **Check PSIRT**, and it works from that tab's PSIRT results. Pro does not have it.
 
 ## Export and email
 

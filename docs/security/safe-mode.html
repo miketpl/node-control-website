@@ -144,7 +144,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/security/">Security</a> &rsaquo; Safe Mode (security view)
                 </div>
                 <h1 id="safe-mode-security-view">Safe Mode (security view)</h1>
-<p>See <a href="../settings/safe-mode.html">Settings → Safe Mode</a> for configuration and behaviour details. This page covers Safe Mode from a security and compliance perspective.</p>
+<p>See <a href="../settings/safe-mode.html">Safe Mode</a> for how the mode is chosen and what it blocks. This page covers Safe Mode from a security and compliance perspective.</p>
 <h2 id="what-safe-mode-protects-against">What Safe Mode protects against</h2>
 <table>
 <thead>
@@ -174,7 +174,7 @@
 </table>
 <h2 id="what-safe-mode-does-not-protect-against">What Safe Mode does NOT protect against</h2>
 <ul>
-<li>**Anything done in the <a href="../tasks/ssh-terminal.html">SSH terminal</a>** — Safe Mode is for automated commands, not human typing
+<li><strong>Read-only SSH</strong> — a command that is not read-only is blocked in an SSH session while Safe Mode is on. Read-only commands still run. See <a href="../tasks/ssh-terminal.html">SSH Terminal</a>
 </li>
 <li><strong>Read-only data exfiltration</strong> — <code>show running-config</code> is allowed under Safe Mode; if a config has secrets in it, they&#x27;re visible
 </li>
@@ -184,16 +184,12 @@
 </li>
 </ul>
 <h2 id="default-state">Default state</h2>
-<p>New installations: Safe Mode <strong>ON</strong>.</p>
-<p>New installs start with Safe Mode on. You turn it off for a port action or a push you intend to send, then turn it back on.</p>
+<p>Safe Mode is session-wide. It is not a per-tab setting.</p>
+<p>The <strong>Select Mode</strong> dialog at startup uses the default in <strong>Settings → General → Startup Mode</strong>. Mid-session, the <strong>Edit</strong> menu or the mode badge switches it. In Safe Mode, <strong>HTTPS</strong> is hidden, the task list is trimmed, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked.</p>
 <h2 id="compliance-use-cases">Compliance use cases</h2>
 <p>For organisations that need to demonstrate &quot;we have technical controls preventing accidental change&quot;:</p>
 <ul>
-<li>Safe Mode ON state is logged at every app launch
-</li>
-<li>Toggle events (ON → OFF and OFF → ON) are recorded with timestamp
-</li>
-<li>Per-tab override settings are exportable for audit review
+<li>The mode is logged when it changes
 </li>
 <li>Custom blocklist patterns provide explicit &quot;we always block X command&quot; evidence
 </li>
@@ -209,9 +205,7 @@
 <h2 id="customising-for-sensitive-environments">Customising for sensitive environments</h2>
 <p>For high-compliance environments:</p>
 <ul>
-<li>Set Safe Mode ON globally
-</li>
-<li>Use <strong>per-tab overrides</strong> to keep it ON for Firewalls, WAN, and Core tabs even when off elsewhere
+<li>Set <strong>Startup Mode</strong> to Safe Mode
 </li>
 <li>Add specific commands to the <strong>blocklist</strong> that should NEVER run (e.g., <code>reload</code>, <code>format</code>)
 </li>
@@ -235,7 +229,7 @@
 <p>Defence in depth: Safe Mode (app-level) + read-only accounts (device-level) gives two independent guarantees.</p>
 <h2 id="related">Related</h2>
 <ul>
-<li><a href="../settings/safe-mode.html">Settings → Safe Mode</a> — configuration UI
+<li><a href="../settings/safe-mode.html">Safe Mode</a> — Select Mode, Startup Mode, and what the session blocks
 </li>
 <li><a href="audit-log.html">Audit log</a> — what gets logged
 </li>
