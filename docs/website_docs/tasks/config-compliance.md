@@ -1,6 +1,6 @@
 # Config Compliance
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
+> On **Pro** and the **AI** edition. On Free both tasks are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides **Config Compliance Remediate**. **Config Compliance Audit** is not in the Safe Mode task list either. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
 
 Two tasks:
 

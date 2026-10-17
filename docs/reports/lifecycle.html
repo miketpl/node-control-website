@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -148,7 +150,22 @@
 <p><strong>Catalyst Center</strong> is the authoritative source for devices it manages. A completed Catalyst Center answer is never overwritten by another source. A failed Catalyst Center scan is not the same thing as &quot;this device has no end-of-life date&quot;. An empty answer from a failed scan does not wipe the other sources either.</p>
 <p>If Catalyst Center is unreachable (VPN down, DNS failure), the log says so in one line. You do not get a traceback. A refused login — wrong password, or a password that has expired — is a plain message that names the account.</p>
 <p>Devices Catalyst Center does not manage, Nexus in particular, get dates from Cisco&#x27;s public End-of-Sale and End-of-Life notices. Those notices ship with the app. This release covers the Nexus 2000, 3000, 5000, 7000, and 9000 families. A row answered that way has a <strong>Source</strong> column that links the notice.</p>
-<p>The report uses the scope you set on the Reports page, not only the devices Catalyst Center happens to know. Library devices outside Catalyst are listed. If the model is not already known, the report identifies the device over SSH with <code>show inventory</code>. What it learns is cached, so this report and the Update page do not ask again.</p>
+<p>The report uses the scope you set on the Reports page, not only the devices Catalyst Center happens to know. Library devices outside Catalyst are listed. If the model is not already known, the report identifies the device over SSH with <code>show inventory</code>. What it learns is cached, so a later run of this report does not ask again.</p>
+<h2 id="catalyst-center-in-settings">Catalyst Center in Settings</h2>
+<p><strong>Settings → API Platforms</strong>, group <strong>Cisco DNA Center / Catalyst Center</strong>:</p>
+<ul>
+<li><strong>Enable</strong>
+</li>
+<li><strong>Base URL:</strong> placeholder <code>https://dnac.example.com</code>
+</li>
+<li><strong>Username:</strong> placeholder <code>admin</code>
+</li>
+<li><strong>Password:</strong> with <strong>Set Credentials</strong>, and a status that reads <strong>Configured</strong> or <strong>Not set</strong>
+</li>
+<li><strong>Test Connection</strong>
+</li>
+</ul>
+<p>There is no verify-SSL control. Certificate verification is off for all API clients.</p>
 <h2 id="what-a-row-means">What a row means</h2>
 <p>Dates are scoped. A chassis date is not a module date, and a software date comes only from a software end-of-life record.</p>
 <p>Columns include:</p>
@@ -186,8 +203,8 @@
 </li>
 </ul>
 <p>The assessment exports and emails as its own document. An optional AI briefing can lead the emailed assessment. It is off by default. It uses your own provider. See <a href="../settings/ai.html">AI provider</a>.</p>
-<h2 id="update-page">Update page</h2>
-<p>The <strong>Update</strong> page is on Pro and the AI edition. Free does not show it. It lists the same end-of-life columns. Click a header to sort, including the date columns. A filter box narrows every device table on that page at once. You can export the tables to HTML or CSV.</p>
+<h2 id="update-tab">Update tab</h2>
+<p>The <strong>Update</strong> tab is the AI edition. It is not on Pro, and it is not on Free. The end-of-sale and end-of-life columns in this Lifecycle report are on Pro.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="security-audit.html">Security Audit</a>

@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="ssh-terminal.html" class="docs-nav-link active">SSH Terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link active">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
       <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -143,15 +145,17 @@
                 </div>
                 <h1 id="ssh-terminal">SSH Terminal</h1>
 <p>Interactive SSH access to any device in your library, embedded directly in Node Control. No need to drop out to PuTTY, iTerm, or a separate terminal app — you can run topology and reports against a device, then jump into a shell on the same device without switching tools.</p>
-<p>The SSH session is on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. You open it by right-clicking a device. It is not an Engineer task. On Free the tasks that run are <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong>.</p>
+<p>The SSH session is on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. It is not an Engineer task. SSH opens only from a library row.</p>
 <h2 id="open-a-session">Open a session</h2>
-<p>Three ways:</p>
-<ol>
-<li>Right-click a device in the library → <strong>SSH</strong>
+<ul>
+<li>The toolbar <strong>SSH</strong> button
 </li>
-<li>From a topology or Find Device result → right-click a node → <strong>Open SSH</strong>
+<li>A double-click on the row
 </li>
-</ol>
+<li>Right-click <strong>Connect SSH</strong>, in Connection Manager mode
+</li>
+</ul>
+<p>There is no box for a raw IP, and there is no Tools menu.</p>
 <p>A new tab opens in the terminal panel with the SSH session.</p>
 <h2 id="multiple-concurrent-sessions">Multiple concurrent sessions</h2>
 <p>Each SSH session lives in its own tab. Open as many as you need:</p>
@@ -161,18 +165,15 @@
 <li>One per role (your &quot;core switch&quot;, &quot;firewall&quot;, &quot;wireless controller&quot; workspace)
 </li>
 </ul>
-<p>Tabs persist across app restarts (sessions reconnect automatically using the same credentials).</p>
+<h2 id="session-controls">Session controls</h2>
+<p>The session controls are <strong>SSH</strong>, <strong>HTTPS</strong>, <strong>Exit</strong>, <strong>Exit All</strong>, <strong>Broadcast</strong>, <strong>Paginate</strong>, <strong>Record</strong>, <strong>Fullscreen</strong>, and <strong>Hostnames</strong>. Each tab has <strong>Stay in config</strong> and <strong>Terminal Mode</strong>.</p>
+<p><strong>Esc</strong> leaves the fullscreen terminal.</p>
+<p>The only other shortcut in the app is <strong>Ctrl+C</strong>, which copies a table selection as tab-separated text. There is no Ctrl+, or Cmd+, shortcut.</p>
 <h2 id="terminal-features">Terminal features</h2>
 <ul>
 <li><strong>Full xterm emulation</strong> via pyte — Cisco / Aruba CLI menus render correctly
 </li>
 <li><strong>Mouse selection</strong> for copy
-</li>
-<li><strong>Ctrl+C</strong> copies the selection. With nothing selected, Ctrl+C still interrupts the device
-</li>
-<li>On a Mac, <strong>Cmd+C</strong> copies as well
-</li>
-<li><strong>Cmd+V / Ctrl+Shift+V</strong> to paste
 </li>
 <li>Output is a fixed-width font, including on Windows, so a table such as <code>show ip interface brief</code> lines up
 </li>
@@ -180,17 +181,11 @@
 </li>
 <li>A pasted line that wraps can be edited and deleted normally
 </li>
-<li>You can switch between command mode and terminal mode while a command is still running
-</li>
-<li><strong>Search</strong> within scrollback (Cmd+F / Ctrl+F)
-</li>
 <li><strong>Save scrollback</strong> to a text file
 </li>
 <li><strong>Configurable colour theme</strong> (Settings → Terminal)
 </li>
 </ul>
-<h2 id="sending-ctrlc-to-the-device">Sending Ctrl+C to the device</h2>
-<p>Ctrl+C copies when text is selected. Click somewhere with no selection, then Ctrl+C, to interrupt the device (for example to cancel a long <code>show tech-support</code>).</p>
 <h2 id="login-notices">Login notices</h2>
 <p>If ISE or another TACACS+ server says at login that the password is about to expire, or that it must be changed, the terminal shows that message before the prompt. Each notice is repeated in bold yellow. The Connection Manager log keeps a <code>LOGIN NOTICE</code> line per notice. Tasks log the same notice.</p>
 <h2 id="send-command-to-multiple-sessions">Send command to multiple sessions</h2>
@@ -217,18 +212,8 @@
 </code></pre>
 <p>Includes both your input and the device&#x27;s output. Useful for change documentation or troubleshooting.</p>
 <p>To disable session logging: Settings → Terminal → uncheck <strong>Log session output</strong>.</p>
-<h2 id="reconnection">Reconnection</h2>
-<p>If an SSH session times out or drops:</p>
-<ul>
-<li>The tab shows a <strong>Session Timed Out</strong> banner. It does not sit there frozen
-</li>
-<li><strong>Reconnect</strong> opens the session again in the same tab, with the same credential profile
-</li>
-<li>If you were in terminal mode, you land back in terminal mode, ready for input
-</li>
-<li>Reconnect works on Palo Alto firewalls as well as on Cisco switches
-</li>
-</ul>
+<h2 id="when-a-session-times-out">When a session times out</h2>
+<p>There is no Auto-reconnect checkbox. When a session times out, a red banner reads <strong>Session timed out -</strong> and the reason, with a <strong>Reconnect</strong> button. Reconnect uses the same tab and the current credential profile.</p>
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
 <p><a href="../settings/safe-mode.html">Safe Mode</a> gates commands routed through tasks (Find Device port actions, Discover Variables, Discovery walks). The SSH terminal is <strong>not</strong> Safe-Mode gated — what you type in an interactive terminal is sent verbatim. Safe Mode protects you from automated commands; it assumes you know what you&#x27;re doing when you have a CLI prompt.</p>
 <h2 id="session-sharing">Session sharing</h2>
@@ -254,8 +239,8 @@
 <td>Settings → Terminal → enable <strong>Paste with delay</strong> (slows pastes to one line at a time)</td>
 </tr>
 <tr>
-<td>Ctrl+C interrupts when you wanted to copy</td>
-<td>A selection has to be active. Select the text, then Ctrl+C. On a Mac, Cmd+C copies as well</td>
+<td>Ctrl+C does not interrupt the device</td>
+<td>Ctrl+C copies a table selection. It is not a terminal-break shortcut</td>
 </tr>
 <tr>
 <td>Session locks up</td>

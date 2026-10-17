@@ -31,15 +31,9 @@ You'll find shortcuts on your Desktop and in the Start Menu under the app name (
 
 ## The installer is signed
 
-The Windows build is an NSIS installer signed with Azure Artifact Signing.
+The installer and the app are signed. They show **The Promised Lan Limited** as the verified publisher, in the UAC prompt and in the installer's properties. The **Unknown publisher** block is gone.
 
-Before you run it:
-
-1. Right-click the `Setup.exe`
-2. **Properties** → **Digital Signatures**
-3. Confirm a signature is present and the publisher is **The Promised LAN**
-
-Confirm the signature, then run the installer. If SmartScreen still appears, stop and check the Digital Signatures tab again. A missing signature means the file is not the build I ship.
+SmartScreen reputation builds with downloads, so an early download may still show a **More info** prompt.
 
 ## Pro and Free side-by-side
 
@@ -66,7 +60,7 @@ Typically expands to `C:\Users\<you>\AppData\Roaming\netOps\`. Contains:
 
 ## Updating
 
-Use **Help → Check for Updates** inside the app. When an update is available:
+Use **Help → Check for Updates...** inside the app. When an update is available:
 
 1. Click **Download**
 2. The new installer downloads to your `%TEMP%` folder

@@ -2,7 +2,28 @@
 
 > On **Pro** and the **AI** edition. Free does not show this page. This is a PAN-OS tool.
 
-The analyser reads a Palo Alto policy export, or a pull straight from Panorama, and checks it against your YAML standards. The checks are deterministic. An empty or unrecognised export fails clearly. It does not pass every check.
+There is no standards picker and no list of named standards.
+
+The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. The **AI advisory** checkbox is on the AI edition only.
+
+Inner tabs: **Rulebase Analyser**, **Compare**, **Proposed Rule Tester**.
+
+**Edit Standards...** opens **Firewall Rulebase Standards**: one YAML editor, **Reset to Default**, Save / Cancel. The fields are:
+
+- `naming_regex`
+- `ticket_regex`
+- `require_logging`
+- `max_src_hosts`
+- `max_dst_hosts`
+- `max_port_breadth`
+- `flag_any_any`
+- `url_filtering_offsets_any_destination`
+- `forbidden_services`
+- `forbidden_zone_pairs`
+
+The default forbids tcp/23, udp/69, and tcp/512-514.
+
+The checks are deterministic. An empty or unrecognised export fails clearly. It does not pass every check.
 
 A destination of `any` that is governed by a URL filtering profile is not scored as wide open.
 
@@ -20,9 +41,9 @@ The **Compare** tab loads an earlier policy against the current one. Every rule 
 
 The tester is where you try a rule before you commit it anywhere. Object names autocomplete on the fields. The assessment uses the screen, rather than a small pane.
 
-## AI advisor
+## AI advisory
 
-The AI advisor is optional and off unless you tick it. It uses the provider in [Settings → AI / LLM](../settings/ai.md). The deterministic findings do not need a provider.
+The **AI advisory** checkbox is the AI edition. It is off unless you tick it. The deterministic findings do not need it.
 
 ## Next steps
 

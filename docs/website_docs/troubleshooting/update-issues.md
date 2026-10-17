@@ -1,6 +1,6 @@
 # Update problems
 
-When **Help → Check for Updates** doesn't work, or downloads fail, or installs hang.
+When **Help → Check for Updates...** doesn't work, or downloads fail, or installs hang.
 
 ## Symptom 1 — "No update available" when you know there's a newer version
 
@@ -60,7 +60,7 @@ Cause: connection dropped mid-download.
 
 The downloader supports resume — re-trigger the download and it'll pick up where it stopped:
 
-1. Help → Check for Updates → Download
+1. Help → Check for Updates... → Download
 
 For chronic download failures:
 
@@ -87,7 +87,7 @@ If you see this on an older version, manually run the downloaded Setup.exe after
 
 ### UAC declined
 
-User clicked No on the UAC prompt. The installer doesn't run. Re-trigger from Help → Check for Updates → Install & Restart.
+User clicked No on the UAC prompt. The installer doesn't run. Re-trigger from Help → Check for Updates... → Install & Restart.
 
 ### Antivirus quarantining the installer
 
@@ -161,7 +161,7 @@ Settings → General → **Auto-check for updates**:
 
 - **Daily** (default): silent background check at app launch + every 24h while running
 - **Weekly**: same but every 7 days
-- **Never**: only checks when you explicitly use Help → Check for Updates
+- **Never**: only checks when you explicitly use Help → Check for Updates...
 
 Notifications appear in the status bar; clicking opens the download dialog.
 

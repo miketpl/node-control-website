@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,8 +144,11 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Settings overview
                 </div>
                 <h1 id="settings-overview">Settings overview</h1>
-<p>Open <strong>Settings</strong> from the bottom of the left sidebar. It is also in the <strong>Edit</strong> menu.</p>
+<p>Open <strong>Settings</strong> from the navigation footer, or <strong>Edit → Settings...</strong>. On macOS, <strong>Settings...</strong> is in the application menu. There is no Tools menu and no Ctrl+, or Cmd+, shortcut.</p>
+<p>The <strong>Edit</strong> menu holds only <strong>Switch to Config Mode</strong> / <strong>Switch to Safe Mode</strong>, and <strong>Settings...</strong>.</p>
 <p>Settings is organised by section. Pick the one you need.</p>
+<h2 id="api-platforms">API Platforms</h2>
+<p><strong>Settings → API Platforms</strong> holds <strong>Cisco DNA Center / Catalyst Center</strong> and <strong>Cisco ISE (Identity Services Engine)</strong>. The fields are on the <a href="../reports/lifecycle.html">Lifecycle</a> and <a href="../tasks/change-ise-password.html">Change ISE Password</a> pages. There is no verify-SSL control. Certificate verification is off for all API clients.</p>
 <h2 id="settings-tabs">Settings tabs</h2>
 <table>
 <thead>
@@ -159,7 +164,7 @@
 </tr>
 <tr>
 <td><strong>Credentials</strong></td>
-<td>Username/password profiles, default profile, per-tab assignments, Meraki API key</td>
+<td>Profiles, try order, and the device-type map. No star, and no per-tab memory. See <a href="../getting-started/credentials.html">Credentials</a></td>
 </tr>
 <tr>
 <td><strong>Library</strong></td>
@@ -233,15 +238,8 @@
 <li>Reconfigure as needed; you can copy specific keys from <code>.bak</code> if helpful
 </li>
 </ol>
-<h2 id="exporting-importing-settings">Exporting / importing settings</h2>
-<p>For sharing a baseline across team members:</p>
-<ul>
-<li><strong>Tools → Export Settings</strong> → produces a JSON file you can email or commit to a repo
-</li>
-<li><strong>Tools → Import Settings</strong> → loads from JSON, prompts before overwriting current values
-</li>
-</ul>
-<p>Useful when standardising &quot;everyone uses these site detection rules&quot; across an org.</p>
+<h2 id="sharing-a-settings-file">Sharing a settings file</h2>
+<p>There is no Tools menu, and no Export Settings command under one. <code>settings.json</code> is the file. Copy it if you want the same settings on another machine.</p>
 <h2 id="per-environment-settings">Per-environment settings</h2>
 <p>If you switch between different customer networks, you can have multiple <code>settings.json</code> files and switch by:</p>
 <ol>
@@ -279,7 +277,7 @@
 <tbody>
 <tr>
 <td>Save typing of credentials</td>
-<td><strong>Credentials</strong> → set a default profile</td>
+<td><strong>Credentials</strong> dropdown → <strong>All</strong>, with the profiles in try order</td>
 </tr>
 <tr>
 <td>Find Device knows my cores</td>

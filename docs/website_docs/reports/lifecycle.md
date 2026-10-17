@@ -12,7 +12,19 @@ If Catalyst Center is unreachable (VPN down, DNS failure), the log says so in on
 
 Devices Catalyst Center does not manage, Nexus in particular, get dates from Cisco's public End-of-Sale and End-of-Life notices. Those notices ship with the app. This release covers the Nexus 2000, 3000, 5000, 7000, and 9000 families. A row answered that way has a **Source** column that links the notice.
 
-The report uses the scope you set on the Reports page, not only the devices Catalyst Center happens to know. Library devices outside Catalyst are listed. If the model is not already known, the report identifies the device over SSH with `show inventory`. What it learns is cached, so this report and the Update page do not ask again.
+The report uses the scope you set on the Reports page, not only the devices Catalyst Center happens to know. Library devices outside Catalyst are listed. If the model is not already known, the report identifies the device over SSH with `show inventory`. What it learns is cached, so a later run of this report does not ask again.
+
+## Catalyst Center in Settings
+
+**Settings → API Platforms**, group **Cisco DNA Center / Catalyst Center**:
+
+- **Enable**
+- **Base URL:** placeholder `https://dnac.example.com`
+- **Username:** placeholder `admin`
+- **Password:** with **Set Credentials**, and a status that reads **Configured** or **Not set**
+- **Test Connection**
+
+There is no verify-SSL control. Certificate verification is off for all API clients.
 
 ## What a row means
 
@@ -49,9 +61,9 @@ Wording in the plan:
 
 The assessment exports and emails as its own document. An optional AI briefing can lead the emailed assessment. It is off by default. It uses your own provider. See [AI provider](../settings/ai.md).
 
-## Update page
+## Update tab
 
-The **Update** page is on Pro and the AI edition. Free does not show it. It lists the same end-of-life columns. Click a header to sort, including the date columns. A filter box narrows every device table on that page at once. You can export the tables to HTML or CSV.
+The **Update** tab is the AI edition. It is not on Pro, and it is not on Free. The end-of-sale and end-of-life columns in this Lifecycle report are on Pro.
 
 ## Next steps
 

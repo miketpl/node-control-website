@@ -53,15 +53,15 @@ Move devices between tabs by right-click → **Move to tab**.
 Three ways, in increasing automation:
 
 1. **Manual** — right-click in the table → **Add Device** ([details](adding-devices.md))
-2. **Subnet scan** — Library Updater walks an IP range and adds what it finds ([details](subnet-scan.md))
-3. **GitHub library import** — pull a shared library from a GitHub repo ([details](github-sync.md)). The import runs on Free as well as Pro. On Free it keeps the first 25.
+2. **Library Updater** — walks an IP range and adds what it finds ([details](subnet-scan.md)). Pro and the AI edition. On Free the task is greyed out
+3. **GitHub** — **Update from GitHub Repo** and **Push Library to Git** ([details](github-sync.md)). Both run on Free. A pull on Free keeps the first 25 devices, sorted by IP.
 
 ## Free tier device cap
 
 Free holds **25 devices**. There is no time limit.
 
 - A manual add refuses the 26th device
-- A workbook import, a subnet scan import, and a GitHub import are cut to the first 25
+- A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP, and the log says so. Library Updater does not run on Free
 - The table shows 25 even when an older database, for example one left by Pro, holds more
 
 Those extra rows are not deleted. They show again if you move back to Pro.
@@ -95,7 +95,7 @@ copy "%APPDATA%\netOps\netOps.db" %USERPROFILE%\Desktop\netOps-backup.db
 
 To restore, just copy it back. Node Control reads the file on launch.
 
-[GitHub library import](github-sync.md) pulls a remote copy. The import runs on Free as well as Pro, and on Free it keeps the first 25. Whether Free can push the library back is not confirmed.
+[GitHub](github-sync.md) push and pull both run on Free, Pro, and the AI edition. On Free a pull keeps the first 25 devices, sorted by IP. You set your own repository and token. There is no fallback repository on Free or Pro.
 
 ## Editing devices
 
@@ -111,7 +111,7 @@ Right-click → **Delete**. Confirms before deletion. Doesn't remove the SSH hos
 
 | Tier | Library size |
 |---|---|
-| Free | 25 shown. Manual add refuses the 26th. Imports keep the first 25 |
+| Free | 25 shown. Manual add refuses the 26th. Workbook import and a GitHub pull keep the first 25 (the pull is sorted by IP). Library Updater does not run |
 | Pro / AI | Practical limit ~10,000 devices (no enforced cap, but the Engineer tab gets slow above that) |
 
 Beyond ~10,000, the Library Updater subnet-scan flow is slow and Find Device starts struggling — use multiple libraries (one per region/customer) instead of one giant one.

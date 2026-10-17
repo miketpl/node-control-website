@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Variables — NodeControl Docs</title>
+    <meta name="description" content="Discover Variables — NodeControl documentation">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=20260530">
+    <link rel="stylesheet" href="../../css/docs.css?v=20260530">
+</head>
+<body>
+
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="docs-layout">
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">v0.9.39</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
+      <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link active">Discover Variables</a>
+      <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Scripts</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+</nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Discover Variables
+                </div>
+                <h1 id="discover-variables">Discover Variables</h1>
+<blockquote>
+<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode allows it.</p>
+</blockquote>
+<p><strong>Discover Variables</strong> reads a few facts off each device and stores them on the library row. It is an inventory enrichment step. Nothing else in the app reads these values yet. <a href="config-push.html">Config Push</a> does not use them.</p>
+<h2 id="run-it">Run it</h2>
+<ol>
+<li>Tick or select the devices. Select <strong>Discover Variables</strong>. Click <strong>Run</strong>.
+</li>
+<li><strong>Select Credentials</strong>. There is no further dialog.
+</li>
+<li>The task is read-only. It collects:
+<ul>
+<li>VRF names, excluding default and management
+</li>
+<li>chassis PID or model
+</li>
+<li>default gateway
+</li>
+<li>on PAN-OS, the virtual-router and logical-router lists
+</li>
+</ul>
+</li>
+<li>Those values are stored in the device library as per-device metadata, with a timestamp.
+</li>
+</ol>
+<p>The log line per device is <code>&lt;ip&gt;: vrfs=N lrs=N pid=... gw=...</code>. At the end: <code>Done. Variables captured on X/Y device(s); stored in device library.</code></p>
+<p>No files are written. The table&#x27;s Status column is not updated. Dry run is ignored. Stop does not cancel it.</p>
+<p>Tick <strong>AI Summary</strong> before you run if you want an end-of-task summary. See <a href="../settings/ai.html">AI provider</a>.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../reports/inventory.html">Inventory report</a>
+</li>
+<li><a href="config-push.html">Config Push</a>
+</li>
+<li><a href="verify-device-types.html">Verify Device Types</a>
+</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+</body>
+</html>

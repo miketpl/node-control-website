@@ -1,6 +1,12 @@
 # Config Push
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out and reads **Upgrade to Pro**.
+> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
+
+Documented for **Cisco IOS, IOS-XE, and NX-OS**. Config Push sends the template through Netmiko's config mode on any device type. Other vendors are not refused. They are untested.
+
+The save command is vendor aware: `write memory`; `copy running-config startup-config` on NX-OS and Dell OS6; `commit` on Junos and PAN-OS; `save configuration` on EXOS.
+
+The **Default interface** action tooltip says other vendors are skipped. The code does not skip them. Treat that tooltip as the intent.
 
 **Config Push** pushes a per-port template: interface configuration, captures, ACLs, or clears. It used to be called **Interface Config Push**. The old name still runs.
 
@@ -30,9 +36,24 @@ The safety layers stay in place: uplink detection, the interface blacklist, a ti
 
 ### Placeholders
 
-A placeholder can carry filters. The short and safe filters turn `GigabitEthernet1/0/1` into `Gi1_0_1`, which fits a capture name, a filename, or an ACL name where the raw interface name would be rejected.
+Double braces:
 
-Other placeholders supply the port's sequence number on that device, and the date and time, for filenames. A misspelt or unknown placeholder is shown under the template editor. It is not sent to the device as literal text.
+| Placeholder | Value |
+|---|---|
+| `{{interface}}` | The interface. A bare `{{}}` is the same |
+| `{{vlan}}` | VLAN |
+| `{{voice_vlan}}` | Voice VLAN |
+| `{{hostname}}` | Hostname |
+| `{{ip}}` | IP |
+| `{{n}}` | 1-based port position on that device |
+| `{{date}}` | `YYYYmmdd` |
+| `{{time}}` | `HHMMSS` |
+
+Filters chain with `|`: `short`, `safe`, `num`, `lower`, `upper`. `{{interface|short|safe}}` gives `Gi1_0_1`.
+
+Legacy single-brace `{interface}`, `{vlan}`, `{voice_vlan}`, `{hostname}`, and `{ip}` still work.
+
+Values come from the source file row only. There is no `{{site}}` and no per-device variables. [Discover Variables](discover-variables.md) output is not used here.
 
 ### Uplinks
 

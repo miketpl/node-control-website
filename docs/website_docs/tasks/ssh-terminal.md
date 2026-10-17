@@ -2,14 +2,15 @@
 
 Interactive SSH access to any device in your library, embedded directly in Node Control. No need to drop out to PuTTY, iTerm, or a separate terminal app — you can run topology and reports against a device, then jump into a shell on the same device without switching tools.
 
-The SSH session is on **Free**, **Pro**, and the **AI** edition. You open it by right-clicking a device. It is not an Engineer task. On Free the tasks that run are **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device**.
+The SSH session is on **Free**, **Pro**, and the **AI** edition. It is not an Engineer task. SSH opens only from a library row.
 
 ## Open a session
 
-Three ways:
+- The toolbar **SSH** button
+- A double-click on the row
+- Right-click **Connect SSH**, in Connection Manager mode
 
-1. Right-click a device in the library → **SSH**
-2. From a topology or Find Device result → right-click a node → **Open SSH**
+There is no box for a raw IP, and there is no Tools menu.
 
 A new tab opens in the terminal panel with the SSH session.
 
@@ -20,26 +21,23 @@ Each SSH session lives in its own tab. Open as many as you need:
 - One per device for comparing config
 - One per role (your "core switch", "firewall", "wireless controller" workspace)
 
-Tabs persist across app restarts (sessions reconnect automatically using the same credentials).
+## Session controls
+
+The session controls are **SSH**, **HTTPS**, **Exit**, **Exit All**, **Broadcast**, **Paginate**, **Record**, **Fullscreen**, and **Hostnames**. Each tab has **Stay in config** and **Terminal Mode**.
+
+**Esc** leaves the fullscreen terminal.
+
+The only other shortcut in the app is **Ctrl+C**, which copies a table selection as tab-separated text. There is no Ctrl+, or Cmd+, shortcut.
 
 ## Terminal features
 
 - **Full xterm emulation** via pyte — Cisco / Aruba CLI menus render correctly
 - **Mouse selection** for copy
-- **Ctrl+C** copies the selection. With nothing selected, Ctrl+C still interrupts the device
-- On a Mac, **Cmd+C** copies as well
-- **Cmd+V / Ctrl+Shift+V** to paste
 - Output is a fixed-width font, including on Windows, so a table such as `show ip interface brief` lines up
 - The session tells the device the terminal width, per vendor, including PAN-OS, so a wrapped command edits on the column you expect
 - A pasted line that wraps can be edited and deleted normally
-- You can switch between command mode and terminal mode while a command is still running
-- **Search** within scrollback (Cmd+F / Ctrl+F)
 - **Save scrollback** to a text file
 - **Configurable colour theme** (Settings → Terminal)
-
-## Sending Ctrl+C to the device
-
-Ctrl+C copies when text is selected. Click somewhere with no selection, then Ctrl+C, to interrupt the device (for example to cancel a long `show tech-support`).
 
 ## Login notices
 
@@ -77,14 +75,9 @@ Includes both your input and the device's output. Useful for change documentatio
 
 To disable session logging: Settings → Terminal → uncheck **Log session output**.
 
-## Reconnection
+## When a session times out
 
-If an SSH session times out or drops:
-
-- The tab shows a **Session Timed Out** banner. It does not sit there frozen
-- **Reconnect** opens the session again in the same tab, with the same credential profile
-- If you were in terminal mode, you land back in terminal mode, ready for input
-- Reconnect works on Palo Alto firewalls as well as on Cisco switches
+There is no Auto-reconnect checkbox. When a session times out, a red banner reads **Session timed out -** and the reason, with a **Reconnect** button. Reconnect uses the same tab and the current credential profile.
 
 ## Safe Mode and the terminal
 
@@ -100,7 +93,7 @@ You cannot currently share an SSH session between users — each session is loca
 |---|---|---|
 | Terminal renders garbage characters | Vendor sending unsupported escape sequences | Try a different terminal type — Settings → Terminal → Terminal type: vt100 |
 | Paste truncates long commands | Some devices have small input buffer | Settings → Terminal → enable **Paste with delay** (slows pastes to one line at a time) |
-| Ctrl+C interrupts when you wanted to copy | A selection has to be active. Select the text, then Ctrl+C. On a Mac, Cmd+C copies as well |
+| Ctrl+C does not interrupt the device | Ctrl+C copies a table selection. It is not a terminal-break shortcut |
 | Session locks up | Heavy command output exceeding terminal buffer | Settings → Terminal → increase scrollback size |
 
 ## Next steps

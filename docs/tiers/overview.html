@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -143,7 +145,7 @@
                 </div>
                 <h1 id="tier-overview-free-pro-ai">Tier overview — Free, Pro, AI</h1>
 <p>Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate. The AI edition adds the dashboard and the backend assistant on top of Pro.</p>
-<p>Feature-level AI (summaries, the lifecycle briefing, the firewall advisor) is on Pro as well, using a provider you configure. It is not reserved for the AI edition. See <a href="../settings/ai.html">AI provider</a>.</p>
+<p>Feature-level AI (summaries and the lifecycle briefing) is on Pro as well, using a provider you configure. The Firewall Analyser <strong>AI advisory</strong> checkbox is the AI edition. See <a href="../settings/ai.html">AI provider</a>.</p>
 <h2 id="quick-comparison">Quick comparison</h2>
 <table>
 <thead>
@@ -192,9 +194,15 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser, Update</td>
+<td>Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Update tab</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
@@ -216,8 +224,8 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Subnet scan import (Library Updater, not Discover)</td>
-<td style="text-align: center;">✓, first 25</td>
+<td>Library Updater (subnet scan, not Discover)</td>
+<td style="text-align: center;">greyed</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -228,10 +236,10 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>GitHub library import</td>
-<td style="text-align: center;">✓, first 25</td>
+<td>GitHub push and pull</td>
+<td style="text-align: center;">pull keeps the first 25, sorted by IP</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓, and a fallback repository</td>
 </tr>
 <tr>
 <td><strong>Engineer tasks</strong></td>
@@ -270,8 +278,14 @@
 <td style="text-align: center;">site and cores, plus Meraki wireless</td>
 </tr>
 <tr>
+<td>File Transfer task, Packet Capture</td>
+<td style="text-align: center;">greyed</td>
+<td style="text-align: center;">✓, hidden in Safe Mode</td>
+<td style="text-align: center;">✓, hidden in Safe Mode</td>
+</tr>
+<tr>
 <td>Every other task</td>
-<td style="text-align: center;">greyed, reads Upgrade to Pro</td>
+<td style="text-align: center;">greyed, tooltip Upgrade to Pro to unlock this feature</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -288,10 +302,16 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td>Every other report</td>
+<td>Security Audit (PSIRT), Lifecycle and EoX, and the other reports</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Update tab, Vuln Plan</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">Update tab only. Vuln Plan is not in Pro</td>
 </tr>
 <tr>
 <td><strong>AI</strong></td>
@@ -331,7 +351,7 @@
 </li>
 <li>The Inventory report
 </li>
-<li>Subnet scan import, workbook import, and GitHub import, each cut to the first 25
+<li>Workbook import, cut to the first 25. GitHub push and pull, with your own repository and token. A pull keeps the first 25, sorted by IP. Library Updater is greyed out
 </li>
 <li>An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
 </li>
@@ -342,9 +362,9 @@
 <ul>
 <li>A library past 25 devices, and a table that shows all of them
 </li>
-<li>Every task that Free greys out with <strong>Upgrade to Pro</strong>, including L3 topology, WAN topology, Verify Device Types, Config Push, and config compliance
+<li>Every task that Free greys out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. That includes L3 Topology Builder, Watcher of The WAN, Verify Device Types, Config Push, Config from File, Discover Variables, and config compliance
 </li>
-<li>Discover, Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
+<li>Discover, Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser. The Update tab is the AI edition, not Pro
 </li>
 <li>Reports other than Inventory
 </li>
@@ -375,21 +395,21 @@
 <ul>
 <li>Unlimited devices, shown in full
 </li>
-<li>L3 and WAN topology, Discover, and Verify Device Types. L2 Topology Builder is already on Free
+<li>L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
 </li>
-<li>The full report list, including Security Audit, Lifecycle, and Change Summary
+<li>The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Vuln Plan is not in Pro. The Update tab is not in Pro
 </li>
 <li>Find Device across a site or a fabric, with Meraki wireless lookup
 </li>
-<li>Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
+<li>Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 </li>
-<li>Config Push, packet capture, and config compliance with guided remediation
+<li>Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
 </li>
 <li>Scripts under Settings → Scripts, and Change ISE Password
 </li>
-<li>Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that
+<li>Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that. The Firewall Analyser AI advisory checkbox is the AI edition
 </li>
-<li>GitHub import without the 25-device cut
+<li>GitHub push and pull without the 25-device cut. You still set your own repository and token
 </li>
 </ul>
 <h3 id="how-to-get-it">How to get it</h3>
@@ -403,7 +423,7 @@
 <li>the backend assistant
 </li>
 </ul>
-<p>The desktop talks to that backend over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM.</p>
+<p>The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. The Update tab is on this edition. It is not on Pro.</p>
 <h3 id="how-to-get-it">How to get it</h3>
 <p>Contact <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a>.</p>
 <h2 id="upgrading">Upgrading</h2>

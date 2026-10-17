@@ -2,7 +2,7 @@
 
 Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate. The AI edition adds the dashboard and the backend assistant on top of Pro.
 
-Feature-level AI (summaries, the lifecycle briefing, the firewall advisor) is on Pro as well, using a provider you configure. It is not reserved for the AI edition. See [AI provider](../settings/ai.md).
+Feature-level AI (summaries and the lifecycle briefing) is on Pro as well, using a provider you configure. The Firewall Analyser **AI advisory** checkbox is the AI edition. See [AI provider](../settings/ai.md).
 
 ## Quick comparison
 
@@ -14,23 +14,26 @@ Feature-level AI (summaries, the lifecycle briefing, the firewall advisor) is on
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
 | **Sidebar** | | | |
 | Home, Engineer, Reports, File Transfer | ✓ | ✓ | ✓ |
-| Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser, Update | — | ✓ | ✓ |
+| Monitor, Discover, IPAM, Meraki Configurator, Firewall Analyser | — | ✓ | ✓ |
+| Update tab | — | — | ✓ |
 | AI page | — | — | ✓ |
 | **Library** | | | |
 | Add devices manually | ✓, until 25 | ✓ | ✓ |
-| Subnet scan import (Library Updater, not Discover) | ✓, first 25 | ✓ | ✓ |
+| Library Updater (subnet scan, not Discover) | greyed | ✓ | ✓ |
 | Workbook import | ✓, first 25 | ✓ | ✓ |
-| GitHub library import | ✓, first 25 | ✓ | ✓ |
+| GitHub push and pull | pull keeps the first 25, sorted by IP | ✓ | ✓, and a fallback repository |
 | **Engineer tasks** | | | |
 | None | ✓ | ✓ | ✓ |
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
 | Find Device | one switch, single thread, no site or cores model | site and cores, plus Meraki wireless | site and cores, plus Meraki wireless |
-| Every other task | greyed, reads Upgrade to Pro | ✓ | ✓ |
+| File Transfer task, Packet Capture | greyed | ✓, hidden in Safe Mode | ✓, hidden in Safe Mode |
+| Every other task | greyed, tooltip Upgrade to Pro to unlock this feature | ✓ | ✓ |
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
-| Every other report | — | ✓ | ✓ |
+| Security Audit (PSIRT), Lifecycle and EoX, and the other reports | — | ✓ | ✓ |
+| Update tab, Vuln Plan | — | — | Update tab only. Vuln Plan is not in Pro |
 | **AI** | | | |
 | Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
 | A provider you can configure for sending | — | ✓ | ✓ |
@@ -46,15 +49,15 @@ Free is a working copy for a small estate, not a timed demo.
 - Sidebar: Home, Engineer, Reports, File Transfer
 - Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
 - The Inventory report
-- Subnet scan import, workbook import, and GitHub import, each cut to the first 25
+- Workbook import, cut to the first 25. GitHub push and pull, with your own repository and token. A pull keeps the first 25, sorted by IP. Library Updater is greyed out
 - An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
 - The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 
 ### What is on Pro instead
 
 - A library past 25 devices, and a table that shows all of them
-- Every task that Free greys out with **Upgrade to Pro**, including L3 topology, WAN topology, Verify Device Types, Config Push, and config compliance
-- Discover, Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
+- Every task that Free greys out, with the tooltip **Upgrade to Pro to unlock this feature**. That includes L3 Topology Builder, Watcher of The WAN, Verify Device Types, Config Push, Config from File, Discover Variables, and config compliance
+- Discover, Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser. The Update tab is the AI edition, not Pro
 - Reports other than Inventory
 - Find Device across a site or a fabric, including Meraki wireless
 - Feature-level AI on a provider you configure
@@ -77,14 +80,14 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 ### What you get beyond Free
 
 - Unlimited devices, shown in full
-- L3 and WAN topology, Discover, and Verify Device Types. L2 Topology Builder is already on Free
-- The full report list, including Security Audit, Lifecycle, and Change Summary
+- L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
+- The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Vuln Plan is not in Pro. The Update tab is not in Pro
 - Find Device across a site or a fabric, with Meraki wireless lookup
-- Monitor, IPAM, the Meraki Configurator, the Firewall Analyser, and Update
-- Config Push, packet capture, and config compliance with guided remediation
+- Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
+- Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
 - Scripts under Settings → Scripts, and Change ISE Password
-- Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that
-- GitHub import without the 25-device cut
+- Feature-level AI on your own Anthropic key or Ollama server. No Node Control backend is required for that. The Firewall Analyser AI advisory checkbox is the AI edition
+- GitHub push and pull without the 25-device cut. You still set your own repository and token
 
 ### How to get it
 
@@ -99,7 +102,7 @@ The AI edition is Pro, plus the parts that stay on this tier only:
 - the AI dashboard and chat
 - the backend assistant
 
-The desktop talks to that backend over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM.
+The backend runs on infrastructure you host. The desktop talks to it over HTTP. Feature-level summaries on Pro do not use it. They use the provider in Settings → AI / LLM. The Update tab is on this edition. It is not on Pro.
 
 ### How to get it
 

@@ -1,32 +1,43 @@
 # File Transfer
 
-**File Transfer** is a sidebar page on **Free**, **Pro**, and the **AI** edition. Free shows this page. It does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, Update, or AI.
+Two different things share this name.
 
-## Local server
+The **File Transfer** sidebar page is on **Free**, **Pro**, and the **AI** edition. Nothing on that page is tier gated.
 
-The server speaks SFTP and SCP. Device-initiated SCP, such as `copy running-config scp://...`, used to hang because only SFTP was implemented. SCP is implemented now.
+The **File Transfer** Engineer task is Pro and the AI edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides the task. Safe Mode does not remove the sidebar page.
 
-### Which address it listens on
+## The File Transfer page
 
-Every address on the machine is listed with its interface name, so a VPN tunnel is easy to pick out. The example commands on the page always match the address you chose.
+There is no TFTP server on this page.
 
-### Port 22
+### Local server
 
-Only root can bind ports below 1024. If you choose port 22, the page offers a one-time command that forwards port 22 to the port the server can actually bind, and the line that removes that forward.
+The server speaks SFTP and SCP.
 
-### When it fails
+- **Listen on**
+- **Port**, default `2222`
+- **Root Directory**, default `~/sftp_root`
+- **Start Server** / **Stop Server**
+- Username `ncuser`, with a random 16-character password shown while the server is running
+- Example commands for Cisco, PAN-OS, and Linux
 
-A port already in use, a blocked bind, or anything else that stops the server is written to the log and shown on screen. It does not fail silently.
+### Remote client
 
-If the switch says SCP is administratively disabled, the task tells you the switch's SCP server is off and names `ip scp server enable`.
+The section is collapsed, and its title is **Remote client - send / fetch to an SFTP server**. It is on Free as well as Pro and the AI edition.
 
-## Remote client
+## The File Transfer task
 
-The Pro release notes describe a **Remote client** section: a host, a port, and a login, then upload or download of files or folders. Each file is logged with its outcome and its size.
+The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko.
 
-Whether that section is hidden on Free is not confirmed. The page itself is on Free.
+The dialog is **File Transfer**:
+
+- **Upload to device** / **Download from device**
+- **Local File Path**
+- **Remote File Path** (for example `flash:filename.bin`)
+- **Transfer Method**, SCP or TFTP
+- **Start Transfer**
 
 ## Next steps
 
 - [Packet Capture](packet-capture.md)
-- [Credential storage](../security/credential-storage.md)
+- [Config Backup](config-backup.md)

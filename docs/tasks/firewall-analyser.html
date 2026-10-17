@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="firewall-analyser.html" class="docs-nav-link active">Firewall Rule Analyser</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link active">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
       <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -143,7 +145,34 @@
 <blockquote>
 <p>On <strong>Pro</strong> and the <strong>AI</strong> edition. Free does not show this page. This is a PAN-OS tool.</p>
 </blockquote>
-<p>The analyser reads a Palo Alto policy export, or a pull straight from Panorama, and checks it against your YAML standards. The checks are deterministic. An empty or unrecognised export fails clearly. It does not pass every check.</p>
+<p>There is no standards picker and no list of named standards.</p>
+<p>The tab has <strong>Load Config File...</strong>, <strong>Edit Standards...</strong>, and <strong>Analyse</strong>. The <strong>AI advisory</strong> checkbox is on the AI edition only.</p>
+<p>Inner tabs: <strong>Rulebase Analyser</strong>, <strong>Compare</strong>, <strong>Proposed Rule Tester</strong>.</p>
+<p><strong>Edit Standards...</strong> opens <strong>Firewall Rulebase Standards</strong>: one YAML editor, <strong>Reset to Default</strong>, Save / Cancel. The fields are:</p>
+<ul>
+<li><code>naming_regex</code>
+</li>
+<li><code>ticket_regex</code>
+</li>
+<li><code>require_logging</code>
+</li>
+<li><code>max_src_hosts</code>
+</li>
+<li><code>max_dst_hosts</code>
+</li>
+<li><code>max_port_breadth</code>
+</li>
+<li><code>flag_any_any</code>
+</li>
+<li><code>url_filtering_offsets_any_destination</code>
+</li>
+<li><code>forbidden_services</code>
+</li>
+<li><code>forbidden_zone_pairs</code>
+</li>
+</ul>
+<p>The default forbids tcp/23, udp/69, and tcp/512-514.</p>
+<p>The checks are deterministic. An empty or unrecognised export fails clearly. It does not pass every check.</p>
 <p>A destination of <code>any</code> that is governed by a URL filtering profile is not scored as wide open.</p>
 <h2 id="pull-from-panorama">Pull from Panorama</h2>
 <p><strong>Pull from Panorama</strong> fetches the running config and the configuration log over the API (keygen, then the pull). Every pull is stored. The previous pull loads as the baseline. You pick any stored pull and any device group to work from.</p>
@@ -152,8 +181,8 @@
 <p><strong>Changed By</strong> names the admin from the Panorama configuration log. Three log formats are read. A rule that only moved is not attributed to anyone. Rules change position as a side effect of other edits.</p>
 <h2 id="proposed-rule-tester">Proposed Rule Tester</h2>
 <p>The tester is where you try a rule before you commit it anywhere. Object names autocomplete on the fields. The assessment uses the screen, rather than a small pane.</p>
-<h2 id="ai-advisor">AI advisor</h2>
-<p>The AI advisor is optional and off unless you tick it. It uses the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>. The deterministic findings do not need a provider.</p>
+<h2 id="ai-advisory">AI advisory</h2>
+<p>The <strong>AI advisory</strong> checkbox is the AI edition. It is off unless you tick it. The deterministic findings do not need it.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../vendors/palo-alto.html">Palo Alto</a>

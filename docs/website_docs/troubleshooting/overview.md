@@ -18,7 +18,7 @@ Before deep-diving into a specific issue, run through these basics:
 ### Confirm the app is on the latest version
 
 - Help → About → check version number
-- Help → Check for Updates → install if there's a newer version
+- Help → Check for Updates... → install if there's a newer version
 - Many issues are fixed in newer releases (especially detection / vendor parsing)
 
 ### Confirm device is reachable from your machine

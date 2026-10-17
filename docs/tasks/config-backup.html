@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link active">Config Backup and Save Config</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
       <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -140,41 +142,54 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Config Backup and Save Config
                 </div>
                 <h1 id="config-backup-and-save-config">Config Backup and Save Config</h1>
-<p><strong>Config Backup</strong> and <strong>Save Config</strong> are Engineer tasks. Both run on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition.</p>
-<p>On Free, the Task list that runs is:</p>
+<p><strong>Config Backup</strong> runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. It is allowed in Safe Mode.</p>
+<p><strong>Save Config</strong> also runs on Free, Pro, and the AI edition. Safe Mode hides it.</p>
+<p>On Free the tasks that run are <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong>. Every other task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
+<h2 id="config-backup">Config Backup</h2>
+<ol>
+<li>Tick or select the devices. Select <strong>Config Backup</strong>. Click <strong>Run</strong>.
+</li>
+<li><strong>Select Credentials</strong>.
+</li>
+<li>The <strong>Config Backup</strong> dialog:
 <ul>
-<li><strong>None</strong>
+<li><strong>Config Type:</strong> radio <strong>Running Config (show running-config)</strong> (the default) or <strong>Startup Config (show startup-config)</strong>
 </li>
-<li><strong>L2 Topology Builder</strong>
+<li><strong>Output Directory:</strong> with <strong>Browse...</strong>. The default is <code>&lt;Output Directory from Settings&gt;/connection_manager/backups</code>
 </li>
-<li><strong>Config Backup</strong>
-</li>
-<li><strong>Save Config</strong>
-</li>
-<li><strong>Find Device</strong>
+<li><strong>Start Backup</strong>
 </li>
 </ul>
-<p>Every other task is greyed out and reads <strong>Upgrade to Pro</strong>.</p>
-<h2 id="what-each-one-is">What each one is</h2>
-<p><strong>Config Backup</strong> takes a copy of the device configuration.</p>
-<p><strong>Save Config</strong> writes the running configuration into the device&#x27;s saved config.</p>
-<h2 id="how-to-start-one">How to start one</h2>
-<ol>
-<li>Open <strong>Engineer</strong>
 </li>
-<li>In <strong>Task</strong>, choose <strong>Config Backup</strong> or <strong>Save Config</strong>
+<li>The task is read-only. It runs the vendor&#x27;s running or startup command from the catalogue, through the safe-send allowlist:
+<ul>
+<li>Cisco and Arista: <code>show running-config</code>
 </li>
-<li>Click <strong>Run</strong>
+<li>Junos: <code>show configuration | no-more</code>. There is no startup variant
+</li>
+<li>PAN-OS: <code>show config running</code> / <code>show config saved</code>
+</li>
+<li>Aruba, Extreme, and Dell have their own variants
+</li>
+</ul>
+</li>
+<li>One file per device:
 </li>
 </ol>
-<p>The screens after Run — what you confirm, and where a backup file is written — are not written up here. Those steps still need a check against the current build.</p>
+<pre><code>&lt;hostname&gt;_&lt;ip with underscores&gt;_&lt;running|startup&gt;_&lt;YYYYmmdd_HHMMSS&gt;.txt
+</code></pre>
+<p>One timestamp covers the whole run. A row shows <strong>Backed up</strong> or FAIL. The summary is <code>Complete - X saved, Y failed. Output: &lt;dir&gt;</code>.</p>
+<p><strong>Dry run</strong> logs the commands and the file it would write. <strong>Stop</strong> cancels the run.</p>
+<h2 id="save-config">Save Config</h2>
+<p><strong>Save Config</strong> is the separate task that writes the running configuration into the device&#x27;s saved config. Config Backup does not do that, and <a href="config-from-file.html">Config from File</a> does not either.</p>
+<p>The screens after you click <strong>Run</strong> on Save Config are not written up here. Those steps still need a check against the current build.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
+<li><a href="config-from-file.html">Config from File</a>
+</li>
 <li><a href="topology-l2.html">L2 Topology Builder</a>
 </li>
-<li><a href="find-device.html">Find Device</a>
-</li>
-<li><a href="../tiers/overview.html">Tier comparison</a>
+<li><a href="../settings/safe-mode.html">Safe Mode</a>
 </li>
 </ul>
             </div>

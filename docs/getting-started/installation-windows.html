@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -182,17 +184,8 @@
 </ol>
 <p>You&#x27;ll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., &quot;Node Control Free&quot;).</p>
 <h2 id="the-installer-is-signed">The installer is signed</h2>
-<p>The Windows build is an NSIS installer signed with Azure Artifact Signing.</p>
-<p>Before you run it:</p>
-<ol>
-<li>Right-click the <code>Setup.exe</code>
-</li>
-<li><strong>Properties</strong> → <strong>Digital Signatures</strong>
-</li>
-<li>Confirm a signature is present and the publisher is <strong>The Promised LAN</strong>
-</li>
-</ol>
-<p>Confirm the signature, then run the installer. If SmartScreen still appears, stop and check the Digital Signatures tab again. A missing signature means the file is not the build I ship.</p>
+<p>The installer and the app are signed. They show <strong>The Promised Lan Limited</strong> as the verified publisher, in the UAC prompt and in the installer&#x27;s properties. The <strong>Unknown publisher</strong> block is gone.</p>
+<p>SmartScreen reputation builds with downloads, so an early download may still show a <strong>More info</strong> prompt.</p>
 <h2 id="pro-and-free-side-by-side">Pro and Free side-by-side</h2>
 <p>Pro and Free install as fully separate Windows apps. You can have both on the same machine without conflict:</p>
 <ul>
@@ -216,7 +209,7 @@
 </ul>
 <p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
 <h2 id="updating">Updating</h2>
-<p>Use <strong>Help → Check for Updates</strong> inside the app. When an update is available:</p>
+<p>Use <strong>Help → Check for Updates...</strong> inside the app. When an update is available:</p>
 <ol>
 <li>Click <strong>Download</strong>
 </li>

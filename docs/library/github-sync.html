@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,7 +144,9 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Sharing libraries via GitHub
                 </div>
                 <h1 id="sharing-libraries-via-github">Sharing libraries via GitHub</h1>
-<p>A GitHub library import runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. On Free that import is cut to the first 25 devices. The table shows those 25, even if the file you pulled contains more. Whether Free can push the library back to GitHub is not confirmed here.</p>
+<p>GitHub push and pull both run on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. The Library menu has <strong>Update from GitHub Repo</strong> and <strong>Push Library to Git</strong>. Neither is tier gated.</p>
+<p>You set your own repository and token in Settings. There is no fallback repository on Free or Pro. Only the AI build has one.</p>
+<p>On Free, a pulled library is cut to the first 25 devices, sorted by IP. The log says so. The table shows those 25.</p>
 <p>Node Control can synchronise your device library with a private GitHub repository. Useful when:</p>
 <ul>
 <li>Multiple engineers need to work from the same device list
@@ -185,21 +189,11 @@
 </li>
 </ul>
 <h3 id="3-configure-in-node-control">3. Configure in Node Control</h3>
-<p><strong>Settings → General → Default Library</strong> tab:</p>
-<ul>
-<li><strong>Library repo</strong>: <code>your-org/nodecontrol-library-acme</code> (or full URL)
-</li>
-<li><strong>Push PAT</strong>: paste your write token (only needed on machines that push)
-</li>
-<li><strong>Pull PAT</strong>: paste your read-only token (used for pulls; if blank, push PAT is used)
-</li>
-<li><strong>Auto-sync on library change</strong>: optional — pushes a commit every time you edit a device
-</li>
-</ul>
+<p>In Settings, set that repository and a token that can read it. A machine that pushes needs a token that can write. There is no built-in repository to fall back to on Free or Pro.</p>
 <h3 id="4-first-push">4. First push</h3>
 <p>If the repo is empty:</p>
 <ol>
-<li><strong>Library</strong> menu → <strong>Push to GitHub</strong>
+<li><strong>Library</strong> menu → <strong>Push Library to Git</strong>
 </li>
 <li>Confirm — your local library JSON is committed to the repo
 </li>
@@ -208,9 +202,9 @@
 </ol>
 <h3 id="5-first-pull-on-another-machine">5. First pull (on another machine)</h3>
 <ol>
-<li>Install Node Control with the same Library repo configured
+<li>Install Node Control and set the same repository and token
 </li>
-<li><strong>Library</strong> menu → <strong>Pull from GitHub</strong> (on the Engineer status strip; older builds used <strong>Tools → Library</strong>)
+<li><strong>Library</strong> menu → <strong>Update from GitHub Repo</strong>
 </li>
 <li>A diff dialog appears showing:
 <ul>
@@ -232,7 +226,7 @@
 <h2 id="conflict-resolution">Conflict resolution</h2>
 <p>If two engineers edit and push at the same time, the second push fails with a Git conflict. Resolution:</p>
 <ol>
-<li>The losing engineer pulls (<strong>Library</strong> menu → <strong>Pull from GitHub</strong>)
+<li>The losing engineer pulls (<strong>Library</strong> menu → <strong>Update from GitHub Repo</strong>)
 </li>
 <li>Reviews the diff to see what changed
 </li>
@@ -284,7 +278,7 @@
 <ol>
 <li>Switch the <strong>Library repo</strong> field in Settings to point at a different repo
 </li>
-<li><strong>Library</strong> menu → <strong>Pull from GitHub</strong> to load that customer&#x27;s library
+<li><strong>Library</strong> menu → <strong>Update from GitHub Repo</strong> to load that customer&#x27;s library
 </li>
 <li>Your local library DB is fully replaced with the pulled contents
 </li>

@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -153,7 +155,7 @@
 </thead>
 <tbody>
 <tr>
-<td>Can't SSH to a device</td>
+<td>Can&#x27;t SSH to a device</td>
 <td><a href="ssh-connection-issues.html">SSH connection problems</a></td>
 </tr>
 <tr>
@@ -161,11 +163,11 @@
 <td><a href="device-type-detection.html">Device type misdetection</a></td>
 </tr>
 <tr>
-<td>App crashed or won't launch</td>
+<td>App crashed or won&#x27;t launch</td>
 <td><a href="crash-logs.html">Reading the crash log</a></td>
 </tr>
 <tr>
-<td>Check for Updates doesn't work</td>
+<td>Check for Updates doesn&#x27;t work</td>
 <td><a href="update-issues.html">Update problems</a></td>
 </tr>
 </tbody>
@@ -174,28 +176,33 @@
 <p>Before deep-diving into a specific issue, run through these basics:</p>
 <h3 id="confirm-the-app-is-on-the-latest-version">Confirm the app is on the latest version</h3>
 <ul>
-<li>Help → About → check version number</li>
-<li>Help → Check for Updates → install if there's a newer version</li>
-<li>Many issues are fixed in newer releases (especially detection / vendor parsing)</li>
+<li>Help → About → check version number
+</li>
+<li>Help → Check for Updates... → install if there&#x27;s a newer version
+</li>
+<li>Many issues are fixed in newer releases (especially detection / vendor parsing)
+</li>
 </ul>
 <h3 id="confirm-device-is-reachable-from-your-machine">Confirm device is reachable from your machine</h3>
-<pre><code class="language-bash">ping &lt;device-ip&gt;
+<pre><code>ping &lt;device-ip&gt;
 ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 </code></pre>
-<p>If neither works, it's a network issue — not a Node Control issue.</p>
+<p>If neither works, it&#x27;s a network issue — not a Node Control issue.</p>
 <h3 id="confirm-credentials-are-correct">Confirm credentials are correct</h3>
 <ul>
-<li>Open Node Control → Engineer tab → right-click device → <strong>Test Connection</strong></li>
-<li>The result message tells you specifically what failed (auth, network, parsing)</li>
+<li>Open Node Control → Engineer tab → right-click device → <strong>Test Connection</strong>
+</li>
+<li>The result message tells you specifically what failed (auth, network, parsing)
+</li>
 </ul>
 <h3 id="check-the-audit-log">Check the audit log</h3>
-<pre><code class="language-bash">~/Library/Application Support/netOps/audit.log
+<pre><code>~/Library/Application Support/netOps/audit.log
 %APPDATA%\netOps\audit.log
 </code></pre>
 <p>Look for <code>SESSION_FAILED</code> events with details on why the connection failed.</p>
 <h3 id="check-the-crash-log">Check the crash log</h3>
 <p>If the app is crashing:</p>
-<pre><code class="language-bash">~/NodeControl_crash.log
+<pre><code>~/NodeControl_crash.log
 %USERPROFILE%\NodeControl_crash.log
 </code></pre>
 <p>The latest crash is at the bottom — Python tracebacks plus Qt/C++ stack traces when applicable.</p>
@@ -231,23 +238,33 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 </tbody>
 </table>
 <h2 id="restart-vs-reset">Restart vs reset</h2>
-<p>If something's behaving oddly:</p>
+<p>If something&#x27;s behaving oddly:</p>
 <ol>
-<li><strong>Restart the app first</strong> — clears caches, re-opens DB connections</li>
-<li><strong>Quit + relaunch</strong> — same effect, more explicit</li>
-<li><strong>Restart with debug logging</strong> — Settings → Advanced → enable Debug logging, restart, reproduce the issue, attach the resulting log to support ticket</li>
-<li><strong>Reset settings</strong> (last resort) — rename <code>settings.json</code> to <code>settings.json.bak</code> and launch fresh</li>
+<li><strong>Restart the app first</strong> — clears caches, re-opens DB connections
+</li>
+<li><strong>Quit + relaunch</strong> — same effect, more explicit
+</li>
+<li><strong>Restart with debug logging</strong> — Settings → Advanced → enable Debug logging, restart, reproduce the issue, attach the resulting log to support ticket
+</li>
+<li><strong>Reset settings</strong> (last resort) — rename <code>settings.json</code> to <code>settings.json.bak</code> and launch fresh
+</li>
 </ol>
-<p>A reset preserves your library and credentials. To also reset those, delete <code>netOps.db</code> (you'll lose your library) and the OS keychain entries (you'll lose stored passwords).</p>
+<p>A reset preserves your library and credentials. To also reset those, delete <code>netOps.db</code> (you&#x27;ll lose your library) and the OS keychain entries (you&#x27;ll lose stored passwords).</p>
 <h2 id="getting-support">Getting support</h2>
 <p>When opening a support ticket, include:</p>
 <ul>
-<li>Node Control version (Help → About)</li>
-<li>OS and version (macOS 14 / Windows 11 / Ubuntu 24.04)</li>
-<li>Device vendor / model / OS version involved</li>
-<li>What you did, what happened, what you expected</li>
-<li>Relevant log file (crash log, audit log, task run log)</li>
-<li>Screenshot if a UI issue</li>
+<li>Node Control version (Help → About)
+</li>
+<li>OS and version (macOS 14 / Windows 11 / Ubuntu 24.04)
+</li>
+<li>Device vendor / model / OS version involved
+</li>
+<li>What you did, what happened, what you expected
+</li>
+<li>Relevant log file (crash log, audit log, task run log)
+</li>
+<li>Screenshot if a UI issue
+</li>
 </ul>
 <p>Email: <a href="mailto:info@nodecontrol.io">info@nodecontrol.io</a></p>
 <h2 id="common-patterns">Common patterns</h2>
@@ -271,7 +288,7 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 <td>Check the run log; add missing devices</td>
 </tr>
 <tr>
-<td>Find Device says "not found" but you know it's there</td>
+<td>Find Device says &quot;not found&quot; but you know it&#x27;s there</td>
 <td>Starting switches not configured for that site</td>
 <td>Settings → Find Device → set Starting Switches</td>
 </tr>
@@ -295,27 +312,39 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 <h2 id="performance-issues">Performance issues</h2>
 <p>If Node Control feels slow:</p>
 <ul>
-<li>Reduce parallelism (Settings → Reports / Find Device → Workers)</li>
-<li>Increase Output cache TTL (Settings → Reports → Cache duration)</li>
-<li>Use site-scoped tasks rather than All Devices</li>
-<li>Close other resource-heavy applications</li>
+<li>Reduce parallelism (Settings → Reports / Find Device → Workers)
+</li>
+<li>Increase Output cache TTL (Settings → Reports → Cache duration)
+</li>
+<li>Use site-scoped tasks rather than All Devices
+</li>
+<li>Close other resource-heavy applications
+</li>
 </ul>
 <p>For very large libraries (&gt;1000 devices), consider splitting into multiple libraries per customer / region — switch using <a href="../library/github-sync.html">GitHub library sync</a> instead of one mega-library.</p>
 <h2 id="reporting-bugs">Reporting bugs</h2>
 <p>Bugs reproduce best with:</p>
 <ul>
-<li>A specific sequence of clicks</li>
-<li>The version number</li>
-<li>An error message or screenshot</li>
-<li>A minimum example device or task that triggers it</li>
+<li>A specific sequence of clicks
+</li>
+<li>The version number
+</li>
+<li>An error message or screenshot
+</li>
+<li>A minimum example device or task that triggers it
+</li>
 </ul>
 <p>We respond to all bug reports within 1 business day. Critical bugs (data loss, security issues) within 4 hours.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="ssh-connection-issues.html">SSH connection problems</a></li>
-<li><a href="device-type-detection.html">Device type misdetection</a></li>
-<li><a href="crash-logs.html">Reading the crash log</a></li>
-<li><a href="update-issues.html">Update problems</a></li>
+<li><a href="ssh-connection-issues.html">SSH connection problems</a>
+</li>
+<li><a href="device-type-detection.html">Device type misdetection</a>
+</li>
+<li><a href="crash-logs.html">Reading the crash log</a>
+</li>
+<li><a href="update-issues.html">Update problems</a>
+</li>
 </ul>
             </div>
         </main>

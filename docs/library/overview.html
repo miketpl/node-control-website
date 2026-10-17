@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -252,9 +254,9 @@
 <ol>
 <li><strong>Manual</strong> — right-click in the table → <strong>Add Device</strong> (<a href="adding-devices.html">details</a>)
 </li>
-<li><strong>Subnet scan</strong> — Library Updater walks an IP range and adds what it finds (<a href="subnet-scan.html">details</a>)
+<li><strong>Library Updater</strong> — walks an IP range and adds what it finds (<a href="subnet-scan.html">details</a>). Pro and the AI edition. On Free the task is greyed out
 </li>
-<li><strong>GitHub library import</strong> — pull a shared library from a GitHub repo (<a href="github-sync.html">details</a>). The import runs on Free as well as Pro. On Free it keeps the first 25.
+<li><strong>GitHub</strong> — <strong>Update from GitHub Repo</strong> and <strong>Push Library to Git</strong> (<a href="github-sync.html">details</a>). Both run on Free. A pull on Free keeps the first 25 devices, sorted by IP.
 </li>
 </ol>
 <h2 id="free-tier-device-cap">Free tier device cap</h2>
@@ -262,7 +264,7 @@
 <ul>
 <li>A manual add refuses the 26th device
 </li>
-<li>A workbook import, a subnet scan import, and a GitHub import are cut to the first 25
+<li>A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP, and the log says so. Library Updater does not run on Free
 </li>
 <li>The table shows 25 even when an older database, for example one left by Pro, holds more
 </li>
@@ -291,7 +293,7 @@
 <pre><code>copy &quot;%APPDATA%\netOps\netOps.db&quot; %USERPROFILE%\Desktop\netOps-backup.db
 </code></pre>
 <p>To restore, just copy it back. Node Control reads the file on launch.</p>
-<p><a href="github-sync.html">GitHub library import</a> pulls a remote copy. The import runs on Free as well as Pro, and on Free it keeps the first 25. Whether Free can push the library back is not confirmed.</p>
+<p><a href="github-sync.html">GitHub</a> push and pull both run on Free, Pro, and the AI edition. On Free a pull keeps the first 25 devices, sorted by IP. You set your own repository and token. There is no fallback repository on Free or Pro.</p>
 <h2 id="editing-devices">Editing devices</h2>
 <p>Double-click any field in the device table to edit it inline. Press Enter to save, Escape to cancel.</p>
 <p>For multi-field edits, right-click → <strong>Edit Device</strong> opens a dialog with all fields visible.</p>
@@ -308,7 +310,7 @@
 <tbody>
 <tr>
 <td>Free</td>
-<td>25 shown. Manual add refuses the 26th. Imports keep the first 25</td>
+<td>25 shown. Manual add refuses the 26th. Workbook import and a GitHub pull keep the first 25 (the pull is sorted by IP). Library Updater does not run</td>
 </tr>
 <tr>
 <td>Pro / AI</td>

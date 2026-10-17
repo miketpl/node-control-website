@@ -56,7 +56,9 @@ For high-compliance environments:
 - Add specific commands to the **blocklist** that should NEVER run (e.g., `reload`, `format`)
 - Periodically review the audit log for unexpected toggles
 
-For deployment to multiple machines, [export Settings](../settings/overview.md#exporting-importing-settings) so the same Safe Mode configuration applies fleet-wide.
+For deployment to multiple machines, copy `settings.json`. See [Sharing a settings file](../settings/overview.md#sharing-a-settings-file).
+
+The Engineer dropdown in Safe Mode, and the tasks it hides, are listed on [Safe Mode](../settings/safe-mode.md).
 
 ## Integration with SSH credential separation
 

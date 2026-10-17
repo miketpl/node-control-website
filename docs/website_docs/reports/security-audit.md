@@ -23,11 +23,7 @@ The product list is filled in from the advisory detail when the version query om
 
 If the product list is only "Cisco IOS XE Software" but the title names hardware (for example Catalyst 3650 and 3850), the title is what gets checked. Those advisories do not pass as train-wide on an unrelated model.
 
-## Vuln Plan
-
-After the advisory data is in, **Vuln Plan** builds a remediation plan grouped by running version, with priorities and upgrade targets. For each advisory it also checks whether the device's configuration actually meets the vulnerable condition.
-
-A platform-mismatch advisory stays in the plan, marked as such. It does not set the plan's priorities.
+These are the PSIRT checks. They are on Pro and the AI edition. Vuln Plan is not part of Pro.
 
 ## Export and email
 

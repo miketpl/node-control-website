@@ -78,7 +78,7 @@ A full list of supported drivers is available in **Settings → Device Types →
 If you have a list of IPs in a spreadsheet:
 
 1. Save the IPs as a CSV with columns: `ip, hostname, tab, site_code`
-2. **Tools → Import Library → From CSV**
+2. Import that file as a workbook import
 3. Pick the file → preview → **Import**
 
 The CSV columns are mapped to device fields. Missing columns are left blank.

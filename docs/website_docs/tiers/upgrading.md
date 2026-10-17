@@ -31,7 +31,7 @@ Once paid, your email is added to the Pro allowed-users list within ~5 minutes. 
 From the email or your customer portal, download:
 
 - **Mac**: the Pro disk image from the download link in that email
-- **Windows**: the Pro NSIS installer from the same link. It is signed with Azure Artifact Signing
+- **Windows**: the Pro NSIS installer from the same link. It is signed, and the verified publisher is **The Promised Lan Limited**
 
 ### 3. Install Pro alongside Free (optional)
 
@@ -95,7 +95,7 @@ If you want to switch back to Free (e.g., no longer working with large networks)
 
 1. Install Node Control Free
 2. Activate with an `NC-XXXX-XXXX` code from nodecontrol.io
-3. Your library file is preserved. The Free table shows 25 devices even when the database holds more. A manual add refuses the 26th. A workbook import, a subnet scan import, and a GitHub import are cut to the first 25. The extra rows are not deleted
+3. Your library file is preserved. The Free table shows 25 devices even when the database holds more. A manual add refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. Library Updater does not run on Free. The extra rows are not deleted
 4. You can uninstall Pro at any time
 
 If you later re-upgrade, all devices become visible again.

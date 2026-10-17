@@ -14,7 +14,7 @@ The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and
 - Engineer command bar → **Task** → **Find Device** → **Run**
 - Home has a **Find Device** quick action
 
-Copy from the result tables with Ctrl+C, or right-click → **Copy**. The clipboard gets tab-separated rows, so a paste lands in a spreadsheet as columns and in an email as text. **Copy with headers** includes the column headings.
+Ctrl+C copies a table selection as tab-separated text. **Esc** closes the Find Device progress dialog.
 
 ## Input targets
 
@@ -91,7 +91,7 @@ Right-click a row for additional actions:
 
 - **Shut Port** / **Re-enable Port** (Phase 4 port actions, gated by Safe Mode + type-to-confirm)
 - **Copy MAC** / **Copy IP** / **Copy CSV row**
-- **Open SSH to Edge Switch**
+- SSH to that switch from its library row: the toolbar **SSH** button, a double-click, or right-click **Connect SSH**
 
 ## Port actions (shut / no-shut)
 

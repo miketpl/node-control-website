@@ -1,6 +1,10 @@
 # Sharing libraries via GitHub
 
-A GitHub library import runs on **Free**, **Pro**, and the **AI** edition. On Free that import is cut to the first 25 devices. The table shows those 25, even if the file you pulled contains more. Whether Free can push the library back to GitHub is not confirmed here.
+GitHub push and pull both run on **Free**, **Pro**, and the **AI** edition. The Library menu has **Update from GitHub Repo** and **Push Library to Git**. Neither is tier gated.
+
+You set your own repository and token in Settings. There is no fallback repository on Free or Pro. Only the AI build has one.
+
+On Free, a pulled library is cut to the first 25 devices, sorted by IP. The log says so. The table shows those 25.
 
 Node Control can synchronise your device library with a private GitHub repository. Useful when:
 
@@ -39,25 +43,20 @@ You'll typically generate **two** tokens:
 
 ### 3. Configure in Node Control
 
-**Settings → General → Default Library** tab:
-
-- **Library repo**: `your-org/nodecontrol-library-acme` (or full URL)
-- **Push PAT**: paste your write token (only needed on machines that push)
-- **Pull PAT**: paste your read-only token (used for pulls; if blank, push PAT is used)
-- **Auto-sync on library change**: optional — pushes a commit every time you edit a device
+In Settings, set that repository and a token that can read it. A machine that pushes needs a token that can write. There is no built-in repository to fall back to on Free or Pro.
 
 ### 4. First push
 
 If the repo is empty:
 
-1. **Library** menu → **Push to GitHub**
+1. **Library** menu → **Push Library to Git**
 2. Confirm — your local library JSON is committed to the repo
 3. The commit message records the action and your machine name
 
 ### 5. First pull (on another machine)
 
-1. Install Node Control with the same Library repo configured
-2. **Library** menu → **Pull from GitHub** (on the Engineer status strip; older builds used **Tools → Library**)
+1. Install Node Control and set the same repository and token
+2. **Library** menu → **Update from GitHub Repo**
 3. A diff dialog appears showing:
    - **New sites**: sites in the remote library but not yours
    - **Removed sites**: sites in yours but not the remote
@@ -73,7 +72,7 @@ Only one fetch runs at a time. A startup sync and a manual pull used to overlap,
 
 If two engineers edit and push at the same time, the second push fails with a Git conflict. Resolution:
 
-1. The losing engineer pulls (**Library** menu → **Pull from GitHub**)
+1. The losing engineer pulls (**Library** menu → **Update from GitHub Repo**)
 2. Reviews the diff to see what changed
 3. Re-applies their local edits on top
 4. Pushes again
@@ -115,7 +114,7 @@ Most teams turn auto-sync **off** and push manually at end-of-session.
 If you manage networks for several customers, you can have a separate library repo per customer:
 
 1. Switch the **Library repo** field in Settings to point at a different repo
-2. **Library** menu → **Pull from GitHub** to load that customer's library
+2. **Library** menu → **Update from GitHub Repo** to load that customer's library
 3. Your local library DB is fully replaced with the pulled contents
 
 Switching libraries effectively "checks out" a different customer's network. Your previous local edits are gone unless they were pushed first — be deliberate about the order.

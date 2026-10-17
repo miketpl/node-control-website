@@ -1,8 +1,41 @@
 # Safe Mode
 
-Safe Mode is a global setting that restricts what commands Node Control sends to your devices. When ON, only commands in the read-only allowlist are sent — config-mode commands, port shut/no-shut, and any custom commands not explicitly allowed are blocked.
+Safe Mode is a global setting. Switch it from the **Edit** menu: **Switch to Safe Mode** or **Switch to Config Mode**.
 
-Default state: **ON** for new installs. Most users keep it on.
+## The task list in Safe Mode
+
+In Safe Mode the Engineer dropdown is cut to:
+
+- **None**
+- **L2 Topology Builder**
+- **L3 Topology Builder**
+- **Watcher of The WAN**
+- **Config Backup**
+- **Library Updater**
+- **VLAN Port Finder**
+- **Refresh Hostnames**
+- **Verify Device Types**
+- **Discover Variables**
+- **Find Device**
+
+Safe Mode hides these from the dropdown:
+
+- **Config Push**
+- **Config Push Script**
+- **Config from File**
+- **Config Compliance Remediate**
+- **Save Config**
+- **File Transfer** (the task, not the File Transfer sidebar page)
+- **Packet Capture**
+- **Change ISE Password**
+
+**Config Compliance Audit** is not in the reduced list, so it is not offered in Safe Mode either.
+
+When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip **Upgrade to Pro to unlock this feature**.
+
+Safe Mode also restricts what commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.
+
+Default state: **ON** for new installs.
 
 ## Why Safe Mode exists
 

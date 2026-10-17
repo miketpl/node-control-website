@@ -2,7 +2,9 @@
 
 > Available on **Pro** and the **AI** edition.
 
-A script registered under **Settings → Scripts** runs like a built-in task. It receives the devices you ticked in the library, and it prompts for a credential profile the same way the built-in tasks do.
+A script registered under **Settings → Scripts** runs like a built-in task. It shows in the Engineer task dropdown as `Script: <name>`. It receives the devices you ticked in the library, and it prompts for a credential profile the same way the built-in tasks do.
+
+**Config Push Script** is separate. It appears in the task dropdown only when **Settings → Paths → Config Push Script** points at an existing file. Safe Mode hides Config Push Script.
 
 This is not the [command catalog](custom-commands.md). The catalog picks which show command a built-in capability runs. A script is your own Python program.
 

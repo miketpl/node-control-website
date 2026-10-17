@@ -45,7 +45,7 @@ Without credentials configured, **Test Connection** will fail with an auth error
 
 If you have a known management subnet (e.g., `10.1.1.0/24` or `192.168.10.0/24`):
 
-1. Click **Library Updater** in the toolbar (or the **Tools** menu)
+1. Engineer → **Task** → **Library Updater** → **Run**. On Free this task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**
 2. Enter the subnet — `10.1.1.0/24`
 3. Pick the **Tab** for discovered devices to land in
 4. Click **Start Scan**
@@ -64,7 +64,7 @@ See [Library Updater details](../library/subnet-scan.md) for advanced options (w
 
 ## Free tier device limit
 
-Free holds **25 devices**. There is no time limit. Adding another device by hand refuses the 26th. A workbook import, a subnet scan import, and a GitHub import are cut to the first 25. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
+Free holds **25 devices**. There is no time limit. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 

@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="config-push.html" class="docs-nav-link active">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
       <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -141,8 +143,11 @@
                 </div>
                 <h1 id="config-push">Config Push</h1>
 <blockquote>
-<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is greyed out and reads <strong>Upgrade to Pro</strong>.</p>
+<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode hides it.</p>
 </blockquote>
+<p>Documented for <strong>Cisco IOS, IOS-XE, and NX-OS</strong>. Config Push sends the template through Netmiko&#x27;s config mode on any device type. Other vendors are not refused. They are untested.</p>
+<p>The save command is vendor aware: <code>write memory</code>; <code>copy running-config startup-config</code> on NX-OS and Dell OS6; <code>commit</code> on Junos and PAN-OS; <code>save configuration</code> on EXOS.</p>
+<p>The <strong>Default interface</strong> action tooltip says other vendors are skipped. The code does not skip them. Treat that tooltip as the intent.</p>
 <p><strong>Config Push</strong> pushes a per-port template: interface configuration, captures, ACLs, or clears. It used to be called <strong>Interface Config Push</strong>. The old name still runs.</p>
 <p>This is not the <a href="meraki-configurator.html">Meraki Configurator</a>, and it is not <a href="config-compliance.html">Config Compliance</a>. Compliance checks a hardening baseline. Config Push targets ports.</p>
 <h2 id="choose-the-ports">Choose the ports</h2>
@@ -169,8 +174,52 @@
 </li>
 </ul>
 <h3 id="placeholders">Placeholders</h3>
-<p>A placeholder can carry filters. The short and safe filters turn <code>GigabitEthernet1/0/1</code> into <code>Gi1_0_1</code>, which fits a capture name, a filename, or an ACL name where the raw interface name would be rejected.</p>
-<p>Other placeholders supply the port&#x27;s sequence number on that device, and the date and time, for filenames. A misspelt or unknown placeholder is shown under the template editor. It is not sent to the device as literal text.</p>
+<p>Double braces:</p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{{interface}}</code></td>
+<td>The interface. A bare <code>{{}}</code> is the same</td>
+</tr>
+<tr>
+<td><code>{{vlan}}</code></td>
+<td>VLAN</td>
+</tr>
+<tr>
+<td><code>{{voice_vlan}}</code></td>
+<td>Voice VLAN</td>
+</tr>
+<tr>
+<td><code>{{hostname}}</code></td>
+<td>Hostname</td>
+</tr>
+<tr>
+<td><code>{{ip}}</code></td>
+<td>IP</td>
+</tr>
+<tr>
+<td><code>{{n}}</code></td>
+<td>1-based port position on that device</td>
+</tr>
+<tr>
+<td><code>{{date}}</code></td>
+<td><code>YYYYmmdd</code></td>
+</tr>
+<tr>
+<td><code>{{time}}</code></td>
+<td><code>HHMMSS</code></td>
+</tr>
+</tbody>
+</table>
+<p>Filters chain with <code>|</code>: <code>short</code>, <code>safe</code>, <code>num</code>, <code>lower</code>, <code>upper</code>. <code>{{interface|short|safe}}</code> gives <code>Gi1_0_1</code>.</p>
+<p>Legacy single-brace <code>{interface}</code>, <code>{vlan}</code>, <code>{voice_vlan}</code>, <code>{hostname}</code>, and <code>{ip}</code> still work.</p>
+<p>Values come from the source file row only. There is no <code>{{site}}</code> and no per-device variables. <a href="discover-variables.html">Discover Variables</a> output is not used here.</p>
 <h3 id="uplinks">Uplinks</h3>
 <p>A typed <code>UPLINK</code> override, and only in trunk mode, is the one deliberate way past the uplink safety layers. It lets a push reach port-channels and their members. Vlan, Loopback, Management, Tunnel, and other virtual interfaces stay blocked no matter what you tick.</p>
 <h2 id="run">Run</h2>

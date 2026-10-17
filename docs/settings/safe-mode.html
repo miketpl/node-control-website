@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,8 +144,56 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/settings/">Settings</a> &rsaquo; Safe Mode
                 </div>
                 <h1 id="safe-mode">Safe Mode</h1>
-<p>Safe Mode is a global setting that restricts what commands Node Control sends to your devices. When ON, only commands in the read-only allowlist are sent — config-mode commands, port shut/no-shut, and any custom commands not explicitly allowed are blocked.</p>
-<p>Default state: <strong>ON</strong> for new installs. Most users keep it on.</p>
+<p>Safe Mode is a global setting. Switch it from the <strong>Edit</strong> menu: <strong>Switch to Safe Mode</strong> or <strong>Switch to Config Mode</strong>.</p>
+<h2 id="the-task-list-in-safe-mode">The task list in Safe Mode</h2>
+<p>In Safe Mode the Engineer dropdown is cut to:</p>
+<ul>
+<li><strong>None</strong>
+</li>
+<li><strong>L2 Topology Builder</strong>
+</li>
+<li><strong>L3 Topology Builder</strong>
+</li>
+<li><strong>Watcher of The WAN</strong>
+</li>
+<li><strong>Config Backup</strong>
+</li>
+<li><strong>Library Updater</strong>
+</li>
+<li><strong>VLAN Port Finder</strong>
+</li>
+<li><strong>Refresh Hostnames</strong>
+</li>
+<li><strong>Verify Device Types</strong>
+</li>
+<li><strong>Discover Variables</strong>
+</li>
+<li><strong>Find Device</strong>
+</li>
+</ul>
+<p>Safe Mode hides these from the dropdown:</p>
+<ul>
+<li><strong>Config Push</strong>
+</li>
+<li><strong>Config Push Script</strong>
+</li>
+<li><strong>Config from File</strong>
+</li>
+<li><strong>Config Compliance Remediate</strong>
+</li>
+<li><strong>Save Config</strong>
+</li>
+<li><strong>File Transfer</strong> (the task, not the File Transfer sidebar page)
+</li>
+<li><strong>Packet Capture</strong>
+</li>
+<li><strong>Change ISE Password</strong>
+</li>
+</ul>
+<p><strong>Config Compliance Audit</strong> is not in the reduced list, so it is not offered in Safe Mode either.</p>
+<p>When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
+<p>Safe Mode also restricts what commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.</p>
+<p>Default state: <strong>ON</strong> for new installs.</p>
 <h2 id="why-safe-mode-exists">Why Safe Mode exists</h2>
 <p>Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:</p>
 <ul>

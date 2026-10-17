@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,7 +144,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/troubleshooting/">Troubleshooting</a> &rsaquo; Update problems
                 </div>
                 <h1 id="update-problems">Update problems</h1>
-<p>When <strong>Help → Check for Updates</strong> doesn&#x27;t work, or downloads fail, or installs hang.</p>
+<p>When <strong>Help → Check for Updates...</strong> doesn&#x27;t work, or downloads fail, or installs hang.</p>
 <h2 id="symptom-1-no-update-available-when-you-know-theres-a-newer-version">Symptom 1 — &quot;No update available&quot; when you know there&#x27;s a newer version</h2>
 <p>Possible causes:</p>
 <h3 id="youre-on-a-different-tiers-update-channel">You&#x27;re on a different tier&#x27;s update channel</h3>
@@ -187,7 +189,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 <p>Cause: connection dropped mid-download.</p>
 <p>The downloader supports resume — re-trigger the download and it&#x27;ll pick up where it stopped:</p>
 <ol>
-<li>Help → Check for Updates → Download
+<li>Help → Check for Updates... → Download
 </li>
 </ol>
 <p>For chronic download failures:</p>
@@ -218,7 +220,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 <p>Old Node Control held a lock on a file in its install dir while the installer tried to overwrite it. Fixed in 0.9.x — the 2-second sleep before launch closes Node Control fully before UAC.</p>
 <p>If you see this on an older version, manually run the downloaded Setup.exe after closing Node Control.</p>
 <h3 id="uac-declined">UAC declined</h3>
-<p>User clicked No on the UAC prompt. The installer doesn&#x27;t run. Re-trigger from Help → Check for Updates → Install &amp; Restart.</p>
+<p>User clicked No on the UAC prompt. The installer doesn&#x27;t run. Re-trigger from Help → Check for Updates... → Install &amp; Restart.</p>
 <h3 id="antivirus-quarantining-the-installer">Antivirus quarantining the installer</h3>
 <p>Some AVs flag installers as suspicious. Whitelist <code>Node Control Free-X.Y.Z-Setup.exe</code> (or Pro equivalent) in your AV.</p>
 <h2 id="symptom-5-mac-install-hangs">Symptom 5 — Mac install hangs</h2>
@@ -295,7 +297,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 </li>
 <li><strong>Weekly</strong>: same but every 7 days
 </li>
-<li><strong>Never</strong>: only checks when you explicitly use Help → Check for Updates
+<li><strong>Never</strong>: only checks when you explicitly use Help → Check for Updates...
 </li>
 </ul>
 <p>Notifications appear in the status bar; clicking opens the download dialog.</p>

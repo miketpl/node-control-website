@@ -1,12 +1,14 @@
 # Subnet scan (Library Updater)
 
+> The task name is **Library Updater**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list. It is not the **Discover** page.
+
 The Library Updater walks an IP range, attempts SSH on each responding host, and adds discovered devices to your library — auto-filling the device type, hostname, and site code along the way.
 
 This is the fastest way to populate a new library, or to keep an existing one accurate as devices change.
 
 ## Open the Library Updater
 
-- **Tools → Library Updater** (or the toolbar button)
+- Engineer command bar → **Task** → **Library Updater** → **Run**
 
 ## Configure the scan
 
@@ -92,11 +94,9 @@ The Library Updater accepts multiple subnets per scan. Click **+ Add Subnet** to
 
 All run in sequence. Total time scales linearly with subnet count.
 
-## Free tier behaviour
+## Free
 
-Subnet scan is the Library Updater. It is not the **Discover** page. Discover is Pro, and Free does not show it.
-
-The scan's import runs on Free. Free keeps the first 25 devices from that import. A manual add still refuses the 26th. The library table shows 25.
+On Free, **Library Updater** is greyed out. A manual add still refuses the 26th device. The library table shows 25.
 
 ## Re-scanning
 
@@ -109,12 +109,7 @@ Running the Library Updater on the same subnet later:
 
 ## Scheduling regular scans
 
-There's no built-in scheduler. For weekly/monthly automated scans:
-
-- **Mac**: `launchd` with a script that opens the app and triggers `Tools → Library Updater` via AppleScript
-- **Windows**: Task Scheduler running the app with command-line args
-
-We're considering native scheduling in a future release — let us know if this matters to you.
+There is no built-in scheduler, and there is no Tools menu.
 
 ## Troubleshooting
 

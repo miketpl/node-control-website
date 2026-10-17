@@ -53,7 +53,7 @@ This includes:
 
 ## Updating
 
-Use **Help → Check for Updates** inside the app. Node Control will tell you when a newer version is available and offer to download the updated DMG.
+Use **Help → Check for Updates...** inside the app. On a Mac, **Settings...** lives in the application menu. Qt puts it there. There is no separate shortcut. Node Control will tell you when a newer version is available and offer to download the updated DMG.
 
 You can also manually re-download from [nodecontrol.io](https://nodecontrol.io) — the new version installs over the old one with no data loss.
 

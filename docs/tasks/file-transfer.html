@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="file-transfer.html" class="docs-nav-link active">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
       <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -140,24 +142,49 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; File Transfer
                 </div>
                 <h1 id="file-transfer">File Transfer</h1>
-<p><strong>File Transfer</strong> is a sidebar page on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. Free shows this page. It does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, Update, or AI.</p>
-<h2 id="local-server">Local server</h2>
-<p>The server speaks SFTP and SCP. Device-initiated SCP, such as <code>copy running-config scp://...</code>, used to hang because only SFTP was implemented. SCP is implemented now.</p>
-<h3 id="which-address-it-listens-on">Which address it listens on</h3>
-<p>Every address on the machine is listed with its interface name, so a VPN tunnel is easy to pick out. The example commands on the page always match the address you chose.</p>
-<h3 id="port-22">Port 22</h3>
-<p>Only root can bind ports below 1024. If you choose port 22, the page offers a one-time command that forwards port 22 to the port the server can actually bind, and the line that removes that forward.</p>
-<h3 id="when-it-fails">When it fails</h3>
-<p>A port already in use, a blocked bind, or anything else that stops the server is written to the log and shown on screen. It does not fail silently.</p>
-<p>If the switch says SCP is administratively disabled, the task tells you the switch&#x27;s SCP server is off and names <code>ip scp server enable</code>.</p>
-<h2 id="remote-client">Remote client</h2>
-<p>The Pro release notes describe a <strong>Remote client</strong> section: a host, a port, and a login, then upload or download of files or folders. Each file is logged with its outcome and its size.</p>
-<p>Whether that section is hidden on Free is not confirmed. The page itself is on Free.</p>
+<p>Two different things share this name.</p>
+<p>The <strong>File Transfer</strong> sidebar page is on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. Nothing on that page is tier gated.</p>
+<p>The <strong>File Transfer</strong> Engineer task is Pro and the AI edition. On Free it is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode hides the task. Safe Mode does not remove the sidebar page.</p>
+<h2 id="the-file-transfer-page">The File Transfer page</h2>
+<p>There is no TFTP server on this page.</p>
+<h3 id="local-server">Local server</h3>
+<p>The server speaks SFTP and SCP.</p>
+<ul>
+<li><strong>Listen on</strong>
+</li>
+<li><strong>Port</strong>, default <code>2222</code>
+</li>
+<li><strong>Root Directory</strong>, default <code>~/sftp_root</code>
+</li>
+<li><strong>Start Server</strong> / <strong>Stop Server</strong>
+</li>
+<li>Username <code>ncuser</code>, with a random 16-character password shown while the server is running
+</li>
+<li>Example commands for Cisco, PAN-OS, and Linux
+</li>
+</ul>
+<h3 id="remote-client">Remote client</h3>
+<p>The section is collapsed, and its title is <strong>Remote client - send / fetch to an SFTP server</strong>. It is on Free as well as Pro and the AI edition.</p>
+<h2 id="the-file-transfer-task">The File Transfer task</h2>
+<p>The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko.</p>
+<p>The dialog is <strong>File Transfer</strong>:</p>
+<ul>
+<li><strong>Upload to device</strong> / <strong>Download from device</strong>
+</li>
+<li><strong>Local File Path</strong>
+</li>
+<li><strong>Remote File Path</strong> (for example <code>flash:filename.bin</code>)
+</li>
+<li><strong>Transfer Method</strong>, SCP or TFTP
+</li>
+<li><strong>Start Transfer</strong>
+</li>
+</ul>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="packet-capture.html">Packet Capture</a>
 </li>
-<li><a href="../security/credential-storage.html">Credential storage</a>
+<li><a href="config-backup.html">Config Backup</a>
 </li>
 </ul>
             </div>

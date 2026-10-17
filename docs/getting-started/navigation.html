@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,7 +144,7 @@
                 <h1 id="where-things-are">Where things are</h1>
 <p>The app opens on a Home page. A left sidebar is how you move between pages. The active page is marked with a rail on its left edge.</p>
 <p>There is no top row of tabs. If an older page in these docs still says &quot;tab&quot; for Engineer, Reports, or Monitor, read that as the page of that name in the sidebar.</p>
-<p>On Free the sidebar is <strong>Home</strong>, <strong>Engineer</strong>, <strong>Reports</strong>, and <strong>File Transfer</strong>. The status bar shows a <strong>FREE VERSION</strong> badge. Free does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, Update, or AI.</p>
+<p>On Free the sidebar is <strong>Home</strong>, <strong>Engineer</strong>, <strong>Reports</strong>, and <strong>File Transfer</strong>. The status bar shows a <strong>FREE VERSION</strong> badge. Free does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, or AI. The <strong>Update</strong> tab is the AI edition only. It is not on Pro or Free.</p>
 <h2 id="home">Home</h2>
 <p>Home is the front of the app.</p>
 <ul>
@@ -157,7 +159,50 @@
 </ul>
 <h2 id="engineer">Engineer</h2>
 <p>Engineer is the library and the place tasks run from.</p>
-<p>On Free the tasks that run are <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong>. Every other task is greyed out and reads <strong>Upgrade to Pro</strong>.</p>
+<p>The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in this order:</p>
+<ol>
+<li><strong>None</strong>
+</li>
+<li><strong>L2 Topology Builder</strong>
+</li>
+<li><strong>L3 Topology Builder</strong>
+</li>
+<li><strong>Watcher of The WAN</strong>
+</li>
+<li><strong>Config Backup</strong>
+</li>
+<li><strong>Config Compliance Audit</strong>
+</li>
+<li><strong>Config Compliance Remediate</strong>
+</li>
+<li><strong>Config from File</strong>
+</li>
+<li><strong>Save Config</strong>
+</li>
+<li><strong>File Transfer</strong>
+</li>
+<li><strong>Packet Capture</strong>
+</li>
+<li><strong>Library Updater</strong>
+</li>
+<li><strong>VLAN Port Finder</strong>
+</li>
+<li><strong>Config Push</strong>
+</li>
+<li><strong>Refresh Hostnames</strong>
+</li>
+<li><strong>Verify Device Types</strong>
+</li>
+<li><strong>Discover Variables</strong>
+</li>
+<li><strong>Find Device</strong>
+</li>
+<li><strong>Change ISE Password</strong>
+</li>
+</ol>
+<p><strong>Config Push Script</strong> appears only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. A configured custom script appears as <code>Script: &lt;name&gt;</code>.</p>
+<p>On Free only <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong> are enabled. The rest are greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
+<p>In Safe Mode the list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, and <strong>Find Device</strong>. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <p>The bar across the top is a command bar, in labelled groups:</p>
 <ul>
 <li><strong>Task</strong> — which task to run
@@ -173,18 +218,21 @@
 </ul>
 <p><strong>Run</strong> sits at the right of that bar.</p>
 <p>Under the bar, a status strip shows the mode badge, the state, the progress, and the <strong>Library</strong> menu. The domain suffix setting lives in that Library menu.</p>
-<h2 id="settings">Settings</h2>
-<p>Settings is pinned at the bottom of the sidebar. It is also in the <strong>Edit</strong> menu.</p>
+<h2 id="settings-and-the-menus">Settings and the menus</h2>
+<p><strong>Settings</strong> is in the navigation footer (the sidebar). It is also <strong>Edit → Settings...</strong>.</p>
+<p>The <strong>Edit</strong> menu holds only <strong>Switch to Config Mode</strong> / <strong>Switch to Safe Mode</strong>, and <strong>Settings...</strong>.</p>
+<p>The <strong>Help</strong> menu holds <strong>Check for Updates...</strong> and <strong>About Node Control</strong>.</p>
+<p>There is no Tools menu. There is no Ctrl+, or Cmd+, shortcut. On macOS, Qt moves <strong>Settings...</strong> into the application menu, and nothing more.</p>
 <h2 id="other-pages">Other pages</h2>
 <p>These are their own sidebar pages, not tasks inside the Engineer command bar:</p>
 <ul>
 <li><strong>Reports</strong> — on Free this page runs the Inventory report only
 </li>
-<li><strong>File Transfer</strong> — on Free as well as Pro
+<li><strong>File Transfer</strong> — the page is on Free, Pro, and the AI edition, including the local server and the remote client. The File Transfer task in the dropdown is Pro
 </li>
 <li><strong>Monitor</strong> (Pro and AI; not on Free)
 </li>
-<li><strong>Discover</strong> (Pro and AI; not on Free). This is not the subnet scan
+<li><strong>Discover</strong> (Pro and AI; not on Free). This is not the Library Updater
 </li>
 <li><strong>IPAM</strong> (Pro and AI; not on Free)
 </li>
@@ -192,7 +240,7 @@
 </li>
 <li>The firewall rule analyser (Pro and AI; not on Free)
 </li>
-<li><strong>Update</strong> (Pro and AI; not on Free), for end-of-sale and end-of-life columns
+<li><strong>Update</strong> (AI edition only; not on Pro or Free)
 </li>
 <li><strong>AI</strong> (AI edition; not on Free)
 </li>
@@ -205,6 +253,10 @@
 <li><a href="../tasks/topology-l2.html">L2 Topology Builder</a>
 </li>
 <li><a href="../tasks/config-backup.html">Config Backup and Save Config</a>
+</li>
+<li><a href="../tasks/config-from-file.html">Config from File</a>
+</li>
+<li><a href="../tasks/discover-variables.html">Discover Variables</a>
 </li>
 <li><a href="../tiers/overview.html">Tier comparison</a>
 </li>

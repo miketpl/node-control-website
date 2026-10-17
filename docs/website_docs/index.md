@@ -24,19 +24,21 @@ Free is 25 devices, with no time limit. It is not a trial.
 ## Tasks
 
 - [L2 Topology Builder](tasks/topology-l2.md) — on Free
-- [Config Backup and Save Config](tasks/config-backup.md) — on Free
-- [Layer 3 topology map](tasks/topology-l3.md) — Pro and AI
-- [WAN topology map](tasks/topology-wan.md) — Pro and AI
-- [Discover](tasks/discovery.md) — Pro and AI; not on Free
+- [L3 Topology Builder](tasks/topology-l3.md) — Pro and AI
+- [Watcher of The WAN](tasks/topology-wan.md) — Pro and AI
+- [Config Backup and Save Config](tasks/config-backup.md) — on Free. Save Config steps after Run are not written up
+- [Config Compliance](tasks/config-compliance.md) — Pro and AI
+- [Config from File](tasks/config-from-file.md) — Pro and AI; hidden in Safe Mode
+- [Discover Variables](tasks/discover-variables.md) — Pro and AI; inventory enrichment
+- [Discover](tasks/discovery.md) — sidebar page, Pro and AI; not on Free
 - [Find Device](tasks/find-device.md) — on Free, one switch at a time
 - [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
 - [Monitor](tasks/monitor.md) — Pro and AI; not on Free
-- [Config Push](tasks/config-push.md) — Pro and AI
-- [Packet Capture](tasks/packet-capture.md) — Pro and AI
-- [Config Compliance](tasks/config-compliance.md) — Pro and AI
+- [Config Push](tasks/config-push.md) — Pro and AI; Cisco IOS, IOS-XE, NX-OS
+- [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
-- [File Transfer](tasks/file-transfer.md) — on Free
+- [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
 - [Change ISE Password](tasks/change-ise-password.md) — Pro and AI
 - [IPAM](tasks/ipam.md) — Pro and AI; not on Free
 - [Meraki Configurator](tasks/meraki-configurator.md) — Pro and AI; not on Free
@@ -97,4 +99,4 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 - Email: info@nodecontrol.io
 - Website: [nodecontrol.io](https://nodecontrol.io)
-- Release notes: **Help → Check for Updates** inside the app
+- Release notes: **Help → Check for Updates...** inside the app

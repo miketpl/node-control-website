@@ -63,20 +63,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -142,11 +144,14 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/library/">Library</a> &rsaquo; Subnet scan (Library Updater)
                 </div>
                 <h1 id="subnet-scan-library-updater">Subnet scan (Library Updater)</h1>
+<blockquote>
+<p>The task name is <strong>Library Updater</strong>. On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free it is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode leaves it in the list. It is not the <strong>Discover</strong> page.</p>
+</blockquote>
 <p>The Library Updater walks an IP range, attempts SSH on each responding host, and adds discovered devices to your library — auto-filling the device type, hostname, and site code along the way.</p>
 <p>This is the fastest way to populate a new library, or to keep an existing one accurate as devices change.</p>
 <h2 id="open-the-library-updater">Open the Library Updater</h2>
 <ul>
-<li><strong>Tools → Library Updater</strong> (or the toolbar button)
+<li>Engineer command bar → <strong>Task</strong> → <strong>Library Updater</strong> → <strong>Run</strong>
 </li>
 </ul>
 <h2 id="configure-the-scan">Configure the scan</h2>
@@ -259,9 +264,8 @@
 192.168.50.0/24
 </code></pre>
 <p>All run in sequence. Total time scales linearly with subnet count.</p>
-<h2 id="free-tier-behaviour">Free tier behaviour</h2>
-<p>Subnet scan is the Library Updater. It is not the <strong>Discover</strong> page. Discover is Pro, and Free does not show it.</p>
-<p>The scan&#x27;s import runs on Free. Free keeps the first 25 devices from that import. A manual add still refuses the 26th. The library table shows 25.</p>
+<h2 id="free">Free</h2>
+<p>On Free, <strong>Library Updater</strong> is greyed out. A manual add still refuses the 26th device. The library table shows 25.</p>
 <h2 id="re-scanning">Re-scanning</h2>
 <p>Running the Library Updater on the same subnet later:</p>
 <ul>
@@ -275,14 +279,7 @@
 </li>
 </ul>
 <h2 id="scheduling-regular-scans">Scheduling regular scans</h2>
-<p>There&#x27;s no built-in scheduler. For weekly/monthly automated scans:</p>
-<ul>
-<li><strong>Mac</strong>: <code>launchd</code> with a script that opens the app and triggers <code>Tools → Library Updater</code> via AppleScript
-</li>
-<li><strong>Windows</strong>: Task Scheduler running the app with command-line args
-</li>
-</ul>
-<p>We&#x27;re considering native scheduling in a future release — let us know if this matters to you.</p>
+<p>There is no built-in scheduler, and there is no Tools menu.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
 <thead>

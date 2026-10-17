@@ -61,20 +61,22 @@
     <div class="docs-nav-section">
       <h4>Tasks</h4>
       <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology</a>
-      <a href="../tasks/topology-wan.html" class="docs-nav-link">WAN Topology</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
       <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
@@ -161,9 +163,7 @@
 <p>Cisco indexes many advisories by software release alone. An advisory written for other hardware on that same release is not hidden. It is marked <strong>platform mismatch</strong>, sorted below the confirmed matches, and kept out of the confirmed High, Medium, and Low counts.</p>
 <p>The product list is filled in from the advisory detail when the version query omits it. An advisory with no product data at all is called out in the report. It is not treated as a clean pass.</p>
 <p>If the product list is only &quot;Cisco IOS XE Software&quot; but the title names hardware (for example Catalyst 3650 and 3850), the title is what gets checked. Those advisories do not pass as train-wide on an unrelated model.</p>
-<h2 id="vuln-plan">Vuln Plan</h2>
-<p>After the advisory data is in, <strong>Vuln Plan</strong> builds a remediation plan grouped by running version, with priorities and upgrade targets. For each advisory it also checks whether the device&#x27;s configuration actually meets the vulnerable condition.</p>
-<p>A platform-mismatch advisory stays in the plan, marked as such. It does not set the plan&#x27;s priorities.</p>
+<p>These are the PSIRT checks. They are on Pro and the AI edition. Vuln Plan is not part of Pro.</p>
 <h2 id="export-and-email">Export and email</h2>
 <p>The HTML report has an <strong>Export CSV</strong> button above each table. You can email the report. The send runs in the background. If the email is skipped, the log says why: the option was unticked, or there were no recipients.</p>
 <p>An AI executive summary is optional, and off unless you tick it for that run. It uses the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>. Nothing is sent if you leave the box unticked.</p>

@@ -2,6 +2,8 @@
 
 > On **Pro** and the **AI** edition. Free does not run this report.
 
+The Engineer task of the same name, **VLAN Port Finder**, is also Pro. Safe Mode leaves that task in the list.
+
 Find every port on every switch in scope that's a member of a given VLAN (or matches a VLAN filter).
 
 The classic "where is VLAN 100 carried?" question, answered fleet-wide in one report.
@@ -81,7 +83,7 @@ A future release may combine these into a single "VLAN bandwidth" report — let
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| VLAN not found anywhere but you know it exists | Sources of truth disagree — e.g., VTP propagation issue | Open SSH to a switch where it should be and run `show vlan brief` manually |
+| VLAN not found anywhere but you know it exists | Sources of truth disagree — e.g., VTP propagation issue | From the library row, open SSH and run `show vlan brief` |
 | Trunk ports not appearing | "Include trunks" toggle is OFF | Toggle ON and re-run |
 | Voice VLANs counted twice | "Include voice VLANs" interacts with vendor-specific behaviour | Try toggling and compare |
 
