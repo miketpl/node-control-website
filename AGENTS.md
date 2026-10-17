@@ -22,16 +22,21 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 
 ## What we are trying to achieve
 
-The site's job is to convert working network engineers into Free Edition
-downloads, and some of those into Professional subscriptions.
+The site's job is to sell Professional. Marketing pushes Free Edition
+elsewhere. Free stays easy to reach: one secondary hero CTA, the free
+section, and the form.
 
-- **Lead with the concrete value**: an L2 map of your switching estate, from
-  SSH, in minutes. Privacy and self-containment (no Catalyst Center, no agents,
-  no cloud) are the differentiators.
-- **The Free Edition is the hook**: up to 25 devices, no time limit, not a
-  trial. Say so plainly and often.
-- **Never lead with AI or Pro.** AI Operations is coming soon and stays
-  labelled "Coming Soon", positioned after Pricing.
+- **Lead with the full product**: discovery, topology, push at scale,
+  compliance, and scheduled backups. Privacy and self-containment (no
+  Catalyst Center, no agents on the devices, no cloud) stay in the pitch.
+- **Professional is the main product.** Pro-only cards stay labelled, so it
+  is clear what Free Edition includes.
+- **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
+  on the free section. Do not make the page all about Free.
+- **AI Operations is in development.** There are 9 agents. It stays labelled
+  Coming Soon, and it stays after Pricing.
+- While payment is not live, Pro calls to action go to the Pro waitlist or
+  the contact section. Do not show a live buy button.
 
 **Voice:** first person, plain, specific, written for network engineers who
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
@@ -99,8 +104,11 @@ sentences. If a claim can't be made concretely, don't make it.
 - The launch copy rewrite (new hero, Free Edition feature list, AI section
   below Pricing) and the direct-download redeem flow (auto-start installer
   with fallback link) are both merged to `main` and live.
-- `images/hero-banner.png` still has the old "AUTOMATE EVERYTHING" tagline
-  baked into the image; awaiting a re-export. Don't try to fix this in HTML.
+- `images/hero-banner.png` still has "AUTOMATE EVERYTHING" baked into the
+  image. Leave it. Mike asked to keep it.
+- macOS minimum version is not confirmed. Cards say "macOS (Apple silicon
+  and Intel)" and do not state a version. The install doc still says macOS
+  11 Big Sur or later. Confirm with the developer before changing either.
 - The Pro/AI tier download links point at private GitHub repos and 404 for
   customers. The visible buy and download controls are hidden with the
   `payment-pending` class until payment is live. Do not delete the Stripe
