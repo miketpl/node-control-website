@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 import base64
+import hmac
 import json
 import os
 import secrets
@@ -21,7 +22,7 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from functools import wraps
 from urllib.request import Request, urlopen
-from urllib.error import URLError
+from urllib.error import HTTPError
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -39,7 +40,8 @@ CORS(app, origins=[
 app.config.update(
     SECRET_KEY=os.environ.get("SECRET_KEY", secrets.token_hex(32)),
     DB_PATH=os.environ.get("DB_PATH", "licenses.db"),
-    ADMIN_TOKEN=os.environ.get("ADMIN_TOKEN", "change-me-in-production"),
+    # Empty, or the public placeholder, means the admin API stays off.
+    ADMIN_TOKEN=os.environ.get("ADMIN_TOKEN", ""),
 
     # SMTP settings
     SMTP_HOST=os.environ.get("SMTP_HOST", "smtp.gmail.com"),
@@ -58,7 +60,7 @@ app.config.update(
     CODE_EXPIRY_HOURS=int(os.environ.get("CODE_EXPIRY_HOURS", 72)),
 
     # GitHub license repo for free tier validation
-    LICENSE_REPO=os.environ.get("LICENSE_REPO", "miketpl/node-control-licenses-free"),
+    LICENSE_REPO=os.environ.get("LICENSE_REPO", "miketpl/node-control-license-free"),
     LICENSE_FILE=os.environ.get("LICENSE_FILE", "licenses.json"),
     GITHUB_PAT=os.environ.get("GITHUB_PAT", ""),          # read-only (app license check)
     GITHUB_PAT_WRITE=os.environ.get("GITHUB_PAT_WRITE", ""),  # read/write (license sync)
@@ -66,6 +68,18 @@ app.config.update(
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Shown on the website when an address already has a free licence.
+# This is the support address on nodecontrol.io. Do not invent another.
+SUPPORT_EMAIL = "support@nodecontrol.io"
+ADMIN_TOKEN_PLACEHOLDER = "change-me-in-production"
+EMAIL_SEND_ERROR = (
+    "We could not send the verification email. Please try again in a few minutes."
+)
+LICENCE_SYNC_ERROR = (
+    "We could not activate this licence. Nothing was issued. "
+    "Please try the same code again in a few minutes."
+)
 
 
 # ── Database ─────────────────────────────────────────────────
@@ -124,9 +138,8 @@ def send_verification_email(to_email, to_name, verify_code, download_code):
     cfg = app.config
 
     if not cfg["SMTP_USER"] or not cfg["SMTP_PASS"]:
-        logger.warning("SMTP not configured — skipping email send")
-        logger.info(f"Would send to {to_email}: verify={verify_code}, download={download_code}")
-        return True
+        logger.warning("SMTP not configured — verification email was not sent")
+        return False
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = f"Your NodeControl Download Code: {verify_code}"
@@ -198,12 +211,22 @@ https://nodecontrol.io
         return False
 
 
+def _admin_is_configured():
+    """Admin stays off until a real token is set."""
+    token = app.config.get("ADMIN_TOKEN") or ""
+    return bool(token) and token != ADMIN_TOKEN_PLACEHOLDER
+
+
 def require_admin(f):
     """Decorator to require admin token for endpoints."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get("Authorization", "").replace("Bearer ", "")
-        if token != app.config["ADMIN_TOKEN"]:
+        configured = app.config.get("ADMIN_TOKEN") or ""
+        if not _admin_is_configured():
+            return jsonify({"error": "admin disabled"}), 503
+        header = request.headers.get("Authorization", "")
+        presented = header[7:] if header.lower().startswith("bearer ") else ""
+        if not hmac.compare_digest(presented, configured):
             return jsonify({"error": "Unauthorized"}), 401
         return f(*args, **kwargs)
     return decorated
@@ -275,8 +298,11 @@ def _get_licenses_json():
                 base64.b64decode(data["content"]).decode("utf-8")
             )
             return content, data["sha"]
-    except URLError:
-        return None, None
+    except HTTPError as exc:
+        # A missing file is an empty list. Anything else is a failed sync.
+        if exc.code == 404:
+            return None, None
+        raise
 
 
 def _put_licenses_json(content: dict, sha: str | None, message: str):
@@ -300,21 +326,21 @@ def _put_licenses_json(content: dict, sha: str | None, message: str):
         method="PUT",
     )
     with urlopen(req, timeout=15) as resp:
-        if resp.status in (200, 201):
-            logger.info(f"GitHub licenses.json updated: {message}")
-        else:
-            logger.error(f"GitHub sync returned {resp.status}")
+        if resp.status not in (200, 201):
+            raise RuntimeError(f"GitHub sync returned {resp.status}")
+        logger.info(f"GitHub licenses.json updated: {message}")
 
 
 def _add_code_to_licenses(new_code: str):
     """Append a verified license code to licenses.json in GitHub.
 
     The desktop app reads this file on startup to validate free-tier codes.
+    Raises if the file cannot be updated. Callers must not tell the user
+    the licence is active unless this returns.
     """
     pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
-        logger.warning("No GitHub PAT configured — skipping license sync")
-        return
+        raise RuntimeError("No GitHub PAT configured for licence sync")
 
     current, sha = _get_licenses_json()
 
@@ -334,8 +360,7 @@ def _remove_code_from_licenses(code: str):
     """Remove a revoked license code from licenses.json in GitHub."""
     pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
-        logger.warning("No GitHub PAT configured — skipping license sync")
-        return
+        raise RuntimeError("No GitHub PAT configured for licence sync")
 
     current, sha = _get_licenses_json()
     if current is None:
@@ -354,8 +379,23 @@ def _remove_code_from_licenses(code: str):
 
 @app.route("/api/health", methods=["GET"])
 def health():
-    """Health check endpoint."""
-    return jsonify({"status": "ok", "service": "nodecontrol-license-api"})
+    """Health check endpoint. Confirms the process is up and SQLite answers."""
+    try:
+        db = get_db()
+        db.execute("SELECT 1").fetchone()
+        db.close()
+    except Exception:
+        logger.exception("Health check could not read the licence database")
+        return jsonify({
+            "status": "error",
+            "service": "nodecontrol-license-api",
+            "database": "unavailable",
+        }), 503
+    return jsonify({
+        "status": "ok",
+        "service": "nodecontrol-license-api",
+        "database": "ok",
+    })
 
 
 @app.route("/api/request-access", methods=["POST"])
@@ -390,7 +430,10 @@ def request_access():
     if existing and existing["status"] == "active":
         db.close()
         return jsonify({
-            "error": "This email already has an active free license. Check your email for the download code.",
+            "error": (
+                "This email already has a licence. Use a different email address, "
+                f"or contact {SUPPORT_EMAIL} to have the old licence revoked."
+            ),
             "already_active": True,
         }), 409
 
@@ -399,39 +442,55 @@ def request_access():
     download_code = generate_code()
     now = datetime.utcnow().isoformat()
     ip = request.remote_addr or ""
+    pending_marker = f"PENDING:{verify_code}"
 
-    if existing and existing["status"] == "pending":
-        # Update existing pending request with new codes
+    # Remember enough to undo this write if the email never goes out.
+    # A pending row whose code was never emailed must not be what a retry sees.
+    inserted_id = None
+    previous = dict(existing) if existing and existing["status"] == "pending" else None
+
+    if previous:
         db.execute("""
             UPDATE licenses SET
                 name = ?, company = ?, platform = ?,
-                code = ?, created_at = ?, ip_address = ?
+                code = ?, created_at = ?, verified_at = ?, ip_address = ?
             WHERE id = ?
-        """, (name, company, platform, download_code, now, ip, existing["id"]))
-
-        # Store verify code in a separate field (we reuse ip_address temporarily,
-        # or better, add a verify_code column)
-        db.execute("""
-            UPDATE licenses SET verified_at = ?
-            WHERE id = ?
-        """, (f"PENDING:{verify_code}", existing["id"]))
+        """, (name, company, platform, download_code, now, pending_marker, ip, previous["id"]))
     else:
-        # Create new license record
-        db.execute("""
+        cursor = db.execute("""
             INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address)
             VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?)
-        """, (download_code, name, email, company, platform, now, f"PENDING:{verify_code}", ip))
+        """, (download_code, name, email, company, platform, now, pending_marker, ip))
+        inserted_id = cursor.lastrowid
 
     db.commit()
     db.close()
 
-    # Send verification email
     email_sent = send_verification_email(email, name, verify_code, download_code)
+    if not email_sent:
+        db = get_db()
+        if inserted_id is not None:
+            db.execute("DELETE FROM licenses WHERE id = ?", (inserted_id,))
+        elif previous:
+            db.execute("""
+                UPDATE licenses SET
+                    name = ?, company = ?, platform = ?,
+                    code = ?, created_at = ?, verified_at = ?, ip_address = ?
+                WHERE id = ?
+            """, (
+                previous["name"], previous["company"], previous["platform"],
+                previous["code"], previous["created_at"], previous["verified_at"],
+                previous["ip_address"], previous["id"],
+            ))
+        db.commit()
+        db.close()
+        logger.error("Verification email failed for %s; pending licence was not kept", email)
+        return jsonify({"success": False, "error": EMAIL_SEND_ERROR}), 502
 
     return jsonify({
         "success": True,
         "message": "Verification code sent to your email. Please check your inbox.",
-        "email_sent": email_sent,
+        "email_sent": True,
         # In development, include the code for testing (remove in production)
         **({"_debug_verify_code": verify_code} if app.debug else {}),
     })
@@ -483,24 +542,38 @@ def verify_code():
         db.close()
         return jsonify({"error": "Verification code expired. Please request a new one."}), 400
 
-    # Activate the license
-    now = datetime.utcnow().isoformat()
-    db.execute("""
-        UPDATE licenses SET status = 'active', verified_at = ?
-        WHERE id = ?
-    """, (now, license_row["id"]))
-    db.commit()
+    download_code = license_row["code"]
+    license_id = license_row["id"]
     db.close()
 
-    # Push the new code to licenses.json in GitHub so the app can validate
+    # Publish first. The row stays pending until GitHub has the code, so a
+    # failure leaves the same 6-digit code usable and the page never shows
+    # an NC- code the app would reject.
     try:
-        _add_code_to_licenses(license_row["code"])
+        _add_code_to_licenses(download_code)
     except Exception as exc:
-        logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+        logger.error(f"License GitHub sync failed: {exc}")
+        return jsonify({"success": False, "error": LICENCE_SYNC_ERROR}), 502
+
+    now = datetime.utcnow().isoformat()
+    db = get_db()
+    db.execute("""
+        UPDATE licenses SET status = 'active', verified_at = ?
+        WHERE id = ? AND status = 'pending'
+    """, (now, license_id))
+    db.commit()
+    updated = db.execute(
+        "SELECT status FROM licenses WHERE id = ?", (license_id,)
+    ).fetchone()
+    db.close()
+
+    if not updated or updated["status"] != "active":
+        logger.error("Licence %s was published to GitHub but the database row was not activated", license_id)
+        return jsonify({"success": False, "error": LICENCE_SYNC_ERROR}), 502
 
     return jsonify({
         "success": True,
-        "download_code": license_row["code"],
+        "download_code": download_code,
         "tier": "free",
         "message": "Email verified! Here's your download code.",
     })
@@ -590,18 +663,64 @@ def list_licenses():
 @app.route("/api/admin/licenses/<int:license_id>", methods=["DELETE"])
 @require_admin
 def revoke_license(license_id):
-    """Revoke/delete a license."""
+    """Revoke a license in GitHub and SQLite together.
+
+    GitHub is updated first. If that fails, SQLite is left as it was, so
+    the database never says revoked while the app still accepts the code.
+    """
     db = get_db()
-    row = db.execute("SELECT code FROM licenses WHERE id = ?", (license_id,)).fetchone()
-    db.execute("UPDATE licenses SET status = 'revoked' WHERE id = ?", (license_id,))
-    db.commit()
+    row = db.execute(
+        "SELECT id, code, status FROM licenses WHERE id = ?", (license_id,)
+    ).fetchone()
+    if not row:
+        db.close()
+        return jsonify({"error": "Licence not found"}), 404
+    code = row["code"]
     db.close()
 
-    if row:
+    try:
+        _remove_code_from_licenses(code)
+    except Exception as exc:
+        logger.error(f"License GitHub revoke failed: {exc}")
+        return jsonify({
+            "success": False,
+            "error": (
+                "Licence was not revoked. The GitHub licence list could not "
+                "be updated, so the database was left unchanged."
+            ),
+        }), 502
+
+    db = get_db()
+    try:
+        db.execute(
+            "UPDATE licenses SET status = 'revoked' WHERE id = ?", (license_id,)
+        )
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        logger.error(f"SQLite revoke failed after GitHub removal: {exc}")
         try:
-            _remove_code_from_licenses(row["code"])
-        except Exception as exc:
-            logger.error(f"License GitHub sync failed (non-fatal): {exc}")
+            _add_code_to_licenses(code)
+        except Exception as restore_exc:
+            logger.error(f"Could not restore {code} to GitHub after a database failure: {restore_exc}")
+            db.close()
+            return jsonify({
+                "success": False,
+                "error": (
+                    "Licence list update failed part-way. The code was removed "
+                    "from GitHub but the database could not be marked revoked, "
+                    "and putting the code back also failed. Check both before retrying."
+                ),
+            }), 500
+        db.close()
+        return jsonify({
+            "success": False,
+            "error": (
+                "Licence was not revoked. The database update failed and the "
+                "GitHub licence list was restored."
+            ),
+        }), 502
+    db.close()
 
     return jsonify({"success": True, "message": "License revoked"})
 
