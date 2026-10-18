@@ -351,11 +351,8 @@
                     <p class="download-tier-desc">&pound;21.25/mo billed annually, ex VAT. Save 15%.</p>
                 </div>
                 <!--
-                    PAYMENT NOT LIVE.
-                    Subscribe buttons carry class "payment-pending", which hides them.
-                    The single switch is PRO_CHECKOUT_LIVE in js/main.js. Leave it false.
-                    Set it to true only when Mike says checkout is live. That shows these
-                    buttons and hides the waitlist links. Do not point these at a GitHub release.
+                    Checkout stays off. Class "payment-pending" hides the subscribe buttons.
+                    PRO_CHECKOUT_LIVE in js/main.js is false. Do not point these at a GitHub release.
                 -->
                 <div class="download-cards">
                     <div class="download-card">
@@ -365,7 +362,7 @@
                         <h3>macOS</h3>
                         <button type="button" class="btn btn-primary btn-download payment-pending pro-checkout" id="dl-pro-mac" data-pro-checkout>Subscribe to Pro</button>
                         <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-outline btn-download pro-waitlist">Join the Pro waitlist</a>
-                        <!-- TODO: Confirm the minimum macOS version with the developer. The install doc says macOS 11 Big Sur or later, Intel and Apple Silicon. Mike is not sure, so this card does not state a version. -->
+                        <!-- TODO: Confirm the minimum macOS version. The install doc says macOS 11 Big Sur or later, Intel and Apple Silicon. This card does not state a version. -->
                         <span class="download-meta">.dmg &mdash; macOS (Apple silicon and Intel)</span>
                     </div>
                     <div class="download-card">
@@ -388,8 +385,8 @@
                     <span class="download-tier-price download-tier-price-orange">&pound;49/month</span>
                 </div>
                 <!--
-                    AI is not for sale. The download anchors stay hidden with class "payment-pending".
-                    They do not start checkout. Leave them hidden.
+                    The AI download anchors stay hidden with class "payment-pending".
+                    They do not start checkout.
                 -->
                 <div class="download-cards">
                     <div class="download-card download-card-ai">
@@ -399,7 +396,7 @@
                         <h3>macOS</h3>
                         <a href="#ai" class="btn btn-primary btn-primary-orange btn-download payment-pending" id="dl-ai-mac">Download for macOS</a>
                         <span class="btn btn-outline btn-outline-orange btn-download btn-disabled" aria-disabled="true">In development</span>
-                        <!-- TODO: Confirm the minimum macOS version with the developer. The install doc says macOS 11 Big Sur or later, Intel and Apple Silicon. Mike is not sure, so this card does not state a version. Do not change the install doc until that is confirmed. -->
+                        <!-- TODO: Confirm the minimum macOS version. The install doc says macOS 11 Big Sur or later, Intel and Apple Silicon. This card does not state a version. Do not change the install doc until that is confirmed. -->
                         <span class="download-meta">.dmg &mdash; macOS (Apple silicon and Intel)</span>
                     </div>
                     <div class="download-card download-card-ai">
@@ -467,9 +464,7 @@
                         <li>Priority email support</li>
                     </ul>
                     <!--
-                        PAYMENT NOT LIVE.
-                        PRO_CHECKOUT_LIVE in js/main.js is the only switch. It is false.
-                        Set it to true to show this button and hide the waitlist link.
+                        PRO_CHECKOUT_LIVE in js/main.js is false, so this button stays hidden.
                     -->
                     <button type="button" class="btn btn-primary payment-pending pro-checkout" id="proCheckoutBtn" data-pro-checkout>Subscribe to Pro</button>
                     <div id="proCheckoutResult" class="redeem-result"></div>
@@ -627,7 +622,7 @@
                         <li>What-if analysis &amp; risk rating</li>
                         <li>Config generation with rollback</li>
                     </ul>
-                    <!-- AI is not for sale. Leave this control disabled. -->
+                    <!-- Leave this control disabled. -->
                     <span class="btn btn-outline btn-outline-orange btn-disabled" aria-disabled="true">In development</span>
                 </div>
 
@@ -878,6 +873,6 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261017vat"></script>
+    <script src="js/main.js?v=20261018privacy"></script>
 </body>
 </html>

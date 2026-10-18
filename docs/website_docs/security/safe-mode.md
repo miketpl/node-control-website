@@ -38,9 +38,9 @@ The audit log can be shared with auditors as evidence — see [Audit log](audit-
 When a user disables Safe Mode:
 
 ```
-2026-05-25T14:32:01Z [SAFE_MODE_OVERRIDE_OFF] user=mike
+2026-05-25T14:32:01Z [SAFE_MODE_OVERRIDE_OFF] user=admin
 2026-05-25T14:32:15Z [PORT_ACTION_SHUT] device=10.1.1.5 port=Gi1/0/3 confirmed=yes
-2026-05-25T14:32:18Z [SAFE_MODE_OVERRIDE_ON] user=mike
+2026-05-25T14:32:18Z [SAFE_MODE_OVERRIDE_ON] user=admin
 ```
 
 A best-practice flow: turn off → do the one action → turn back on immediately. The audit trail then clearly shows scope-limited intent rather than "Safe Mode was off all afternoon, who knows what happened".

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────
-# NodeControl License API — DGX Spark Deployment Script
+# NodeControl License API — Server Deployment Script
 # Run as root (or with sudo) on a fresh Ubuntu 22+ box.
 #
 # Usage:
@@ -80,7 +80,7 @@ echo ""
 read -p "Run certbot now? [y/N] " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    certbot --nginx -d api.nodecontrol.io --non-interactive --agree-tos --email mike.irwin@live.com
+    certbot --nginx -d api.nodecontrol.io --non-interactive --agree-tos --email "${CERTBOT_EMAIL:?set CERTBOT_EMAIL}"
 fi
 
 # ── Done ────────────────────────────────────────────────────

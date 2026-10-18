@@ -77,7 +77,7 @@ The OS killed Node Control without a Python traceback. The `faulthandler` traceb
 
 ## How to send
 
-Email [info@nodecontrol.io](mailto:info@nodecontrol.io) with:
+Email [support@nodecontrol.io](mailto:support@nodecontrol.io) with:
 
 - The crash log (attach the whole file, or paste just the latest block)
 - Node Control version (from Help → About, or the top of the crash log)

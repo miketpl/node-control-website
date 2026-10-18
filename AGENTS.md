@@ -9,7 +9,7 @@ with it, this file wins.
 
 This repo is the public website for **NodeControl** (nodecontrol.io): a
 desktop network-operations tool for network engineers, built by The Promised
-LAN (Mike Irwin, solo founder). The site is plain static HTML/CSS/JS — no
+LAN. The site is plain static HTML/CSS/JS — no
 framework, no build step.
 
 **NodeControl in one paragraph:** it runs on an engineer's laptop and talks to
@@ -20,23 +20,20 @@ terminal. Nothing is installed on the devices, nothing goes to a cloud — all
 data stays on the laptop. Supported vendors: Cisco IOS/IOS-XE/NX-OS, Meraki,
 Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 
-## What we are trying to achieve
-
-The site's job is to sell Professional. Marketing pushes Free Edition
-elsewhere. Free stays easy to reach: one secondary hero CTA, the free
-section, and the form.
+## What the site should say
 
 - **Lead with the full product**: discovery, topology, push at scale,
   compliance, and scheduled backups. Privacy and self-containment (no
   Catalyst Center, no agents on the devices, no cloud) stay in the pitch.
 - **Professional is the main product.** Pro-only cards stay labelled, so it
-  is clear what Free Edition includes.
+  is clear what Free Edition includes. Free stays easy to reach: one
+  secondary hero CTA, the free section, and the form.
 - **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
   on the free section. Do not make the page all about Free.
-- **AI Operations is in development.** There are 9 agents. It stays labelled
-  Coming Soon, and it stays after Pricing.
-- While payment is not live, Pro calls to action go to the Pro waitlist or
-  the contact section. Do not show a live buy button.
+- **AI section.** It stays labelled Coming Soon, and it stays after Pricing.
+  Do not add a buy path for it.
+- While checkout is off, Pro calls to action go to the Pro waitlist or the
+  contact section. Do not show a live buy button.
 
 **Voice:** first person, plain, specific, written for network engineers who
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
@@ -105,16 +102,16 @@ sentences. If a claim can't be made concretely, don't make it.
   below Pricing) and the direct-download redeem flow (auto-start installer
   with fallback link) are both merged to `main` and live.
 - `images/hero-banner.png` still has "AUTOMATE EVERYTHING" baked into the
-  image. Leave it. Mike asked to keep it.
+  image. Leave it.
 - macOS minimum version is not confirmed. Cards say "macOS (Apple silicon
   and Intel)" and do not state a version. The install doc still says macOS
   11 Big Sur or later. Confirm with the developer before changing either.
 - Professional is £25/month ex VAT or £255/year ex VAT (£21.25/mo billed
   annually, ex VAT, save 15%). Prices are VAT-exclusive. UK VAT (20%) is
   added at checkout where applicable. Checkout is built and stays off. The only switch is
-  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until Mike says to
-  turn it on. Do not point Pro buttons at a GitHub release. AI stays
-  "In development" and is not for sale. The old `?paid=true&download=`
+  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until the owner
+  turns it on. Do not point Pro buttons at a GitHub release. The AI
+  section stays labelled Coming Soon. The old `?paid=true&download=`
   redirect has been removed.
 - `privacy.html` and `terms.html` are drafts pending review. Do not remove
-  the draft notice or fill `[PLACEHOLDER]` markers without Mike.
+  the draft notice or fill `[PLACEHOLDER]` markers without the owner.

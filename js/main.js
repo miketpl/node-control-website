@@ -71,7 +71,7 @@
         ? 'http://localhost:5001'
         : 'https://api.nodecontrol.io';
 
-    // SINGLE SWITCH. Pro checkout stays off until Mike says it is live.
+    // SINGLE SWITCH. Pro checkout stays off until it is turned on.
     // true: show .pro-checkout, hide .pro-waitlist, and point the hero button at pricing.
     // false: class "payment-pending" keeps the subscribe buttons hidden.
     const PRO_CHECKOUT_LIVE = false;
