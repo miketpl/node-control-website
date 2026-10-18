@@ -48,11 +48,7 @@ For corporate firewalls that proxy-intercept SSL:
 - The proxy CA needs to be trusted by Node Control's bundled `certifi` cert store
 - Workaround: Settings → Advanced → check **Use system cert store** (uses macOS / Windows root CAs instead of bundled certifi)
 
-### Token expired / revoked
-
-The PATs baked into Node Control to read the releases repos are long-lived (1+ years) but can be rotated/revoked. If we rotate a token, you may need to update to a newer Node Control to pick up the new token.
-
-Symptom: every update check fails with 401 Unauthorized. Solution: download the latest version manually from the releases page.
+Update checks contact GitHub over HTTPS.
 
 ## Symptom 3 — Download fails partway through
 

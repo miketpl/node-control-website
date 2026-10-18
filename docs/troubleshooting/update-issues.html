@@ -184,9 +184,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 <li>Workaround: Settings → Advanced → check <strong>Use system cert store</strong> (uses macOS / Windows root CAs instead of bundled certifi)
 </li>
 </ul>
-<h3 id="token-expired-revoked">Token expired / revoked</h3>
-<p>The PATs baked into Node Control to read the releases repos are long-lived (1+ years) but can be rotated/revoked. If we rotate a token, you may need to update to a newer Node Control to pick up the new token.</p>
-<p>Symptom: every update check fails with 401 Unauthorized. Solution: download the latest version manually from the releases page.</p>
+<p>Update checks contact GitHub over HTTPS.</p>
 <h2 id="symptom-3-download-fails-partway-through">Symptom 3 — Download fails partway through</h2>
 <p>Cause: connection dropped mid-download.</p>
 <p>The downloader supports resume — re-trigger the download and it&#x27;ll pick up where it stopped:</p>

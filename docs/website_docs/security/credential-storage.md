@@ -111,17 +111,6 @@ Or use Keychain Access GUI → search "nodecontrol" → delete entries.
 
 After clearing, the next launch of Node Control will prompt for credentials (and write fresh entries when you save them).
 
-## What about the GitHub PATs in updater.py?
-
-The PATs baked into `core/updater.py` (for fetching update info) and `core/license_free.py` (for license check) are NOT in the keychain — they're base64-encoded in the binary itself. This is intentional: they have read-only scope to specific repos and are part of the app's published code.
-
-Anyone with a Node Control binary can extract these PATs. That's why we don't put sensitive data behind them — they only allow reading public-shaped data:
-
-- Update releases (the latest available version)
-- License code list (a list of `NC-XXXX-XXXX` codes — not bound to user identities in the JSON)
-
-The PATs that have write access (used by your backend to push new license codes to the licenses repo) are NOT in any client binary. Those are server-side only.
-
 ## Audit log
 
 Credential changes are recorded (without password content) in:

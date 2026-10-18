@@ -91,7 +91,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 
 ### How to get it
 
-Buy from [nodecontrol.io](https://nodecontrol.io), or email [info@nodecontrol.io](mailto:info@nodecontrol.io).
+Buy from [nodecontrol.io](https://nodecontrol.io), or email [support@nodecontrol.io](mailto:support@nodecontrol.io).
 
 Pro is licensed per user. Each licensed email can be used on as many machines as that user owns.
 
@@ -108,12 +108,12 @@ The backend runs on infrastructure you host. The desktop talks to it over HTTP. 
 
 ### How to get it
 
-Contact [info@nodecontrol.io](mailto:info@nodecontrol.io).
+Contact [support@nodecontrol.io](mailto:support@nodecontrol.io).
 
 ## Upgrading
 
 - **Free → Pro**: see [Upgrading to Pro](upgrading.md)
-- **Pro → AI**: contact [info@nodecontrol.io](mailto:info@nodecontrol.io)
+- **Pro → AI**: contact [support@nodecontrol.io](mailto:support@nodecontrol.io)
 
 The library and the credentials carry forward. You do not re-enter devices.
 

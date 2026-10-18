@@ -87,7 +87,7 @@ When opening a support ticket, include:
 - Relevant log file (crash log, audit log, task run log)
 - Screenshot if a UI issue
 
-Email: [info@nodecontrol.io](mailto:info@nodecontrol.io)
+Email: [support@nodecontrol.io](mailto:support@nodecontrol.io)
 
 ## Common patterns
 

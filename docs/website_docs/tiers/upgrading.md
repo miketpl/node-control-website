@@ -71,7 +71,7 @@ If you've just paid and your registration is rejected:
 
 1. Wait a few minutes for the allowed list to update
 2. Click **Re-register** in the rejection dialog and try again
-3. If still rejected after 15 minutes, email [info@nodecontrol.io](mailto:info@nodecontrol.io) with the email you paid with — we'll check the subscription and add you manually if the payment is there
+3. If still rejected after 15 minutes, email [support@nodecontrol.io](mailto:support@nodecontrol.io) with the email you paid with — we'll check the subscription and add you manually if the payment is there
 
 ## Sharing one Pro license across machines
 
@@ -89,7 +89,7 @@ Professional is a subscription: £25/month ex VAT, or £255/year ex VAT. Cancell
 
 Manage the card or cancel from the link on [nodecontrol.io](https://nodecontrol.io/#manage). That page emails a billing link. It does not show whether the address has a subscription.
 
-To transfer a license to a different email (e.g., job change, company restructure), contact [info@nodecontrol.io](mailto:info@nodecontrol.io). We'll move the licensed email and disable the old one.
+To transfer a license to a different email (e.g., job change, company restructure), contact [support@nodecontrol.io](mailto:support@nodecontrol.io). We'll move the licensed email and disable the old one.
 
 ## Downgrading from Pro back to Free
 
