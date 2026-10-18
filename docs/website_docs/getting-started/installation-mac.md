@@ -33,7 +33,7 @@ You should *not* see this dialog — Node Control is signed with a Developer ID 
 
 - Check that you downloaded the file from `nodecontrol.io` (not a mirror)
 - Right-click the app in Applications → **Open** → click **Open** in the dialog
-- If problems persist, contact [info@nodecontrol.io](mailto:info@nodecontrol.io) with the macOS version you're running
+- If problems persist, contact [support@nodecontrol.io](mailto:support@nodecontrol.io) with the macOS version you're running
 
 ## Where your data is stored
 

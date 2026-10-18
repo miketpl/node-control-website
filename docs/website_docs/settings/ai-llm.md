@@ -45,7 +45,7 @@ On Free, AI is preview only. You can see the anonymised payload. Nothing is ever
 
 ## Node Control AI edition
 
-The AI edition is a separate product. It runs nine specialist AI agents on infrastructure you host, for example an NVIDIA DGX Spark or another on-prem GPU server, so the AI runs entirely inside your network. It is not yet available to buy. The site has no price and no download for it. Register interest from the [contact section](https://nodecontrol.io/#contact).
+The AI edition is a separate product. It runs nine specialist AI agents on infrastructure you host, on an on-prem GPU server, so the AI runs entirely inside your network. It is not yet available to buy. The site has no price and no download for it. Register interest from the [contact section](https://nodecontrol.io/#contact).
 
 ## Next steps
 

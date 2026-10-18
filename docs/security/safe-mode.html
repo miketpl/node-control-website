@@ -200,9 +200,9 @@
 <p>The audit log can be shared with auditors as evidence — see <a href="audit-log.html">Audit log</a> for format and contents.</p>
 <h2 id="bypass-logging">Bypass logging</h2>
 <p>When a user disables Safe Mode:</p>
-<pre><code>2026-05-25T14:32:01Z [SAFE_MODE_OVERRIDE_OFF] user=mike
+<pre><code>2026-05-25T14:32:01Z [SAFE_MODE_OVERRIDE_OFF] user=admin
 2026-05-25T14:32:15Z [PORT_ACTION_SHUT] device=10.1.1.5 port=Gi1/0/3 confirmed=yes
-2026-05-25T14:32:18Z [SAFE_MODE_OVERRIDE_ON] user=mike
+2026-05-25T14:32:18Z [SAFE_MODE_OVERRIDE_ON] user=admin
 </code></pre>
 <p>A best-practice flow: turn off → do the one action → turn back on immediately. The audit trail then clearly shows scope-limited intent rather than &quot;Safe Mode was off all afternoon, who knows what happened&quot;.</p>
 <h2 id="customising-for-sensitive-environments">Customising for sensitive environments</h2>

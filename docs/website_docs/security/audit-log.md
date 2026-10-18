@@ -21,8 +21,8 @@ The file is plain text, UTF-8 encoded, one event per line. Rotates when it reach
 Example:
 
 ```
-2026-05-25T14:32:01.123Z [PORT_ACTION_SHUT] device=10.1.1.5 port=GigabitEthernet1/0/3 confirmed=yes user=mike
-2026-05-25T14:32:15.456Z [SAFE_MODE_OVERRIDE_OFF] user=mike
+2026-05-25T14:32:01.123Z [PORT_ACTION_SHUT] device=10.1.1.5 port=GigabitEthernet1/0/3 confirmed=yes user=admin
+2026-05-25T14:32:15.456Z [SAFE_MODE_OVERRIDE_OFF] user=admin
 2026-05-25T14:35:12.789Z [CREDENTIAL_UPDATED] profile=default
 ```
 

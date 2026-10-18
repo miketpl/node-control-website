@@ -130,7 +130,7 @@ Format:
 
 ```
 2026-05-25T14:32:01Z [SAFE_MODE_BLOCK] device=10.1.1.5 cmd="interface gi1/0/3" reason="Config mode entry"
-2026-05-25T14:32:15Z [SAFE_MODE_OVERRIDE_OFF] user=mike
+2026-05-25T14:32:15Z [SAFE_MODE_OVERRIDE_OFF] user=admin
 ```
 
 See [Audit log](../security/audit-log.md) for the full event taxonomy.

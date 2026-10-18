@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional download — Node Control</title>
+    <meta name="description" content="Download Node Control Professional after checkout.">
+    <link rel="canonical" href="https://nodecontrol.io/pro-success.html">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=20261018merge">
+</head>
+<body>
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#download">Download</a></li>
+                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="docs/">Docs</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="legal-page">
+        <div class="container">
+            <h1>Professional</h1>
+            <p id="proStatus">Checking the payment…</p>
+            <p id="proEmail" hidden></p>
+            <div id="proDownloads" hidden>
+                <p><a class="btn btn-primary" id="proMac" href="#">Download for macOS</a></p>
+                <p><a class="btn btn-primary" id="proWin" href="#">Download for Windows</a></p>
+                <p>Each link lasts 30 minutes. Reload this page to get a new one. In the app, open Welcome to Node Control and enter the email shown above.</p>
+                <p>To cancel or change the card, use <a href="index.html#manage">Manage a Professional subscription</a>.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 The Promised Lan Limited. Node Control is a product of The Promised Lan Limited.</p>
+                <p><a href="index.html">Home</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js?v=20261018privacy"></script>
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var sessionId = params.get('session_id') || '';
+            var api = params.get('localapi') === '1'
+                ? 'http://localhost:5001'
+                : 'https://api.nodecontrol.io';
+            var statusEl = document.getElementById('proStatus');
+            var emailEl = document.getElementById('proEmail');
+            var downloads = document.getElementById('proDownloads');
+            var tries = 0;
+
+            function showError(message) {
+                statusEl.textContent = message;
+            }
+
+            function paint(data) {
+                emailEl.hidden = false;
+                emailEl.textContent = 'Register the app with this email: ' + data.email;
+                document.getElementById('proMac').href = api + '/api/pro/download?token=' + encodeURIComponent(data.downloads.mac);
+                document.getElementById('proWin').href = api + '/api/pro/download?token=' + encodeURIComponent(data.downloads.win);
+                downloads.hidden = false;
+                statusEl.textContent = 'Payment received. Download Professional for macOS or Windows.';
+            }
+
+            function poll() {
+                if (!sessionId) {
+                    showError('This page needs the checkout session from Stripe.');
+                    return;
+                }
+                fetch(api + '/api/pro/session?session_id=' + encodeURIComponent(sessionId))
+                    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+                    .then(function (result) {
+                        if (!result.ok) {
+                            showError(result.data.error || 'Could not confirm the payment.');
+                            return;
+                        }
+                        if (result.data.status === 'active' && result.data.downloads) {
+                            paint(result.data);
+                            return;
+                        }
+                        if (result.data.status === 'unpaid') {
+                            showError('This checkout is not paid. You can subscribe from the pricing page.');
+                            return;
+                        }
+                        tries += 1;
+                        if (tries > 15) {
+                            showError('Payment is confirmed, and the download link is still being prepared. Use the link in the email, or reload this page in a minute.');
+                            return;
+                        }
+                        statusEl.textContent = 'Payment received. Preparing the download links…';
+                        setTimeout(poll, 2000);
+                    })
+                    .catch(function () {
+                        showError('Could not reach the licence service. Reload this page.');
+                    });
+            }
+
+            poll();
+        })();
+    </script>
+</body>
+</html>

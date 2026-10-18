@@ -97,6 +97,6 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 ## Getting help
 
-- Email: info@nodecontrol.io
+- Email: support@nodecontrol.io
 - Website: [nodecontrol.io](https://nodecontrol.io)
 - Release notes: **Help → Check for Updates...** inside the app

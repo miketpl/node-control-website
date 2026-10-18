@@ -18,17 +18,17 @@ Once your network outgrows Free's 25-device cap, or you need the tasks and repor
 
 ### 1. Buy a Pro license
 
-Go to [nodecontrol.io](https://nodecontrol.io) and click **Buy Pro**. The purchase flow asks for:
+Go to [nodecontrol.io](https://nodecontrol.io) and subscribe to Professional. Choose monthly (£25/month ex VAT) or annual (£255/year ex VAT, which is £21.25/mo billed annually, ex VAT, save 15%). Checkout asks for:
 
 - Your name
 - Email (this becomes the licensed identity)
-- Payment details
+- Billing address and payment details
 
-Once paid, your email is added to the Pro allowed-users list within ~5 minutes. You'll receive a confirmation email with download links.
+When Stripe confirms the payment, that email is added to the Pro allowed-users list. You'll receive a confirmation email with the download page.
 
 ### 2. Download Node Control Pro
 
-From the email or your customer portal, download:
+From the email or the checkout success page, download:
 
 - **Mac**: the Pro disk image from the download link in that email
 - **Windows**: the Pro NSIS installer from the same link. It is signed, and the verified publisher is **The Promised Lan Limited**
@@ -67,11 +67,11 @@ The Free activation code you entered remains valid — if you ever want to insta
 
 ## What if my Pro email isn't on the allowed list yet?
 
-If you've just purchased and your registration is rejected:
+If you've just paid and your registration is rejected:
 
-1. Wait ~5 minutes for the allowed list to update
+1. Wait a few minutes for the allowed list to update
 2. Click **Re-register** in the rejection dialog and try again
-3. If still rejected after 15 minutes, email [info@nodecontrol.io](mailto:info@nodecontrol.io) with your order number — we'll add you manually within a few hours
+3. If still rejected after 15 minutes, email [support@nodecontrol.io](mailto:support@nodecontrol.io) with the email you paid with — we'll check the subscription and add you manually if the payment is there
 
 ## Sharing one Pro license across machines
 
@@ -85,9 +85,11 @@ If you change machines (e.g., new laptop):
 
 ## Renewing or transferring a license
 
-Pro is sold as a perpetual licence with a one-year support and updates window. After year one, the app continues to work but you stop receiving updates until you renew.
+Professional is a subscription: £25/month ex VAT, or £255/year ex VAT. Cancelling stops the next renewal. The app keeps working until the end of the period you have already paid. When that period ends, or a renewal fails, the email comes off the allowed-users list. The app then blocks. If it cannot check in, it blocks after the 7-day offline grace.
 
-To transfer a license to a different email (e.g., job change, company restructure), contact [info@nodecontrol.io](mailto:info@nodecontrol.io). We'll move the licensed email and disable the old one.
+Manage the card or cancel from the link on [nodecontrol.io](https://nodecontrol.io/#manage). That page emails a billing link. It does not show whether the address has a subscription.
+
+To transfer a license to a different email (e.g., job change, company restructure), contact [support@nodecontrol.io](mailto:support@nodecontrol.io). We'll move the licensed email and disable the old one.
 
 ## Downgrading from Pro back to Free
 

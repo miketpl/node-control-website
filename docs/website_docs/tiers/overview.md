@@ -91,13 +91,13 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 
 ### How to get it
 
-Buy from [nodecontrol.io](https://nodecontrol.io), or email [info@nodecontrol.io](mailto:info@nodecontrol.io).
+Buy from [nodecontrol.io](https://nodecontrol.io), or email [support@nodecontrol.io](mailto:support@nodecontrol.io).
 
 Pro is licensed per user. Each licensed email can be used on as many machines as that user owns.
 
 ## AI edition
 
-The AI edition is not Professional with a switch turned on. It is nine specialist AI agents running on infrastructure you host. An NVIDIA DGX Spark is one example. Another on-prem GPU server is fine. The AI runs entirely inside your network.
+The AI edition is not Professional with a switch turned on. It is nine specialist AI agents running on infrastructure you host. An on-prem GPU server is one example. The AI runs entirely inside your network.
 
 It is a working product. It is not yet available to buy. There is no price and no download on the site.
 
@@ -112,12 +112,12 @@ The desktop talks to that backend over HTTP. Feature-level summaries on Pro do n
 
 ### How to get it
 
-Not yet available to buy. To register interest, email [info@nodecontrol.io](mailto:info@nodecontrol.io).
+Not yet available to buy. To register interest, email [support@nodecontrol.io](mailto:support@nodecontrol.io).
 
 ## Upgrading
 
 - **Free → Pro**: see [Upgrading to Pro](upgrading.md)
-- **Pro → AI**: the AI edition is not yet available to buy. Register interest at [info@nodecontrol.io](mailto:info@nodecontrol.io)
+- **Pro → AI**: the AI edition is not yet available to buy. Register interest at [support@nodecontrol.io](mailto:support@nodecontrol.io)
 
 The library and the credentials carry forward. You do not re-enter devices.
 

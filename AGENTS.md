@@ -9,7 +9,7 @@ with it, this file wins.
 
 This repo is the public website for **NodeControl** (nodecontrol.io): a
 desktop network-operations tool for network engineers, built by The Promised
-LAN (Mike Irwin, solo founder). The site is plain static HTML/CSS/JS — no
+LAN. The site is plain static HTML/CSS/JS — no
 framework, no build step.
 
 **NodeControl in one paragraph:** it runs on an engineer's laptop and talks to
@@ -20,31 +20,28 @@ terminal. Nothing is installed on the devices, nothing goes to a cloud — all
 data stays on the laptop. Supported vendors: Cisco IOS/IOS-XE/NX-OS, Meraki,
 Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 
-## What we are trying to achieve
-
-The site's job is to sell Professional. Marketing pushes Free Edition
-elsewhere. Free stays easy to reach: one secondary hero CTA, the free
-section, and the form.
+## What the site should say
 
 - **Lead with the full product**: discovery, topology, push at scale,
   compliance, and scheduled backups. Privacy and self-containment (no
   Catalyst Center, no agents on the devices, no cloud) stay in the pitch.
 - **Professional is the main product.** Pro-only cards stay labelled, so it
-  is clear what Free Edition includes.
+  is clear what Free Edition includes. Free stays easy to reach: one
+  secondary hero CTA, the free section, and the form.
 - **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
   on the free section. Do not make the page all about Free.
 - **Professional includes bring-your-own AI.** Lead with "Bring your own
   AI provider". It uses the user's own API key. There is no Node Control
   AI subscription and no markup. Anthropic (Claude), OpenAI, and a local
-  Ollama model are supported. Do not make Claude the headline, and do not
-  call any of those three "coming soon".
+  Ollama model are supported. Do not make Claude the headline.
 - **The AI edition is a separate product.** Nine specialist agents on
-  infrastructure you host. It works, and it is not on sale. No price, no
-  buy button, no download. The badge is "Coming to customers soon".
-  Register interest uses the existing contact section. Do not call it
-  "in development" or "on the roadmap".
-- While payment is not live, Pro calls to action go to the Pro waitlist or
-  the contact section. Do not show a live buy button.
+  infrastructure you host. No price, no buy button, no download. The badge
+  is "Coming to customers soon". Register interest uses the existing
+  contact section. Do not describe it as unfinished.
+- While checkout is off, Pro calls to action go to the Pro waitlist or the
+  contact section. Do not show a live buy button. The switch is
+  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it false until the owner
+  turns it on.
 
 **Voice:** first person, plain, specific, written for network engineers who
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
@@ -113,14 +110,18 @@ sentences. If a claim can't be made concretely, don't make it.
   below Pricing) and the direct-download redeem flow (auto-start installer
   with fallback link) are both merged to `main` and live.
 - `images/hero-banner.png` still has "AUTOMATE EVERYTHING" baked into the
-  image. Leave it. Mike asked to keep it.
+  image. Leave it.
 - macOS minimum version is not confirmed. Cards say "macOS (Apple silicon
   and Intel)" and do not state a version. The install doc still says macOS
   11 Big Sur or later. Confirm with the developer before changing either.
-- The Pro/AI tier download links point at private GitHub repos and 404 for
-  customers. The visible buy and download controls are hidden with the
-  `payment-pending` class until payment is live. Do not delete the Stripe
-  attributes, the Stripe handler, or `js/main.js`. Prices stay as they are.
-  An HTML comment in `index.html` says how to show the buttons again.
+- Professional is £25/month ex VAT or £255/year ex VAT (£21.25/mo billed
+  annually, ex VAT, save 15%). Prices are VAT-exclusive. UK VAT (20%) is
+  added at checkout where applicable. Checkout is built and stays off. The only switch is
+  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until the owner
+  turns it on. Do not point Pro buttons at a GitHub release. Professional
+  AI is bring-your-own: Anthropic (Claude), OpenAI, and local Ollama. The
+  AI edition badge is "Coming to customers soon", with no price, buy
+  button, or download. The old `?paid=true&download=`
+  redirect has been removed.
 - `privacy.html` and `terms.html` are drafts pending review. Do not remove
-  the draft notice or fill `[PLACEHOLDER]` markers without Mike.
+  the draft notice or fill `[PLACEHOLDER]` markers without the owner.
