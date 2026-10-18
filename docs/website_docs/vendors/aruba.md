@@ -41,7 +41,7 @@ Aruba CX uses a structured CLI with explicit `configure terminal` / `exit` bound
 
 ## REST API
 
-Aruba CX exposes a comprehensive REST API. Node Control currently uses SSH only; REST API integration is not in the product. It would need customer demand.
+Aruba CX exposes a comprehensive REST API. Node Control currently uses SSH only; REST API integration is on the roadmap if there's customer demand.
 
 ## Common gotchas
 

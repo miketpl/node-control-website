@@ -52,7 +52,7 @@ Junos has a commit-based config model with `commit` / `commit and-quit`. The wri
 
 ## Limitations
 
-- **Mist** (Juniper's cloud wireless): not currently supported — like Meraki, would require API integration. Not in the product.
+- **Mist** (Juniper's cloud wireless): not currently supported — like Meraki, would require API integration. On the roadmap.
 - **EVPN-VXLAN underlay**: visible in L3 topology as BGP peers, but the VXLAN overlay isn't separately rendered
 - **Junos PyEZ**: Node Control uses SSH directly; PyEZ-based integration isn't planned
 
