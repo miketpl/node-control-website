@@ -4,7 +4,7 @@
 
 There is no standards picker and no list of named standards.
 
-The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. The **AI advisory** checkbox is on the AI edition only.
+The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. The **AI advisory** checkbox uses the provider in Settings → AI / LLM. On Pro you opt in for that run. See [AI on Professional](../settings/ai-llm.md).
 
 Inner tabs: **Rulebase Analyser**, **Compare**, **Proposed Rule Tester**.
 
@@ -43,7 +43,7 @@ The tester is where you try a rule before you commit it anywhere. Object names a
 
 ## AI advisory
 
-The **AI advisory** checkbox is the AI edition. It is off unless you tick it. The deterministic findings do not need it.
+The **AI advisory** checkbox is off unless you tick it. On Pro it uses the provider you configure: your own API key, with no AI subscription and no markup. Anthropic (Claude), OpenAI, and local Ollama are supported. The deterministic findings do not need it.
 
 ## Next steps
 

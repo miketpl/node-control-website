@@ -30,10 +30,18 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
   secondary hero CTA, the free section, and the form.
 - **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
   on the free section. Do not make the page all about Free.
-- **AI section.** It stays labelled Coming Soon, and it stays after Pricing.
-  Do not add a buy path for it.
+- **Professional includes bring-your-own AI.** Lead with "Bring your own
+  AI provider". It uses the user's own API key. There is no Node Control
+  AI subscription and no markup. Anthropic (Claude), OpenAI, and a local
+  Ollama model are supported. Do not make Claude the headline.
+- **The AI edition is a separate product.** Nine specialist agents on
+  infrastructure you host. No price, no buy button, no download. The badge
+  is "Coming to customers soon". Register interest uses the existing
+  contact section. Do not describe it as unfinished.
 - While checkout is off, Pro calls to action go to the Pro waitlist or the
-  contact section. Do not show a live buy button.
+  contact section. Do not show a live buy button. The switch is
+  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it false until the owner
+  turns it on.
 
 **Voice:** first person, plain, specific, written for network engineers who
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
@@ -110,8 +118,10 @@ sentences. If a claim can't be made concretely, don't make it.
   annually, ex VAT, save 15%). Prices are VAT-exclusive. UK VAT (20%) is
   added at checkout where applicable. Checkout is built and stays off. The only switch is
   `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until the owner
-  turns it on. Do not point Pro buttons at a GitHub release. The AI
-  section stays labelled Coming Soon. The old `?paid=true&download=`
+  turns it on. Do not point Pro buttons at a GitHub release. Professional
+  AI is bring-your-own: Anthropic (Claude), OpenAI, and local Ollama. The
+  AI edition badge is "Coming to customers soon", with no price, buy
+  button, or download. The old `?paid=true&download=`
   redirect has been removed.
 - `privacy.html` and `terms.html` are drafts pending review. Do not remove
   the draft notice or fill `[PLACEHOLDER]` markers without the owner.
