@@ -23,7 +23,8 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 ## What the site should say
 
 - **Lead with the full product**: discovery, topology, push at scale,
-  compliance, and scheduled backups. Privacy and self-containment (no
+  and compliance. Scheduled backups come with Node Control Server, not
+  the current desktop editions. Privacy and self-containment (no
   Catalyst Center, no agents on the devices, no cloud) stay in the pitch.
 - **Professional is the main product.** Pro-only cards stay labelled, so it
   is clear what Free Edition includes. Free stays easy to reach: one
