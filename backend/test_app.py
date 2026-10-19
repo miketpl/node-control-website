@@ -2,6 +2,7 @@
 
 import base64
 import json
+import multiprocessing
 import os
 import sqlite3
 import subprocess
@@ -25,6 +26,12 @@ os.environ["SECRET_KEY"] = "test-secret"
 
 import app as api  # noqa: E402
 from app import app, get_db  # noqa: E402
+
+
+def _migrate_in_child(db_path):
+    """Run in a second process, the way a second gunicorn worker does."""
+    api.app.config["DB_PATH"] = db_path
+    api.migrate_db()
 
 
 class FakeResp:
@@ -519,6 +526,117 @@ class LicenceApiTests(unittest.TestCase):
         self.assertIsNotNone(events)
         for column in ("utm_source", "utm_medium", "utm_campaign", "referrer", "landing_page"):
             self.assertIn(column, cols)
+        os.unlink(old.name + ".migrate.lock")
+
+    def test_adding_a_column_twice_is_not_an_error(self):
+        path = tempfile.NamedTemporaryFile(prefix="nc-dup-col-", suffix=".db", delete=False)
+        path.close()
+        raw = sqlite3.connect(path.name)
+        raw.execute("""
+            CREATE TABLE licenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                landing_page TEXT DEFAULT ''
+            )
+        """)
+        raw.execute(
+            "INSERT INTO licenses (code, name, email, created_at, landing_page) VALUES (?, ?, ?, ?, ?)",
+            ("NC-PART-0001", "Person", "part@example.com", "2026-01-01T00:00:00", ""),
+        )
+        raw.commit()
+        try:
+            api._add_license_column(raw, "landing_page")
+            api._add_license_column(raw, "landing_page")
+            raw.commit()
+            cols = {row[1] for row in raw.execute("PRAGMA table_info(licenses)")}
+            row = raw.execute(
+                "SELECT email FROM licenses WHERE code = ?", ("NC-PART-0001",)
+            ).fetchone()
+        finally:
+            raw.close()
+            os.unlink(path.name)
+        self.assertIn("landing_page", cols)
+        self.assertEqual(row[0], "part@example.com")
+
+    def test_two_processes_can_migrate_a_partly_updated_database(self):
+        path = tempfile.NamedTemporaryFile(prefix="nc-migrate-race-", suffix=".db", delete=False)
+        path.close()
+        raw = sqlite3.connect(path.name)
+        raw.execute("""
+            CREATE TABLE licenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                company TEXT DEFAULT '',
+                platform TEXT DEFAULT '',
+                tier TEXT DEFAULT 'free',
+                status TEXT DEFAULT 'active',
+                created_at TEXT NOT NULL,
+                verified_at TEXT,
+                redeemed_at TEXT,
+                download_count INTEGER DEFAULT 0,
+                ip_address TEXT DEFAULT '',
+                utm_source TEXT DEFAULT '',
+                utm_medium TEXT DEFAULT '',
+                utm_campaign TEXT DEFAULT ''
+            )
+        """)
+        raw.execute(
+            """INSERT INTO licenses
+               (code, name, email, created_at, download_count, utm_source, utm_medium, utm_campaign)
+               VALUES (?, ?, ?, ?, 3, ?, ?, ?)""",
+            ("NC-PART-0002", "Person", "part@example.com", "2026-01-02T00:00:00", "linkedin", "social", "launch"),
+        )
+        raw.commit()
+        raw.close()
+
+        ctx = multiprocessing.get_context("fork")
+        procs = [
+            ctx.Process(target=_migrate_in_child, args=(path.name,))
+            for _ in range(2)
+        ]
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join(15)
+            self.assertFalse(proc.is_alive())
+            self.assertEqual(proc.exitcode, 0, f"migrate process exited {proc.exitcode}")
+
+        db = sqlite3.connect(path.name)
+        db.row_factory = sqlite3.Row
+        try:
+            cols = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+            row = db.execute(
+                "SELECT * FROM licenses WHERE code = ?", ("NC-PART-0002",)
+            ).fetchone()
+            index = db.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_licenses_utm_source'"
+            ).fetchone()
+            events = db.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'download_events'"
+            ).fetchone()
+        finally:
+            db.close()
+            os.unlink(path.name)
+            lock = path.name + ".migrate.lock"
+            if os.path.exists(lock):
+                os.unlink(lock)
+
+        for column in ("utm_source", "utm_medium", "utm_campaign", "referrer", "landing_page"):
+            self.assertIn(column, cols)
+        self.assertEqual(row["email"], "part@example.com")
+        self.assertEqual(row["utm_source"], "linkedin")
+        self.assertEqual(row["utm_medium"], "social")
+        self.assertEqual(row["utm_campaign"], "launch")
+        self.assertEqual(row["download_count"], 3)
+        self.assertEqual(row["referrer"], "")
+        self.assertEqual(row["landing_page"], "")
+        self.assertIsNotNone(index)
+        self.assertIsNotNone(events)
 
 
 if __name__ == "__main__":
