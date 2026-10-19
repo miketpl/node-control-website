@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 import base64
+import fcntl
 import hmac
 import html
 import json
@@ -190,16 +191,78 @@ ATTRIBUTION_FIELDS = {
 }
 
 
+def _schema_already_applied(exc):
+    """True when another worker created this column, table, or index first."""
+    message = str(exc).lower()
+    return "duplicate column name" in message or "already exists" in message
+
+
+def _add_license_column(db, column):
+    """Add one attribution column. A duplicate name means the other worker won."""
+    if column not in ATTRIBUTION_FIELDS:
+        raise ValueError("unknown licence column")
+    try:
+        db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _apply_schema(db, statement):
+    """Run one CREATE TABLE or CREATE INDEX. IF NOT EXISTS, and ignore a race."""
+    try:
+        db.execute(statement)
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
 def migrate_db():
-    """Add attribution columns that older databases do not have yet."""
-    db = get_db()
-    have = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
-    for column in ATTRIBUTION_FIELDS:
-        if column not in have:
-            db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
-    db.execute("CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)")
-    db.commit()
-    db.close()
+    """Add attribution columns that older databases do not have yet.
+
+    Gunicorn imports the app in each worker, so several processes run this
+    at startup. A lock beside the database makes them take turns. Each
+    column add still ignores 'duplicate column name' if two slip through.
+    """
+    lock_path = str(app.config["DB_PATH"]) + ".migrate.lock"
+    lock_file = open(lock_path, "a")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        db = get_db()
+        try:
+            db.execute("PRAGMA busy_timeout=30000")
+            db.commit()
+            db.execute("BEGIN IMMEDIATE")
+            have = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+            for column in ATTRIBUTION_FIELDS:
+                if column not in have:
+                    _add_license_column(db, column)
+            _apply_schema(db, """
+                CREATE TABLE IF NOT EXISTS download_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    license_id INTEGER NOT NULL,
+                    platform TEXT DEFAULT '',
+                    kind TEXT DEFAULT '',
+                    created_at TEXT NOT NULL
+                )
+            """)
+            _apply_schema(
+                db,
+                "CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at)",
+            )
+            _apply_schema(
+                db,
+                "CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)",
+            )
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+    finally:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        lock_file.close()
 
 
 _HOST_RE = re.compile(
