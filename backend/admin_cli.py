@@ -10,6 +10,7 @@ else set API_BASE=https://api.nodecontrol.io.
     python3 admin_cli.py list --status active
     python3 admin_cli.py revoke --code NC-ABCD-2345
     python3 admin_cli.py revoke --email person@example.com
+    python3 admin_cli.py stats --since 2026-10-12 --until 2026-10-19
 """
 
 import argparse
@@ -118,6 +119,34 @@ def cmd_revoke(args):
         print(f"Revoked {row.get('code')} ({row.get('email')}), id {row.get('id')}")
 
 
+def cmd_stats(args):
+    query = []
+    if args.since:
+        query.append("since=" + urllib.request.quote(args.since))
+    if args.until:
+        query.append("until=" + urllib.request.quote(args.until))
+    path = "/api/admin/stats" + ("?" + "&".join(query) if query else "")
+    status, payload = api("GET", path)
+    if status != 200:
+        _die(status, payload)
+    print(
+        f"All time: {payload.get('total_licenses')} licences, "
+        f"{payload.get('active')} active, {payload.get('pending')} pending, "
+        f"{payload.get('total_downloads')} redeems"
+    )
+    window = payload.get("window", {})
+    print(f"Window {window.get('since')} to {window.get('until')} (UTC)")
+    print("source\tmedium\trequested\tverified\tredeemed")
+    for row in payload.get("by_source", []):
+        print(
+            f"{row['source']}\t{row['medium']}\t{row['requested']}\t"
+            f"{row['verified']}\t{row['redeemed']}"
+        )
+    print("platform\tkind\tevents\tlicences")
+    for row in payload.get("download_events", []):
+        print(f"{row['platform']}\t{row['kind']}\t{row['events']}\t{row['licences']}")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="NodeControl licence admin CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -131,6 +160,11 @@ def main(argv=None):
     revoke_cmd.add_argument("--code", help="NC-XXXX-XXXX")
     revoke_cmd.add_argument("--email", help="exact email address")
     revoke_cmd.set_defaults(func=cmd_revoke)
+
+    stats_cmd = sub.add_parser("stats", help="Registrations by source, and download events")
+    stats_cmd.add_argument("--since", help="UTC date, inclusive, e.g. 2026-10-12")
+    stats_cmd.add_argument("--until", help="UTC date, exclusive, e.g. 2026-10-19")
+    stats_cmd.set_defaults(func=cmd_stats)
 
     args = parser.parse_args(argv)
     args.func(args)

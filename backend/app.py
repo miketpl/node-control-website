@@ -18,11 +18,14 @@ import string
 import sqlite3
 import smtplib
 import logging
+import re
+import threading
 import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from functools import wraps
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError
 
@@ -133,6 +136,15 @@ def init_db():
             ip_address TEXT DEFAULT ''
         );
 
+        CREATE TABLE IF NOT EXISTS download_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            license_id INTEGER NOT NULL,
+            platform TEXT DEFAULT '',
+            kind TEXT DEFAULT '',
+            created_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at);
+
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
         CREATE INDEX IF NOT EXISTS idx_licenses_email ON licenses(email);
         CREATE INDEX IF NOT EXISTS idx_licenses_status ON licenses(status);
@@ -167,6 +179,141 @@ def init_db():
 
 
 # ── Helpers ──────────────────────────────────────────────────
+# Attribution columns on licenses. Added after launch, so existing databases
+# get them through ALTER TABLE. Values are short, plain strings or ''.
+ATTRIBUTION_FIELDS = {
+    "utm_source": 64,
+    "utm_medium": 64,
+    "utm_campaign": 128,
+    "referrer": 128,
+    "landing_page": 256,
+}
+
+
+def migrate_db():
+    """Add attribution columns that older databases do not have yet."""
+    db = get_db()
+    have = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+    for column in ATTRIBUTION_FIELDS:
+        if column not in have:
+            db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)")
+    db.commit()
+    db.close()
+
+
+_HOST_RE = re.compile(
+    r"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)"
+    r"(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*$"
+)
+_PATH_RE = re.compile(r"^/[A-Za-z0-9._~/-]*$")
+_IP_RE = re.compile(r"^[A-Za-z0-9.:]+$")
+
+# Download events are a public POST. The per-licence cap is in SQLite, so it
+# holds across workers. The address cap is in memory, per worker.
+DOWNLOAD_EVENT_IP_LIMIT = 60
+DOWNLOAD_EVENT_IP_WINDOW = 3600
+DOWNLOAD_EVENT_LICENCE_CAP = 24
+DOWNLOAD_EVENT_BODY_LIMIT = 1024
+_download_event_lock = threading.Lock()
+_download_event_hits = {}
+
+
+def _clean_host(value):
+    """Host name only. A full URL is reduced to its host. Anything else is dropped."""
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    if "://" in value or value.startswith("//"):
+        try:
+            value = urlparse(value if "://" in value else "http:" + value).hostname or ""
+        except Exception:
+            return ""
+    value = value.lower().strip(".")[:128]
+    if not _HOST_RE.match(value):
+        return ""
+    return value
+
+
+def _clean_path(value):
+    """Site path only. Query strings and full URLs are dropped."""
+    value = str(value or "").strip().split("?", 1)[0].split("#", 1)[0]
+    if not value.startswith("/") or ".." in value or "\\" in value:
+        return ""
+    if not _PATH_RE.match(value):
+        return ""
+    return value[:256]
+
+
+def clean_attribution(data):
+    """Return the attribution fields from a request body, trimmed and bounded.
+
+    Source, medium and campaign are lower-cased and limited to letters,
+    digits, dot, dash and underscore, so the weekly report groups cleanly.
+    The referrer is a host name. The landing page is a path.
+    """
+    if not isinstance(data, dict):
+        data = {}
+    out = {}
+    for field, limit in ATTRIBUTION_FIELDS.items():
+        if field == "referrer":
+            out[field] = _clean_host(data.get(field))
+        elif field == "landing_page":
+            out[field] = _clean_path(data.get(field))
+        else:
+            value = str(data.get(field) or "").strip()[:limit]
+            value = "".join(ch for ch in value.lower() if ch.isalnum() or ch in "._-")
+            out[field] = value
+    return out
+
+
+def _client_ip():
+    """Visitor address. The proxy sets X-Real-IP; the app only listens locally."""
+    real = (request.headers.get("X-Real-IP") or "").strip()
+    if real and len(real) <= 64 and _IP_RE.match(real):
+        return real
+    return request.remote_addr or ""
+
+
+def _download_event_ip_allowed(ip):
+    now = time.monotonic()
+    with _download_event_lock:
+        hits = _download_event_hits.get(ip)
+        if hits is None:
+            hits = []
+            _download_event_hits[ip] = hits
+        cutoff = now - DOWNLOAD_EVENT_IP_WINDOW
+        hits[:] = [stamp for stamp in hits if stamp >= cutoff]
+        if len(hits) >= DOWNLOAD_EVENT_IP_LIMIT:
+            return False
+        hits.append(now)
+        if len(_download_event_hits) > 2000:
+            stale = [
+                key for key, stamps in _download_event_hits.items()
+                if not stamps or stamps[-1] < cutoff
+            ]
+            for key in stale:
+                _download_event_hits.pop(key, None)
+        return True
+
+
+def reset_download_event_limits():
+    with _download_event_lock:
+        _download_event_hits.clear()
+
+
+def _utc_day(value, default):
+    """Accept YYYY-MM-DD. An empty value uses the default. Anything else is rejected."""
+    if value is None or str(value).strip() == "":
+        return default
+    raw = str(value).strip()
+    try:
+        datetime.strptime(raw, "%Y-%m-%d")
+    except ValueError:
+        return None
+    return raw
+
+
 def generate_code():
     """Generate a download code like NC-XXXX-XXXX."""
     chars = string.ascii_uppercase + string.digits
@@ -1390,6 +1537,7 @@ def request_access():
     email = (data.get("email") or "").strip().lower()
     company = (data.get("company") or "").strip()
     platform = (data.get("platform") or "").strip()
+    attr = clean_attribution(data)
 
     if not name or not email:
         return jsonify({"error": "Name and email are required"}), 400
@@ -1428,17 +1576,28 @@ def request_access():
     previous = dict(existing) if existing and existing["status"] == "pending" else None
 
     if previous:
+        # A retry without attribution keeps what the first attempt recorded.
         db.execute("""
             UPDATE licenses SET
                 name = ?, company = ?, platform = ?,
-                code = ?, created_at = ?, verified_at = ?, ip_address = ?
+                code = ?, created_at = ?, verified_at = ?, ip_address = ?,
+                utm_source = COALESCE(NULLIF(?, ''), utm_source),
+                utm_medium = COALESCE(NULLIF(?, ''), utm_medium),
+                utm_campaign = COALESCE(NULLIF(?, ''), utm_campaign),
+                referrer = COALESCE(NULLIF(?, ''), referrer),
+                landing_page = COALESCE(NULLIF(?, ''), landing_page)
             WHERE id = ?
-        """, (name, company, platform, download_code, now, pending_marker, ip, previous["id"]))
+        """, (name, company, platform, download_code, now, pending_marker, ip,
+              attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
+              attr["referrer"], attr["landing_page"], previous["id"]))
     else:
         cursor = db.execute("""
-            INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address)
-            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?)
-        """, (download_code, name, email, company, platform, now, pending_marker, ip))
+            INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address,
+                                  utm_source, utm_medium, utm_campaign, referrer, landing_page)
+            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (download_code, name, email, company, platform, now, pending_marker, ip,
+              attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
+              attr["referrer"], attr["landing_page"]))
         inserted_id = cursor.lastrowid
 
     db.commit()
@@ -1453,12 +1612,17 @@ def request_access():
             db.execute("""
                 UPDATE licenses SET
                     name = ?, company = ?, platform = ?,
-                    code = ?, created_at = ?, verified_at = ?, ip_address = ?
+                    code = ?, created_at = ?, verified_at = ?, ip_address = ?,
+                    utm_source = ?, utm_medium = ?, utm_campaign = ?,
+                    referrer = ?, landing_page = ?
                 WHERE id = ?
             """, (
                 previous["name"], previous["company"], previous["platform"],
                 previous["code"], previous["created_at"], previous["verified_at"],
-                previous["ip_address"], previous["id"],
+                previous["ip_address"],
+                previous["utm_source"], previous["utm_medium"], previous["utm_campaign"],
+                previous["referrer"], previous["landing_page"],
+                previous["id"],
             ))
         db.commit()
         db.close()
@@ -1604,6 +1768,49 @@ def redeem():
     })
 
 
+@app.route("/api/download-event", methods=["POST"])
+def download_event():
+    """Record that the site started or offered an installer download.
+
+    The site sends this with navigator.sendBeacon as text/plain, so the body
+    is parsed with force=True. Only an active code is recorded. The response
+    is always 204, so the endpoint cannot be used to test whether a code exists.
+    """
+    raw = request.get_data(cache=True) or b""
+    if len(raw) > DOWNLOAD_EVENT_BODY_LIMIT:
+        return ("", 204)
+    if not _download_event_ip_allowed(_client_ip()):
+        return ("", 204)
+
+    data = request.get_json(force=True, silent=True) or {}
+    if not isinstance(data, dict):
+        return ("", 204)
+    code = str(data.get("code") or "").strip().upper()[:32]
+    platform = str(data.get("platform") or "").strip().lower()
+    kind = str(data.get("kind") or "").strip().lower()
+    if platform not in ("mac", "win") or kind not in ("auto", "click"):
+        return ("", 204)
+
+    db = get_db()
+    row = db.execute(
+        "SELECT id FROM licenses WHERE code = ? AND status = 'active'", (code,)
+    ).fetchone()
+    if row:
+        cutoff = (datetime.utcnow() - timedelta(hours=24)).isoformat()
+        count = db.execute(
+            "SELECT COUNT(*) AS c FROM download_events WHERE license_id = ? AND created_at >= ?",
+            (row["id"], cutoff),
+        ).fetchone()["c"]
+        if count < DOWNLOAD_EVENT_LICENCE_CAP:
+            db.execute(
+                "INSERT INTO download_events (license_id, platform, kind, created_at) VALUES (?, ?, ?, ?)",
+                (row["id"], platform, kind, datetime.utcnow().isoformat()),
+            )
+            db.commit()
+    db.close()
+    return ("", 204)
+
+
 # ── Admin Routes ─────────────────────────────────────────────
 
 @app.route("/api/admin/licenses", methods=["GET"])
@@ -1712,6 +1919,36 @@ def stats():
     active = db.execute("SELECT COUNT(*) as c FROM licenses WHERE status = 'active'").fetchone()["c"]
     pending = db.execute("SELECT COUNT(*) as c FROM licenses WHERE status = 'pending'").fetchone()["c"]
     total_downloads = db.execute("SELECT SUM(download_count) as c FROM licenses").fetchone()["c"] or 0
+
+    # Optional window for the weekly report: ?since=2026-10-12&until=2026-10-19 (UTC dates).
+    since = _utc_day(request.args.get("since"), "0000-01-01")
+    until = _utc_day(request.args.get("until"), "9999-12-31")
+    if since is None or until is None:
+        db.close()
+        return jsonify({"error": "since and until must be YYYY-MM-DD"}), 400
+    by_source = [dict(r) for r in db.execute("""
+        SELECT
+            CASE
+                WHEN utm_source != '' THEN utm_source
+                WHEN referrer != '' THEN 'ref:' || referrer
+                ELSE '(direct)'
+            END AS source,
+            COALESCE(NULLIF(utm_medium, ''), '-') AS medium,
+            COUNT(*) AS requested,
+            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS verified,
+            SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
+        FROM licenses
+        WHERE tier = 'free' AND created_at >= ? AND created_at < ?
+        GROUP BY source, medium
+        ORDER BY requested DESC
+    """, (since, until))]
+    download_events = [dict(r) for r in db.execute("""
+        SELECT platform, kind, COUNT(*) AS events, COUNT(DISTINCT license_id) AS licences
+        FROM download_events
+        WHERE created_at >= ? AND created_at < ?
+        GROUP BY platform, kind
+        ORDER BY platform, kind
+    """, (since, until))]
     db.close()
 
     return jsonify({
@@ -1719,12 +1956,16 @@ def stats():
         "active": active,
         "pending": pending,
         "total_downloads": total_downloads,
+        "window": {"since": since, "until": until},
+        "by_source": by_source,
+        "download_events": download_events,
     })
 
 
 # ── Init & Run ───────────────────────────────────────────────
 with app.app_context():
     init_db()
+    migrate_db()
 
 if __name__ == "__main__":
     app.run(
