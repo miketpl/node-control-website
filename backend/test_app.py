@@ -80,8 +80,10 @@ class LicenceApiTests(unittest.TestCase):
         app.config["LICENSE_REPO"] = "miketpl/node-control-license-free"
         db = get_db()
         db.execute("DELETE FROM licenses")
+        db.execute("DELETE FROM download_events")
         db.commit()
         db.close()
+        api.reset_download_event_limits()
 
     def tearDown(self):
         self.urlopen_patch.stop()
@@ -354,6 +356,169 @@ class LicenceApiTests(unittest.TestCase):
 
         self.assertEqual(self._pending("cli-user@example.com")["status"], "revoked")
         self.assertNotIn(issued, self.github.codes)
+
+    @patch("app.smtplib.SMTP")
+    def test_attribution_is_stored_and_cleaned(self, smtp):
+        res = self.client.post("/api/request-access", json={
+            "name": "Person", "email": "utm@example.com", "company": "", "platform": "windows",
+            "utm_source": "LinkedIn", "utm_medium": "social", "utm_campaign": "launch<script>",
+            "referrer": "www.linkedin.com", "landing_page": "/",
+        })
+        self.assertEqual(res.status_code, 200)
+        row = self._pending("utm@example.com")
+        self.assertEqual(row["utm_source"], "linkedin")
+        self.assertEqual(row["utm_medium"], "social")
+        self.assertEqual(row["utm_campaign"], "launchscript")
+        self.assertEqual(row["referrer"], "www.linkedin.com")
+        self.assertEqual(row["landing_page"], "/")
+
+    @patch("app.smtplib.SMTP")
+    def test_resend_without_attribution_keeps_the_first_values(self, smtp):
+        self.client.post("/api/request-access", json={
+            "name": "Person", "email": "keep@example.com", "platform": "macos",
+            "utm_source": "youtube", "utm_medium": "video",
+        })
+        self.client.post("/api/request-access", json={
+            "name": "Person", "email": "keep@example.com", "platform": "macos",
+        })
+        row = self._pending("keep@example.com")
+        self.assertEqual(row["utm_source"], "youtube")
+        self.assertEqual(row["utm_medium"], "video")
+
+    @patch("app.smtplib.SMTP")
+    def test_download_event_needs_an_active_code_and_shows_in_stats(self, smtp):
+        self.client.post("/api/request-access", json={
+            "name": "Person", "email": "dl@example.com", "platform": "macos", "utm_source": "x",
+        })
+        code = self._verify_code("dl@example.com")
+        issued = self.client.post("/api/verify", json={"email": "dl@example.com", "code": code}).get_json()["download_code"]
+
+        # sendBeacon posts text/plain
+        ok = self.client.post("/api/download-event", data=json.dumps(
+            {"code": issued, "platform": "mac", "kind": "auto"}), content_type="text/plain")
+        self.assertEqual(ok.status_code, 204)
+        bad = self.client.post("/api/download-event", data=json.dumps(
+            {"code": "NC-NOPE-NOPE", "platform": "mac", "kind": "auto"}), content_type="text/plain")
+        self.assertEqual(bad.status_code, 204)
+
+        stats = self.client.get("/api/admin/stats", headers={"Authorization": "Bearer test-admin-token"})
+        self.assertEqual(stats.status_code, 200)
+        body = stats.get_json()
+        sources = {row["source"]: row for row in body["by_source"]}
+        self.assertEqual(sources["x"]["verified"], 1)
+        self.assertEqual(body["download_events"], [{"platform": "mac", "kind": "auto", "events": 1, "licences": 1}])
+        hidden = self.client.get("/api/admin/stats")
+        self.assertEqual(hidden.status_code, 401)
+
+    @patch("app.smtplib.SMTP")
+    def test_attribution_drops_urls_and_query_strings(self, smtp):
+        res = self.client.post("/api/request-access", json={
+            "name": "Person", "email": "ref@example.com", "platform": "macos",
+            "referrer": "https://www.linkedin.com/in/someone?email=person@example.com",
+            "landing_page": "/?utm_source=linkedin#free-edition",
+        })
+        self.assertEqual(res.status_code, 200)
+        row = self._pending("ref@example.com")
+        self.assertEqual(row["referrer"], "www.linkedin.com")
+        self.assertEqual(row["landing_page"], "/")
+        junk = self.client.post("/api/request-access", json={
+            "name": "Person", "email": "junk@example.com", "platform": "macos",
+            "referrer": "not a host", "landing_page": "https://evil.example/steal",
+        })
+        self.assertEqual(junk.status_code, 200)
+        junk_row = self._pending("junk@example.com")
+        self.assertEqual(junk_row["referrer"], "")
+        self.assertEqual(junk_row["landing_page"], "")
+
+    @patch("app.smtplib.SMTP")
+    def test_download_event_is_capped_and_ignores_junk(self, smtp):
+        self.client.post("/api/request-access", json={
+            "name": "Person", "email": "cap@example.com", "platform": "macos",
+        })
+        code = self._verify_code("cap@example.com")
+        issued = self.client.post("/api/verify", json={"email": "cap@example.com", "code": code}).get_json()["download_code"]
+        original = api.DOWNLOAD_EVENT_LICENCE_CAP
+        api.DOWNLOAD_EVENT_LICENCE_CAP = 2
+        try:
+            for _ in range(4):
+                res = self.client.post("/api/download-event", data=json.dumps(
+                    {"code": issued, "platform": "win", "kind": "click"}), content_type="text/plain")
+                self.assertEqual(res.status_code, 204)
+            odd = self.client.post("/api/download-event", data=json.dumps(
+                {"code": issued, "platform": "linux", "kind": "click"}), content_type="text/plain")
+            self.assertEqual(odd.status_code, 204)
+            huge = self.client.post(
+                "/api/download-event",
+                data=b"x" * (api.DOWNLOAD_EVENT_BODY_LIMIT + 1),
+                content_type="text/plain",
+            )
+            self.assertEqual(huge.status_code, 204)
+        finally:
+            api.DOWNLOAD_EVENT_LICENCE_CAP = original
+        db = get_db()
+        count = db.execute("SELECT COUNT(*) AS c FROM download_events").fetchone()["c"]
+        db.close()
+        self.assertEqual(count, 2)
+
+    def test_migration_keeps_an_existing_row_on_the_old_schema(self):
+        old = tempfile.NamedTemporaryFile(prefix="nc-old-lic-", suffix=".db", delete=False)
+        old.close()
+        raw = sqlite3.connect(old.name)
+        raw.execute("""
+            CREATE TABLE licenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                company TEXT DEFAULT '',
+                platform TEXT DEFAULT '',
+                tier TEXT DEFAULT 'free',
+                status TEXT DEFAULT 'pending',
+                created_at TEXT NOT NULL,
+                verified_at TEXT,
+                redeemed_at TEXT,
+                download_count INTEGER DEFAULT 0,
+                ip_address TEXT DEFAULT ''
+            )
+        """)
+        raw.execute(
+            """INSERT INTO licenses
+               (code, name, email, company, platform, tier, status, created_at, download_count)
+               VALUES (?, ?, ?, ?, ?, 'free', 'active', ?, 2)""",
+            ("NC-KEEP-ROW1", "Person", "kept@example.com", "Example", "macos", "2026-01-01T00:00:00"),
+        )
+        raw.commit()
+        raw.close()
+
+        previous = app.config["DB_PATH"]
+        app.config["DB_PATH"] = old.name
+        try:
+            api.init_db()
+            api.migrate_db()
+            api.migrate_db()
+            db = get_db()
+            cols = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+            row = db.execute(
+                "SELECT * FROM licenses WHERE code = ?", ("NC-KEEP-ROW1",)
+            ).fetchone()
+            events = db.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'download_events'"
+            ).fetchone()
+            db.close()
+        finally:
+            app.config["DB_PATH"] = previous
+            os.unlink(old.name)
+
+        self.assertIsNotNone(row)
+        self.assertEqual(row["email"], "kept@example.com")
+        self.assertEqual(row["name"], "Person")
+        self.assertEqual(row["download_count"], 2)
+        self.assertEqual(row["status"], "active")
+        self.assertEqual(row["utm_source"], "")
+        self.assertEqual(row["referrer"], "")
+        self.assertIsNotNone(events)
+        for column in ("utm_source", "utm_medium", "utm_campaign", "referrer", "landing_page"):
+            self.assertIn(column, cols)
 
 
 if __name__ == "__main__":
