@@ -163,6 +163,45 @@
         });
     }
 
+    // ── Attribution for the Free form ───────────────────────────
+    // Read at submit time from this page's own URL. Nothing is stored in the
+    // browser: no cookie, no localStorage. Only the referring host name is
+    // kept, never the full referring URL.
+    function clip(value, max) {
+        return String(value || '').slice(0, max);
+    }
+
+    function attributionPayload() {
+        const params = new URLSearchParams(window.location.search);
+        let referrer = '';
+        try {
+            const ref = document.referrer ? new URL(document.referrer) : null;
+            if (ref && ref.hostname !== window.location.hostname) {
+                referrer = ref.hostname;
+            }
+        } catch (err) { /* malformed referrer: leave it empty */ }
+        return {
+            utm_source: clip(params.get('utm_source'), 64),
+            utm_medium: clip(params.get('utm_medium'), 64),
+            utm_campaign: clip(params.get('utm_campaign'), 128),
+            referrer: clip(referrer, 128),
+            landing_page: clip(window.location.pathname, 256),
+        };
+    }
+
+    // Tell the API an installer download was started or a link was clicked.
+    // sendBeacon with text/plain needs no CORS preflight and survives the
+    // page starting a file download. Failure is silent by design.
+    function trackDownload(code, platform, kind) {
+        try {
+            const body = JSON.stringify({ code: code, platform: platform, kind: kind });
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(API_BASE + '/api/download-event',
+                    new Blob([body], { type: 'text/plain' }));
+            }
+        } catch (err) { /* never block the download */ }
+    }
+
     // Helper: show result message in a container
     function showResult(container, message, type) {
         container.className = 'redeem-result visible ' + type;
@@ -212,7 +251,8 @@
             reqResult.className = 'redeem-result';
 
             try {
-                const { status, data } = await apiCall('/api/request-access', { name, email, company, platform });
+                const { status, data } = await apiCall('/api/request-access',
+                    Object.assign({ name, email, company, platform }, attributionPayload()));
 
                 if (data.success) {
                     // Show verification step
@@ -299,7 +339,8 @@
                 const name = document.getElementById('reqName').value.trim();
                 const platform = document.getElementById('reqPlatform').value;
                 const company = document.getElementById('reqCompany').value.trim();
-                await apiCall('/api/request-access', { name, email: pendingEmail, company, platform });
+                await apiCall('/api/request-access',
+                    Object.assign({ name, email: pendingEmail, company, platform }, attributionPayload()));
                 this.textContent = 'Code resent! Check your inbox.';
                 this.style.color = '#00e8ff';
             } catch (err) {
@@ -366,24 +407,30 @@
                         const other = key === 'mac' ? 'win' : 'mac';
                         const otherLabel = key === 'mac' ? 'Windows (.exe)' : 'macOS (.dmg)';
                         startDownload(urls[key]);
+                        trackDownload(normalised, key, 'auto');
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — your download is starting.' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls[key] + '" class="redeem-fallback-link">Download didn\'t start? Click here.</a>' +
+                            '<a href="' + urls[key] + '" class="redeem-fallback-link" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
                             '</div>' +
-                            '<a href="' + urls[other] + '" class="redeem-other-link">Need ' + otherLabel + ' instead?</a>',
+                            '<a href="' + urls[other] + '" class="redeem-other-link" data-platform="' + other + '">Need ' + otherLabel + ' instead?</a>',
                             'success'
                         );
                     } else {
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — choose your platform:' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
-                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
+                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
+                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
                             '</div>',
                             'success'
                         );
                     }
+                    redeemResult.querySelectorAll('a[data-platform]').forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            trackDownload(normalised, link.getAttribute('data-platform'), 'click');
+                        });
+                    });
                 } else {
                     showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
                 }
