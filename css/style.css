@@ -1506,16 +1506,31 @@ select.form-input {
 .feature-card:nth-child(6) { animation-delay: 0.6s; }
 .feature-card:nth-child(7) { animation-delay: 0.7s; }
 .feature-card:nth-child(8) { animation-delay: 0.8s; }
+.feature-card:nth-child(9) { animation-delay: 0.9s; }
 
 .screenshot-card:nth-child(1) { animation-delay: 0.05s; }
 .screenshot-card:nth-child(2) { animation-delay: 0.1s; }
 .screenshot-card:nth-child(3) { animation-delay: 0.15s; }
 .screenshot-card:nth-child(4) { animation-delay: 0.2s; }
 
-/* ── Testimonial ───────────────────────────────────────────── */
-.testimonial {
+/* ── Testimonial carousel ──────────────────────────────────── */
+/* Without JS the slides stay in normal flow, stacked. JS adds
+   .is-ready, fixes the viewport height, and shows one slide. */
+.testimonial-carousel {
     max-width: 760px;
     margin: 28px auto 0;
+}
+
+.testimonial-viewport {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.testimonial-slide {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--cyan);
@@ -1523,24 +1538,124 @@ select.form-input {
     padding: 36px 40px 28px;
 }
 
-.testimonial blockquote p {
+.testimonial-slide blockquote {
+    margin: 0;
+    quotes: none;
+}
+
+.testimonial-slide blockquote p {
     color: var(--text-primary);
     font-size: 1.05rem;
     line-height: 1.7;
-    margin-bottom: 16px;
+    margin: 0;
 }
 
-.testimonial blockquote p:last-child {
-    margin-bottom: 0;
-}
-
-.testimonial figcaption {
+.testimonial-slide figcaption {
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
     color: var(--text-secondary);
     font-size: 0.95rem;
     font-weight: 600;
+}
+
+.testimonial-controls {
+    display: none;
+}
+
+.testimonial-carousel.is-ready .testimonial-viewport {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.testimonial-carousel.is-ready .testimonial-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.testimonial-carousel.is-ready .testimonial-slide blockquote {
+    flex: 1 0 auto;
+}
+
+.testimonial-carousel.is-ready .testimonial-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .testimonial-carousel.is-ready .testimonial-slide {
+        transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+    }
+    .testimonial-carousel.is-ready .testimonial-slide.is-active {
+        transition: opacity 0.45s ease, visibility 0s linear 0s;
+    }
+}
+
+.testimonial-carousel.is-ready .testimonial-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.testimonial-prev,
+.testimonial-next {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.testimonial-prev:hover,
+.testimonial-next:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+}
+
+.testimonial-prev:focus-visible,
+.testimonial-next:focus-visible,
+.testimonial-dot:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+.testimonial-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.testimonial-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+}
+
+.testimonial-dot.is-active {
+    width: 22px;
+    background: var(--cyan);
+    border-color: var(--cyan);
 }
 
 /* ── Responsive ────────────────────────────────────────────── */
@@ -1615,10 +1730,10 @@ select.form-input {
         font-size: 1.75rem;
     }
 
-    .testimonial {
+    .testimonial-slide {
         padding: 24px 20px 20px;
     }
-    .testimonial blockquote p {
+    .testimonial-slide blockquote p {
         font-size: 1rem;
     }
 
