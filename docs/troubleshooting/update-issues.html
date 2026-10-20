@@ -154,7 +154,7 @@
 <p>Pro builds check the Pro releases repo; Free builds check the Free releases repo. A Pro release does not appear as an update for a Free install. They are different products.</p>
 <p>Confirm: Help → About → check the tier. Confirm the latest version available for THAT tier on:</p>
 <ul>
-<li>Free: https://github.com/miketpl/node-control-releases-free/releases
+<li>Free: download the latest installer from <a href="https://nodecontrol.io">nodecontrol.io</a>
 </li>
 <li>Pro: (Pro release channel — your customer portal has the URL)
 </li>
@@ -173,9 +173,8 @@
 <p>The updater can&#x27;t fetch the latest release info. Causes:</p>
 <h3 id="network-connectivity">Network connectivity</h3>
 <pre><code>ping api.github.com
-curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/latest
 </code></pre>
-<p>If either fails: your network blocks GitHub API access. Common in corporate networks behind strict proxies.</p>
+<p>The updater fetches the latest release from GitHub. If ping fails, your network blocks GitHub API access. Common in corporate networks behind strict proxies.</p>
 <h3 id="proxy-firewall">Proxy / firewall</h3>
 <p>Settings → Advanced → check if HTTP/HTTPS proxy needs to be configured. Node Control uses the system proxy by default.</p>
 <p>For corporate firewalls that proxy-intercept SSL:</p>
@@ -195,7 +194,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 </ol>
 <p>For chronic download failures:</p>
 <ul>
-<li>Manually download the DMG / Setup.exe from the releases page in a browser
+<li>Download the latest installer from nodecontrol.io and install it manually
 </li>
 <li>Install manually — same end-state as the in-app downloader
 </li>
@@ -275,7 +274,7 @@ curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/la
 <h2 id="manual-update-flow">Manual update flow</h2>
 <p>If the in-app updater is unreliable, you can always:</p>
 <ol>
-<li>Download from https://nodecontrol.io or the release repo directly
+<li>Download the latest installer from https://nodecontrol.io
 </li>
 <li>Install over the top (Mac: drag to Applications; Windows: run Setup.exe)
 </li>
