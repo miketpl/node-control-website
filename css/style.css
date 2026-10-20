@@ -571,6 +571,35 @@ a:hover {
 }
 
 /* ── Download ──────────────────────────────────────────────── */
+/* Pause switch: #download.free-paused hides the Free form. Remove that class to restore it. */
+.free-pause-notice {
+    display: none;
+}
+#download.free-paused .free-pause-notice {
+    display: block;
+    max-width: 540px;
+    margin: 16px auto 0;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+}
+#download.free-paused #freeRequestForm,
+#download.free-paused #verifySection,
+#download.free-paused #downloadCodeSection,
+#download.free-paused #free-edition .download-cards,
+#download.free-paused .download-tier-redeem,
+#download.free-paused .free-signup-hint {
+    display: none !important;
+}
+#download.free-paused #free-edition .download-tier-header {
+    border-bottom: none;
+}
+
 .download-tier {
     max-width: 700px;
     margin: 0 auto 48px;

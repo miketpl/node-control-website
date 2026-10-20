@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261019carousel">
+    <link rel="stylesheet" href="css/style.css?v=20261020pause">
 </head>
 <body>
 
@@ -57,7 +57,7 @@
             <p class="hero-free-line">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
             <div class="hero-buttons">
                 <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
-                <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
+                <a href="#free-paused-notice" class="btn btn-outline">Get Node Control Free</a>
             </div>
             <!-- TPL branding is part of the hero banner image -->
         </div>
@@ -96,7 +96,7 @@
             </div>
             <div class="ai-pro-actions">
                 <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
-                <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
+                <a href="#free-paused-notice" class="btn btn-outline">Get Node Control Free</a>
                 <a href="docs/settings/ai-llm.html" class="btn btn-outline">How AI works on Professional</a>
             </div>
         </div>
@@ -370,7 +370,8 @@
     </section>
 
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-    <section class="section section-alt" id="download">
+    <!-- Pause switch: remove the class "free-paused" to restore Free sign-up and download. -->
+    <section class="section section-alt free-paused" id="download">
         <div class="container">
             <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
             <p class="section-subtitle">Your network data stays on your machine. Pick your edition and platform below.</p>
@@ -388,7 +389,8 @@
                         <li>Multi-vendor terminal and device library</li>
                     </ul>
                     <p class="download-tier-desc">Works with Cisco IOS, IOS-XE and NX-OS, Meraki, Palo Alto, HP/Aruba, Juniper, Arista, Dell and Extreme.</p>
-                    <p class="download-tier-desc">Enter your details and we'll email you a verification code instantly.</p>
+                    <p class="free-pause-notice" id="free-paused-notice">Node Control Free downloads are temporarily paused while we ship an update (v0.9.41). Please check back soon.</p>
+                    <p class="download-tier-desc free-signup-hint">Enter your details and we'll email you a verification code instantly.</p>
                 </div>
                 <div class="download-cards">
                     <div class="download-card" style="grid-column: 1 / -1;">
@@ -533,7 +535,7 @@
                         <li>File Transfer tab. The File Transfer task and Packet Capture are Professional</li>
                         <li>Multi-vendor terminal and device library</li>
                     </ul>
-                    <a href="#download" class="btn btn-outline">Get Node Control Free</a>
+                    <a href="#free-paused-notice" class="btn btn-outline">Get Node Control Free</a>
                 </div>
 
                 <div class="pricing-card pricing-featured">

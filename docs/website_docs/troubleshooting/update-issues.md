@@ -12,7 +12,7 @@ Pro builds check the Pro releases repo; Free builds check the Free releases repo
 
 Confirm: Help → About → check the tier. Confirm the latest version available for THAT tier on:
 
-- Free: https://github.com/miketpl/node-control-releases-free/releases
+- Free: download the latest installer from [nodecontrol.io](https://nodecontrol.io)
 - Pro: (Pro release channel — your customer portal has the URL)
 
 ### The releases page hasn't been published yet
@@ -34,10 +34,9 @@ The updater can't fetch the latest release info. Causes:
 
 ```bash
 ping api.github.com
-curl https://api.github.com/repos/miketpl/node-control-releases-free/releases/latest
 ```
 
-If either fails: your network blocks GitHub API access. Common in corporate networks behind strict proxies.
+The updater fetches the latest release from GitHub. If ping fails, your network blocks GitHub API access. Common in corporate networks behind strict proxies.
 
 ### Proxy / firewall
 
@@ -60,7 +59,7 @@ The downloader supports resume — re-trigger the download and it'll pick up whe
 
 For chronic download failures:
 
-- Manually download the DMG / Setup.exe from the releases page in a browser
+- Download the latest installer from nodecontrol.io and install it manually
 - Install manually — same end-state as the in-app downloader
 
 ## Symptom 4 — "Install & Restart" fails on Windows
@@ -141,7 +140,7 @@ Hopefully rare. If it happens:
 
 If the in-app updater is unreliable, you can always:
 
-1. Download from https://nodecontrol.io or the release repo directly
+1. Download the latest installer from https://nodecontrol.io
 2. Install over the top (Mac: drag to Applications; Windows: run Setup.exe)
 3. Library, settings, credentials all preserved
 
