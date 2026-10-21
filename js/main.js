@@ -71,6 +71,26 @@
         ? 'http://localhost:5001'
         : 'https://api.nodecontrol.io';
 
+    // The HTML ships with class free-paused. This only removes it when the
+    // licence server says Free downloads are open. A failed fetch leaves
+    // the class in place, so the form stays hidden.
+    fetch(API_BASE + '/api/v1/status', { headers: { 'Accept': 'application/json' } })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+            var section = document.getElementById('download');
+            var notice = document.getElementById('free-paused-notice');
+            if (!section || !data || typeof data.free_downloads_paused !== 'boolean') return;
+            if (data.free_downloads_paused) {
+                section.classList.add('free-paused');
+                if (notice && typeof data.message === 'string' && data.message.trim()) {
+                    notice.textContent = data.message;
+                }
+            } else {
+                section.classList.remove('free-paused');
+            }
+        })
+        .catch(function () {});
+
     // SINGLE SWITCH. Pro checkout stays off until it is turned on.
     // true: show .pro-checkout, hide .pro-waitlist, and point the hero button at pricing.
     // false: class "payment-pending" keeps the subscribe buttons hidden.

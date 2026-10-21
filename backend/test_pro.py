@@ -12,6 +12,9 @@ os.environ["ADMIN_TOKEN"] = "test-admin-token"
 os.environ["SECRET_KEY"] = "test-secret"
 os.environ["SMTP_USER"] = ""
 os.environ["SMTP_PASS"] = ""
+os.environ["FREE_DOWNLOADS_PAUSED"] = "false"
+os.environ["KEY_ENCRYPTION_KEY"] = "11" * 32
+os.environ["LEGACY_ALLOWLIST_SYNC"] = "false"
 
 import stripe
 import app
@@ -96,9 +99,13 @@ class ProBillingTests(unittest.TestCase):
         app.app.config["PRO_RELEASES_PAT"] = "ghp_releases_secret"
         app.app.config["PRO_DOWNLOAD_SECRET"] = "download-secret"
         app.app.config["SITE_URL"] = "https://nodecontrol.io"
+        app.app.config["KEY_ENCRYPTION_KEY"] = "11" * 32
+        app.app.config["LEGACY_ALLOWLIST_SYNC"] = ""
+        app.app.config["FREE_DOWNLOADS_PAUSED"] = "false"
         db = app.get_db()
         db.execute("DELETE FROM pro_subscriptions")
         db.execute("DELETE FROM stripe_events")
+        db.execute("DELETE FROM pro_keys")
         db.commit()
         db.close()
 
@@ -187,11 +194,15 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(ok.status_code, 200)
         again = self._checkout("evt_1", "sub_new", "payer@example.com")
         self.assertEqual(again.status_code, 200)
-        self.assertEqual(self.github.puts, 1)
+        self.assertEqual(self.github.puts, 0)
         self.assertEqual(len(self.welcomes), 1)
-        self.assertIn("payer@example.com", self.github.doc["allowed_emails"])
+        self.assertEqual(self.github.doc["allowed_emails"], ["Beta.User@Example.com"])
         self.assertEqual(self.github.doc["grace_period_days"], 7)
         self.assertEqual(self.github.doc["kept"], "yes")
+        db = app.get_db()
+        keys = db.execute("SELECT COUNT(*) AS c FROM pro_keys WHERE subscription_id = 'sub_new'").fetchone()["c"]
+        db.close()
+        self.assertEqual(keys, 1)
 
     def test_hand_added_beta_email_is_not_removed(self):
         before = json.loads(json.dumps(self.github.doc))
@@ -218,7 +229,8 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(granted.status_code, 200)
         emails = [item.lower() for item in self.github.doc["allowed_emails"]]
         self.assertIn("beta.user@example.com", emails)
-        self.assertIn("payer@example.com", emails)
+        self.assertNotIn("payer@example.com", emails)
+        self.assertEqual(self.github.puts, 0)
         self.assertEqual(self.github.doc["grace_period_days"], 7)
 
         ended = self._post_event("evt_pay_end", "customer.subscription.deleted", {
@@ -232,6 +244,7 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn("beta.user@example.com", emails)
         self.assertEqual(self.github.doc["grace_period_days"], 7)
         self.assertEqual(self.github.doc["kept"], "yes")
+        self.assertEqual(app._get_pro_row_by_subscription("sub_pay")["status"], "canceled")
 
     def test_second_active_subscription_keeps_the_email(self):
         self._checkout("evt_a", "sub_a", "payer@example.com", session_id="cs_a")
@@ -243,7 +256,9 @@ class ProBillingTests(unittest.TestCase):
             "id": "sub_a", "status": "canceled", "customer": "cus_1",
         })
         self.assertEqual(first.status_code, 200)
-        self.assertIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertNotIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_a")["status"], "canceled")
+        self.assertEqual(app._get_pro_row_by_subscription("sub_b")["status"], "active")
 
         second = self._post_event("evt_b_end", "customer.subscription.deleted", {
             "id": "sub_b", "status": "canceled", "customer": "cus_1",
@@ -251,6 +266,8 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(second.status_code, 200)
         self.assertNotIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
         self.assertIn("beta.user@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_b")["status"], "canceled")
+        self.assertEqual(self.github.puts, 0)
 
     def test_cancel_at_period_end_and_failed_payment_keep_access_until_it_ends(self):
         self._checkout("evt_live", "sub_live", "payer@example.com")
@@ -265,7 +282,8 @@ class ProBillingTests(unittest.TestCase):
         })
         self.assertEqual(updated.status_code, 200)
         self.assertEqual(self.github.puts, puts_after_add)
-        self.assertIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertNotIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_live")["status"], "active")
 
         self.subs["sub_live"]["status"] = "active"
         failed = self._post_event("evt_fail_open", "invoice.payment_failed", {
@@ -273,7 +291,8 @@ class ProBillingTests(unittest.TestCase):
             "customer_email": "payer@example.com",
         })
         self.assertEqual(failed.status_code, 200)
-        self.assertIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_live")["status"], "active")
+        self.assertNotIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
 
         self.subs["sub_live"]["status"] = "past_due"
         failed_closed = self._post_event("evt_fail_closed", "invoice.payment_failed", {
@@ -299,29 +318,26 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(len(self.welcomes), 1)
 
     def test_allowlist_retries_a_conflict_and_uses_the_write_pat(self):
+        # Allow-list sync is off, so a GitHub 409 cannot fail checkout.
         self.github.fail_next_puts = 1
         res = self._checkout("evt_retry", "sub_retry", "payer@example.com")
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(self.github.puts, 1)
-        put_calls = [call for call in self.github.calls if call[1] == "PUT"]
-        self.assertGreaterEqual(len(put_calls), 2)
-        self.assertTrue(all(call[2] == "Bearer ghp_write_token" for call in put_calls))
-        self.assertIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
+        self.assertEqual(self.github.puts, 0)
+        self.assertNotIn("payer@example.com", [e.lower() for e in self.github.doc["allowed_emails"]])
 
-        self.github.puts = 0
         self.github.doc = json.loads(json.dumps(BETA_DOC))
         app.app.config["GITHUB_PAT_REGISTRATIONS"] = "ghp_regs_token"
         db = app.get_db()
         db.execute("DELETE FROM pro_subscriptions")
         db.execute("DELETE FROM stripe_events")
+        db.execute("DELETE FROM pro_keys")
         db.commit()
         db.close()
         res = self._checkout("evt_regs", "sub_regs", "second@example.com")
         self.assertEqual(res.status_code, 200)
-        put_calls = [call for call in self.github.calls if call[1] == "PUT" and "second" in json.dumps(self.github.doc)]
-        auths = [call[2] for call in self.github.calls if call[1] == "PUT"]
-        self.assertIn("Bearer ghp_regs_token", auths)
-        self.assertIn("second@example.com", self.github.doc["allowed_emails"])
+        self.assertEqual(self.github.puts, 0)
+        self.assertNotIn("second@example.com", self.github.doc["allowed_emails"])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_regs")["email"], "second@example.com")
 
     def test_download_token_is_gated(self):
         self._checkout("evt_dl", "sub_dl", "payer@example.com", session_id="cs_dl")
@@ -394,7 +410,8 @@ class ProBillingTests(unittest.TestCase):
         ok = self._checkout("evt_mail", "sub_mail", "payer@example.com")
         self.assertEqual(ok.status_code, 200)
         self.assertEqual(len(self.welcomes), 1)
-        self.assertIn("payer@example.com", [item.lower() for item in self.github.doc["allowed_emails"]])
+        self.assertEqual(app._get_pro_row_by_subscription("sub_mail")["email"], "payer@example.com")
+        self.assertNotIn("payer@example.com", [item.lower() for item in self.github.doc["allowed_emails"]])
         self.assertIn("beta.user@example.com", [item.lower() for item in self.github.doc["allowed_emails"]])
 
     def test_allowlist_defaults_are_the_live_repo(self):
@@ -404,6 +421,8 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn('miketpl/node-control-registrations', source)
         self.assertIn('allowlist.json', source)
         self.assertIn("added_to_allowlist", source)
+        self.assertIn("LEGACY_ALLOWLIST_SYNC", source)
+        self.assertFalse(app._legacy_allowlist_enabled())
 
 
 if __name__ == "__main__":

@@ -90,6 +90,24 @@ app.config.update(
     PRO_DOWNLOAD_SECRET=os.environ.get("PRO_DOWNLOAD_SECRET", ""),
     # Upper bound for a download token. The payload also carries its own exp.
     PRO_DOWNLOAD_TOKEN_MAX_AGE=int(os.environ.get("PRO_DOWNLOAD_TOKEN_MAX_AGE", 7 * 24 * 3600)),
+
+    # 0.9.41. Empty LEGACY_ALLOWLIST_SYNC means the webhook does not write allowlist.json.
+    LEGACY_ALLOWLIST_SYNC=os.environ.get("LEGACY_ALLOWLIST_SYNC", ""),
+    # Read-only on the private releases-free and releases-pro repos. PRO_RELEASES_PAT is the fallback.
+    RELEASES_READ_PAT=os.environ.get("RELEASES_READ_PAT", ""),
+    # 32-byte key as 64 hex characters. Encrypts Professional keys so a resend returns the same key.
+    KEY_ENCRYPTION_KEY=os.environ.get("KEY_ENCRYPTION_KEY", ""),
+    # Empty means paused. Set FREE_DOWNLOADS_PAUSED=false to open Free downloads.
+    FREE_DOWNLOADS_PAUSED=os.environ.get("FREE_DOWNLOADS_PAUSED", ""),
+    FREE_PAUSED_MESSAGE=os.environ.get("FREE_PAUSED_MESSAGE", ""),
+    MAINTENANCE=os.environ.get("MAINTENANCE", ""),
+    MIN_SUPPORTED_VERSION_FREE=os.environ.get("MIN_SUPPORTED_VERSION_FREE", "0.9.41"),
+    MIN_SUPPORTED_VERSION_PRO=os.environ.get("MIN_SUPPORTED_VERSION_PRO", "0.9.41"),
+    TELEMETRY_RETENTION_DAYS=os.environ.get("TELEMETRY_RETENTION_DAYS", "365"),
+    TELEMETRY_ACCEPT=os.environ.get("TELEMETRY_ACCEPT", "true"),
+    # Empty disables the alert. The default address is the public support mailbox.
+    REGISTRATION_ALERT_EMAIL=os.environ.get("REGISTRATION_ALERT_EMAIL", "support@nodecontrol.io"),
+    API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -254,6 +272,9 @@ def migrate_db():
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)",
             )
+            from licence_v1 import V1_SCHEMA
+            for statement in V1_SCHEMA:
+                _apply_schema(db, statement)
             db.commit()
         except Exception:
             db.rollback()
@@ -331,38 +352,34 @@ def clean_attribution(data):
 
 
 def _client_ip():
-    """Visitor address. The proxy sets X-Real-IP; the app only listens locally."""
-    real = (request.headers.get("X-Real-IP") or "").strip()
-    if real and len(real) <= 64 and _IP_RE.match(real):
-        return real
-    return request.remote_addr or ""
+    """Visitor address.
+
+    The Spark is reached through a Cloudflare tunnel, so the peer is loopback
+    and the client address is CF-Connecting-IP. Any other peer is used as-is.
+    """
+    import licence_v1
+    return licence_v1.client_ip()
 
 
 def _download_event_ip_allowed(ip):
-    now = time.monotonic()
-    with _download_event_lock:
-        hits = _download_event_hits.get(ip)
-        if hits is None:
-            hits = []
-            _download_event_hits[ip] = hits
-        cutoff = now - DOWNLOAD_EVENT_IP_WINDOW
-        hits[:] = [stamp for stamp in hits if stamp >= cutoff]
-        if len(hits) >= DOWNLOAD_EVENT_IP_LIMIT:
-            return False
-        hits.append(now)
-        if len(_download_event_hits) > 2000:
-            stale = [
-                key for key, stamps in _download_event_hits.items()
-                if not stamps or stamps[-1] < cutoff
-            ]
-            for key in stale:
-                _download_event_hits.pop(key, None)
-        return True
+    """Shared SQLite cap so both gunicorn workers count the same addresses."""
+    import hashlib
+    import licence_v1
+    bucket = "ep:download-event:ip:" + hashlib.sha256((ip or "").encode()).hexdigest()
+    allowed, _wait = licence_v1.consume_rate(bucket, DOWNLOAD_EVENT_IP_LIMIT, DOWNLOAD_EVENT_IP_WINDOW)
+    return allowed
 
 
 def reset_download_event_limits():
     with _download_event_lock:
         _download_event_hits.clear()
+    try:
+        db = get_db()
+        db.execute("DELETE FROM rate_limits WHERE bucket LIKE 'ep:download-event:%'")
+        db.commit()
+        db.close()
+    except Exception:
+        logger.exception("Could not reset download-event rate limits")
 
 
 def _utc_day(value, default):
@@ -1038,6 +1055,21 @@ def _send_pro_welcome(row):
         plan_text = "Professional, £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%)"
     else:
         plan_text = "Professional, £25/month ex VAT"
+    import licence_v1
+    plain_key = ""
+    try:
+        plain_key = licence_v1.plaintext_for_subscription(row["stripe_subscription_id"])
+    except Exception:
+        logger.exception("Professional key was not added to the welcome email")
+        raise
+    key_text = ""
+    if plain_key:
+        key_text = (
+            "Your Professional licence key:\n"
+            f"{plain_key}\n\n"
+            "In the app, open Welcome to Node Control and enter this key.\n"
+            "If you lose it, ask for it again. The same key is sent.\n\n"
+        )
     session_id = row["stripe_checkout_session_id"] or ""
     if session_id:
         download_text = f"{site}/pro-success.html?session_id={session_id}"
@@ -1057,7 +1089,8 @@ def _send_pro_welcome(row):
         f"Hi {row['name'] or 'there'},\n\n"
         "Your Node Control Professional subscription is active.\n"
         f"Plan: {plan_text}\n\n"
-        "In the app, open Welcome to Node Control and enter this email address:\n"
+        f"{key_text}"
+        "The subscription email is:\n"
         f"{row['email']}\n\n"
         "Download Pro:\n"
         f"{download_text}\n\n"
@@ -1099,6 +1132,12 @@ def _send_portal_email(email, portal_url):
     )
 
 
+def _legacy_allowlist_enabled():
+    """0.9.40 allowlist.json writes. Off unless LEGACY_ALLOWLIST_SYNC is true."""
+    raw = str(app.config.get("LEGACY_ALLOWLIST_SYNC") or "").strip().lower()
+    return raw in ("1", "true", "yes", "on")
+
+
 def _grant_pro_access(
     email, name, customer_id, subscription_id, session_id, plan, status,
     period_end, cancel_at_period_end,
@@ -1109,7 +1148,11 @@ def _grant_pro_access(
     if not subscription_id:
         raise AllowlistError("Stripe event had no subscription id")
     existing = _get_pro_row_by_subscription(subscription_id)
-    if existing and existing["added_to_allowlist"]:
+    if not _legacy_allowlist_enabled():
+        # Checkout must not depend on GITHUB_PAT_REGISTRATIONS. The 0.9.41
+        # app uses the NCP- key, not allowlist.json.
+        ours = 1 if existing and existing["added_to_allowlist"] else 0
+    elif existing and existing["added_to_allowlist"]:
         ours = 1
     else:
         # Decide before the GitHub write. An address already on the list
@@ -1128,8 +1171,10 @@ def _grant_pro_access(
         "current_period_end": period_end or "",
         "added_to_allowlist": ours,
     })
-    if ours:
+    if _legacy_allowlist_enabled() and ours:
         _add_email_to_allowlist(email)
+    import licence_v1
+    licence_v1.ensure_stripe_pro_key(subscription_id, email, plan)
     row = _get_pro_row_by_subscription(subscription_id)
     if not row["welcomed_at"]:
         if not _send_pro_welcome(row):
@@ -1149,7 +1194,11 @@ def _end_pro_access(email, subscription_id, status, cancel_at_period_end, period
     email = (email or existing["email"] or "").strip().lower()
     removed = False
     try:
-        if email and _should_remove_from_allowlist(email, subscription_id):
+        if (
+            _legacy_allowlist_enabled()
+            and email
+            and _should_remove_from_allowlist(email, subscription_id)
+        ):
             _remove_email_from_allowlist(email)
             removed = True
         _upsert_pro_subscription({
@@ -1241,7 +1290,7 @@ def _handle_subscription_change(sub, deleted=False):
         existing = _get_pro_row_by_subscription(subscription_id)
         if not existing:
             raise RuntimeError(f"No local row for active subscription {subscription_id}")
-        if existing["added_to_allowlist"] and email:
+        if _legacy_allowlist_enabled() and existing["added_to_allowlist"] and email:
             _add_email_to_allowlist(email)
         _upsert_pro_subscription({
             "email": email or existing["email"],
@@ -1338,10 +1387,11 @@ def _read_download_token(token):
 
 
 def _pro_asset_redirect(platform):
-    pat = (app.config.get("PRO_RELEASES_PAT") or "").strip()
+    import licence_v1
+    pat = licence_v1.releases_pat()
     repo = (app.config.get("PRO_RELEASES_REPO") or "").strip()
     if not pat or not repo:
-        raise RuntimeError("PRO_RELEASES_PAT or PRO_RELEASES_REPO is not set")
+        raise RuntimeError("RELEASES_READ_PAT or PRO_RELEASES_REPO is not set")
     ext = ".dmg" if platform == "mac" else ".exe"
     status, _headers, body = _github_request(_github_req(
         f"https://api.github.com/repos/{repo}/releases/latest",
@@ -1487,11 +1537,18 @@ def pro_session():
     except Exception:
         logger.exception("Could not sign download tokens")
         return jsonify({"error": "Downloads are not configured"}), 503
+    licence_key = None
+    try:
+        import licence_v1
+        licence_key = licence_v1.reveal_pro_key_for_session(row["stripe_subscription_id"])
+    except Exception:
+        logger.exception("Could not reveal the Professional key on the success page")
     return jsonify({
         "status": "active",
         "email": row["email"],
         "plan": row["plan"],
         "downloads": downloads,
+        "licence_key": licence_key,
     })
 
 
@@ -1592,6 +1649,12 @@ def request_access():
     Step 1: User submits their details to request free access.
     Generates a verification code, emails it, and stores the pending license.
     """
+    import licence_v1
+    if licence_v1.get_flags()["maintenance"]:
+        return licence_v1.maintenance_response()
+    if licence_v1.is_free_paused():
+        return licence_v1.free_paused_response()
+
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid request body"}), 400
@@ -1707,6 +1770,12 @@ def verify_code():
     Step 2: User enters the 6-digit verification code from their email.
     If valid, activates the license and returns the download code.
     """
+    import licence_v1
+    if licence_v1.get_flags()["maintenance"]:
+        return licence_v1.maintenance_response()
+    if licence_v1.is_free_paused():
+        return licence_v1.free_paused_response()
+
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid request body"}), 400
@@ -1790,6 +1859,12 @@ def redeem():
     Step 3: User enters their download code (NC-XXXX-XXXX) to get download links.
     Validates the code, increments download count, returns URLs.
     """
+    import licence_v1
+    if licence_v1.get_flags()["maintenance"]:
+        return licence_v1.maintenance_response()
+    if licence_v1.is_free_paused():
+        return licence_v1.free_paused_response()
+
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid request body"}), 400
@@ -1821,7 +1896,11 @@ def redeem():
     db.close()
 
     tier = license_row["tier"]
-    downloads = _get_latest_download_urls()
+    try:
+        downloads = licence_v1.free_redeem_links(license_row["id"])
+    except Exception:
+        logger.exception("Could not sign free download links")
+        return jsonify({"success": False, "error": "Downloads are not configured"}), 503
     return jsonify({
         "success": True,
         "tier": tier,
@@ -2029,6 +2108,8 @@ def stats():
 with app.app_context():
     init_db()
     migrate_db()
+    import licence_v1
+    licence_v1.register(app)
 
 if __name__ == "__main__":
     app.run(

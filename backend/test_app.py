@@ -23,6 +23,8 @@ os.environ["GITHUB_PAT"] = "test-read-token"
 os.environ["GITHUB_PAT_WRITE"] = "test-write-token"
 os.environ["LICENSE_REPO"] = "miketpl/node-control-license-free"
 os.environ["SECRET_KEY"] = "test-secret"
+os.environ["FREE_DOWNLOADS_PAUSED"] = "false"
+os.environ["KEY_ENCRYPTION_KEY"] = "11" * 32
 
 import app as api  # noqa: E402
 from app import app, get_db  # noqa: E402

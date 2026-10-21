@@ -1,3 +1,7 @@
+# Old recipe. The Spark runs from ~/node-control-website and reads
+# ~/node-control-website/.env. Point EnvironmentFile and WorkingDirectory
+# at that checkout. cloudflared already proxies api.nodecontrol.io to
+# 127.0.0.1:5000. Do not add a Cloudflare IP firewall in front of this.
 [Unit]
 Description=NodeControl License API
 After=network.target

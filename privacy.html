@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy — Node Control</title>
-    <meta name="description" content="Draft privacy notice for the Node Control website and Free Edition download form.">
+    <meta name="description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
     <link rel="canonical" href="https://nodecontrol.io/privacy.html">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Privacy — Node Control">
-    <meta property="og:description" content="Draft privacy notice for the Node Control website and Free Edition download form.">
+    <meta property="og:description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
     <meta property="og:url" content="https://nodecontrol.io/privacy.html">
     <meta property="og:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Privacy — Node Control">
-    <meta name="twitter:description" content="Draft privacy notice for the Node Control website and Free Edition download form.">
+    <meta name="twitter:description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
     <meta name="twitter:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,7 @@
         <div class="container">
             <p class="draft-notice">Draft, pending review.</p>
             <h1>Privacy</h1>
-            <p>This notice describes personal data collected when you request the Node Control Free Edition from this website. Node Control is a product of The Promised Lan Limited.</p>
+            <p>This notice describes personal data collected when you request the Node Control Free Edition from this website, and when the desktop app talks to the licence server. Node Control is a product of The Promised Lan Limited.</p>
 
             <h2>Who we are</h2>
             <p>The controller is The Promised Lan Limited, a company in the United Kingdom.</p>
@@ -65,8 +65,8 @@
 
             <h2>Where it is kept</h2>
             <p>The details are stored in a licence database on servers the company operates. The verification email is sent through an SMTP provider.</p>
-            <p>The licence code is checked against a list hosted on GitHub.</p>
-            <p>This website is served through GitHub Pages and Cloudflare.</p>
+            <p>The app checks the licence with our server at api.nodecontrol.io.</p>
+            <p>GitHub hosts the installer files. This website is served through GitHub Pages and Cloudflare. Cloudflare proxies the API.</p>
             <p>Transfers of personal data outside the UK, including via the SMTP provider, GitHub, and Cloudflare: <span class="placeholder">[PLACEHOLDER: international transfers]</span></p>
 
             <h2>Analytics and advertising</h2>
@@ -74,8 +74,15 @@
             <p>When you request the Free Edition, the form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign), the host name of the website that referred you, and the path of the page you are on. These are read from the page address when you submit. Nothing is stored in a cookie or in the browser. We store them with your request so we know which channels people find Node Control through. We use them only in totals. They are kept for the same period as the rest of that request.</p>
             <p>When the site starts an installer download, or you click a download link, it records the platform and whether the download was started automatically or from a click. That record is stored against your licence, with the time. If that call fails, the download still starts.</p>
 
+            <h2>In the app</h2>
+            <p>The licence check and device activation send the licence key, a random install id, the app version, and the OS family to api.nodecontrol.io.</p>
+            <p>Update checks send the same kind of request, so the app can tell you when a newer build is published.</p>
+            <p>If you register the install, we store the name, email, organisation, and role you enter, with the app version and OS family, in the licence database. An alert email goes to support@nodecontrol.io.</p>
+            <p>Usage statistics are counts of features used, the session length, the app version, and the OS family. They are linked to the licence, so we can see how a licence uses the product. They do not include device configs, IP addresses, hostnames, or the contents of the network. The app asks at first launch and the choice can be changed in Settings. While it is off, the app sends nothing. Per-user rows are kept for 12 months and then kept only as aggregate counts. You can delete the per-user rows from the app, or by emailing support@nodecontrol.io.</p>
+            <p>Usage statistics and the Privacy and Electronic Communications Regulations: <span class="placeholder">[PLACEHOLDER: solicitor to confirm whether a first-launch opt-out meets PECR, including the statistical exemption in the Data (Use and Access) Act 2025, and the UK GDPR lawful basis for statistics linked to a licence]</span></p>
+
             <h2>Licences</h2>
-            <p>A licence can be revoked.</p>
+            <p>A licence can be revoked. One computer is active on a key at a time. Moving the key to another computer is confirmed by an email code, and is limited to two moves in 30 days.</p>
 
             <h2>How long we keep it</h2>
             <p><span class="placeholder">[PLACEHOLDER: retention period]</span></p>
@@ -99,6 +106,6 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261019tracking"></script>
+    <script src="js/main.js?v=20261021status"></script>
 </body>
 </html>

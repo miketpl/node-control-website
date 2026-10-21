@@ -37,10 +37,11 @@
             <h1>Professional</h1>
             <p id="proStatus">Checking the payment…</p>
             <p id="proEmail" hidden></p>
+            <p id="proKey" hidden></p>
             <div id="proDownloads" hidden>
                 <p><a class="btn btn-primary" id="proMac" href="#">Download for macOS</a></p>
                 <p><a class="btn btn-primary" id="proWin" href="#">Download for Windows</a></p>
-                <p>Each link lasts 30 minutes. Reload this page to get a new one. In the app, open Welcome to Node Control and enter the email shown above.</p>
+                <p>Each link lasts 30 minutes. Reload this page to get a new one. In the app, open Welcome to Node Control and enter the Professional key.</p>
                 <p>To cancel or change the card, use <a href="index.html#manage">Manage a Professional subscription</a>.</p>
             </div>
         </div>
@@ -55,7 +56,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261019tracking"></script>
+    <script src="js/main.js?v=20261021status"></script>
     <script>
         (function () {
             var params = new URLSearchParams(window.location.search);
@@ -65,6 +66,7 @@
                 : 'https://api.nodecontrol.io';
             var statusEl = document.getElementById('proStatus');
             var emailEl = document.getElementById('proEmail');
+            var keyEl = document.getElementById('proKey');
             var downloads = document.getElementById('proDownloads');
             var tries = 0;
 
@@ -74,7 +76,13 @@
 
             function paint(data) {
                 emailEl.hidden = false;
-                emailEl.textContent = 'Register the app with this email: ' + data.email;
+                emailEl.textContent = 'This subscription is for ' + data.email + '.';
+                keyEl.hidden = false;
+                if (data.licence_key) {
+                    keyEl.textContent = 'Professional key: ' + data.licence_key + '. This page shows it for 24 hours.';
+                } else {
+                    keyEl.textContent = 'This page no longer shows the Professional key. The key in the email is the one to enter.';
+                }
                 document.getElementById('proMac').href = api + '/api/pro/download?token=' + encodeURIComponent(data.downloads.mac);
                 document.getElementById('proWin').href = api + '/api/pro/download?token=' + encodeURIComponent(data.downloads.win);
                 downloads.hidden = false;

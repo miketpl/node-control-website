@@ -1,0 +1,12 @@
+# Enable after the matching service has a real User. Daily, with a
+# little jitter so it does not land on the same second every night.
+[Unit]
+Description=Nightly Node Control licence maintenance
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

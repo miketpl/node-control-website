@@ -67,7 +67,7 @@ sentences. If a claim can't be made concretely, don't make it.
 | `js/main.js` | Nav, scroll-spy, download/verification flow, Stripe | **Only with explicit instruction** — and bump its `?v=` cache-buster in `index.html` when it changes, or Cloudflare keeps serving the old file |
 | `docs/` | Documentation site (generated from markdown sources) | Yes — content changes |
 | `images/` | Logos, screenshots, banners | Yes — adding/replacing images |
-| `backend/` | Flask license API **source**. Runs on a separate VPS; editing it here does not deploy it | **No** |
+| `backend/` | Flask licence API source. The Spark reads `~/node-control-website/.env`. Editing it here does not deploy it | **No**, unless the owner explicitly approves a backend change |
 | `CNAME` | Custom-domain binding for GitHub Pages | **No** |
 | `AGENTS.md` | This brief | Only to keep it accurate |
 
@@ -83,7 +83,9 @@ sentences. If a claim can't be made concretely, don't make it.
 2. **Never hardcode release version numbers** in download URLs or copy. Free
    Edition installer URLs come from the backend, which resolves the latest
    release of `miketpl/node-control-releases-free` at request time. That repo
-   must remain public or every free download breaks.
+   and `miketpl/node-control-releases-pro` are private. The server reads them
+   with `RELEASES_READ_PAT` and returns a short-lived signed link. Do not
+   call those release APIs from the website without a token.
 3. **Pricing figures, Stripe attributes (`data-stripe-link`,
    `data-requires-license`), and contact email addresses** change only on
    explicit human instruction.
