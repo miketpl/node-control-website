@@ -8,7 +8,7 @@ This repository does not deploy the VPS. Copy the files onto the box and restart
 
 Copy `.env.example` to `.env` on the server and replace every placeholder. The admin routes stay disabled until `ADMIN_TOKEN` is set to something other than `change-me-in-production`.
 
-`ADMIN_READ_TOKEN` is a second secret for the read-only dashboard. Empty or `change-me-in-production` is ignored. It is accepted only on `GET /api/admin/stats`, `GET /api/admin/stats/v1`, and `GET /api/admin/flags`. Those three return counts and flags, not emails, licence keys, install ids, or IP addresses. `GET /api/admin/pro-keys` includes customer emails, so it stays on `ADMIN_TOKEN`, as do every other admin route: listing licences, changing flags, issuing or revoking keys, resetting a device, resyncing a subscription, and deleting a licence.
+`ADMIN_READ_TOKEN` is a second secret for the read-only dashboard. Empty or `change-me-in-production` is ignored. It is accepted only on `GET /api/admin/stats`, `GET /api/admin/stats/v1`, and `GET /api/admin/flags`. Those three return counts and flags, not emails, licence keys, install ids, or IP addresses. `GET /api/admin/pro-keys` includes customer emails, so it stays on `ADMIN_TOKEN`, as do every other admin route: listing licences, changing flags, issuing or revoking keys, resetting a device, resyncing a subscription, deleting a licence, and sending notices.
 
 | Key | What it is |
 |---|---|
@@ -35,9 +35,13 @@ python3 admin_cli.py flags get
 python3 admin_cli.py flags set free_downloads_paused false
 python3 admin_cli.py pro-key issue --email person@example.com
 python3 admin_cli.py maintenance --local
+python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --dry-run
+python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --confirm
 ```
 
 List, revoke, flags, and Pro key commands call the API. `maintenance --local` opens the database and does not issue a key or call GitHub. When `LEGACY_ALLOWLIST_SYNC=true`, revoke removes the code from `licenses.json` first and only then marks the row revoked. If GitHub cannot be updated, the row is left as it was. When the flag is false, revoke only updates the database.
+
+`notify` sends one template from `email_templates/` through the same mail sender as the 6-digit codes. It needs `ADMIN_TOKEN`. `ADMIN_READ_TOKEN` is rejected. `--dry-run` counts and sends nothing. A real send needs `--confirm` and `NOTICE_UNSUBSCRIBE_SECRET` set to something other than the placeholder. Audiences are `free_downloaded` (verified Free licences with a download), `free_all` (verified Free licences), `pro_active` (active Professional keys, and an active subscription that has no key), and `all`. `--below-version 0.9.41` keeps licences whose newest known version, from a registration or a telemetry session, is below that. Licences with no known version are left out unless `--include-unknown-version` is set. The same template is not sent to the same licence twice. Each mail has a signed unsubscribe link. The command prints `matched`, `already_sent`, `opted_out`, `sent`, and `failed` only. `NOTICE_THROTTLE_SECONDS` is the pause between messages. Empty uses 0.25.
 
 `GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `device_moves` for rows in `device_moves`, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for free installer redirects, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month`, `day` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].day` is the UTC day.
 
