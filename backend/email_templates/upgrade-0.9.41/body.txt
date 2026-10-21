@@ -1,0 +1,22 @@
+Hi,
+
+Thanks for downloading Node Control Free. We've just released version 0.9.41, and version 0.9.40 will stop working soon, so please update when you have a moment.
+
+Normally you wouldn't need to do anything, because Node Control checks for updates itself and installs them for you. This time we fixed an issue that stops 0.9.40 from updating on its own, so you'll need to download 0.9.41 once by hand. After that, updates will happen automatically again.
+
+It only takes a couple of minutes:
+
+1) Go to https://nodecontrol.io and click 'Get Node Control Free'.
+2) Enter your email to get a new download code, then download the installer for your computer.
+3) Close Node Control if it's open, then run the installer. It will install over your current version.
+4) Open Node Control and sign in with the same email if it asks.
+
+If anything doesn't work, just reply to this email and I'll sort it out.
+
+Thanks again for trying Node Control.
+
+Mike
+Node Control
+
+---
+To stop these notices, open {{unsubscribe_url}}

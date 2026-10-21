@@ -23,6 +23,8 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py reset-device --licence NC-ABCD-2345
     python3 admin_cli.py pro-resync --subscription sub_123
     python3 admin_cli.py maintenance --local
+    python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --dry-run
+    python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --confirm
 """
 
 import argparse
@@ -50,7 +52,7 @@ def _base():
     return os.environ.get("API_BASE", "http://127.0.0.1:5000").rstrip("/")
 
 
-def api(method, path, payload=None):
+def api(method, path, payload=None, timeout=30):
     data = None
     headers = {
         "Authorization": f"Bearer {_token()}",
@@ -66,7 +68,7 @@ def api(method, path, payload=None):
         headers=headers,
     )
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             body = resp.read().decode("utf-8")
             return resp.status, json.loads(body) if body else {}
     except urllib.error.HTTPError as exc:
@@ -182,6 +184,34 @@ def cmd_maintenance(_args):
     print(json.dumps(licence_v1.run_maintenance()))
 
 
+def cmd_notify(args):
+    """Send one notice template. Prints counts only."""
+    if args.dry_run and args.confirm:
+        print("Pass either --dry-run or --confirm.", file=sys.stderr)
+        sys.exit(2)
+    if not args.dry_run and not args.confirm:
+        print("A real send needs --confirm. Use --dry-run to count only.", file=sys.stderr)
+        sys.exit(2)
+    payload = {
+        "template": args.template,
+        "audience": args.audience,
+        "dry_run": bool(args.dry_run),
+        "include_unknown_version": bool(args.include_unknown_version),
+    }
+    if args.below_version:
+        payload["below_version"] = args.below_version
+    status, body = api("POST", "/api/admin/notify", payload, timeout=600)
+    if status != 200 or not isinstance(body, dict):
+        print(f"API {status}: request failed", file=sys.stderr)
+        sys.exit(1)
+    for key in ("matched", "already_sent", "opted_out", "sent", "failed"):
+        value = body.get(key)
+        if not isinstance(value, int):
+            print("API response was not counts.", file=sys.stderr)
+            sys.exit(1)
+        print(f"{key} {value}")
+
+
 def cmd_stats(args):
     query = []
     if args.since:
@@ -266,6 +296,23 @@ def main(argv=None):
         help="Open the database in this process",
     )
     maintenance.set_defaults(func=cmd_maintenance)
+
+    notify = sub.add_parser("notify", help="Send a service notice. Prints counts only")
+    notify.add_argument("--template", required=True)
+    notify.add_argument(
+        "--audience",
+        required=True,
+        choices=("free_downloaded", "free_all", "pro_active", "all"),
+    )
+    notify.add_argument("--below-version", default="", help="Only licences whose newest known version is below this")
+    notify.add_argument(
+        "--include-unknown-version",
+        action="store_true",
+        help="With --below-version, also include licences with no known version",
+    )
+    notify.add_argument("--dry-run", action="store_true", help="Count only. Nothing is sent")
+    notify.add_argument("--confirm", action="store_true", help="Send. Required for a real run")
+    notify.set_defaults(func=cmd_notify)
 
     args = parser.parse_args(argv)
     args.func(args)

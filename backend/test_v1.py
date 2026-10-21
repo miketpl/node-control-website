@@ -138,6 +138,7 @@ class V1Tests(unittest.TestCase):
             "email_codes", "registrations", "telemetry_sessions", "telemetry_monthly",
             "server_flags", "release_cache", "rate_limits", "stripe_events",
             "download_events", "update_check_daily",
+            "notices_sent", "notice_opt_outs",
         ):
             db.execute(f"DELETE FROM {table}")
         db.commit()

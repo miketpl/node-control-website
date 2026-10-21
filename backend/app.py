@@ -114,6 +114,10 @@ app.config.update(
     # Empty disables the alert. The default address is the public support mailbox.
     REGISTRATION_ALERT_EMAIL=os.environ.get("REGISTRATION_ALERT_EMAIL", "support@nodecontrol.io"),
     API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
+    # Signs one-click notice unsubscribe links. Empty or the placeholder disables sending.
+    NOTICE_UNSUBSCRIBE_SECRET=os.environ.get("NOTICE_UNSUBSCRIBE_SECRET", ""),
+    # Seconds to wait between notice emails. Empty uses 0.25.
+    NOTICE_THROTTLE_SECONDS=os.environ.get("NOTICE_THROTTLE_SECONDS", ""),
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -310,6 +314,9 @@ def migrate_db():
             )
             from licence_v1 import V1_SCHEMA
             for statement in V1_SCHEMA:
+                _apply_schema(db, statement)
+            from notices import SCHEMA as NOTICE_SCHEMA
+            for statement in NOTICE_SCHEMA:
                 _apply_schema(db, statement)
             db.commit()
         except Exception:
@@ -1130,10 +1137,13 @@ def _email_for_subscription(subscription_id, stripe_sub):
     return _customer_email_from_stripe(_stripe_id((stripe_sub or {}).get("customer")))
 
 
-def _send_mail(to_email, subject, text_body, html_body):
+def _send_mail(to_email, subject, text_body, html_body, log_recipient=True):
     cfg = app.config
     if not cfg.get("SMTP_USER") or not cfg.get("SMTP_PASS"):
-        logger.error("SMTP not configured — email to %s was not sent", to_email)
+        if log_recipient:
+            logger.error("SMTP not configured — email to %s was not sent", to_email)
+        else:
+            logger.error("SMTP not configured — email was not sent")
         return False
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -1148,7 +1158,10 @@ def _send_mail(to_email, subject, text_body, html_body):
             server.send_message(msg)
         return True
     except Exception as exc:
-        logger.error("Failed to send email to %s: %s", to_email, exc)
+        if log_recipient:
+            logger.error("Failed to send email to %s: %s", to_email, exc)
+        else:
+            logger.error("Failed to send email")
         return False
 
 
@@ -2227,6 +2240,8 @@ with app.app_context():
     migrate_db()
     import licence_v1
     licence_v1.register(app)
+    import notices
+    notices.register(app)
 
 if __name__ == "__main__":
     app.run(
