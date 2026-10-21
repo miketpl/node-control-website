@@ -56,8 +56,10 @@ class GitHubFake:
         self.codes = []
         self.sha = "sha-1"
         self.fail = False
+        self.calls = []
 
     def urlopen(self, req, timeout=10):
+        self.calls.append(req.full_url)
         if self.fail:
             raise HTTPError(req.full_url, 503, "unavailable", hdrs=None, fp=None)
         if req.get_method() == "GET":
@@ -87,6 +89,7 @@ class LicenceApiTests(unittest.TestCase):
         app.config["GITHUB_PAT_WRITE"] = "test-write-token"
         app.config["ADMIN_TOKEN"] = "test-admin-token"
         app.config["ADMIN_READ_TOKEN"] = ""
+        app.config["LEGACY_ALLOWLIST_SYNC"] = "true"
         app.config["LICENSE_REPO"] = "miketpl/node-control-license-free"
         db = get_db()
         db.execute("DELETE FROM licenses")
@@ -261,6 +264,68 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(res.status_code, 502)
         self.assertNotIn("download_code", res.get_json())
         self.assertEqual(self._pending()["status"], "pending")
+
+    @patch("app.smtplib.SMTP")
+    def test_verify_and_redeem_need_no_github_pat_when_legacy_sync_is_false(self, smtp):
+        app.config["LEGACY_ALLOWLIST_SYNC"] = "false"
+        app.config["GITHUB_PAT"] = ""
+        app.config["GITHUB_PAT_WRITE"] = ""
+        self.github.fail = True
+        self.github.calls = []
+        self.assertEqual(self._request().status_code, 200)
+        code = self._verify_code()
+        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        self.assertEqual(verified.status_code, 200)
+        issued = verified.get_json()["download_code"]
+        self.assertTrue(issued.startswith("NC-"))
+        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self.github.calls, [])
+        self.assertEqual(self.github.codes, [])
+
+        redeemed = self.client.post("/api/redeem", json={"code": issued})
+        self.assertEqual(redeemed.status_code, 200)
+        body = redeemed.get_json()
+        self.assertTrue(body["success"])
+        self.assertEqual(body["download_count"], 1)
+        self.assertIn("/api/v1/download/free/mac?t=", body["downloads"]["mac"])
+        self.assertIn("/api/v1/download/free/win?t=", body["downloads"]["win"])
+        self.assertEqual(self.github.calls, [])
+
+        health = self.client.get("/api/health")
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(health.get_json()["status"], "ok")
+        self.assertEqual(self.github.calls, [])
+
+        revoked = self.client.delete(
+            f"/api/admin/licenses/{self._pending()['id']}",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(revoked.status_code, 200)
+        self.assertEqual(self._pending()["status"], "revoked")
+        self.assertEqual(self.github.calls, [])
+        self.assertEqual(self.github.codes, [])
+
+        with patch("app.urlopen", side_effect=AssertionError("github was called")):
+            api._add_code_to_licenses("NC-SKIP-0001")
+            api._remove_code_from_licenses("NC-SKIP-0001")
+            with self.assertRaises(RuntimeError):
+                api._github_headers()
+            with self.assertRaises(RuntimeError):
+                api._get_licenses_json()
+            with self.assertRaises(api.AllowlistError):
+                api._registrations_pat()
+
+    @patch("app.smtplib.SMTP")
+    def test_legacy_sync_publishes_the_code_when_enabled(self, smtp):
+        app.config["LEGACY_ALLOWLIST_SYNC"] = "true"
+        self.assertEqual(self._request().status_code, 200)
+        code = self._verify_code()
+        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        self.assertEqual(verified.status_code, 200)
+        issued = verified.get_json()["download_code"]
+        self.assertIn(issued, self.github.codes)
+        self.assertTrue(any("licenses.json" in url for url in self.github.calls))
+        self.assertEqual(self._pending()["status"], "active")
 
     @patch("app.smtplib.SMTP")
     def test_already_active_points_at_support(self, smtp):

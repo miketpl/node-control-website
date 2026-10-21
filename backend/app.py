@@ -95,7 +95,8 @@ app.config.update(
     # Upper bound for a download token. The payload also carries its own exp.
     PRO_DOWNLOAD_TOKEN_MAX_AGE=int(os.environ.get("PRO_DOWNLOAD_TOKEN_MAX_AGE", 7 * 24 * 3600)),
 
-    # 0.9.41. Empty LEGACY_ALLOWLIST_SYNC means the webhook does not write allowlist.json.
+    # Empty or false: do not read or write licenses.json or allowlist.json,
+    # and do not call GitHub with GITHUB_PAT or GITHUB_PAT_WRITE.
     LEGACY_ALLOWLIST_SYNC=os.environ.get("LEGACY_ALLOWLIST_SYNC", ""),
     # Read-only on the private releases-free and releases-pro repos. PRO_RELEASES_PAT is the fallback.
     RELEASES_READ_PAT=os.environ.get("RELEASES_READ_PAT", ""),
@@ -622,7 +623,11 @@ def _github_headers(write=False):
     """Common headers for GitHub Contents API calls.
 
     Uses GITHUB_PAT_WRITE for mutations, falls back to GITHUB_PAT.
+    Refuses while LEGACY_ALLOWLIST_SYNC is off, so a caller cannot
+    send either token by accident.
     """
+    if not _legacy_allowlist_enabled():
+        raise RuntimeError("GitHub licence sync is off. Set LEGACY_ALLOWLIST_SYNC=true to use it.")
     pat = app.config["GITHUB_PAT_WRITE"] if write else app.config["GITHUB_PAT"]
     if not pat:
         pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
@@ -690,8 +695,12 @@ def _add_code_to_licenses(new_code: str):
 
     The desktop app reads this file on startup to validate free-tier codes.
     Raises if the file cannot be updated. Callers must not tell the user
-    the licence is active unless this returns.
+    the licence is active unless this returns. When LEGACY_ALLOWLIST_SYNC
+    is off this returns without a request, and the caller activates SQLite.
     """
+    if not _legacy_allowlist_enabled():
+        logger.info("licenses.json sync is off. %s was not published.", new_code)
+        return
     pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
         raise RuntimeError("No GitHub PAT configured for licence sync")
@@ -711,7 +720,13 @@ def _add_code_to_licenses(new_code: str):
 
 
 def _remove_code_from_licenses(code: str):
-    """Remove a revoked license code from licenses.json in GitHub."""
+    """Remove a revoked license code from licenses.json in GitHub.
+
+    When LEGACY_ALLOWLIST_SYNC is off this returns without a request.
+    """
+    if not _legacy_allowlist_enabled():
+        logger.info("licenses.json sync is off. %s was not removed.", code)
+        return
     pat = app.config["GITHUB_PAT_WRITE"] or app.config["GITHUB_PAT"]
     if not pat:
         raise RuntimeError("No GitHub PAT configured for licence sync")
@@ -818,7 +833,15 @@ def _stripe_id(value):
 
 
 def _registrations_pat():
-    """Token for allowlist.json. Prefer the dedicated PAT, else the existing write PAT."""
+    """Token for allowlist.json. Prefer the dedicated PAT, else the existing write PAT.
+
+    The fallback is GITHUB_PAT_WRITE, so this stays behind the same switch
+    as licenses.json. A caller cannot use that token while sync is off.
+    """
+    if not _legacy_allowlist_enabled():
+        raise AllowlistError(
+            "Pro allow-list sync is off. Set LEGACY_ALLOWLIST_SYNC=true to use it."
+        )
     pat = (app.config.get("GITHUB_PAT_REGISTRATIONS") or "").strip()
     if not pat:
         pat = (app.config.get("GITHUB_PAT_WRITE") or "").strip()
@@ -1213,7 +1236,11 @@ def _send_portal_email(email, portal_url):
 
 
 def _legacy_allowlist_enabled():
-    """0.9.40 allowlist.json writes. Off unless LEGACY_ALLOWLIST_SYNC is true."""
+    """0.9.40 GitHub licence files. Off unless LEGACY_ALLOWLIST_SYNC is true.
+
+    Covers allowlist.json and licenses.json, including reads, and any
+    GitHub call that would send GITHUB_PAT or GITHUB_PAT_WRITE.
+    """
     raw = str(app.config.get("LEGACY_ALLOWLIST_SYNC") or "").strip().lower()
     return raw in ("1", "true", "yes", "on")
 
@@ -1902,9 +1929,10 @@ def verify_code():
     license_id = license_row["id"]
     db.close()
 
-    # Publish first. The row stays pending until GitHub has the code, so a
-    # failure leaves the same 6-digit code usable and the page never shows
-    # an NC- code the app would reject.
+    # When legacy sync is on, publish first. The row stays pending until
+    # GitHub has the code, so a failure leaves the same 6-digit code usable
+    # and the page never shows an NC- code the app would reject. When it is
+    # off, _add_code_to_licenses returns without a request.
     try:
         _add_code_to_licenses(download_code)
     except Exception as exc:
@@ -2074,8 +2102,9 @@ def list_licenses():
 def revoke_license(license_id):
     """Revoke a license in GitHub and SQLite together.
 
-    GitHub is updated first. If that fails, SQLite is left as it was, so
-    the database never says revoked while the app still accepts the code.
+    When LEGACY_ALLOWLIST_SYNC is on, GitHub is updated first. If that
+    fails, SQLite is left as it was, so the database never says revoked
+    while the app still accepts the code. When it is off, only SQLite changes.
     """
     db = get_db()
     row = db.execute(
@@ -2108,6 +2137,12 @@ def revoke_license(license_id):
     except Exception as exc:
         db.rollback()
         logger.error(f"SQLite revoke failed after GitHub removal: {exc}")
+        if not _legacy_allowlist_enabled():
+            db.close()
+            return jsonify({
+                "success": False,
+                "error": "Licence was not revoked. The database update failed.",
+            }), 502
         try:
             _add_code_to_licenses(code)
         except Exception as restore_exc:

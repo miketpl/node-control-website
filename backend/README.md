@@ -1,6 +1,6 @@
 # NodeControl licence API
 
-Flask service for the free-download form: email a 6-digit code, then publish an `NC-` code to the private GitHub list the desktop app reads (`miketpl/node-control-license-free`, file `licenses.json`).
+Flask service for the free-download form: email a 6-digit code, then store an `NC-` code in SQLite. Publishing that code to `licenses.json` happens only when `LEGACY_ALLOWLIST_SYNC=true`.
 
 This repository does not deploy the VPS. Copy the files onto the box and restart the service yourself.
 
@@ -18,7 +18,7 @@ Copy `.env.example` to `.env` on the server and replace every placeholder. The a
 | `GITHUB_PAT_WRITE` | GitHub PAT with Contents write on that repo |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the 6-digit code |
 
-`GITHUB_PAT` is optional and read-only. Writes use `GITHUB_PAT_WRITE`, then fall back to `GITHUB_PAT`.
+`GITHUB_PAT` is optional and read-only. Writes use `GITHUB_PAT_WRITE`, then fall back to `GITHUB_PAT`. Neither token is sent unless `LEGACY_ALLOWLIST_SYNC=true`.
 
 ## Admin CLI
 
@@ -37,7 +37,7 @@ python3 admin_cli.py pro-key issue --email person@example.com
 python3 admin_cli.py maintenance --local
 ```
 
-List, revoke, flags, and Pro key commands call the API. `maintenance --local` opens the database and does not issue a key. Revoke removes the code from `licenses.json` first and only then marks the row revoked. If GitHub cannot be updated, the row is left as it was.
+List, revoke, flags, and Pro key commands call the API. `maintenance --local` opens the database and does not issue a key or call GitHub. When `LEGACY_ALLOWLIST_SYNC=true`, revoke removes the code from `licenses.json` first and only then marks the row revoked. If GitHub cannot be updated, the row is left as it was. When the flag is false, revoke only updates the database.
 
 `GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `device_moves` for rows in `device_moves`, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for free installer redirects, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month`, `day` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].day` is the UTC day.
 
@@ -99,7 +99,7 @@ Stripe Tax is on (`automatic_tax`, billing address required, tax ID collection).
 
 Checkout issues one `NCP-` key per Stripe subscription and stores it encrypted with `KEY_ENCRYPTION_KEY`. Resend returns that same key. The success page shows it for 24 hours. `allowlist.json` is not updated. Set `LEGACY_ALLOWLIST_SYNC=true` only if an old client still needs that file. Hand-added beta keys are `python3 admin_cli.py pro-key issue --email …`. That command does not run on startup.
 
-Free codes are still published to `licenses.json` with `GITHUB_PAT_WRITE` so 0.9.40 clients can check a licence. `miketpl/node-control-releases-free` and `miketpl/node-control-releases-pro` are private. `RELEASES_READ_PAT` reads both. `PRO_RELEASES_PAT` is the fallback. The website redeem response is still `{downloads: {mac, win}}`. Those URLs are server-signed links on this API, and each one redirects to GitHub's short-lived asset URL. The PAT is not put in the redirect.
+Free codes stay in SQLite. They are published to `licenses.json` with `GITHUB_PAT_WRITE` only when `LEGACY_ALLOWLIST_SYNC=true`, for a 0.9.40 client that still reads that file. The same flag is required before the API reads `licenses.json` or calls GitHub with `GITHUB_PAT` or `GITHUB_PAT_WRITE` (including the allow-list, which falls back to `GITHUB_PAT_WRITE`). `miketpl/node-control-releases-free` and `miketpl/node-control-releases-pro` are private. `RELEASES_READ_PAT` reads both whether or not the flag is set. `PRO_RELEASES_PAT` is the fallback. The website redeem response is still `{downloads: {mac, win}}`. Those URLs are server-signed links on this API, and each one redirects to GitHub's short-lived asset URL. The PAT is not put in the redirect.
 
 `GET /api/pro/download?token=` checks a short-lived signed token and an active subscription, then redirects the same way.
 
