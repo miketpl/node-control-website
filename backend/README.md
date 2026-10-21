@@ -48,6 +48,16 @@ List, revoke, flags, and Pro key commands call the API. `maintenance --local` op
 
 `--licence-id` narrows that audience to those ids. The value is a comma-separated list, and the flag can be repeated (`--licence-id 22` or `--licence-id 22,25`). `--exclude-licence-id` uses the same form and leaves those ids out. On `POST /api/admin/notify` the same filters are `licence_ids` and `exclude_licence_ids`, each a list of positive integers. Audience, version, opt-out, and already-sent checks still apply. For a Free audience the id is the number `list` prints. For `pro_active` it is the Professional key id, or the subscription row id when that subscription has no key yet. An id that does not exist, or is not in the audience, adds to `not_matched` and is not printed. With either flag the command also prints `not_matched`. It still prints counts only.
 
+## Admin alerts
+
+`ADMIN_ALERT_EMAIL` receives a short mail when a Free installer redirect is served, when a Free sign-up is verified, and when a Professional checkout is paid. Empty means the alerts are off, so they can be switched off later without a code change. The mail goes out on a background thread. If sending fails, the log line has no address, and the download, the verification response, and the webhook status stay as they were.
+
+The body has the event, tier, platform, architecture when the file name has one, version, time in Europe/London, licence id, utm source, medium and campaign, the referrer host, the landing path, and the totals for today and all time. It has no email address, no name, no company, and no IP address.
+
+A click or an auto beacon is the same download as the installer redirect that follows it. The alert is sent for that redirect. A second redirect for the same licence and platform within 5 minutes is the same download and does not send another mail. At most 30 of these alerts go out in an hour. The next event sends one summary, with no licence ids, and then nothing further until the hour has moved on.
+
+`ADMIN_ALERT_SKIP_LICENCE_IDS` is an optional comma-separated list of licence ids to ignore. A Free id is the number `list` prints. A Professional id is the Professional key id.
+
 `GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `device_moves` for rows in `device_moves`, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for free installer redirects, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month`, `day` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].day` is the UTC day.
 
 `GET /api/v1/status` and update-check report no minimum when `MIN_SUPPORTED_VERSION_FREE` or `MIN_SUPPORTED_VERSION_PRO` is empty and no flag is set. If the configured minimum is higher than the latest published release for that tier, the response uses the published version and the process logs a warning.
@@ -87,7 +97,7 @@ python3 admin_cli.py flags set free_downloads_paused false
 No secrets required. SMTP and GitHub are mocked.
 
 ```bash
-cd backend && python3 -m unittest test_app test_pro test_v1 -q
+cd backend && python3 -m unittest test_app test_pro test_v1 test_notify test_alerts -q
 ```
 
 ## Professional subscriptions
@@ -132,6 +142,8 @@ Free codes stay in SQLite. They are published to `licenses.json` with `GITHUB_PA
 | `MIN_SUPPORTED_VERSION_PRO` | Leave unset, or `0.9.40`, until 0.9.41 is published. Empty means no minimum. A higher value is capped to the latest published release. |
 | `API_PUBLIC_URL` | Default `https://api.nodecontrol.io`. Used in signed Free links. |
 | `REGISTRATION_ALERT_EMAIL` | Default `support@nodecontrol.io`. Empty disables the alert. |
+| `ADMIN_ALERT_EMAIL` | Empty disables instant admin alerts. Set the mailbox to turn them on. |
+| `ADMIN_ALERT_SKIP_LICENCE_IDS` | Optional comma-separated licence ids to leave out of those alerts. |
 | `PRO_DOWNLOAD_SECRET` | Signs download tokens. Falls back to `SECRET_KEY`. |
 | `SITE_URL` | `https://nodecontrol.io`. Used for Checkout return URLs. |
 

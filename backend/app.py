@@ -113,6 +113,10 @@ app.config.update(
     TELEMETRY_ACCEPT=os.environ.get("TELEMETRY_ACCEPT", "true"),
     # Empty disables the alert. The default address is the public support mailbox.
     REGISTRATION_ALERT_EMAIL=os.environ.get("REGISTRATION_ALERT_EMAIL", "support@nodecontrol.io"),
+    # Empty disables instant admin alerts. Set the mailbox to turn them on.
+    ADMIN_ALERT_EMAIL=os.environ.get("ADMIN_ALERT_EMAIL", ""),
+    # Optional comma-separated licence ids. Alerts for these ids are not sent.
+    ADMIN_ALERT_SKIP_LICENCE_IDS=os.environ.get("ADMIN_ALERT_SKIP_LICENCE_IDS", ""),
     API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
     # Signs one-click notice unsubscribe links. Empty or the placeholder disables sending.
     NOTICE_UNSUBSCRIBE_SECRET=os.environ.get("NOTICE_UNSUBSCRIBE_SECRET", ""),
@@ -317,6 +321,9 @@ def migrate_db():
                 _apply_schema(db, statement)
             from notices import SCHEMA as NOTICE_SCHEMA
             for statement in NOTICE_SCHEMA:
+                _apply_schema(db, statement)
+            from alerts import SCHEMA as ALERT_SCHEMA
+            for statement in ALERT_SCHEMA:
                 _apply_schema(db, statement)
             db.commit()
         except Exception:
@@ -1371,6 +1378,29 @@ def _handle_checkout_completed(session):
         period_end=_period_end_iso(sub),
         cancel_at_period_end=bool(sub.get("cancel_at_period_end")),
     )
+    # Renewals arrive as invoice.paid and do not alert. A checkout that
+    # is not paid yet does not either.
+    if session.get("payment_status") == "paid":
+        _queue_pro_purchase_alert(subscription_id)
+
+
+def _queue_pro_purchase_alert(subscription_id):
+    """Licence id is the Professional key id. No customer fields are passed."""
+    try:
+        import alerts
+        db = get_db()
+        try:
+            key = db.execute(
+                "SELECT id FROM pro_keys WHERE subscription_id = ?",
+                (subscription_id,),
+            ).fetchone()
+        finally:
+            db.close()
+        if not key:
+            return
+        alerts.queue({"kind": "pro_purchase", "licence_id": int(key["id"])})
+    except Exception:
+        logging.getLogger("alerts").error("Admin alert was not sent")
 
 
 def _handle_invoice_paid(invoice):
@@ -1968,12 +1998,32 @@ def verify_code():
         logger.error("Licence %s was published to GitHub but the database row was not activated", license_id)
         return jsonify({"success": False, "error": LICENCE_SYNC_ERROR}), 502
 
+    _queue_free_signup_alert(license_row, license_id)
+
     return jsonify({
         "success": True,
         "download_code": download_code,
         "tier": "free",
         "message": "Email verified! Here's your download code.",
     })
+
+
+def _queue_free_signup_alert(license_row, license_id):
+    """Verified Free sign-up. The row's address, name, company, and IP stay out."""
+    try:
+        import alerts
+        alerts.queue({
+            "kind": "free_verified",
+            "licence_id": license_id,
+            "platform": license_row["platform"] if license_row else "",
+            "utm_source": license_row["utm_source"] if license_row else "",
+            "utm_medium": license_row["utm_medium"] if license_row else "",
+            "utm_campaign": license_row["utm_campaign"] if license_row else "",
+            "referrer": license_row["referrer"] if license_row else "",
+            "landing_page": license_row["landing_page"] if license_row else "",
+        })
+    except Exception:
+        logging.getLogger("alerts").error("Admin alert was not sent")
 
 
 @app.route("/api/redeem", methods=["POST"])
