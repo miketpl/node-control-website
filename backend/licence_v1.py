@@ -81,7 +81,10 @@ PAUSED_MESSAGE = (
     "(v0.9.41). Please check back soon."
 )
 
-# Checked in this order by the guard. day windows are separate buckets.
+# Checked in this order. Each window is its own bucket: the key includes
+# the scope and the window length. The daily window and the 00:00 UTC
+# hour both start at the same second, so a shared name would count
+# one request twice during that hour.
 LIMITS = {
     "activate": (("key", 10, 3600), ("ip", 30, 3600)),
     "licence-check": (("key", 30, 3600), ("ip", 60, 3600)),
@@ -557,22 +560,29 @@ def consume_rate(bucket, limit, window_seconds):
     return True, 0
 
 
+def _limit_bucket(endpoint, scope, window, token):
+    """One counter per endpoint, scope and window length.
+
+    window_start alone is not enough. At 00:00 UTC the hourly and daily
+    windows share a start time, so they need different bucket names.
+    """
+    digest = hashlib.sha256(token.encode()).hexdigest()
+    return f"ep:{endpoint}:{scope}:{int(window)}:{digest}"
+
+
 def _enforce_limits(endpoint, parts):
     retry = 0
     allowed = True
     for scope, limit, window in LIMITS.get(endpoint, ()):
-        token = parts.get(scope) or parts.get("key") or ""
         if scope == "key-day":
             token = parts.get("key") or ""
-            label = "key"
         elif scope == "licence":
             token = str(parts.get("licence") or "")
-            label = "licence"
         else:
-            label = scope
+            token = parts.get(scope) or ""
         if not token:
             continue
-        bucket = f"ep:{endpoint}:{label}:{hashlib.sha256(token.encode()).hexdigest()}"
+        bucket = _limit_bucket(endpoint, scope, window, token)
         ok, wait = consume_rate(bucket, limit, window)
         if not ok:
             allowed = False
@@ -2253,9 +2263,33 @@ def _admin_resync():
     return jsonify({"synced": True, "subscription_id": subscription_id, "status": sub.get("status")})
 
 
+# Flask raises these before a view runs (unknown path, wrong method,
+# oversized body, uncaught exception). Views that return their own
+# response, including the legacy {"error": "..."} bodies, are left as
+# they are. Paths outside /api/ keep Flask's normal HTML.
+_STATUS_ERRORS = {
+    400: ("bad_request", "Malformed JSON, missing field or bad type."),
+    404: ("not_found", "That resource was not found."),
+    405: ("method_not_allowed", "That method is not allowed."),
+    413: ("payload_too_large", "The request body is too large."),
+    429: ("rate_limited", "Too many requests. Try again later."),
+    500: ("internal_error", "Something went wrong."),
+}
+
+
+def _api_error_response(err):
+    if not (request.path or "").startswith("/api/"):
+        return err.get_response()
+    status = int(getattr(err, "code", None) or 500)
+    code, message = _STATUS_ERRORS.get(status, ("internal_error", "Something went wrong."))
+    return error(status, code, message)
+
+
 def register(flask_app):
     """Attach /api/v1 routes. Called once from app.py after the tables exist."""
     api = _api()
+    for status_code in _STATUS_ERRORS:
+        flask_app.register_error_handler(status_code, _api_error_response)
 
     @flask_app.before_request
     def _v1_request_id():

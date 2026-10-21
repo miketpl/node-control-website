@@ -8,6 +8,7 @@ import tempfile
 import time
 import unittest
 import uuid
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 os.environ["DB_PATH"] = tempfile.mktemp(suffix=".db")
@@ -25,6 +26,26 @@ os.environ["REGISTRATION_ALERT_EMAIL"] = "support@nodecontrol.io"
 import app as api
 import licence_v1
 from app import app, get_db
+
+
+def _test_limited():
+    from flask import abort
+    abort(429)
+
+
+def _test_explode():
+    raise RuntimeError("sql password=secret-value")
+
+
+def _test_page_explode():
+    raise RuntimeError("page-secret")
+
+
+# Registered at import, before the first request. These paths exist only
+# in the test process.
+app.add_url_rule("/api/v1/__limited", "v1_test_limited", _test_limited, methods=["GET"])
+app.add_url_rule("/api/v1/__explode", "v1_test_explode", _test_explode, methods=["GET"])
+app.add_url_rule("/site-explode", "site_test_explode", _test_page_explode, methods=["GET"])
 
 
 def _rate_child(db_path, bucket, limit, count, queue):
@@ -827,6 +848,135 @@ class V1Tests(unittest.TestCase):
         status = self.client.get("/api/v1/status")
         self.assertTrue(status.get_json()["maintenance"])
         licence_v1.set_flag("maintenance", "false")
+
+    def _window_counts(self, endpoint, scope):
+        prefix = f"ep:{endpoint}:{scope}:"
+        db = get_db()
+        rows = db.execute("SELECT bucket, count FROM rate_limits").fetchall()
+        db.close()
+        return {
+            row["bucket"]: row["count"]
+            for row in rows
+            if row["bucket"].startswith(prefix)
+        }
+
+    def test_hourly_and_daily_limits_do_not_share_the_midnight_hour(self):
+        # 00:30 UTC: the hour window and the day window start at the same second.
+        moment = datetime(2026, 10, 21, 0, 30, tzinfo=timezone.utc)
+        stamp = moment.timestamp()
+        self.assertEqual(int(stamp) - (int(stamp) % 3600), int(stamp) - (int(stamp) % 86400))
+        self._activate(self.free["code"], self.install_a)
+        download = {
+            "version": "latest",
+            "platform": "mac",
+        }
+        with patch("licence_v1.time.time", return_value=stamp):
+            statuses = []
+            for _ in range(10):
+                res = self.client.post(
+                    "/api/v1/app/download",
+                    json=download,
+                    headers=self._headers(self.free["code"], self.install_a),
+                )
+                statuses.append(res.status_code)
+            blocked = self.client.post(
+                "/api/v1/app/download",
+                json=download,
+                headers=self._headers(self.free["code"], self.install_a),
+            )
+        self.assertEqual(statuses, [200] * 10)
+        self.assertEqual(blocked.status_code, 429)
+        self.assertEqual(self._body(blocked)["error"]["code"], "rate_limited")
+        hourly = self._window_counts("download", "key")
+        daily = self._window_counts("download", "key-day")
+        self.assertEqual(list(hourly.values()), [11])
+        self.assertEqual(list(daily.values()), [11])
+        self.assertIn(":3600:", next(iter(hourly)))
+        self.assertIn(":86400:", next(iter(daily)))
+
+        with patch("licence_v1.time.time", return_value=stamp):
+            move_statuses = []
+            for _ in range(3):
+                res = self.client.post(
+                    "/api/v1/app/device/move",
+                    json={},
+                    headers=self._headers(self.free["code"], self.install_b),
+                )
+                move_statuses.append(res.status_code)
+            move_blocked = self.client.post(
+                "/api/v1/app/device/move",
+                json={},
+                headers=self._headers(self.free["code"], self.install_b),
+            )
+        self.assertEqual(move_statuses, [202, 202, 202])
+        self.assertEqual(move_blocked.status_code, 429)
+        self.assertEqual(self._body(move_blocked)["error"]["code"], "rate_limited")
+        move_hour = self._window_counts("move", "key")
+        move_day = self._window_counts("move", "key-day")
+        self.assertEqual(list(move_hour.values()), [4])
+        self.assertEqual(list(move_day.values()), [4])
+        self.assertTrue(all(":3600:" in bucket for bucket in move_hour))
+        self.assertTrue(all(":86400:" in bucket for bucket in move_day))
+
+    def test_api_errors_are_json_without_traces(self):
+        missing = self.client.get("/api/v1/does-not-exist")
+        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(self._body(missing)["error"]["code"], "not_found")
+        self.assertTrue(self._body(missing)["request_id"])
+        self.assertNotIn("Traceback", missing.get_data(as_text=True))
+
+        wrong = self.client.post("/api/v1/status", json={})
+        self.assertEqual(wrong.status_code, 405)
+        self.assertEqual(self._body(wrong)["error"]["code"], "method_not_allowed")
+
+        malformed = self.client.post(
+            "/api/request-access",
+            data=b"{",
+            content_type="application/json",
+        )
+        self.assertEqual(malformed.status_code, 400)
+        self.assertEqual(self._body(malformed)["error"]["code"], "bad_request")
+        self.assertNotIn("Traceback", malformed.get_data(as_text=True))
+
+        legacy = self.client.post("/api/checkout", json={"plan": "weekly"})
+        self.assertEqual(legacy.status_code, 400)
+        self.assertEqual(legacy.get_json()["error"], "plan must be monthly or annual")
+
+        page = self.client.get("/not-a-website-page")
+        self.assertEqual(page.status_code, 404)
+        self.assertIn("html", page.content_type)
+        self.assertNotIn(b"request_id", page.data)
+
+        previous_limit = app.config.get("MAX_CONTENT_LENGTH")
+        app.config["MAX_CONTENT_LENGTH"] = 32
+        try:
+            huge = self.client.post(
+                "/api/redeem",
+                data=b"{" + b" " * 80,
+                content_type="application/json",
+            )
+        finally:
+            app.config["MAX_CONTENT_LENGTH"] = previous_limit
+        self.assertEqual(huge.status_code, 413)
+        self.assertEqual(self._body(huge)["error"]["code"], "payload_too_large")
+        self.assertNotIn("Traceback", huge.get_data(as_text=True))
+
+        capped = self.client.get("/api/v1/__limited")
+        self.assertEqual(capped.status_code, 429)
+        self.assertEqual(self._body(capped)["error"]["code"], "rate_limited")
+
+        boom = self.client.get("/api/v1/__explode")
+        body = boom.get_data(as_text=True)
+        self.assertEqual(boom.status_code, 500)
+        self.assertEqual(boom.get_json()["error"]["code"], "internal_error")
+        self.assertNotIn("secret-value", body)
+        self.assertNotIn("Traceback", body)
+
+        page_boom = self.client.get("/site-explode")
+        self.assertEqual(page_boom.status_code, 500)
+        self.assertIn("html", page_boom.content_type)
+        self.assertNotIn(b"internal_error", page_boom.data)
+        self.assertNotIn(b"page-secret", page_boom.data)
 
     def test_internal_error_when_move_mail_fails(self):
         self._activate(self.free["code"], self.install_a)
