@@ -53,12 +53,12 @@
             <p>This page is a draft. It is not a finished privacy notice.</p>
 
             <h2>Who we are</h2>
-            <p>The controller is The Promised Lan Limited, a company in the United Kingdom.</p>
-            <p>Company number: <span class="placeholder">[COMPANY NUMBER]</span></p>
-            <p>Registered address: <span class="placeholder">[REGISTERED ADDRESS]</span></p>
-            <p>ICO registration number: <span class="placeholder">[ICO REGISTRATION NUMBER]</span></p>
+            <p>The controller is The Promised Lan Limited, a company registered in England and Wales, trading as Node Control. Node Control is a product of The Promised Lan Limited.</p>
+            <p>Company number: 12571780.</p>
+            <p>Registered office: 266-268 Wickham Road, Shirley, Croydon, Surrey, CR0 8BJ, United Kingdom.</p>
+            <!-- ICO registration number goes here once registered. There is no registration number yet. -->
             <p>Data protection officer: <span class="placeholder">[DPO, OR CONFIRM THERE IS NONE]</span></p>
-            <p>Privacy requests go to <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a>.</p>
+            <p>Privacy requests go to <a href="mailto:privacy@nodecontrol.io">privacy@nodecontrol.io</a>.</p>
 
             <h2>Purposes</h2>
             <p>We use personal data for the following. The lawful basis for each one is still open: <span class="placeholder">[LAWFUL BASIS FOR EACH PURPOSE]</span></p>
@@ -100,8 +100,8 @@
             <h2>Usage statistics</h2>
             <p>If you leave usage statistics on, the app sends counts for that session: how long it ran, how many connections it opened, how many errors it counted, and counts of tasks such as topology, backup, and ping. It also sends the app version, OS family, OS major version, and architecture. The row is stored against the licence and the install id. It is not anonymous.</p>
             <p>The server drops a user name, company, hostname, or machine id if the app sends one. The stored counts do not include device configs, hostnames, IP addresses, or the contents of the network.</p>
-            <p>The app asks at first launch. You can turn this off in Settings. While it is off, the app is not supposed to send these counts. You can delete the session rows from the app, or by emailing support@nodecontrol.io.</p>
-            <p>Session rows are kept for 365 days by default, then folded into monthly totals. The monthly totals are edition, version, OS family, and the counts. They do not include the licence or the install id. The code does not delete the monthly totals.</p>
+            <p>The app asks at first launch. You can turn this off in Settings. While it is off, the app is not supposed to send these counts. You can delete the session rows from the app, or by emailing privacy@nodecontrol.io.</p>
+            <p>Session rows are kept for 365 days, which is the current server setting, then folded into monthly totals. The monthly totals are edition, version, OS family, and the counts. They do not include the licence or the install id. We delete or anonymise those totals on request, or periodically.</p>
             <p>Whether a first-launch opt-out meets PECR, including any statistical exemption, and the UK GDPR lawful basis for statistics linked to a licence: <span class="placeholder">[LAWFUL BASIS AND PECR FOR USAGE STATISTICS]</span></p>
 
             <h2>Update checks</h2>
@@ -125,7 +125,8 @@
                 <li>GitHub hosts the installer files. Your browser downloads the installer from GitHub, so GitHub sees that download. The licence server also asks GitHub for release details, using its own token.</li>
                 <li>A legacy switch can copy a free licence code to a file on GitHub. That file contains codes, not names or email addresses. The same switch can copy a Professional email address to a GitHub allow-list. The switch is off unless it is turned on.</li>
                 <li>Stripe processes the Professional payment, as above.</li>
-                <li>Email is sent by SMTP. The provider is <span class="placeholder">[EMAIL PROVIDER]</span>.</li>
+                <!-- SMTP host comes from the server environment. The code names no live provider. The unset default is not the host in use. -->
+                <li>Email is sent by our email delivery provider, over SMTP.</li>
                 <li>Every page on this site loads the Inter font from fonts.googleapis.com and fonts.gstatic.com. Your browser sends your IP address, and the address of the page, to Google. This site does not load an analytics script, an advertising pixel, or a similar tracker.</li>
             </ul>
             <p>There is no separate cookie page. Cookies are described below.</p>
@@ -135,10 +136,13 @@
 
             <h2>How long we keep it</h2>
             <ul>
-                <li>Usage-statistics session rows: 365 days by default, then monthly totals that the code does not delete.</li>
-                <li>Rate-limit hashes: about two days.</li>
-                <li>Device-move codes: 15 minutes, then deleted when maintenance runs. The free-download verification code expires after 72 hours if you do not enter it. The licence row itself is not deleted on that timer.</li>
-                <li>Licence rows, registration rows, device rows, subscription rows, update-check counts, and notice records: the code has no automatic deletion. <span class="placeholder">[RETENTION FOR THESE RECORDS]</span></li>
+                <li>Usage-statistics session rows: 365 days, then monthly totals that are not tied to a licence. We delete or anonymise those totals on request, or periodically.</li>
+                <li>Update-check totals are counts of edition, platform, and version. They are not tied to a person. We delete or anonymise them on request, or periodically.</li>
+                <li>Rate-limit hashes: about two days. Maintenance removes them.</li>
+                <li>An unverified sign-up: we keep it for 30 days. The 6-digit code expires after 72 hours. We delete or anonymise the sign-up on request, or periodically.</li>
+                <li>An expired email code: we keep it for 30 days. A device-move code expires after 15 minutes, and maintenance removes expired codes when it runs. We delete or anonymise any that remain on request, or periodically.</li>
+                <li>Licence and registration records, including the computer a licence is active on and the record that a product notice was sent: we keep them while the licence is active, and for 2 years after it ends. We delete or anonymise them on request, or periodically.</li>
+                <li>Stripe and billing records: we keep them for 6 years, for UK tax. We delete or anonymise them on request, or periodically.</li>
             </ul>
 
             <h2>Cookies and local storage</h2>
@@ -154,7 +158,7 @@
 
             <h2>Your rights</h2>
             <p>Under UK GDPR you can ask for access to the personal data we hold about you, and you can ask for it to be corrected or deleted. You can ask us to restrict how we use it. You can object to a use based on legitimate interests, and you can object to direct marketing. Where a use is based on consent or on a contract, and is carried out by automated means, you can ask for a copy in a portable form. Where a use is based on consent, you can withdraw that consent. Withdrawing consent does not affect a use that has already happened.</p>
-            <p>Write to <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a>. UK GDPR says the reply should be without undue delay, and within one month in most cases.</p>
+            <p>Write to <a href="mailto:privacy@nodecontrol.io">privacy@nodecontrol.io</a>. UK GDPR says the reply should be without undue delay, and within one month in most cases.</p>
             <p>You can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a>.</p>
 
             <h2>Changes to this notice</h2>
