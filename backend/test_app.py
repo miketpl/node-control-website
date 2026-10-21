@@ -87,6 +87,7 @@ class LicenceApiTests(unittest.TestCase):
         app.config["GITHUB_PAT_WRITE"] = "test-write-token"
         app.config["ADMIN_TOKEN"] = "test-admin-token"
         app.config["ADMIN_READ_TOKEN"] = ""
+        app.config["LEGACY_ALLOWLIST_SYNC"] = "true"
         app.config["LICENSE_REPO"] = "miketpl/node-control-license-free"
         db = get_db()
         db.execute("DELETE FROM licenses")
@@ -261,6 +262,37 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(res.status_code, 502)
         self.assertNotIn("download_code", res.get_json())
         self.assertEqual(self._pending()["status"], "pending")
+
+    @patch("app.smtplib.SMTP")
+    def test_verify_and_revoke_skip_github_when_legacy_sync_is_off(self, smtp):
+        app.config["LEGACY_ALLOWLIST_SYNC"] = ""
+        self.github.fail = True
+        self.assertEqual(self._request().status_code, 200)
+        code = self._verify_code()
+        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        self.assertEqual(verified.status_code, 200)
+        issued = verified.get_json()["download_code"]
+        self.assertTrue(issued.startswith("NC-"))
+        self.assertEqual(self.github.codes, [])
+        self.assertEqual(self._pending()["status"], "active")
+
+        revoked = self.client.delete(
+            f"/api/admin/licenses/{self._pending()['id']}",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(revoked.status_code, 200)
+        self.assertEqual(self.github.codes, [])
+        self.assertEqual(self._pending()["status"], "revoked")
+
+        with patch("app.urlopen", side_effect=AssertionError("github was called")):
+            api._add_code_to_licenses("NC-SKIP-0001")
+            api._remove_code_from_licenses("NC-SKIP-0001")
+            with self.assertRaises(RuntimeError):
+                api._github_headers()
+            with self.assertRaises(RuntimeError):
+                api._get_licenses_json()
+            with self.assertRaises(api.AllowlistError):
+                api._registrations_pat()
 
     @patch("app.smtplib.SMTP")
     def test_already_active_points_at_support(self, smtp):
