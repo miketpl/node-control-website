@@ -128,16 +128,21 @@ class V1Tests(unittest.TestCase):
         self.github_patch.start()
         self.mail_patch = patch.object(api, "_send_mail", side_effect=self._send)
         self.mail_patch.start()
-        licence_v1.clear_flag_cache()
+        app.config["ADMIN_TOKEN"] = "test-admin-token"
+        app.config["ADMIN_READ_TOKEN"] = ""
+        app.config["MIN_SUPPORTED_VERSION_FREE"] = "0.9.41"
+        app.config["MIN_SUPPORTED_VERSION_PRO"] = "0.9.41"
         db = get_db()
         for table in (
             "licenses", "pro_keys", "pro_subscriptions", "devices", "device_moves",
             "email_codes", "registrations", "telemetry_sessions", "telemetry_monthly",
             "server_flags", "release_cache", "rate_limits", "stripe_events",
+            "download_events", "update_check_daily",
         ):
             db.execute(f"DELETE FROM {table}")
         db.commit()
         db.close()
+        licence_v1.clear_flag_cache()
         self.free = self._insert_free()
         self.install_a = str(uuid.uuid4())
         self.install_b = str(uuid.uuid4())
@@ -399,6 +404,10 @@ class V1Tests(unittest.TestCase):
         pro_install = str(uuid.uuid4())
         self.assertEqual(self._activate(pro, pro_install, tier="pro").status_code, 200)
         self.github.urls.clear()
+        db = get_db()
+        db.execute("DELETE FROM release_cache")
+        db.commit()
+        db.close()
         pro_check = self.client.post(
             "/api/v1/app/update-check",
             json={
@@ -600,6 +609,7 @@ class V1Tests(unittest.TestCase):
 
     def test_registration_stays_in_the_database(self):
         self._activate(self.free["code"], self.install_a)
+        self.github.urls.clear()
         payload = {
             "registration_token": str(uuid.uuid4()),
             "name": "Person",
@@ -994,6 +1004,353 @@ class V1Tests(unittest.TestCase):
             self.mail_patch.start()
         self.assertEqual(res.status_code, 500)
         self.assertEqual(self._body(res)["error"]["code"], "internal")
+
+    def test_admin_read_token_is_rejected_on_writes(self):
+        app.config["ADMIN_READ_TOKEN"] = "test-read-token"
+        read = {"Authorization": "Bearer test-read-token"}
+        write = {"Authorization": "Bearer test-admin-token"}
+        try:
+            for path in (
+                "/api/admin/stats",
+                "/api/admin/flags",
+                "/api/admin/pro-keys",
+                "/api/admin/stats/v1",
+            ):
+                allowed = self.client.get(path, headers=read)
+                self.assertEqual(allowed.status_code, 200, path)
+                also = self.client.get(path, headers=write)
+                self.assertEqual(also.status_code, 200, path)
+            self.assertEqual(
+                self.client.get("/api/admin/licenses", headers=write).status_code, 200
+            )
+            denied = (
+                ("GET", "/api/admin/licenses", None),
+                ("PUT", "/api/admin/flags", {"maintenance": False}),
+                ("POST", "/api/admin/pro-keys", {"email": "x@example.com"}),
+                ("POST", "/api/admin/pro-keys/1/revoke", None),
+                ("POST", "/api/admin/devices/" + self.free["code"] + "/reset", None),
+                ("POST", "/api/admin/pro/resync", {"subscription_id": "sub_test"}),
+                ("DELETE", "/api/admin/licenses/1", None),
+            )
+            for method, path, payload in denied:
+                res = self.client.open(path, method=method, json=payload, headers=read)
+                self.assertEqual(res.status_code, 401, path)
+                self.assertEqual(res.get_json()["error"], "Unauthorized")
+            placeholder = self.client.get(
+                "/api/admin/stats/v1",
+                headers={"Authorization": "Bearer change-me-in-production"},
+            )
+            self.assertEqual(placeholder.status_code, 401)
+            self.assertEqual(self.client.get("/api/admin/stats/v1").status_code, 401)
+
+            app.config["ADMIN_TOKEN"] = "change-me-in-production"
+            app.config["ADMIN_READ_TOKEN"] = "change-me-in-production"
+            disabled = self.client.get(
+                "/api/admin/stats/v1",
+                headers={"Authorization": "Bearer test-read-token"},
+            )
+            self.assertEqual(disabled.status_code, 503)
+
+            app.config["ADMIN_TOKEN"] = ""
+            app.config["ADMIN_READ_TOKEN"] = "test-read-token"
+            still = self.client.get("/api/admin/stats/v1", headers=read)
+            self.assertEqual(still.status_code, 200)
+            blocked = self.client.put(
+                "/api/admin/flags",
+                json={"maintenance": False},
+                headers=read,
+            )
+            self.assertEqual(blocked.status_code, 503)
+            self.assertEqual(blocked.get_json()["error"], "admin disabled")
+        finally:
+            app.config["ADMIN_TOKEN"] = "test-admin-token"
+            app.config["ADMIN_READ_TOKEN"] = ""
+
+    def test_update_check_daily_count_and_stats(self):
+        api.migrate_db()
+        api.migrate_db()
+        missed = self.client.post(
+            "/api/v1/app/update-check",
+            json={
+                "tier": "free", "current_version": "0.9.41", "platform": "mac",
+                "arch": "arm64", "channel": "stable",
+            },
+            headers=self._headers(self.free["code"], self.install_a),
+        )
+        self.assertEqual(missed.status_code, 403)
+        self._activate(self.free["code"], self.install_a)
+        bad = self.client.post(
+            "/api/v1/app/update-check",
+            json={
+                "tier": "free", "current_version": "0.9.41", "platform": "linux",
+                "arch": "arm64", "channel": "stable",
+            },
+            headers=self._headers(self.free["code"], self.install_a),
+        )
+        self.assertEqual(bad.status_code, 400)
+        db = get_db()
+        self.assertEqual(
+            db.execute("SELECT COUNT(*) AS c FROM update_check_daily").fetchone()["c"], 0
+        )
+        db.close()
+
+        self.github.fail = True
+        db = get_db()
+        db.execute("DELETE FROM release_cache")
+        db.commit()
+        db.close()
+        failed = self.client.post(
+            "/api/v1/app/update-check",
+            json={
+                "tier": "free", "current_version": "0.9.41", "platform": "mac",
+                "arch": "arm64", "channel": "stable",
+            },
+            headers=self._headers(self.free["code"], self.install_a),
+        )
+        self.assertEqual(failed.status_code, 503)
+        self.github.fail = False
+        db = get_db()
+        db.execute("DELETE FROM release_cache")
+        db.commit()
+        db.close()
+        for _ in range(2):
+            ok = self.client.post(
+                "/api/v1/app/update-check",
+                json={
+                    "tier": "free", "current_version": "0.9.41", "platform": "mac",
+                    "arch": "arm64", "channel": "stable",
+                },
+                headers=self._headers(self.free["code"], self.install_a),
+            )
+            self.assertEqual(ok.status_code, 200)
+        db = get_db()
+        cols = {row["name"] for row in db.execute("PRAGMA table_info(update_check_daily)")}
+        row = db.execute(
+            "SELECT day, tier, platform, app_version, count FROM update_check_daily"
+        ).fetchone()
+        db.close()
+        self.assertEqual(cols, {"day", "tier", "platform", "app_version", "count"})
+        self.assertEqual(row["count"], 3)
+        self.assertEqual(row["tier"], "free")
+        self.assertEqual(row["platform"], "mac")
+        self.assertEqual(row["app_version"], "0.9.41")
+        self.assertEqual(len(row["day"]), 10)
+
+        with patch.object(api, "get_db", side_effect=RuntimeError("busy")):
+            licence_v1.record_update_check("free", "mac", "0.9.41")
+
+        listed = self.client.get(
+            "/api/admin/stats/v1",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(listed.status_code, 200)
+        checks = listed.get_json()["update_checks"]
+        self.assertEqual(len(checks), 1)
+        self.assertEqual(checks[0]["tier"], "free")
+        self.assertEqual(checks[0]["platform"], "mac")
+        self.assertEqual(checks[0]["version"], "0.9.41")
+        self.assertEqual(checks[0]["count"], 3)
+        self.assertEqual(checks[0]["month"], row["day"])
+        narrow = self.client.get(
+            "/api/admin/stats/v1?since=2099-01-01&until=2099-01-02",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(narrow.get_json()["update_checks"], [])
+
+    def test_stats_v1_counts_have_no_pii(self):
+        plain = self._insert_pro()
+        self._activate(self.free["code"], self.install_a)
+        db = get_db()
+        db.execute(
+            """
+            UPDATE licenses
+            SET utm_source = 'newsletter', utm_medium = 'email', ip_address = '203.0.113.50'
+            WHERE id = ?
+            """,
+            (self.free["id"],),
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (
+                code, name, email, company, platform, tier, status, created_at,
+                utm_source, referrer, ip_address
+            ) VALUES (
+                'NC-REF1-REF1', 'Person', 'ref@example.com', '', 'macos', 'free', 'pending',
+                '2026-10-21T00:00:00', '', 'example.com', '198.51.100.20'
+            )
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (
+                code, name, email, company, platform, tier, status, created_at, ip_address
+            ) VALUES (
+                'NC-DIR1-DIR1', 'Person', 'direct@example.com', '', 'macos', 'free', 'pending',
+                '2026-10-21T00:00:00', '192.0.2.10'
+            )
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO device_moves (
+                licence_kind, licence_ref, from_install_id, to_install_id, moved_at
+            ) VALUES ('free', ?, 'from-install', ?, '2026-10-21T01:00:00Z')
+            """,
+            (self.free["id"], self.install_a),
+        )
+        db.execute(
+            """
+            INSERT INTO registrations (
+                licence_kind, licence_ref, install_id, registration_token, name, email, created_at
+            ) VALUES ('free', ?, ?, 'tok-1', 'Person', 'reg@example.com', '2026-10-21T02:00:00Z')
+            """,
+            (self.free["id"], self.install_a),
+        )
+        db.execute(
+            """
+            INSERT INTO telemetry_sessions (
+                licence_ref, licence_kind, install_id, session_id, tier, app_version, os_family,
+                first_received_at, last_received_at
+            ) VALUES (?, 'free', ?, 'abcdabcdabcdabcd', 'free', '0.9.41', 'mac', ?, ?)
+            """,
+            (self.free["id"], self.install_a, "2026-10-21T03:00:00Z", "2026-10-21T03:00:00Z"),
+        )
+        db.execute(
+            """
+            INSERT INTO telemetry_monthly (
+                month, tier, app_version, os_family, counter_name, total, session_count, install_count
+            ) VALUES ('2026-10', 'free', '0.9.41', 'mac', 'errors', 4, 2, 1)
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at)
+            VALUES (?, 'mac', 'redirect', '2026-10-21T04:00:00Z')
+            """,
+            (self.free["id"],),
+        )
+        db.commit()
+        db.close()
+
+        res = self.client.get(
+            "/api/admin/stats/v1",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        self.assertEqual(
+            set(body),
+            {
+                "window", "licences", "pro_keys", "activations", "devices",
+                "registrations", "telemetry", "downloads", "update_checks",
+                "flags", "db_bytes", "generated_at",
+            },
+        )
+        text = res.get_data(as_text=True)
+        for secret in (
+            "free@example.com", "pro@example.com", "ref@example.com",
+            "direct@example.com", "reg@example.com", plain, self.install_a,
+            "203.0.113.50", "198.51.100.20", "192.0.2.10", "tok-1",
+            "from-install", "abcdabcdabcdabcd",
+        ):
+            self.assertNotIn(secret, text)
+        self.assertNotIn("device_resets", text)
+        self.assertNotIn("moves_requested", text)
+        self.assertNotIn("opt_out", text)
+        self.assertNotIn("rate_limit", text)
+
+        sources = {(row["tier"], row["status"], row["source"]): row["count"] for row in body["licences"]}
+        self.assertEqual(sources[("free", "active", "newsletter")], 1)
+        self.assertEqual(sources[("free", "pending", "ref:example.com")], 1)
+        self.assertEqual(sources[("free", "pending", "(direct)")], 1)
+        for row in body["licences"]:
+            self.assertEqual(set(row), {"tier", "status", "source", "count"})
+        self.assertEqual(body["pro_keys"], [{"status": "active", "plan": "monthly", "count": 1}])
+        self.assertEqual(body["activations"], [{"tier": "free", "status": "confirmed", "count": 1}])
+        self.assertEqual(body["devices"], [{"tier": "free", "platform": "mac", "count": 1}])
+        self.assertEqual(body["registrations"], 1)
+        self.assertIsInstance(body["registrations"], int)
+        sessions = [row for row in body["telemetry"] if row["status"] == "sessions"]
+        installs = [row for row in body["telemetry"] if row["status"] == "installs"]
+        rollups = [row for row in body["telemetry"] if row["status"] == "rollups"]
+        self.assertEqual(sessions, [{
+            "status": "sessions", "tier": "free", "version": "0.9.41", "os": "mac", "count": 1,
+        }])
+        self.assertEqual(installs, [{"status": "installs", "tier": "free", "count": 1}])
+        self.assertEqual(rollups, [{
+            "status": "rollups", "month": "2026-10", "tier": "free",
+            "version": "0.9.41", "os": "mac", "count": 2,
+        }])
+        self.assertEqual(body["downloads"], [{"tier": "free", "platform": "mac", "count": 1}])
+        self.assertEqual(body["update_checks"], [])
+        self.assertIsInstance(body["db_bytes"], int)
+        self.assertGreater(body["db_bytes"], 0)
+        self.assertTrue(body["generated_at"].endswith("Z"))
+        self.assertFalse(body["flags"]["free_downloads_paused"])
+        self.assertEqual(body["flags"]["min_supported_version_free"], "0.9.41")
+        self.assertEqual(body["window"]["since"], "0000-01-01")
+        bad = self.client.get(
+            "/api/admin/stats/v1?since=nope",
+            headers={"Authorization": "Bearer test-admin-token"},
+        )
+        self.assertEqual(bad.status_code, 400)
+
+    def test_minimum_version_is_unset_or_capped_to_the_release(self):
+        app.config["MIN_SUPPORTED_VERSION_FREE"] = ""
+        app.config["MIN_SUPPORTED_VERSION_PRO"] = ""
+        licence_v1.clear_flag_cache()
+        status = self.client.get("/api/v1/status")
+        self.assertIsNone(status.get_json()["min_supported_version"]["free"])
+        self.assertIsNone(status.get_json()["min_supported_version"]["pro"])
+        old = self._activate(self.free["code"], self.install_a, version="0.9.40")
+        self.assertEqual(old.status_code, 200)
+        checked = self.client.post(
+            "/api/v1/app/update-check",
+            json={
+                "tier": "free", "current_version": "0.9.40", "platform": "mac",
+                "arch": "arm64", "channel": "stable",
+            },
+            headers=self._headers(self.free["code"], self.install_a, version="0.9.40"),
+        )
+        self.assertEqual(checked.status_code, 200)
+        self.assertIsNone(checked.get_json()["min_supported_version"])
+        self.assertFalse(checked.get_json()["force_update"])
+
+        db = get_db()
+        db.execute("DELETE FROM devices")
+        db.execute("DELETE FROM release_cache")
+        db.commit()
+        db.close()
+        app.config["MIN_SUPPORTED_VERSION_FREE"] = "0.9.42"
+        app.config["MIN_SUPPORTED_VERSION_PRO"] = "0.9.42"
+        licence_v1.clear_flag_cache()
+        licence_v1._cap_warned.clear()
+        with self.assertLogs("licence_v1", level="WARNING") as logs:
+            capped = self.client.get("/api/v1/status")
+        self.assertEqual(capped.get_json()["min_supported_version"]["free"], "0.9.41")
+        self.assertEqual(capped.get_json()["min_supported_version"]["pro"], "0.9.41")
+        self.assertEqual(capped.get_json()["latest_version"]["free"], "0.9.41")
+        self.assertTrue(any("0.9.42" in line and "0.9.41" in line for line in logs.output))
+
+        current = self._activate(self.free["code"], self.install_a, version="0.9.41")
+        self.assertEqual(current.status_code, 200)
+        self.assertEqual(
+            current.get_json()["licence"]["update"]["min_supported_version"], "0.9.41"
+        )
+        self.assertFalse(current.get_json()["licence"]["update"]["force_update"])
+        behind = self._activate(self.free["code"], self.install_b, version="0.9.40")
+        self.assertEqual(behind.status_code, 426)
+        looked = self.client.post(
+            "/api/v1/app/update-check",
+            json={
+                "tier": "free", "current_version": "0.9.41", "platform": "mac",
+                "arch": "arm64", "channel": "stable",
+            },
+            headers=self._headers(self.free["code"], self.install_a),
+        )
+        self.assertEqual(looked.status_code, 200)
+        self.assertEqual(looked.get_json()["min_supported_version"], "0.9.41")
+        self.assertFalse(looked.get_json()["force_update"])
 
 
 if __name__ == "__main__":

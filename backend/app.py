@@ -10,6 +10,7 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 import base64
 import fcntl
+import hashlib
 import hmac
 import html
 import json
@@ -20,6 +21,7 @@ import sqlite3
 import smtplib
 import logging
 import re
+import subprocess
 import threading
 import time
 from email.mime.text import MIMEText
@@ -50,6 +52,8 @@ app.config.update(
     DB_PATH=os.environ.get("DB_PATH", "licenses.db"),
     # Empty, or the public placeholder, means the admin API stays off.
     ADMIN_TOKEN=os.environ.get("ADMIN_TOKEN", ""),
+    # Read-only dashboard. Empty or the placeholder is ignored.
+    ADMIN_READ_TOKEN=os.environ.get("ADMIN_READ_TOKEN", ""),
 
     # SMTP settings
     SMTP_HOST=os.environ.get("SMTP_HOST", "smtp.gmail.com"),
@@ -101,8 +105,9 @@ app.config.update(
     FREE_DOWNLOADS_PAUSED=os.environ.get("FREE_DOWNLOADS_PAUSED", ""),
     FREE_PAUSED_MESSAGE=os.environ.get("FREE_PAUSED_MESSAGE", ""),
     MAINTENANCE=os.environ.get("MAINTENANCE", ""),
-    MIN_SUPPORTED_VERSION_FREE=os.environ.get("MIN_SUPPORTED_VERSION_FREE", "0.9.41"),
-    MIN_SUPPORTED_VERSION_PRO=os.environ.get("MIN_SUPPORTED_VERSION_PRO", "0.9.41"),
+    # Empty means no minimum. A floor is only applied when this or a flag is set.
+    MIN_SUPPORTED_VERSION_FREE=os.environ.get("MIN_SUPPORTED_VERSION_FREE", ""),
+    MIN_SUPPORTED_VERSION_PRO=os.environ.get("MIN_SUPPORTED_VERSION_PRO", ""),
     TELEMETRY_RETENTION_DAYS=os.environ.get("TELEMETRY_RETENTION_DAYS", "365"),
     TELEMETRY_ACCEPT=os.environ.get("TELEMETRY_ACCEPT", "true"),
     # Empty disables the alert. The default address is the public support mailbox.
@@ -117,6 +122,36 @@ logger = logging.getLogger(__name__)
 # This is the support address on nodecontrol.io. Do not invent another.
 SUPPORT_EMAIL = "support@nodecontrol.io"
 ADMIN_TOKEN_PLACEHOLDER = "change-me-in-production"
+
+
+def _resolve_git_sha():
+    """Short commit at startup. A failure leaves the health field as unknown."""
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(Path(__file__).resolve().parent.parent),
+            timeout=2,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        sha = (proc.stdout or "").strip()
+        if proc.returncode == 0 and sha and not any(ch.isspace() for ch in sha):
+            return sha
+    except Exception:
+        logger.warning("Could not read the deployed git SHA")
+    return "unknown"
+
+
+def deployed_git_sha():
+    """GIT_SHA wins. Otherwise the commit read once at startup."""
+    override = (os.environ.get("GIT_SHA") or "").strip()
+    if override:
+        return override
+    return GIT_SHA_AT_START
+
+
+GIT_SHA_AT_START = _resolve_git_sha()
 EMAIL_SEND_ERROR = (
     "We could not send the verification email. Please try again in a few minutes."
 )
@@ -503,6 +538,51 @@ def require_admin(f):
         if not hmac.compare_digest(presented, configured):
             return jsonify({"error": "Unauthorized"}), 401
         return f(*args, **kwargs)
+    return decorated
+
+
+def _usable_admin_secret(value):
+    """Empty and the public placeholder are not secrets."""
+    value = (value or "").strip()
+    if not value or value == ADMIN_TOKEN_PLACEHOLDER:
+        return ""
+    return value
+
+
+def _bearer_token():
+    header = request.headers.get("Authorization", "")
+    if not header.lower().startswith("bearer "):
+        return ""
+    return header[7:]
+
+
+def _bearer_matches(presented, expected):
+    """Constant-time compare. Hashing keeps the length of the two sides equal."""
+    if not expected:
+        return False
+    return hmac.compare_digest(
+        hashlib.sha256((presented or "").encode("utf-8")).digest(),
+        hashlib.sha256(expected.encode("utf-8")).digest(),
+    )
+
+
+def require_admin_read(f):
+    """Accept the write token or the read-only token.
+
+    Write routes stay on require_admin. A read token cannot pass those.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        admin = _usable_admin_secret(app.config.get("ADMIN_TOKEN"))
+        reader = _usable_admin_secret(app.config.get("ADMIN_READ_TOKEN"))
+        if not admin and not reader:
+            return jsonify({"error": "admin disabled"}), 503
+        presented = _bearer_token()
+        ok_admin = _bearer_matches(presented, admin)
+        ok_reader = _bearer_matches(presented, reader)
+        if ok_admin or ok_reader:
+            return f(*args, **kwargs)
+        return jsonify({"error": "Unauthorized"}), 401
     return decorated
 
 
@@ -1635,11 +1715,13 @@ def health():
             "status": "error",
             "service": "nodecontrol-license-api",
             "database": "unavailable",
+            "git_sha": deployed_git_sha(),
         }), 503
     return jsonify({
         "status": "ok",
         "service": "nodecontrol-license-api",
         "database": "ok",
+        "git_sha": deployed_git_sha(),
     })
 
 
@@ -2053,7 +2135,7 @@ def revoke_license(license_id):
 
 
 @app.route("/api/admin/stats", methods=["GET"])
-@require_admin
+@require_admin_read
 def stats():
     """Get license statistics."""
     db = get_db()

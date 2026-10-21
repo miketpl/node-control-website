@@ -12,6 +12,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 import re
 import secrets
 import sqlite3
@@ -245,9 +246,20 @@ V1_SCHEMA = (
         PRIMARY KEY (bucket, window_start)
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS update_check_daily (
+        day TEXT NOT NULL,
+        tier TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        app_version TEXT NOT NULL,
+        count INTEGER NOT NULL,
+        UNIQUE(day, tier, platform, app_version)
+    )
+    """,
 )
 
 _flag_cache = {"at": 0.0, "values": None}
+_cap_warned = set()
 
 
 def _api():
@@ -322,10 +334,10 @@ def _flag_defaults():
         "free_paused_message": message or PAUSED_MESSAGE,
         "maintenance": "true" if _config_bool("MAINTENANCE", False) else "false",
         "min_supported_version_free": (
-            api.app.config.get("MIN_SUPPORTED_VERSION_FREE") or "0.9.41"
+            api.app.config.get("MIN_SUPPORTED_VERSION_FREE") or ""
         ).strip(),
         "min_supported_version_pro": (
-            api.app.config.get("MIN_SUPPORTED_VERSION_PRO") or "0.9.41"
+            api.app.config.get("MIN_SUPPORTED_VERSION_PRO") or ""
         ).strip(),
     }
 
@@ -994,9 +1006,8 @@ def _previous_install(kind, ref):
 
 
 def licence_payload(record, install_id, app_version):
-    flags = get_flags()
     now = utcnow()
-    minimum = flags["min_supported_version"].get(record["tier"]) or "0.9.41"
+    minimum = effective_minimum(record["tier"])
     current = parse_version(app_version or "")
     floor = parse_version(minimum)
     device = _active_device(record["kind"], record["id"])
@@ -1159,7 +1170,7 @@ def _guard(endpoint, needs_device=False, check_version=True, body_tier=True):
         parsed = parse_version(version if isinstance(version, str) else "")
         if parsed is None:
             return None, error(400, "bad_version", "The version is not N.N.N.")
-        floor = parse_version(get_flags()["min_supported_version"].get(record["tier"]) or "")
+        floor = parse_version(effective_minimum(record["tier"]) or "")
         if floor and parsed < floor:
             latest = _latest_known(record["tier"])
             shown = latest or ".".join(str(part) for part in floor)
@@ -1214,6 +1225,32 @@ def _latest_known(kind):
         return _version_of(release)
     except Exception:
         return ""
+
+
+def effective_minimum(tier):
+    """Configured floor, capped so it is never above the latest published release.
+
+    An empty configuration means no minimum. When the published release
+    cannot be read, the configured floor is left as it is.
+    """
+    configured = (get_flags()["min_supported_version"].get(tier) or "").strip()
+    if parse_version(configured) is None:
+        return None
+    latest = _latest_known(tier)
+    latest_parsed = parse_version(latest) if latest else None
+    if latest_parsed and parse_version(configured) > latest_parsed:
+        marker = (tier, configured, latest)
+        if marker not in _cap_warned:
+            _cap_warned.add(marker)
+            logger.warning(
+                "Minimum version for %s is %s, above the latest published release %s. Reporting %s.",
+                tier,
+                configured,
+                latest,
+                latest,
+            )
+        return latest
+    return configured
 
 
 def _platform_of(body, ua):
@@ -1482,6 +1519,40 @@ def device_move_confirm():
     })
 
 
+def record_update_check(tier, platform, app_version):
+    """Count one accepted update check. No IP, key, or install id is stored."""
+    day = utcnow().strftime("%Y-%m-%d")
+    tier = str(tier or "")[:32]
+    platform = str(platform or "")[:16]
+    app_version = str(app_version or "")[:32]
+    try:
+        api = _api()
+        db = api.get_db()
+    except Exception:
+        logger.exception("Update check was not counted")
+        return
+    try:
+        db.execute("PRAGMA busy_timeout=5000")
+        db.execute("BEGIN IMMEDIATE")
+        db.execute(
+            """
+            INSERT INTO update_check_daily (day, tier, platform, app_version, count)
+            VALUES (?, ?, ?, ?, 1)
+            ON CONFLICT(day, tier, platform, app_version) DO UPDATE SET count = count + 1
+            """,
+            (day, tier, platform, app_version),
+        )
+        db.commit()
+    except Exception:
+        try:
+            db.rollback()
+        except Exception:
+            pass
+        logger.exception("Update check was not counted")
+    finally:
+        db.close()
+
+
 def update_check():
     ctx, err = _guard("update-check", needs_device=True, check_version=False)
     if err:
@@ -1499,10 +1570,11 @@ def update_check():
     if channel != "stable":
         return error(400, "bad_request", "channel must be stable.")
     record = ctx["record"]
+    record_update_check(record["tier"], platform, current)
     flags = get_flags()
-    minimum = flags["min_supported_version"].get(record["tier"]) or "0.9.41"
+    minimum = effective_minimum(record["tier"])
     paused = record["tier"] == "free" and flags["free_downloads_paused"]
-    floor = parse_version(minimum)
+    floor = parse_version(minimum) if minimum else None
     force = bool(floor and parse_version(current) < floor)
     try:
         release = _load_release(_repo_for(record["tier"]), "latest")
@@ -1941,7 +2013,10 @@ def status():
         "free_downloads_paused": flags["free_downloads_paused"],
         "message": flags["message"] if flags["free_downloads_paused"] else "",
         "maintenance": flags["maintenance"],
-        "min_supported_version": flags["min_supported_version"],
+        "min_supported_version": {
+            "free": effective_minimum("free"),
+            "pro": effective_minimum("pro"),
+        },
         "latest_version": latest,
         "server_time": iso(utcnow()),
     })
@@ -2285,6 +2360,211 @@ def _api_error_response(err):
     return error(status, code, message)
 
 
+def _labelled(rows, fields):
+    """One object per group: the label fields that apply, plus a count."""
+    items = []
+    for row in rows:
+        item = {field: row[field] for field in fields}
+        item["count"] = int(row["count"] or 0)
+        items.append(item)
+    return items
+
+
+def _rollup_bounds(since, until):
+    """Month strings for telemetry_monthly. until on the 1st excludes that month."""
+    start = since[:7]
+    end = until[:7]
+    exclusive = len(until) >= 10 and until[8:10] == "01"
+    return start, end, exclusive
+
+
+def admin_stats_v1():
+    """Aggregate counts for a read-only dashboard. No emails, keys, install ids, or IPs.
+
+    Device resets are not stored: the admin reset deletes the device rows.
+    Move requests are not kept after the code is used. Telemetry has no
+    separate event log and no opt-out deletion log. Rate-limit rows are
+    request counters, not 429 outcomes. Pro installer downloads are not recorded.
+    """
+    api = _api()
+    since = api._utc_day(request.args.get("since"), "0000-01-01")
+    until = api._utc_day(request.args.get("until"), "9999-12-31")
+    if since is None or until is None:
+        return jsonify({"error": "since and until must be YYYY-MM-DD"}), 400
+    window = (since, until)
+    db = api.get_db()
+    try:
+        licences = _labelled(db.execute(
+            """
+            SELECT
+                tier,
+                status,
+                CASE
+                    WHEN COALESCE(utm_source, '') != '' THEN utm_source
+                    WHEN COALESCE(referrer, '') != '' THEN 'ref:' || referrer
+                    ELSE '(direct)'
+                END AS source,
+                COUNT(*) AS count
+            FROM licenses
+            WHERE created_at >= ? AND created_at < ?
+            GROUP BY tier, status, source
+            ORDER BY tier, status, source
+            """,
+            window,
+        ).fetchall(), ("tier", "status", "source"))
+        pro_keys = _labelled(db.execute(
+            """
+            SELECT status, COALESCE(plan, '') AS plan, COUNT(*) AS count
+            FROM pro_keys
+            WHERE created_at >= ? AND created_at < ?
+            GROUP BY status, plan
+            ORDER BY status, plan
+            """,
+            window,
+        ).fetchall(), ("status", "plan"))
+        activations = _labelled(db.execute(
+            """
+            SELECT licence_kind AS tier, 'confirmed' AS status, COUNT(*) AS count
+            FROM device_moves
+            WHERE moved_at >= ? AND moved_at < ?
+            GROUP BY licence_kind
+            ORDER BY tier
+            """,
+            window,
+        ).fetchall(), ("tier", "status"))
+        # Current seats. Windowing by activated_at would hide seats activated earlier.
+        devices = _labelled(db.execute(
+            """
+            SELECT licence_kind AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM devices
+            WHERE active = 1
+            GROUP BY licence_kind, platform
+            ORDER BY tier, platform
+            """
+        ).fetchall(), ("tier", "platform"))
+        registrations = int(db.execute(
+            """
+            SELECT COUNT(*) AS count FROM registrations
+            WHERE created_at >= ? AND created_at < ?
+            """,
+            window,
+        ).fetchone()["count"] or 0)
+        sessions = db.execute(
+            """
+            SELECT
+                'sessions' AS status,
+                COALESCE(tier, '') AS tier,
+                COALESCE(app_version, '') AS version,
+                COALESCE(os_family, '') AS os,
+                COUNT(*) AS count
+            FROM telemetry_sessions
+            WHERE last_received_at >= ? AND last_received_at < ?
+            GROUP BY tier, app_version, os_family
+            ORDER BY tier, version, os
+            """,
+            window,
+        ).fetchall()
+        installs = db.execute(
+            """
+            SELECT 'installs' AS status, COALESCE(tier, '') AS tier, COUNT(DISTINCT install_id) AS count
+            FROM telemetry_sessions
+            WHERE last_received_at >= ? AND last_received_at < ?
+            GROUP BY tier
+            ORDER BY tier
+            """,
+            window,
+        ).fetchall()
+        month_start, month_end, month_exclusive = _rollup_bounds(since, until)
+        if month_exclusive:
+            rollup_sql = """
+                SELECT
+                    'rollups' AS status,
+                    month,
+                    COALESCE(tier, '') AS tier,
+                    COALESCE(app_version, '') AS version,
+                    COALESCE(os_family, '') AS os,
+                    MAX(session_count) AS count
+                FROM telemetry_monthly
+                WHERE month >= ? AND month < ?
+                GROUP BY month, tier, app_version, os_family
+                ORDER BY month, tier, version, os
+            """
+        else:
+            rollup_sql = """
+                SELECT
+                    'rollups' AS status,
+                    month,
+                    COALESCE(tier, '') AS tier,
+                    COALESCE(app_version, '') AS version,
+                    COALESCE(os_family, '') AS os,
+                    MAX(session_count) AS count
+                FROM telemetry_monthly
+                WHERE month >= ? AND month <= ?
+                GROUP BY month, tier, app_version, os_family
+                ORDER BY month, tier, version, os
+            """
+        rollups = db.execute(rollup_sql, (month_start, month_end)).fetchall()
+        telemetry = (
+            _labelled(sessions, ("status", "tier", "version", "os"))
+            + _labelled(installs, ("status", "tier"))
+            + _labelled(rollups, ("status", "month", "tier", "version", "os"))
+        )
+        downloads = _labelled(db.execute(
+            """
+            SELECT 'free' AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM download_events
+            WHERE kind = 'redirect' AND created_at >= ? AND created_at < ?
+            GROUP BY platform
+            ORDER BY platform
+            """,
+            window,
+        ).fetchall(), ("tier", "platform"))
+        update_checks = _labelled(db.execute(
+            """
+            SELECT
+                day AS month,
+                tier,
+                platform,
+                app_version AS version,
+                SUM(count) AS count
+            FROM update_check_daily
+            WHERE day >= ? AND day < ?
+            GROUP BY day, tier, platform, app_version
+            ORDER BY day, tier, platform, app_version
+            """,
+            window,
+        ).fetchall(), ("month", "tier", "platform", "version"))
+    finally:
+        db.close()
+
+    flags = get_flags()
+    try:
+        db_bytes = os.path.getsize(api.app.config["DB_PATH"])
+    except OSError:
+        db_bytes = 0
+    free_min = (flags["min_supported_version"].get("free") or "").strip() or None
+    pro_min = (flags["min_supported_version"].get("pro") or "").strip() or None
+    return jsonify({
+        "window": {"since": since, "until": until},
+        "licences": licences,
+        "pro_keys": pro_keys,
+        "activations": activations,
+        "devices": devices,
+        "registrations": registrations,
+        "telemetry": telemetry,
+        "downloads": downloads,
+        "update_checks": update_checks,
+        "flags": {
+            "free_downloads_paused": flags["free_downloads_paused"],
+            "maintenance": flags["maintenance"],
+            "min_supported_version_free": free_min,
+            "min_supported_version_pro": pro_min,
+        },
+        "db_bytes": db_bytes,
+        "generated_at": iso(utcnow()),
+    })
+
+
 def register(flask_app):
     """Attach /api/v1 routes. Called once from app.py after the tables exist."""
     api = _api()
@@ -2332,21 +2612,28 @@ def register(flask_app):
         API_PREFIX + "/download/free/<platform>", "v1_download_free", download_free, methods=["GET"]
     )
 
-    def _flags_route():
-        if request.method == "PUT":
-            return _admin_flags_put()
-        return _admin_flags_get()
-
     flask_app.add_url_rule(
         "/api/admin/flags",
-        "admin_flags",
-        api.require_admin(_flags_route),
-        methods=["GET", "PUT"],
+        "admin_flags_get",
+        api.require_admin_read(_admin_flags_get),
+        methods=["GET"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/flags",
+        "admin_flags_put",
+        api.require_admin(_admin_flags_put),
+        methods=["PUT"],
     )
     flask_app.add_url_rule(
         "/api/admin/pro-keys",
         "admin_pro_keys_list",
-        api.require_admin(_admin_pro_keys_get),
+        api.require_admin_read(_admin_pro_keys_get),
+        methods=["GET"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/stats/v1",
+        "admin_stats_v1",
+        api.require_admin_read(admin_stats_v1),
         methods=["GET"],
     )
     flask_app.add_url_rule(
