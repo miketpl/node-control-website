@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────
-# NodeControl License API — Server Deployment Script
-# Run as root (or with sudo) on a fresh Ubuntu 22+ box.
+# NodeControl License API — old direct-nginx recipe.
+#
+# The Spark does not use this script. The live checkout is
+# ~/node-control-website. app.py reads ~/node-control-website/.env.
+# api.nodecontrol.io arrives through a Cloudflare tunnel to
+# 127.0.0.1. Do not install an origin firewall of Cloudflare
+# IP ranges. See backend/README.md before deploying.
+#
+# This script is kept for a fresh Ubuntu box that terminates
+# TLS in nginx. It still expects /opt/nodecontrol-api.
 #
 # Usage:
 #   chmod +x setup.sh

@@ -1,0 +1,13 @@
+# Nightly telemetry roll-up. Not installed by the repo.
+# Replace REPLACE_WITH_SPARK_ACCOUNT with the account that owns
+# ~/node-control-website before enabling. This unit does not issue keys.
+[Unit]
+Description=Node Control licence maintenance
+After=network.target
+
+[Service]
+Type=oneshot
+User=REPLACE_WITH_SPARK_ACCOUNT
+WorkingDirectory=%h/node-control-website/backend
+EnvironmentFile=%h/node-control-website/.env
+ExecStart=%h/node-control-website/backend/venv/bin/python admin_cli.py maintenance --local

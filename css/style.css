@@ -571,7 +571,7 @@ a:hover {
 }
 
 /* ── Download ──────────────────────────────────────────────── */
-/* Pause switch: #download.free-paused hides the Free form. Remove that class to restore it. */
+/* Pause switch: #download.free-paused hides the Free form. The class stays in the HTML. js/main.js removes it only when /api/v1/status says downloads are open. */
 .free-pause-notice {
     display: none;
 }

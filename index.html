@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261020pause">
+    <link rel="stylesheet" href="css/style.css?v=20261021status">
 </head>
 <body>
 
@@ -370,7 +370,7 @@
     </section>
 
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-    <!-- Pause switch: remove the class "free-paused" to restore Free sign-up and download. -->
+    <!-- The free-paused class stays in the HTML. js/main.js removes it only when GET /api/v1/status says free_downloads_paused is false. A failed fetch leaves the pause in place. -->
     <section class="section section-alt free-paused" id="download">
         <div class="container">
             <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
@@ -837,7 +837,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261019tracking"></script>
+    <script src="js/main.js?v=20261021status"></script>
     <script src="js/testimonials.js?v=20261019carousel" defer></script>
 </body>
 </html>
