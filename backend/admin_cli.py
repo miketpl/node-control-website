@@ -25,6 +25,9 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py maintenance --local
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --dry-run
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --confirm
+    python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22 --dry-run
+    python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22,25 --dry-run
+    python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_all --exclude-licence-id 22,25 --confirm
 """
 
 import argparse
@@ -184,6 +187,37 @@ def cmd_maintenance(_args):
     print(json.dumps(licence_v1.run_maintenance()))
 
 
+def _licence_ids(values):
+    """Comma-separated positive integers. Repeatable flags are already a list.
+
+    A bad token is rejected without printing it.
+    """
+    if not values:
+        return None
+    chosen = []
+    seen = set()
+    for raw in values:
+        parts = [part.strip() for part in str(raw).split(",")]
+        if not any(parts):
+            print("Each licence id must be a positive integer.", file=sys.stderr)
+            sys.exit(2)
+        for part in parts:
+            if not part:
+                continue
+            if not part.isdigit() or int(part) < 1:
+                print("Each licence id must be a positive integer.", file=sys.stderr)
+                sys.exit(2)
+            number = int(part)
+            if number in seen:
+                continue
+            seen.add(number)
+            chosen.append(number)
+    if not chosen:
+        print("Each licence id must be a positive integer.", file=sys.stderr)
+        sys.exit(2)
+    return chosen
+
+
 def cmd_notify(args):
     """Send one notice template. Prints counts only."""
     if args.dry_run and args.confirm:
@@ -192,6 +226,8 @@ def cmd_notify(args):
     if not args.dry_run and not args.confirm:
         print("A real send needs --confirm. Use --dry-run to count only.", file=sys.stderr)
         sys.exit(2)
+    include_ids = _licence_ids(args.licence_id)
+    exclude_ids = _licence_ids(args.exclude_licence_id)
     payload = {
         "template": args.template,
         "audience": args.audience,
@@ -200,13 +236,20 @@ def cmd_notify(args):
     }
     if args.below_version:
         payload["below_version"] = args.below_version
+    if include_ids is not None:
+        payload["licence_ids"] = include_ids
+    if exclude_ids is not None:
+        payload["exclude_licence_ids"] = exclude_ids
     status, body = api("POST", "/api/admin/notify", payload, timeout=600)
     if status != 200 or not isinstance(body, dict):
         print(f"API {status}: request failed", file=sys.stderr)
         sys.exit(1)
-    for key in ("matched", "already_sent", "opted_out", "sent", "failed"):
+    keys = ["matched", "already_sent", "opted_out", "sent", "failed"]
+    if include_ids is not None or exclude_ids is not None:
+        keys.append("not_matched")
+    for key in keys:
         value = body.get(key)
-        if not isinstance(value, int):
+        if not isinstance(value, int) or isinstance(value, bool):
             print("API response was not counts.", file=sys.stderr)
             sys.exit(1)
         print(f"{key} {value}")
@@ -312,6 +355,20 @@ def main(argv=None):
     )
     notify.add_argument("--dry-run", action="store_true", help="Count only. Nothing is sent")
     notify.add_argument("--confirm", action="store_true", help="Send. Required for a real run")
+    notify.add_argument(
+        "--licence-id",
+        action="append",
+        default=[],
+        metavar="IDS",
+        help="Only these ids, comma-separated. Repeat to add more",
+    )
+    notify.add_argument(
+        "--exclude-licence-id",
+        action="append",
+        default=[],
+        metavar="IDS",
+        help="Leave these ids out. Same form as --licence-id",
+    )
     notify.set_defaults(func=cmd_notify)
 
     args = parser.parse_args(argv)

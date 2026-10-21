@@ -274,8 +274,8 @@ def _usable_address(value):
     return value
 
 
-def _counts(matched, already, opted, sent, failed, dry_run):
-    return {
+def _counts(matched, already, opted, sent, failed, dry_run, not_matched=None):
+    body = {
         "dry_run": bool(dry_run),
         "matched": matched,
         "already_sent": already,
@@ -283,6 +283,54 @@ def _counts(matched, already, opted, sent, failed, dry_run):
         "sent": sent,
         "failed": failed,
     }
+    if not_matched is not None:
+        body["not_matched"] = not_matched
+    return body
+
+
+_MAX_LICENCE_IDS = 1000
+
+
+def _id_list(data, field):
+    """Positive integer ids, or None when the field is omitted.
+
+    A bad value returns the string "bad". The caller answers 400 and does
+    not echo the value.
+    """
+    if field not in data or data.get(field) is None:
+        return None
+    value = data.get(field)
+    if not isinstance(value, list) or len(value) > _MAX_LICENCE_IDS:
+        return "bad"
+    chosen = []
+    seen = set()
+    for item in value:
+        if type(item) is not int or item < 1:
+            return "bad"
+        if item in seen:
+            continue
+        seen.add(item)
+        chosen.append(item)
+    return chosen
+
+
+def _narrow(targets, include_ids, exclude_ids):
+    """Keep audience rows by id. Missing ids are a count, not a list."""
+    in_audience = {ref for _kind, ref, _address in targets}
+    missing = set()
+    selected = targets
+    if include_ids is not None:
+        wanted = set(include_ids)
+        selected = [row for row in selected if row[1] in wanted]
+        missing.update(item for item in wanted if item not in in_audience)
+    if exclude_ids is not None:
+        blocked = set(exclude_ids)
+        selected = [row for row in selected if row[1] not in blocked]
+        missing.update(item for item in blocked if item not in in_audience)
+    not_matched = None
+    if include_ids is not None or exclude_ids is not None:
+        not_matched = len(missing)
+    return selected, not_matched
 
 
 @api.require_admin
@@ -308,6 +356,10 @@ def admin_notify():
         below = parse_version(below_raw.strip())
         if below is None:
             return jsonify({"error": "below_version must be N.N.N"}), 400
+    include_ids = _id_list(data, "licence_ids")
+    exclude_ids = _id_list(data, "exclude_licence_ids")
+    if include_ids == "bad" or exclude_ids == "bad":
+        return jsonify({"error": "licence ids must be a list of positive integers"}), 400
     loaded = _load_template(template_name.strip())
     if loaded is None:
         return jsonify({"error": "unknown template"}), 404
@@ -316,7 +368,7 @@ def admin_notify():
 
     db = api.get_db()
     try:
-        targets = _audience(db, audience_name)
+        targets, not_matched = _narrow(_audience(db, audience_name), include_ids, exclude_ids)
         known = _known_versions(db)
         chosen = [
             (kind, ref, address)
@@ -339,11 +391,17 @@ def admin_notify():
                 continue
             pending.append((kind, ref, address))
         if dry_run:
-            logger.info(
-                "Notice dry run finished matched=%s already_sent=%s opted_out=%s",
-                matched, already, opted,
-            )
-            return jsonify(_counts(matched, already, opted, 0, 0, True))
+            if not_matched is None:
+                logger.info(
+                    "Notice dry run finished matched=%s already_sent=%s opted_out=%s",
+                    matched, already, opted,
+                )
+            else:
+                logger.info(
+                    "Notice dry run finished matched=%s already_sent=%s opted_out=%s not_matched=%s",
+                    matched, already, opted, not_matched,
+                )
+            return jsonify(_counts(matched, already, opted, 0, 0, True, not_matched))
 
         for index, (kind, ref, address) in enumerate(pending):
             if index and delay:
@@ -388,11 +446,17 @@ def admin_notify():
             db.close()
         except Exception:
             pass
-    logger.info(
-        "Notice run finished matched=%s already_sent=%s opted_out=%s sent=%s failed=%s",
-        matched, already, opted, sent, failed,
-    )
-    return jsonify(_counts(matched, already, opted, sent, failed, False))
+    if not_matched is None:
+        logger.info(
+            "Notice run finished matched=%s already_sent=%s opted_out=%s sent=%s failed=%s",
+            matched, already, opted, sent, failed,
+        )
+    else:
+        logger.info(
+            "Notice run finished matched=%s already_sent=%s opted_out=%s sent=%s failed=%s not_matched=%s",
+            matched, already, opted, sent, failed, not_matched,
+        )
+    return jsonify(_counts(matched, already, opted, sent, failed, False, not_matched))
 
 
 def unsubscribe():
