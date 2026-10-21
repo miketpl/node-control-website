@@ -4,28 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy — Node Control</title>
-    <meta name="description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
+    <meta name="description" content="Privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <link rel="canonical" href="https://nodecontrol.io/privacy.html">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Privacy — Node Control">
-    <meta property="og:description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
+    <meta property="og:description" content="Privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <meta property="og:url" content="https://nodecontrol.io/privacy.html">
     <meta property="og:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Privacy — Node Control">
-    <meta name="twitter:description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
+    <meta name="twitter:description" content="Privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <meta name="twitter:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261021social">
+    <link rel="stylesheet" href="css/style.css?v=20261021fonts">
 </head>
 <body>
-    <!-- TODO: legal review. Draft, not a finished privacy notice. Placeholders are marked in the page. -->
-
     <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
@@ -46,22 +41,27 @@
 
     <main class="legal-page">
         <div class="container">
-            <p class="draft-notice">Draft, pending review. Last updated 21 October 2026.</p>
+            <p>Last updated 21 October 2026.</p>
             <h1>Privacy</h1>
             <p>This notice describes personal data used by the Node Control website, the Free Edition download, the Professional subscription, and the desktop app when it talks to the licence server at api.nodecontrol.io. Node Control is a product of The Promised Lan Limited.</p>
             <p>Device configs, topology, and credentials stay in the app on your computer. They are not sent to the licence server. The licence server does receive the categories on this page.</p>
-            <p>This page is a draft. It is not a finished privacy notice.</p>
 
             <h2>Who we are</h2>
             <p>The controller is The Promised Lan Limited, a company registered in England and Wales, trading as Node Control. Node Control is a product of The Promised Lan Limited.</p>
             <p>Company number: 12571780.</p>
             <p>Registered office: 266-268 Wickham Road, Shirley, Croydon, Surrey, CR0 8BJ, United Kingdom.</p>
             <!-- ICO registration number goes here once registered. There is no registration number yet. -->
-            <p>Data protection officer: <span class="placeholder">[DPO, OR CONFIRM THERE IS NONE]</span></p>
+            <p>No data protection officer is appointed. One is not required for an organisation of this size and type.</p>
             <p>Privacy requests go to <a href="mailto:privacy@nodecontrol.io">privacy@nodecontrol.io</a>.</p>
 
             <h2>Purposes</h2>
-            <p>We use personal data for the following. The lawful basis for each one is still open: <span class="placeholder">[LAWFUL BASIS FOR EACH PURPOSE]</span></p>
+            <p>The lawful basis depends on the use.</p>
+            <ul>
+                <li>Contract: licences, downloads, and the service emails that go with them.</li>
+                <li>Legitimate interests: security, rate limiting, and aggregate usage statistics.</li>
+                <li>Legal obligation: billing records.</li>
+            </ul>
+            <p>Those uses cover the following.</p>
             <ul>
                 <li>Send the verification code, and issue and check a Free licence.</li>
                 <li>Run a Professional subscription, including the licence key and the payment record.</li>
@@ -102,7 +102,7 @@
             <p>The server drops a user name, company, hostname, or machine id if the app sends one. The stored counts do not include device configs, hostnames, IP addresses, or the contents of the network.</p>
             <p>The app asks at first launch. You can turn this off in Settings. While it is off, the app is not supposed to send these counts. You can delete the session rows from the app, or by emailing privacy@nodecontrol.io.</p>
             <p>Session rows are kept for 365 days, which is the current server setting, then folded into monthly totals. The monthly totals are edition, version, OS family, and the counts. They do not include the licence or the install id. We delete or anonymise those totals on request, or periodically.</p>
-            <p>Whether a first-launch opt-out meets PECR, including any statistical exemption, and the UK GDPR lawful basis for statistics linked to a licence: <span class="placeholder">[LAWFUL BASIS AND PECR FOR USAGE STATISTICS]</span></p>
+            <p>Usage statistics are kept on the basis of legitimate interests. They are aggregate product statistics. While they are session rows they are linked to the licence. You can turn them off, and you can object.</p>
 
             <h2>Update checks</h2>
             <p>An update check sends the licence key and install id so the server can answer, and it updates the last-seen time on that computer. The statistic that is kept is a daily count of edition, platform, and version. The key and the install id are not written into that count. The code does not delete those daily counts.</p>
@@ -116,7 +116,7 @@
             <p>We email you when the product needs to: a verification code, a licence key, a device-move code, or a link to manage a Professional subscription.</p>
             <p>The licence server can also send a product notice, for example that a version will stop working. Each notice has an unsubscribe link. Opening it records that this licence has opted out. The record is the licence and the time. It does not store your email address. We also record which notice template was sent to which licence, and when. That record does not include your email address either. The same template is not sent to the same licence twice.</p>
             <p>Unsubscribing stops further product notices. It does not stop verification codes, licence keys, or device-move codes.</p>
-            <p>This code does not run a promotional mailing list. <span class="placeholder">[CONFIRM THERE IS NO OTHER MARKETING LIST]</span></p>
+            <p>There is no promotional or marketing list. The only emails we send are service emails. Each product notice has an unsubscribe link.</p>
 
             <h2>Who else receives data</h2>
             <ul>
@@ -127,12 +127,12 @@
                 <li>Stripe processes the Professional payment, as above.</li>
                 <!-- SMTP host comes from the server environment. The code names no live provider. The unset default is not the host in use. -->
                 <li>Email is sent by our email delivery provider, over SMTP.</li>
-                <li>Every page on this site loads the Inter font from fonts.googleapis.com and fonts.gstatic.com. Your browser sends your IP address, and the address of the page, to Google. This site does not load an analytics script, an advertising pixel, or a similar tracker.</li>
             </ul>
+            <p>This site does not load an analytics script, an advertising pixel, or a similar tracker. The typeface is served from this site.</p>
             <p>There is no separate cookie page. Cookies are described below.</p>
 
             <h2>International transfers</h2>
-            <p>Cloudflare, GitHub, Google Fonts, Stripe, and the email provider may process personal data outside the United Kingdom. The safeguard for each transfer: <span class="placeholder">[INTERNATIONAL TRANSFERS]</span></p>
+            <p>Processors such as Cloudflare, GitHub, Stripe, and our email delivery provider may process personal data outside the United Kingdom. Where they do, the transfer is made under UK adequacy regulations, or under the International Data Transfer Agreement or the UK Addendum to the EU Standard Contractual Clauses.</p>
 
             <h2>How long we keep it</h2>
             <ul>
@@ -148,10 +148,9 @@
             <h2>Cookies and local storage</h2>
             <p>The scripts on this website do not set a cookie, and they do not use local storage or session storage. The Free form reads the page address at the moment you submit.</p>
             <p>Professional checkout happens on Stripe's website. Stripe's own cookies apply there.</p>
-            <p>The Google Fonts request is described above. Whether that request needs consent: <span class="placeholder">[COOKIE CONSENT FOR GOOGLE FONTS]</span></p>
 
             <h2>Children</h2>
-            <p>Node Control is a tool for people who operate networks. It is not aimed at children. The forms do not ask your age. <span class="placeholder">[CONFIRM THE SERVICE IS NOT OFFERED TO CHILDREN]</span></p>
+            <p>The service is for professionals. It is not for anyone under 18.</p>
 
             <h2>Security</h2>
             <p>The website and the API are served over HTTPS, through Cloudflare. Professional keys are encrypted in the licence database. Device-move codes are stored as hashes. The free licence code is stored so the app can be checked.</p>
@@ -162,10 +161,10 @@
             <p>You can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a>.</p>
 
             <h2>Changes to this notice</h2>
-            <p>The date at the top of this page changes when the notice changes. How we will tell you about a change: <span class="placeholder">[HOW WE WILL TELL YOU ABOUT CHANGES]</span></p>
+            <p>We announce a change by updating the date at the top of this page. For a significant change, we also send an email.</p>
 
             <h2>Terms</h2>
-            <p>The Free Edition and Professional terms are on the <a href="terms.html">terms</a> page. There is no separate EULA. That page is also a draft.</p>
+            <p>The Free Edition and Professional terms are on the <a href="terms.html">terms</a> page. There is no separate EULA.</p>
         </div>
     </main>
 
