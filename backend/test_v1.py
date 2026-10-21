@@ -1013,18 +1013,26 @@ class V1Tests(unittest.TestCase):
             for path in (
                 "/api/admin/stats",
                 "/api/admin/flags",
-                "/api/admin/pro-keys",
                 "/api/admin/stats/v1",
             ):
                 allowed = self.client.get(path, headers=read)
                 self.assertEqual(allowed.status_code, 200, path)
+                text = allowed.get_data(as_text=True)
+                self.assertNotIn("free@example.com", text)
+                self.assertNotIn(self.free["code"], text)
+                self.assertNotIn(self.install_a, text)
+                self.assertNotIn(self.install_b, text)
                 also = self.client.get(path, headers=write)
                 self.assertEqual(also.status_code, 200, path)
             self.assertEqual(
                 self.client.get("/api/admin/licenses", headers=write).status_code, 200
             )
+            self.assertEqual(
+                self.client.get("/api/admin/pro-keys", headers=write).status_code, 200
+            )
             denied = (
                 ("GET", "/api/admin/licenses", None),
+                ("GET", "/api/admin/pro-keys", None),
                 ("PUT", "/api/admin/flags", {"maintenance": False}),
                 ("POST", "/api/admin/pro-keys", {"email": "x@example.com"}),
                 ("POST", "/api/admin/pro-keys/1/revoke", None),
@@ -1055,6 +1063,9 @@ class V1Tests(unittest.TestCase):
             app.config["ADMIN_READ_TOKEN"] = "test-read-token"
             still = self.client.get("/api/admin/stats/v1", headers=read)
             self.assertEqual(still.status_code, 200)
+            hidden = self.client.get("/api/admin/pro-keys", headers=read)
+            self.assertEqual(hidden.status_code, 503)
+            self.assertEqual(hidden.get_json()["error"], "admin disabled")
             blocked = self.client.put(
                 "/api/admin/flags",
                 json={"maintenance": False},
@@ -1150,7 +1161,8 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(checks[0]["platform"], "mac")
         self.assertEqual(checks[0]["version"], "0.9.41")
         self.assertEqual(checks[0]["count"], 3)
-        self.assertEqual(checks[0]["month"], row["day"])
+        self.assertEqual(checks[0]["day"], row["day"])
+        self.assertNotIn("month", checks[0])
         narrow = self.client.get(
             "/api/admin/stats/v1?since=2099-01-01&until=2099-01-02",
             headers={"Authorization": "Bearer test-admin-token"},
@@ -1241,18 +1253,20 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(
             set(body),
             {
-                "window", "licences", "pro_keys", "activations", "devices",
+                "window", "licences", "pro_keys", "device_moves", "devices",
                 "registrations", "telemetry", "downloads", "update_checks",
                 "flags", "db_bytes", "generated_at",
             },
         )
         text = res.get_data(as_text=True)
-        for secret in (
+        secrets = (
             "free@example.com", "pro@example.com", "ref@example.com",
-            "direct@example.com", "reg@example.com", plain, self.install_a,
+            "direct@example.com", "reg@example.com", plain, self.free["code"],
+            "NC-REF1-REF1", "NC-DIR1-DIR1", self.install_a,
             "203.0.113.50", "198.51.100.20", "192.0.2.10", "tok-1",
             "from-install", "abcdabcdabcdabcd",
-        ):
+        )
+        for secret in secrets:
             self.assertNotIn(secret, text)
         self.assertNotIn("device_resets", text)
         self.assertNotIn("moves_requested", text)
@@ -1266,7 +1280,8 @@ class V1Tests(unittest.TestCase):
         for row in body["licences"]:
             self.assertEqual(set(row), {"tier", "status", "source", "count"})
         self.assertEqual(body["pro_keys"], [{"status": "active", "plan": "monthly", "count": 1}])
-        self.assertEqual(body["activations"], [{"tier": "free", "status": "confirmed", "count": 1}])
+        self.assertEqual(body["device_moves"], [{"tier": "free", "status": "confirmed", "count": 1}])
+        self.assertNotIn("activations", body)
         self.assertEqual(body["devices"], [{"tier": "free", "platform": "mac", "count": 1}])
         self.assertEqual(body["registrations"], 1)
         self.assertIsInstance(body["registrations"], int)
@@ -1289,6 +1304,21 @@ class V1Tests(unittest.TestCase):
         self.assertFalse(body["flags"]["free_downloads_paused"])
         self.assertEqual(body["flags"]["min_supported_version_free"], "0.9.41")
         self.assertEqual(body["window"]["since"], "0000-01-01")
+        app.config["ADMIN_READ_TOKEN"] = "test-read-token"
+        try:
+            read = {"Authorization": "Bearer test-read-token"}
+            for path in ("/api/admin/stats", "/api/admin/stats/v1", "/api/admin/flags"):
+                viewed = self.client.get(path, headers=read)
+                self.assertEqual(viewed.status_code, 200, path)
+                payload = viewed.get_data(as_text=True)
+                for secret in secrets:
+                    self.assertNotIn(secret, payload, path)
+            locked = self.client.get("/api/admin/pro-keys", headers=read)
+            self.assertEqual(locked.status_code, 401)
+            self.assertNotIn("pro@example.com", locked.get_data(as_text=True))
+            self.assertNotIn(plain, locked.get_data(as_text=True))
+        finally:
+            app.config["ADMIN_READ_TOKEN"] = ""
         bad = self.client.get(
             "/api/admin/stats/v1?since=nope",
             headers={"Authorization": "Bearer test-admin-token"},
