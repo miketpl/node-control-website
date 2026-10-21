@@ -2422,7 +2422,7 @@ def admin_stats_v1():
             """,
             window,
         ).fetchall(), ("status", "plan"))
-        activations = _labelled(db.execute(
+        device_moves = _labelled(db.execute(
             """
             SELECT licence_kind AS tier, 'confirmed' AS status, COUNT(*) AS count
             FROM device_moves
@@ -2522,7 +2522,7 @@ def admin_stats_v1():
         update_checks = _labelled(db.execute(
             """
             SELECT
-                day AS month,
+                day,
                 tier,
                 platform,
                 app_version AS version,
@@ -2533,7 +2533,7 @@ def admin_stats_v1():
             ORDER BY day, tier, platform, app_version
             """,
             window,
-        ).fetchall(), ("month", "tier", "platform", "version"))
+        ).fetchall(), ("day", "tier", "platform", "version"))
     finally:
         db.close()
 
@@ -2548,7 +2548,7 @@ def admin_stats_v1():
         "window": {"since": since, "until": until},
         "licences": licences,
         "pro_keys": pro_keys,
-        "activations": activations,
+        "device_moves": device_moves,
         "devices": devices,
         "registrations": registrations,
         "telemetry": telemetry,
@@ -2627,7 +2627,7 @@ def register(flask_app):
     flask_app.add_url_rule(
         "/api/admin/pro-keys",
         "admin_pro_keys_list",
-        api.require_admin_read(_admin_pro_keys_get),
+        api.require_admin(_admin_pro_keys_get),
         methods=["GET"],
     )
     flask_app.add_url_rule(
