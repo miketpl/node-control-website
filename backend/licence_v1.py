@@ -2001,7 +2001,43 @@ def download_free(platform):
     except Exception:
         logger.exception("Free download redirect failed")
         return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    # click and auto are beacons for this same file. The redirect is the
+    # download. Mail must not change the 302 or the location.
+    _queue_free_download_alert(row["id"], platform, described)
     return redirect(location, code=302)
+
+
+def _queue_free_download_alert(license_id, platform, described):
+    try:
+        import alerts
+        api = _api()
+        db = api.get_db()
+        try:
+            full = db.execute(
+                """
+                SELECT utm_source, utm_medium, utm_campaign, referrer, landing_page
+                FROM licenses WHERE id = ?
+                """,
+                (license_id,),
+            ).fetchone()
+        finally:
+            db.close()
+        payload = {
+            "kind": "free_download",
+            "licence_id": license_id,
+            "platform": platform,
+            "arch": (described or {}).get("name") or "",
+            "version": (described or {}).get("version") or "",
+        }
+        if full:
+            payload["utm_source"] = full["utm_source"] or ""
+            payload["utm_medium"] = full["utm_medium"] or ""
+            payload["utm_campaign"] = full["utm_campaign"] or ""
+            payload["referrer"] = full["referrer"] or ""
+            payload["landing_page"] = full["landing_page"] or ""
+        alerts.queue(payload)
+    except Exception:
+        logging.getLogger("alerts").error("Admin alert was not sent")
 
 
 def status():
