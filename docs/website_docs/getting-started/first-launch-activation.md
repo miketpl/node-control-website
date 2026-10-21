@@ -38,7 +38,7 @@ You will also be stopped if the code is later revoked.
 |---|---|---|
 | "Code must be in the format NC-XXXX-XXXX" | The code is malformed or wrong length | Re-paste from the website / email |
 | "This license code is not active" | The code wasn't found in our active licenses list | Confirm you copied it correctly; if so, request a fresh code at nodecontrol.io |
-| "Unable to verify your license" with no prior check | Network failure on first activation — your machine can't reach `api.github.com` | Check your internet connection, firewall, proxy settings |
+| "Unable to verify your license" with no prior check | Network failure on first activation. The app could not reach the licence server at `api.nodecontrol.io`. Older builds checked `api.github.com`. | Check your internet connection, firewall, and proxy settings |
 | "Offline grace period: N days remaining" | The online check failed, and you still have grace left | Close the message. The app retries on the next launch |
 | App blocked after days offline | The 7-day grace period has run out | Connect so the app can check the code again |
 
@@ -58,10 +58,10 @@ Fill in:
 Click **Submit**. The app:
 
 1. Records your registration locally
-2. Submits the details to our private registrations system on GitHub (used for support, not for marketing)
-3. Checks your email against the allowed Pro user list
-4. If your email is on the list — you're in
-5. If not — a "not approved" message appears with contact info for support
+2. Submits the name, email, organisation, and role to the licence server at api.nodecontrol.io
+3. Checks the Professional licence with that server. Older builds checked an email allow-list
+4. If the licence is active, you're in
+5. If not, a message appears with contact info for support
 
 ### When you'll see this again
 
@@ -71,17 +71,17 @@ Click **Submit**. The app:
 
 ### License re-check
 
-On every launch, Pro / AI rechecks your email against the allowed user list. Same 7-day offline grace period applies — useful if you're on a customer site without internet for a few days.
+On every launch, Pro / AI checks the licence with the licence server. Same 7-day offline grace period applies. That is useful if you are on a customer site without internet for a few days.
 
 ## Why we check at all
 
 The license check exists to:
 
-- Track active users for support and update notifications
-- Allow rapid response if a code or account is misused
-- Give me a way to see which build is actually in use when a crash report comes in
+- See which licences are in use, so support and product notices can reach them
+- Revoke a code or a subscription that is misused
+- See which build is in use if you email a crash log to support. The crash log stays on the laptop until you send it
 
-We do *not* use your email or activation data for marketing. Our [privacy policy](https://nodecontrol.io/privacy) covers full details.
+Service email, including a notice that a version will stop working, is described in the [privacy notice](https://nodecontrol.io/privacy.html). That notice also says what is not a promotional mailing list.
 
 ## Next steps
 

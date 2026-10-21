@@ -33,10 +33,11 @@ The updater can't fetch the latest release info. Causes:
 ### Network connectivity
 
 ```bash
+ping api.nodecontrol.io
 ping api.github.com
 ```
 
-The updater fetches the latest release from GitHub. If ping fails, your network blocks GitHub API access. Common in corporate networks behind strict proxies.
+The update check goes to the licence server at api.nodecontrol.io. That server reads the release from GitHub. The installer file is then downloaded from GitHub, so a network that blocks GitHub can still fail the download. Older builds contacted GitHub for the check itself. This is common on corporate networks behind strict proxies.
 
 ### Proxy / firewall
 
@@ -47,7 +48,7 @@ For corporate firewalls that proxy-intercept SSL:
 - The proxy CA needs to be trusted by Node Control's bundled `certifi` cert store
 - Workaround: Settings → Advanced → check **Use system cert store** (uses macOS / Windows root CAs instead of bundled certifi)
 
-Update checks contact GitHub over HTTPS.
+Update checks contact api.nodecontrol.io over HTTPS. The installer download then comes from GitHub.
 
 ## Symptom 3 — Download fails partway through
 

@@ -172,9 +172,10 @@
 <h2 id="symptom-2-could-not-reach-any-release-repo">Symptom 2 — &quot;Could not reach any release repo&quot;</h2>
 <p>The updater can&#x27;t fetch the latest release info. Causes:</p>
 <h3 id="network-connectivity">Network connectivity</h3>
-<pre><code>ping api.github.com
+<pre><code>ping api.nodecontrol.io
+ping api.github.com
 </code></pre>
-<p>The updater fetches the latest release from GitHub. If ping fails, your network blocks GitHub API access. Common in corporate networks behind strict proxies.</p>
+<p>The update check goes to the licence server at api.nodecontrol.io. That server reads the release from GitHub. The installer file is then downloaded from GitHub, so a network that blocks GitHub can still fail the download. Older builds contacted GitHub for the check itself. This is common on corporate networks behind strict proxies.</p>
 <h3 id="proxy-firewall">Proxy / firewall</h3>
 <p>Settings → Advanced → check if HTTP/HTTPS proxy needs to be configured. Node Control uses the system proxy by default.</p>
 <p>For corporate firewalls that proxy-intercept SSL:</p>
@@ -184,7 +185,7 @@
 <li>Workaround: Settings → Advanced → check <strong>Use system cert store</strong> (uses macOS / Windows root CAs instead of bundled certifi)
 </li>
 </ul>
-<p>Update checks contact GitHub over HTTPS.</p>
+<p>Update checks contact api.nodecontrol.io over HTTPS. The installer download then comes from GitHub.</p>
 <h2 id="symptom-3-download-fails-partway-through">Symptom 3 — Download fails partway through</h2>
 <p>Cause: connection dropped mid-download.</p>
 <p>The downloader supports resume — re-trigger the download and it&#x27;ll pick up where it stopped:</p>
