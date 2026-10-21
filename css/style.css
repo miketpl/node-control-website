@@ -1145,6 +1145,64 @@ select.form-input {
     margin-bottom: 12px;
 }
 
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.footer-brand .footer-social {
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.footer-bottom .footer-social {
+    justify-content: center;
+}
+
+.footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.footer-social a:hover,
+.footer-social a:focus-visible {
+    color: var(--cyan);
+    border-color: var(--cyan);
+}
+
+.footer-social a:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+.footer-social svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.footer-social-bar {
+    padding: 28px 0;
+}
+
+.footer-social-bar .footer-bottom {
+    border-top: none;
+    padding-top: 0;
+}
+
+.footer-social-bar .footer-social {
+    margin-bottom: 0;
+}
+
 .footer-tpl {
     display: flex;
     flex-direction: column;
