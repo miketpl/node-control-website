@@ -8,10 +8,13 @@ This repository does not deploy the VPS. Copy the files onto the box and restart
 
 Copy `.env.example` to `.env` on the server and replace every placeholder. The admin routes stay disabled until `ADMIN_TOKEN` is set to something other than `change-me-in-production`.
 
+`ADMIN_READ_TOKEN` is a second secret for the read-only dashboard. Empty or `change-me-in-production` is ignored. It is accepted on `GET /api/admin/stats`, `GET /api/admin/flags`, `GET /api/admin/pro-keys`, and `GET /api/admin/stats/v1`. It cannot change flags, issue or revoke keys, reset a device, resync a subscription, delete a licence, or call `GET /api/admin/licenses`. Those stay on `ADMIN_TOKEN`.
+
 | Key | What it is |
 |---|---|
 | `LICENSE_REPO` | `miketpl/node-control-license-free` |
 | `ADMIN_TOKEN` | Long random secret. Not the placeholder. |
+| `ADMIN_READ_TOKEN` | Long random secret for the read-only routes above. Not the placeholder. |
 | `GITHUB_PAT_WRITE` | GitHub PAT with Contents write on that repo |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the 6-digit code |
 
@@ -36,6 +39,10 @@ python3 admin_cli.py maintenance --local
 
 List, revoke, flags, and Pro key commands call the API. `maintenance --local` opens the database and does not issue a key. Revoke removes the code from `licenses.json` first and only then marks the row revoked. If GitHub cannot be updated, the row is left as it was.
 
+`GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `activations` for confirmed device moves, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for free installer redirects, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].month` is the UTC day.
+
+`GET /api/v1/status` and update-check report no minimum when `MIN_SUPPORTED_VERSION_FREE` or `MIN_SUPPORTED_VERSION_PRO` is empty and no flag is set. If the configured minimum is higher than the latest published release for that tier, the response uses the published version and the process logs a warning.
+
 ## Deploy
 
 The live service is on the Spark. `app.py` loads `~/node-control-website/.env` (the repo root, beside `backend/`). It does not read `/opt/nodecontrol-api/.env`. `api.nodecontrol.io` reaches the box through a Cloudflare tunnel, so gunicorn sees the peer as localhost. Trust `CF-Connecting-IP` only in that case. Do not add an origin firewall of Cloudflare IP ranges.
@@ -58,7 +65,7 @@ Use the real `DB_PATH` from the live `.env` if it is not `backend/licenses.db`.
 5. `curl -s http://127.0.0.1:5000/api/health` and `curl -s http://127.0.0.1:5000/api/v1/status`
 6. Optional nightly roll-up: `backend/deploy/nodecontrol-maintenance.service` and `.timer`. Set the account that owns the checkout before enabling them. The timer runs `admin_cli.py maintenance --local`. That command does not issue keys.
 
-`database` should be `ok`. A `503` from an admin call that says `admin disabled` means the token is still empty or still the placeholder. A flag change is visible to both workers within 10 seconds. No restart is required for the pause switch:
+`database` should be `ok`. `git_sha` is the deployed commit: `GIT_SHA` if that is set, otherwise `git rev-parse --short HEAD` read once at startup, otherwise `unknown`. A `503` from an admin call that says `admin disabled` means the token is still empty or still the placeholder. A flag change is visible to both workers within 10 seconds. No restart is required for the pause switch:
 
 ```bash
 python3 admin_cli.py flags set free_downloads_paused false
@@ -112,8 +119,8 @@ Free codes are still published to `licenses.json` with `GITHUB_PAT_WRITE` so 0.9
 | `PRO_RELEASES_PAT` | Fallback if `RELEASES_READ_PAT` is empty. |
 | `KEY_ENCRYPTION_KEY` | Encrypts the stored Professional key. |
 | `FREE_DOWNLOADS_PAUSED` | Empty or unset means paused. A database flag overrides it. |
-| `MIN_SUPPORTED_VERSION_FREE` | Default `0.9.41`. |
-| `MIN_SUPPORTED_VERSION_PRO` | Default `0.9.41`. |
+| `MIN_SUPPORTED_VERSION_FREE` | Leave unset, or `0.9.40`, until 0.9.41 is published. Empty means no minimum. A higher value is capped to the latest published release. |
+| `MIN_SUPPORTED_VERSION_PRO` | Leave unset, or `0.9.40`, until 0.9.41 is published. Empty means no minimum. A higher value is capped to the latest published release. |
 | `API_PUBLIC_URL` | Default `https://api.nodecontrol.io`. Used in signed Free links. |
 | `REGISTRATION_ALERT_EMAIL` | Default `support@nodecontrol.io`. Empty disables the alert. |
 | `PRO_DOWNLOAD_SECRET` | Signs download tokens. Falls back to `SECRET_KEY`. |

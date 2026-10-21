@@ -86,6 +86,7 @@ class LicenceApiTests(unittest.TestCase):
         app.config["GITHUB_PAT"] = "test-read-token"
         app.config["GITHUB_PAT_WRITE"] = "test-write-token"
         app.config["ADMIN_TOKEN"] = "test-admin-token"
+        app.config["ADMIN_READ_TOKEN"] = ""
         app.config["LICENSE_REPO"] = "miketpl/node-control-license-free"
         db = get_db()
         db.execute("DELETE FROM licenses")
@@ -130,11 +131,55 @@ class LicenceApiTests(unittest.TestCase):
         self.assertIn("LICENSE_REPO=miketpl/node-control-license-free", example)
         self.assertIn("GITHUB_PAT_WRITE=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", example)
         self.assertIn("ADMIN_TOKEN=change-me-in-production", example)
+        self.assertIn("ADMIN_READ_TOKEN=change-me-in-production", example)
+        self.assertIn('os.environ.get("MIN_SUPPORTED_VERSION_FREE", "")', app_src)
+        self.assertNotIn("MIN_SUPPORTED_VERSION_FREE=0.9.41", example)
+        self.assertIn("until 0.9.41 is published", example)
 
     def test_health_reads_database(self):
         res = self.client.get("/api/health")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.get_json()["database"], "ok")
+
+    def test_health_git_sha_uses_env_then_startup(self):
+        previous = os.environ.get("GIT_SHA")
+        os.environ["GIT_SHA"] = "deadbee"
+        try:
+            res = self.client.get("/api/health")
+            body = res.get_json()
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(body["git_sha"], "deadbee")
+            self.assertEqual(body["status"], "ok")
+            self.assertEqual(body["service"], "nodecontrol-license-api")
+            self.assertEqual(body["database"], "ok")
+        finally:
+            if previous is None:
+                os.environ.pop("GIT_SHA", None)
+            else:
+                os.environ["GIT_SHA"] = previous
+        again = self.client.get("/api/health").get_json()
+        self.assertEqual(again["git_sha"], api.GIT_SHA_AT_START)
+        self.assertNotEqual(again["git_sha"], "deadbee")
+        self.assertEqual(again["status"], "ok")
+        self.assertEqual(again["service"], "nodecontrol-license-api")
+        self.assertEqual(again["database"], "ok")
+
+        os.environ.pop("GIT_SHA", None)
+        with patch("app.subprocess.run", side_effect=subprocess.TimeoutExpired(cmd=["git"], timeout=2)):
+            self.assertEqual(api._resolve_git_sha(), "unknown")
+        self.assertEqual(api.GIT_SHA_AT_START, again["git_sha"])
+        if previous is not None:
+            os.environ["GIT_SHA"] = previous
+
+    def test_health_reports_git_sha_when_the_database_is_down(self):
+        with patch("app.get_db", side_effect=sqlite3.OperationalError("closed")):
+            res = self.client.get("/api/health")
+        body = res.get_json()
+        self.assertEqual(res.status_code, 503)
+        self.assertEqual(body["status"], "error")
+        self.assertEqual(body["service"], "nodecontrol-license-api")
+        self.assertEqual(body["database"], "unavailable")
+        self.assertEqual(body["git_sha"], api.deployed_git_sha())
 
     @patch("app.smtplib.SMTP")
     def test_request_sends_mail_and_stores_pending(self, smtp):
