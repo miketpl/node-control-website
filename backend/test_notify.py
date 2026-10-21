@@ -307,6 +307,204 @@ class NotifyTests(unittest.TestCase):
             admin_cli.main(["notify", "--template", "upgrade-0.9.41", "--audience", "all"])
         self.assertEqual(missing.exception.code, 2)
 
+    def _free_at(self, row_id, code, email, status="active", downloads=1):
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO licenses (
+                id, code, name, email, company, platform, tier, status, created_at, download_count
+            ) VALUES (?, ?, 'Person', ?, '', 'macos', 'free', ?, '2026-10-21T00:00:00', ?)
+            """,
+            (row_id, code, email, status, downloads),
+        )
+        db.commit()
+        db.close()
+        return row_id
+
+    def test_licence_ids_narrow_audience_and_hide_the_ids(self):
+        keep = self._free_at(22, "NC-KEEP-0022", "keep@example.com", downloads=1)
+        self._free_at(25, "NC-SKIP-0025", "skip@example.com", downloads=1)
+        self._free_at(30, "NC-NONE-0030", "none@example.com", downloads=0)
+        self._free_at(31, "NC-PEND-0031", "pend@example.com", status="pending", downloads=3)
+        self._version("free", keep, "0.9.40")
+        self._version("free", 25, "0.9.41")
+
+        with self.assertLogs("notices", level="INFO") as logs:
+            narrowed = self._notify(licence_ids=[22, 25, 999001])
+        self.assertEqual(narrowed.status_code, 200)
+        body = narrowed.get_json()
+        self.assertEqual(body["matched"], 2)
+        self.assertEqual(body["not_matched"], 1)
+        self.assertEqual(body["sent"], 0)
+        self.assertTrue(body["dry_run"])
+        text = narrowed.get_data(as_text=True)
+        log_text = "\n".join(logs.output)
+        for secret in ("keep@example.com", "skip@example.com", "NC-KEEP-0022", "999001", "22", "25"):
+            self.assertNotIn(secret, text)
+            self.assertNotIn(secret, log_text)
+        self.assertIn("not_matched=1", log_text)
+        self.assertEqual(self.mail, [])
+
+        outside = self._notify(audience="free_downloaded", licence_ids=[30, 31])
+        self.assertEqual(outside.get_json()["matched"], 0)
+        self.assertEqual(outside.get_json()["not_matched"], 2)
+        self.assertNotIn("none@example.com", outside.get_data(as_text=True))
+        self.assertNotIn("30", outside.get_data(as_text=True))
+
+        versioned = self._notify(
+            audience="free_downloaded",
+            licence_ids=[22, 25],
+            below_version="0.9.41",
+        )
+        self.assertEqual(versioned.get_json()["matched"], 1)
+        self.assertEqual(versioned.get_json()["not_matched"], 0)
+
+        plain = self._notify(audience="free_downloaded")
+        self.assertNotIn("not_matched", plain.get_json())
+
+    def test_exclude_licence_ids_and_filters_still_apply(self):
+        self._free_at(22, "NC-KEEP-0022", "keep@example.com", downloads=1)
+        self._free_at(25, "NC-DROP-0025", "drop@example.com", downloads=1)
+        self._free_at(40, "NC-ALSO-0040", "also@example.com", downloads=1)
+        sent = self._notify(
+            audience="free_all",
+            exclude_licence_ids=[25, 999002],
+            dry_run=False,
+        )
+        self.assertEqual(sent.status_code, 200)
+        self.assertEqual(sent.get_json()["sent"], 2)
+        self.assertEqual(sent.get_json()["not_matched"], 1)
+        self.assertEqual({item["to"] for item in self.mail}, {"keep@example.com", "also@example.com"})
+        self.assertNotIn("drop@example.com", sent.get_data(as_text=True))
+        self.assertNotIn("999002", sent.get_data(as_text=True))
+        self.assertNotIn("25", sent.get_data(as_text=True))
+
+        both = self._notify(
+            audience="free_all",
+            licence_ids=[22, 25, 40, 999003],
+            exclude_licence_ids=[25, 999004],
+            dry_run=True,
+        )
+        self.assertEqual(both.get_json()["matched"], 2)
+        self.assertEqual(both.get_json()["not_matched"], 2)
+        self.assertNotIn("999003", both.get_data(as_text=True))
+        self.assertNotIn("999004", both.get_data(as_text=True))
+
+        again = self._notify(audience="free_all", licence_ids=[22], dry_run=False)
+        self.assertEqual(again.get_json()["already_sent"], 1)
+        self.assertEqual(again.get_json()["sent"], 0)
+        self.assertEqual(again.get_json()["not_matched"], 0)
+        self.assertEqual(len(self.mail), 2)
+
+        self.mail.clear()
+        db = get_db()
+        db.execute("DELETE FROM notices_sent")
+        db.execute(
+            """
+            INSERT INTO notice_opt_outs (licence_kind, licence_ref, opted_out_at)
+            VALUES ('free', 40, '2026-10-21T00:00:00')
+            """
+        )
+        db.commit()
+        db.close()
+        opted = self._notify(audience="free_all", licence_ids=[40], dry_run=False)
+        self.assertEqual(opted.get_json()["opted_out"], 1)
+        self.assertEqual(opted.get_json()["sent"], 0)
+        self.assertEqual(self.mail, [])
+
+    def test_pro_licence_id_uses_the_key_id(self):
+        free_id = self._free_at(22, "NC-FREE-0022", "free@example.com", downloads=1)
+        pro_id = self._pro_key("live@example.com")
+        res = self._notify(audience="pro_active", licence_ids=[pro_id, free_id, 999005])
+        body = res.get_json()
+        if pro_id == free_id:
+            self.assertEqual(body["matched"], 1)
+            self.assertEqual(body["not_matched"], 1)
+        else:
+            self.assertEqual(body["matched"], 1)
+            self.assertEqual(body["not_matched"], 2)
+        self.assertNotIn("live@example.com", res.get_data(as_text=True))
+        self.assertNotIn("free@example.com", res.get_data(as_text=True))
+        self.assertEqual(
+            set(body),
+            {"dry_run", "matched", "already_sent", "opted_out", "sent", "failed", "not_matched"},
+        )
+
+    def test_bad_licence_ids_are_rejected_without_details(self):
+        self._free_at(22, "NC-KEEP-0022", "keep@example.com", downloads=1)
+        rejected = [
+            {"licence_ids": "22"},
+            {"licence_ids": ["22"]},
+            {"licence_ids": [True]},
+            {"licence_ids": [0]},
+            {"licence_ids": [-3]},
+            {"licence_ids": [1.5]},
+            {"licence_ids": [22, {"id": 25}]},
+            {"licence_ids": ["keep@example.com"]},
+            {"exclude_licence_ids": "25"},
+            {"exclude_licence_ids": [False]},
+        ]
+        for extra in rejected:
+            res = self._notify(**extra)
+            self.assertEqual(res.status_code, 400)
+            text = res.get_data(as_text=True)
+            self.assertNotIn("@", text)
+            self.assertNotIn("keep@example.com", text)
+            self.assertNotIn("NC-KEEP", text)
+        self.assertEqual(self.mail, [])
+
+    def test_cli_licence_id_flags_print_counts_only(self):
+        leaked = {
+            "dry_run": True,
+            "matched": 1,
+            "already_sent": 0,
+            "opted_out": 0,
+            "sent": 0,
+            "failed": 0,
+            "not_matched": 1,
+            "email": "person@example.com",
+            "name": "Person",
+            "ids": [22, 25],
+        }
+        with patch("admin_cli.api", return_value=(200, leaked)) as called:
+            stdout = io.StringIO()
+            with patch("sys.stdout", stdout):
+                admin_cli.main([
+                    "notify", "--template", "upgrade-0.9.41",
+                    "--audience", "free_downloaded",
+                    "--licence-id", "22,25",
+                    "--licence-id", "30",
+                    "--exclude-licence-id", "8",
+                    "--exclude-licence-id", "9,8",
+                    "--dry-run",
+                ])
+        text = stdout.getvalue()
+        self.assertEqual(
+            text,
+            "matched 1\nalready_sent 0\nopted_out 0\nsent 0\nfailed 0\nnot_matched 1\n",
+        )
+        self.assertNotIn("example.com", text)
+        self.assertNotIn("Person", text)
+        body = called.call_args[0][2]
+        self.assertEqual(body["licence_ids"], [22, 25, 30])
+        self.assertEqual(body["exclude_licence_ids"], [8, 9])
+        self.assertTrue(body["dry_run"])
+
+        with patch("admin_cli.api", return_value=(200, leaked)) as called:
+            stderr = io.StringIO()
+            with patch("sys.stderr", stderr):
+                with self.assertRaises(SystemExit) as bad:
+                    admin_cli.main([
+                        "notify", "--template", "upgrade-0.9.41",
+                        "--audience", "free_all",
+                        "--licence-id", "22,person@example.com",
+                        "--dry-run",
+                    ])
+        self.assertEqual(bad.exception.code, 2)
+        self.assertNotIn("@", stderr.getvalue())
+        self.assertNotIn("example.com", stderr.getvalue())
+        called.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
