@@ -209,7 +209,7 @@
 </tr>
 <tr>
 <td>&quot;Unable to verify your license&quot; with no prior check</td>
-<td>Network failure on first activation — your machine can&#x27;t reach <code>api.github.com</code></td>
+<td>Network failure on first activation. The app could not reach the licence server at <code>api.nodecontrol.io</code>. Older builds checked <code>api.github.com</code>.</td>
 <td>Check your internet connection, firewall, proxy settings</td>
 </tr>
 <tr>
@@ -242,13 +242,13 @@
 <ol>
 <li>Records your registration locally
 </li>
-<li>Submits the details to our private registrations system on GitHub (used for support, not for marketing)
+<li>Submits the name, email, organisation, and role to the licence server at api.nodecontrol.io
 </li>
-<li>Checks your email against the allowed Pro user list
+<li>Checks the Professional licence with that server. Older builds checked an email allow-list
 </li>
-<li>If your email is on the list — you&#x27;re in
+<li>If the licence is active, you&#x27;re in
 </li>
-<li>If not — a &quot;not approved&quot; message appears with contact info for support
+<li>If not, a message appears with contact info for support
 </li>
 </ol>
 <h3 id="when-youll-see-this-again">When you&#x27;ll see this again</h3>
@@ -261,18 +261,18 @@
 </li>
 </ul>
 <h3 id="license-re-check">License re-check</h3>
-<p>On every launch, Pro / AI rechecks your email against the allowed user list. Same 7-day offline grace period applies — useful if you&#x27;re on a customer site without internet for a few days.</p>
+<p>On every launch, Pro / AI checks the licence with the licence server. Same 7-day offline grace period applies. That is useful if you are on a customer site without internet for a few days.</p>
 <h2 id="why-we-check-at-all">Why we check at all</h2>
 <p>The license check exists to:</p>
 <ul>
-<li>Track active users for support and update notifications
+<li>See which licences are in use, so support and product notices can reach them
 </li>
-<li>Allow rapid response if a code or account is misused
+<li>Revoke a code or a subscription that is misused
 </li>
-<li>Give me a way to see which build is actually in use when a crash report comes in
+<li>See which build is in use if you email a crash log to support. The crash log stays on the laptop until you send it
 </li>
 </ul>
-<p>We do <em>not</em> use your email or activation data for marketing. Our <a href="https://nodecontrol.io/privacy">privacy policy</a> covers full details.</p>
+<p>Service email, including a notice that a version will stop working, is described in the <a href="https://nodecontrol.io/privacy.html">privacy notice</a>. That notice also says what is not a promotional mailing list.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="adding-first-device.html">Adding your first device</a>

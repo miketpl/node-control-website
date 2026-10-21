@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy — Node Control</title>
-    <meta name="description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
+    <meta name="description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <link rel="canonical" href="https://nodecontrol.io/privacy.html">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Privacy — Node Control">
-    <meta property="og:description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
+    <meta property="og:description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <meta property="og:url" content="https://nodecontrol.io/privacy.html">
     <meta property="og:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Privacy — Node Control">
-    <meta name="twitter:description" content="Draft privacy notice for the Node Control website, the Free Edition download form, and the desktop app.">
+    <meta name="twitter:description" content="Draft privacy notice for the Node Control website, the Free Edition, the Professional subscription, and the desktop app.">
     <meta name="twitter:image" content="https://nodecontrol.io/images/screenshots/nc-l2-topology.png">
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
@@ -46,56 +46,126 @@
 
     <main class="legal-page">
         <div class="container">
-            <p class="draft-notice">Draft, pending review.</p>
+            <p class="draft-notice">Draft, pending review. Last updated 21 October 2026.</p>
             <h1>Privacy</h1>
-            <p>This notice describes personal data collected when you request the Node Control Free Edition from this website, and when the desktop app talks to the licence server. Node Control is a product of The Promised Lan Limited.</p>
+            <p>This notice describes personal data used by the Node Control website, the Free Edition download, the Professional subscription, and the desktop app when it talks to the licence server at api.nodecontrol.io. Node Control is a product of The Promised Lan Limited.</p>
+            <p>Device configs, topology, and credentials stay in the app on your computer. They are not sent to the licence server. The licence server does receive the categories on this page.</p>
+            <p>This page is a draft. It is not a finished privacy notice.</p>
 
             <h2>Who we are</h2>
-            <p>The controller is The Promised Lan Limited, a company in the United Kingdom.</p>
-            <p>Company number: <span class="placeholder">[PLACEHOLDER: company number]</span></p>
-            <p>Registered address: <span class="placeholder">[PLACEHOLDER: registered address]</span></p>
-            <p>Lawful basis for using the form data: <span class="placeholder">[PLACEHOLDER: lawful basis]</span></p>
+            <p>The controller is The Promised Lan Limited, a company registered in England and Wales, trading as Node Control. Node Control is a product of The Promised Lan Limited.</p>
+            <p>Company number: 12571780.</p>
+            <p>Registered office: 266-268 Wickham Road, Shirley, Croydon, Surrey, CR0 8BJ, United Kingdom.</p>
+            <!-- ICO registration number goes here once registered. There is no registration number yet. -->
+            <p>Data protection officer: <span class="placeholder">[DPO, OR CONFIRM THERE IS NONE]</span></p>
+            <p>Privacy requests go to <a href="mailto:privacy@nodecontrol.io">privacy@nodecontrol.io</a>.</p>
 
-            <h2>What the free download form collects</h2>
+            <h2>Purposes</h2>
+            <p>We use personal data for the following. The lawful basis for each one is still open: <span class="placeholder">[LAWFUL BASIS FOR EACH PURPOSE]</span></p>
+            <ul>
+                <li>Send the verification code, and issue and check a Free licence.</li>
+                <li>Run a Professional subscription, including the licence key and the payment record.</li>
+                <li>See which computer a licence is active on, and confirm a move to another computer.</li>
+                <li>Tell the app when a newer build is published.</li>
+                <li>Send service email. That includes verification codes, licence keys, device-move codes, a link to manage a subscription, and a product notice such as a version that will stop working.</li>
+                <li>Count which links people follow to the Free form, and which installer downloads start.</li>
+                <li>Store usage counts you choose to send, linked to the licence.</li>
+                <li>Limit repeated requests.</li>
+            </ul>
+            <p>Name, email, and platform are required for a Free licence. Company is optional. If you register an install, name and email are required. Organisation and role are optional. Usage statistics can be turned off. The licence still works if they are off.</p>
+
+            <h2>Free download form</h2>
             <ul>
                 <li>Name</li>
                 <li>Email</li>
                 <li>Platform</li>
-                <li>Company, if you choose to enter one</li>
+                <li>Company, if you enter one</li>
             </ul>
-            <p>We use this to send the verification code, and to issue and manage the free licence.</p>
+            <p>These are stored in the licence database on servers the company operates. The 6-digit verification code is stored with that request until you enter it, or until it expires. The default expiry is 72 hours. After you verify, that field is replaced with the time you verified. The rest of the row stays, including the free licence code.</p>
+            <p>The form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign), the host name of the site that referred you, and the path of the page you are on. These are read when you submit. They are stored on the same licence row. They are not stored in a cookie or in the browser.</p>
+            <p>When the site starts an installer download, or you click a download link, it records the platform and whether the download was started automatically or from a click. That record is stored against the licence, with the time. It does not include an IP address. If that call fails, the download still starts.</p>
 
-            <h2>Where it is kept</h2>
-            <p>The details are stored in a licence database on servers the company operates. The verification email is sent through an SMTP provider.</p>
-            <p>The app checks the licence with our server at api.nodecontrol.io.</p>
-            <p>GitHub hosts the installer files. This website is served through GitHub Pages and Cloudflare. Cloudflare proxies the API.</p>
-            <p>Transfers of personal data outside the UK, including via the SMTP provider, GitHub, and Cloudflare: <span class="placeholder">[PLACEHOLDER: international transfers]</span></p>
+            <h2>IP addresses</h2>
+            <p>The free-download request stores the address of the connection the API sees. The API is reached through a Cloudflare tunnel, so that stored address is the tunnel, not your public IP address.</p>
+            <p>Rate limits use the client address Cloudflare sends. That address is stored only as a hash, together with a hash of the licence key or install id where the limit needs one. Those hashes are deleted after about two days. A failed licence check is counted the same way.</p>
+            <p>Usage statistics do not include an IP address.</p>
 
-            <h2>Analytics and advertising</h2>
-            <p>This website does not load an analytics or advertising script. The pages and scripts in this site were checked. There is no analytics tag, advertising pixel, or similar tracker.</p>
-            <p>When you request the Free Edition, the form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign), the host name of the website that referred you, and the path of the page you are on. These are read from the page address when you submit. Nothing is stored in a cookie or in the browser. We store them with your request so we know which channels people find Node Control through. We use them only in totals. They are kept for the same period as the rest of that request.</p>
-            <p>When the site starts an installer download, or you click a download link, it records the platform and whether the download was started automatically or from a click. That record is stored against your licence, with the time. If that call fails, the download still starts.</p>
+            <h2>The app and the licence server</h2>
+            <p>The app checks the licence with api.nodecontrol.io. A check sends the licence key, a random install id, the app version, the OS family, and the CPU architecture. The server stores the install id, platform, architecture, the time the computer was activated, and the time it was last seen. One computer is active on a key at a time.</p>
+            <p>Moving the key to another computer is confirmed by an email code, and is limited to two moves in 30 days. The server stores the previous install id, the new install id, and the time. The code itself is stored as a hash, with the email address, until it is used or it expires. A device-move code expires after 15 minutes. Expired codes are deleted when database maintenance runs.</p>
+            <p>A licence can be revoked.</p>
+            <p>If you register the install, we store the name, email, organisation, and role you enter, with the app version, OS family, OS major version, architecture, and install id. A copy of that registration, including the last four characters of the licence key, is emailed to support@nodecontrol.io.</p>
+            <p>A crash log is written on the laptop. The licence server does not upload it. If you email the file to support, that message is ordinary support mail.</p>
 
-            <h2>In the app</h2>
-            <p>The licence check and device activation send the licence key, a random install id, the app version, and the OS family to api.nodecontrol.io.</p>
-            <p>Update checks send the same kind of request, so the app can tell you when a newer build is published.</p>
-            <p>If you register the install, we store the name, email, organisation, and role you enter, with the app version and OS family, in the licence database. An alert email goes to support@nodecontrol.io.</p>
-            <p>Usage statistics are counts of features used, the session length, the app version, and the OS family. They are linked to the licence, so we can see how a licence uses the product. They do not include device configs, IP addresses, hostnames, or the contents of the network. The app asks at first launch and the choice can be changed in Settings. While it is off, the app sends nothing. Per-user rows are kept for 12 months and then kept only as aggregate counts. You can delete the per-user rows from the app, or by emailing support@nodecontrol.io.</p>
-            <p>Usage statistics and the Privacy and Electronic Communications Regulations: <span class="placeholder">[PLACEHOLDER: solicitor to confirm whether a first-launch opt-out meets PECR, including the statistical exemption in the Data (Use and Access) Act 2025, and the UK GDPR lawful basis for statistics linked to a licence]</span></p>
+            <h2>Usage statistics</h2>
+            <p>If you leave usage statistics on, the app sends counts for that session: how long it ran, how many connections it opened, how many errors it counted, and counts of tasks such as topology, backup, and ping. It also sends the app version, OS family, OS major version, and architecture. The row is stored against the licence and the install id. It is not anonymous.</p>
+            <p>The server drops a user name, company, hostname, or machine id if the app sends one. The stored counts do not include device configs, hostnames, IP addresses, or the contents of the network.</p>
+            <p>The app asks at first launch. You can turn this off in Settings. While it is off, the app is not supposed to send these counts. You can delete the session rows from the app, or by emailing privacy@nodecontrol.io.</p>
+            <p>Session rows are kept for 365 days, which is the current server setting, then folded into monthly totals. The monthly totals are edition, version, OS family, and the counts. They do not include the licence or the install id. We delete or anonymise those totals on request, or periodically.</p>
+            <p>Whether a first-launch opt-out meets PECR, including any statistical exemption, and the UK GDPR lawful basis for statistics linked to a licence: <span class="placeholder">[LAWFUL BASIS AND PECR FOR USAGE STATISTICS]</span></p>
 
-            <h2>Licences</h2>
-            <p>A licence can be revoked. One computer is active on a key at a time. Moving the key to another computer is confirmed by an email code, and is limited to two moves in 30 days.</p>
+            <h2>Update checks</h2>
+            <p>An update check sends the licence key and install id so the server can answer, and it updates the last-seen time on that computer. The statistic that is kept is a daily count of edition, platform, and version. The key and the install id are not written into that count. The code does not delete those daily counts.</p>
+
+            <h2>Professional subscriptions</h2>
+            <p>Stripe takes the card payment. We store the email address, the name if Stripe sends one, the Stripe customer id, the subscription id, the checkout session id, the plan, the status, whether the subscription cancels at the end of the period, and when the period ends.</p>
+            <p>The card number is not stored in the licence database. The billing address and tax ID are entered on Stripe's page. They are not columns in the licence database.</p>
+            <p>The Professional key is stored as a hash, with an encrypted copy so the same key can be emailed again. The welcome email contains the key.</p>
+
+            <h2>Service email</h2>
+            <p>We email you when the product needs to: a verification code, a licence key, a device-move code, or a link to manage a Professional subscription.</p>
+            <p>The licence server can also send a product notice, for example that a version will stop working. Each notice has an unsubscribe link. Opening it records that this licence has opted out. The record is the licence and the time. It does not store your email address. We also record which notice template was sent to which licence, and when. That record does not include your email address either. The same template is not sent to the same licence twice.</p>
+            <p>Unsubscribing stops further product notices. It does not stop verification codes, licence keys, or device-move codes.</p>
+            <p>This code does not run a promotional mailing list. <span class="placeholder">[CONFIRM THERE IS NO OTHER MARKETING LIST]</span></p>
+
+            <h2>Who else receives data</h2>
+            <ul>
+                <li>Cloudflare serves the website in front of GitHub Pages, and the licence API is reached through a Cloudflare tunnel. Cloudflare sees the connection, including the IP address and the page or API address.</li>
+                <li>GitHub Pages hosts the website files.</li>
+                <li>GitHub hosts the installer files. Your browser downloads the installer from GitHub, so GitHub sees that download. The licence server also asks GitHub for release details, using its own token.</li>
+                <li>A legacy switch can copy a free licence code to a file on GitHub. That file contains codes, not names or email addresses. The same switch can copy a Professional email address to a GitHub allow-list. The switch is off unless it is turned on.</li>
+                <li>Stripe processes the Professional payment, as above.</li>
+                <!-- SMTP host comes from the server environment. The code names no live provider. The unset default is not the host in use. -->
+                <li>Email is sent by our email delivery provider, over SMTP.</li>
+                <li>Every page on this site loads the Inter font from fonts.googleapis.com and fonts.gstatic.com. Your browser sends your IP address, and the address of the page, to Google. This site does not load an analytics script, an advertising pixel, or a similar tracker.</li>
+            </ul>
+            <p>There is no separate cookie page. Cookies are described below.</p>
+
+            <h2>International transfers</h2>
+            <p>Cloudflare, GitHub, Google Fonts, Stripe, and the email provider may process personal data outside the United Kingdom. The safeguard for each transfer: <span class="placeholder">[INTERNATIONAL TRANSFERS]</span></p>
 
             <h2>How long we keep it</h2>
-            <p><span class="placeholder">[PLACEHOLDER: retention period]</span></p>
+            <ul>
+                <li>Usage-statistics session rows: 365 days, then monthly totals that are not tied to a licence. We delete or anonymise those totals on request, or periodically.</li>
+                <li>Update-check totals are counts of edition, platform, and version. They are not tied to a person. We delete or anonymise them on request, or periodically.</li>
+                <li>Rate-limit hashes: about two days. Maintenance removes them.</li>
+                <li>An unverified sign-up: we keep it for 30 days. The 6-digit code expires after 72 hours. We delete or anonymise the sign-up on request, or periodically.</li>
+                <li>An expired email code: we keep it for 30 days. A device-move code expires after 15 minutes, and maintenance removes expired codes when it runs. We delete or anonymise any that remain on request, or periodically.</li>
+                <li>Licence and registration records, including the computer a licence is active on and the record that a product notice was sent: we keep them while the licence is active, and for 2 years after it ends. We delete or anonymise them on request, or periodically.</li>
+                <li>Stripe and billing records: we keep them for 6 years, for UK tax. We delete or anonymise them on request, or periodically.</li>
+            </ul>
+
+            <h2>Cookies and local storage</h2>
+            <p>The scripts on this website do not set a cookie, and they do not use local storage or session storage. The Free form reads the page address at the moment you submit.</p>
+            <p>Professional checkout happens on Stripe's website. Stripe's own cookies apply there.</p>
+            <p>The Google Fonts request is described above. Whether that request needs consent: <span class="placeholder">[COOKIE CONSENT FOR GOOGLE FONTS]</span></p>
+
+            <h2>Children</h2>
+            <p>Node Control is a tool for people who operate networks. It is not aimed at children. The forms do not ask your age. <span class="placeholder">[CONFIRM THE SERVICE IS NOT OFFERED TO CHILDREN]</span></p>
+
+            <h2>Security</h2>
+            <p>The website and the API are served over HTTPS, through Cloudflare. Professional keys are encrypted in the licence database. Device-move codes are stored as hashes. The free licence code is stored so the app can be checked.</p>
 
             <h2>Your rights</h2>
-            <p>Under UK GDPR you can ask for access to the personal data we hold about you, and you can ask for it to be corrected or deleted. You can also ask us to restrict or stop certain uses of it.</p>
-            <p>Other UK GDPR rights, and how to complain to the Information Commissioner's Office: <span class="placeholder">[PLACEHOLDER: remaining rights and complaint route, for a solicitor to confirm]</span></p>
-            <p>Contact <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a>.</p>
+            <p>Under UK GDPR you can ask for access to the personal data we hold about you, and you can ask for it to be corrected or deleted. You can ask us to restrict how we use it. You can object to a use based on legitimate interests, and you can object to direct marketing. Where a use is based on consent or on a contract, and is carried out by automated means, you can ask for a copy in a portable form. Where a use is based on consent, you can withdraw that consent. Withdrawing consent does not affect a use that has already happened.</p>
+            <p>Write to <a href="mailto:privacy@nodecontrol.io">privacy@nodecontrol.io</a>. UK GDPR says the reply should be without undue delay, and within one month in most cases.</p>
+            <p>You can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a>.</p>
+
+            <h2>Changes to this notice</h2>
+            <p>The date at the top of this page changes when the notice changes. How we will tell you about a change: <span class="placeholder">[HOW WE WILL TELL YOU ABOUT CHANGES]</span></p>
 
             <h2>Terms</h2>
-            <p>The Free Edition licence terms are on the <a href="terms.html">terms</a> page. That page is also a draft.</p>
+            <p>The Free Edition and Professional terms are on the <a href="terms.html">terms</a> page. There is no separate EULA. That page is also a draft.</p>
         </div>
     </main>
 

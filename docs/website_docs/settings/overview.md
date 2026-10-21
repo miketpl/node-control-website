@@ -83,7 +83,7 @@ A future release may add named settings profiles to skip the manual copy — let
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |
 | Don't want SSH session logging | **Terminal** → uncheck Log session output |
 | Auto-update aggressively | **General** → Auto-check for updates daily |
-| Disable telemetry | **Advanced** → uncheck Send anonymous usage data |
+| Disable telemetry | **Advanced** → uncheck Send anonymous usage data. Those counts are stored against the licence. They are not anonymous. The privacy notice describes them. |
 
 ## Settings audit log
 
