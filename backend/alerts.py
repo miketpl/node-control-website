@@ -38,12 +38,13 @@ ALERT_HOUR_CAP = 30
 # window is the same download as the click that preceded it.
 ALERT_DEDUP_SECONDS = 300
 
-_KINDS = ("free_download", "free_verified", "pro_purchase")
+_KINDS = ("free_download", "free_verified", "pro_purchase", "pro_beta_download")
 
 _SUBJECTS = {
     "free_download": "[Node Control] New Free download",
     "free_verified": "[Node Control] New Free sign-up",
     "pro_purchase": "[Node Control] New Pro purchase",
+    "pro_beta_download": "[Node Control] New Pro beta download",
     "summary": "[Node Control] Alert summary",
 }
 
@@ -51,12 +52,14 @@ _EVENTS = {
     "free_download": "Free download",
     "free_verified": "Free sign-up",
     "pro_purchase": "Pro purchase",
+    "pro_beta_download": "Pro beta download",
 }
 
 _TIERS = {
     "free_download": "free",
     "free_verified": "free",
     "pro_purchase": "pro",
+    "pro_beta_download": "pro",
 }
 
 _HOST_RE = re.compile(
@@ -171,15 +174,15 @@ def _claim(db, kind, licence_id, platform):
         if prior:
             db.rollback()
             return "skip", 0
-    if kind == "free_download":
+    if kind in ("free_download", "pro_beta_download"):
         recent = db.execute(
             """
             SELECT 1 FROM admin_alert_log
-            WHERE kind = 'free_download' AND licence_id = ? AND platform = ?
+            WHERE kind = ? AND licence_id = ? AND platform = ?
               AND created_at >= ?
             LIMIT 1
             """,
-            (licence_id, platform, dedup_ago),
+            (kind, licence_id, platform, dedup_ago),
         ).fetchone()
         if recent:
             db.rollback()
@@ -187,7 +190,9 @@ def _claim(db, kind, licence_id, platform):
     count = db.execute(
         """
         SELECT COUNT(*) AS c FROM admin_alert_log
-        WHERE kind IN ('free_download', 'free_verified', 'pro_purchase')
+        WHERE kind IN (
+            'free_download', 'free_verified', 'pro_purchase', 'pro_beta_download'
+        )
           AND created_at >= ?
         """,
         (hour_ago,),
@@ -295,6 +300,9 @@ def _counts(db, kind):
         today_sql = where + " AND verified_at >= ?"
     elif kind == "pro_purchase":
         where = "FROM pro_keys WHERE source = 'stripe'"
+        today_sql = where + " AND created_at >= ?"
+    elif kind == "pro_beta_download":
+        where = "FROM download_events WHERE kind = 'pro_redirect'"
         today_sql = where + " AND created_at >= ?"
     else:
         return 0, 0

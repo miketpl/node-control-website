@@ -8,7 +8,7 @@ This repository does not deploy the VPS. Copy the files onto the box and restart
 
 Copy `.env.example` to `.env` on the server and replace every placeholder. The admin routes stay disabled until `ADMIN_TOKEN` is set to something other than `change-me-in-production`.
 
-`ADMIN_READ_TOKEN` is a second secret for the read-only dashboard. Empty or `change-me-in-production` is ignored. It is accepted only on `GET /api/admin/stats`, `GET /api/admin/stats/v1`, and `GET /api/admin/flags`. Those three return counts and flags, not emails, licence keys, install ids, or IP addresses. `GET /api/admin/pro-keys` includes customer emails, so it stays on `ADMIN_TOKEN`, as do every other admin route: listing licences, changing flags, issuing or revoking keys, resetting a device, resyncing a subscription, deleting a licence, and sending notices.
+`ADMIN_READ_TOKEN` is a second secret for the read-only dashboard. Empty or `change-me-in-production` is ignored. It is accepted only on `GET /api/admin/stats`, `GET /api/admin/stats/v1`, and `GET /api/admin/flags`. Those three return counts and flags, not emails, licence keys, install ids, or IP addresses. `GET /api/admin/pro-keys` includes customer emails, so it stays on `ADMIN_TOKEN`, as do every other admin route: listing licences, changing flags, issuing or revoking keys, resending a key's download links, resetting a device, resyncing a subscription, deleting a licence, and sending notices.
 
 | Key | What it is |
 |---|---|
@@ -34,6 +34,7 @@ python3 admin_cli.py revoke --email person@example.com
 python3 admin_cli.py flags get
 python3 admin_cli.py flags set free_downloads_paused false
 python3 admin_cli.py pro-key issue --email person@example.com
+python3 admin_cli.py pro-key send-links --id 12
 python3 admin_cli.py maintenance --local
 python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --dry-run
 python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --confirm
@@ -50,11 +51,11 @@ List, revoke, flags, and Pro key commands call the API. `maintenance --local` op
 
 ## Admin alerts
 
-`ADMIN_ALERT_EMAIL` receives a short mail when a Free installer redirect is served, when a Free sign-up is verified, and when a Professional checkout is paid. Empty means the alerts are off, so they can be switched off later without a code change. The mail goes out on a background thread. If sending fails, the log line has no address, and the download, the verification response, and the webhook status stay as they were.
+`ADMIN_ALERT_EMAIL` receives a short mail when a Free installer redirect is served, when a Free sign-up is verified, when a Professional checkout is paid, and when a hand-added Professional key's first-install link is used. That last one is the event Pro beta download. Empty means the alerts are off, so they can be switched off later without a code change. The mail goes out on a background thread. If sending fails, the log line has no address, and the download, the verification response, and the webhook status stay as they were.
 
 The body has the event, tier, platform, architecture when the file name has one, version, time in Europe/London, licence id, utm source, medium and campaign, the referrer host, the landing path, and the totals for today and all time. It has no email address, no name, no company, and no IP address.
 
-A click or an auto beacon is the same download as the installer redirect that follows it. The alert is sent for that redirect. A second redirect for the same licence and platform within 5 minutes is the same download and does not send another mail. At most 30 of these alerts go out in an hour. The next event sends one summary, with no licence ids, and then nothing further until the hour has moved on.
+A click or an auto beacon is the same download as the installer redirect that follows it. The alert is sent for that redirect. A second redirect for the same licence and platform within 5 minutes is the same download and does not send another mail. A Pro beta download uses the same 5-minute rule. At most 30 of these alerts go out in an hour. The next event sends one summary, with no licence ids, and then nothing further until the hour has moved on.
 
 `ADMIN_ALERT_SKIP_LICENCE_IDS` is an optional comma-separated list of licence ids to ignore. A Free id is the number `list` prints. A Professional id is the Professional key id.
 
@@ -97,7 +98,7 @@ python3 admin_cli.py flags set free_downloads_paused false
 No secrets required. SMTP and GitHub are mocked.
 
 ```bash
-cd backend && python3 -m unittest test_app test_pro test_v1 test_notify test_alerts -q
+cd backend && python3 -m unittest test_app test_pro test_v1 test_notify test_alerts test_pro_beta -q
 ```
 
 ## Professional subscriptions
@@ -116,11 +117,11 @@ The webhook is `https://api.nodecontrol.io/api/stripe/webhook`. In the Stripe Da
 
 Stripe Tax is on (`automatic_tax`, billing address required, tax ID collection). The Promised Lan Limited is VAT registered. Set the Stripe Tax origin address in the Dashboard before taking live payments.
 
-Checkout issues one `NCP-` key per Stripe subscription and stores it encrypted with `KEY_ENCRYPTION_KEY`. Resend returns that same key. The success page shows it for 24 hours. `allowlist.json` is not updated. Set `LEGACY_ALLOWLIST_SYNC=true` only if an old client still needs that file. Hand-added beta keys are `python3 admin_cli.py pro-key issue --email …`. That command does not run on startup.
+Checkout issues one `NCP-` key per Stripe subscription and stores it encrypted with `KEY_ENCRYPTION_KEY`. Resend returns one key for the address: a key with no active computer if one exists, otherwise the most recently issued key. The recovery email lists every active key. The success page shows the checkout key for 24 hours. `allowlist.json` is not updated. Set `LEGACY_ALLOWLIST_SYNC=true` only if an old client still needs that file. Hand-added beta keys are `python3 admin_cli.py pro-key issue --email …`. That command emails the key and 7-day Mac and Windows links for the first install, and does not run on startup. A second key for the same address is a second computer. `python3 admin_cli.py pro-key send-links --id N` sends those links again for one active manual key and does not change the key. `GET /api/v1/download/pro/<platform>?t=` checks that signed link and redirects to the Professional installer while the key is active. A revoked key is refused.
 
 Free codes stay in SQLite. They are published to `licenses.json` with `GITHUB_PAT_WRITE` only when `LEGACY_ALLOWLIST_SYNC=true`, for a 0.9.40 client that still reads that file. The same flag is required before the API reads `licenses.json` or calls GitHub with `GITHUB_PAT` or `GITHUB_PAT_WRITE` (including the allow-list, which falls back to `GITHUB_PAT_WRITE`). `miketpl/node-control-releases-free` and `miketpl/node-control-releases-pro` are private. `RELEASES_READ_PAT` reads both whether or not the flag is set. `PRO_RELEASES_PAT` is the fallback. The website redeem response is still `{downloads: {mac, win}}`. Those URLs are server-signed links on this API, and each one redirects to GitHub's short-lived asset URL. The PAT is not put in the redirect.
 
-`GET /api/pro/download?token=` checks a short-lived signed token and an active subscription, then redirects the same way.
+`GET /api/pro/download?token=` checks a short-lived signed token and an active subscription, then redirects the same way. The hand-added first-install links are a different token, on `GET /api/v1/download/pro/<platform>?t=`.
 
 `POST /api/portal` emails a Customer Portal link when the address has a subscription. The JSON response is the same when it does not. Turn on the Customer Portal in Stripe, allow cancel and payment-method updates, and set the return URL to `https://nodecontrol.io/#manage`.
 

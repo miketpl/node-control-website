@@ -10,6 +10,7 @@ import app at load time, so migrate_db can load V1_SCHEMA without a cycle.
 import base64
 import hashlib
 import hmac
+import html
 import json
 import logging
 import os
@@ -35,6 +36,8 @@ GRACE_DAYS = 7
 FLAG_CACHE_SECONDS = 10
 RELEASE_CACHE_SECONDS = 60
 FREE_LINK_TTL = 30 * 60
+# First-install links for a hand-added Professional key. The app updates itself after that.
+PRO_BETA_LINK_TTL = 7 * 24 * 3600
 REVEAL_TTL = 24 * 3600
 ASSET_URL_TTL = 300
 MAINTENANCE_RETRY = 300
@@ -100,6 +103,8 @@ LIMITS = {
     "resend": (("email", 3, 3600), ("ip", 10, 3600)),
     "resend-confirm": (("email", 10, 3600), ("ip", 20, 3600)),
     "free-download": (("licence", 10, 3600), ("ip", 30, 3600)),
+    # Same numbers as a Free installer link. A separate name so the counters do not mix.
+    "pro-download": (("licence", 10, 3600), ("ip", 30, 3600)),
 }
 
 V1_SCHEMA = (
@@ -845,6 +850,50 @@ def free_redeem_links(license_id):
     for platform in ("mac", "win"):
         token = make_free_download_token(license_id, platform)
         links[platform] = f"{base}{API_PREFIX}/download/free/{platform}?t={token}"
+    return links
+
+
+def _pro_beta_serializer():
+    api = _api()
+    secret = (api.app.config.get("PRO_DOWNLOAD_SECRET") or "").strip()
+    if not secret:
+        secret = (api.app.config.get("SECRET_KEY") or "").strip()
+    if not secret:
+        raise RuntimeError("download signing secret is not set")
+    return URLSafeTimedSerializer(secret, salt="nodecontrol-pro-beta-download")
+
+
+def make_pro_beta_download_token(key_id, platform):
+    payload = {
+        "kid": int(key_id),
+        "platform": platform,
+        "exp": int(time.time()) + PRO_BETA_LINK_TTL,
+    }
+    return _pro_beta_serializer().dumps(payload)
+
+
+def read_pro_beta_download_token(token):
+    try:
+        data = _pro_beta_serializer().loads(token, max_age=PRO_BETA_LINK_TTL)
+    except SignatureExpired:
+        return None, "expired"
+    except BadSignature:
+        return None, "invalid"
+    if int(data.get("exp") or 0) < int(time.time()):
+        return None, "expired"
+    if data.get("platform") not in ("mac", "win"):
+        return None, "invalid"
+    if int(data.get("kid") or 0) < 1:
+        return None, "invalid"
+    return data, ""
+
+
+def pro_beta_download_links(key_id):
+    base = _public_base()
+    links = {}
+    for platform in ("mac", "win"):
+        token = make_pro_beta_download_token(key_id, platform)
+        links[platform] = f"{base}{API_PREFIX}/download/pro/{platform}?t={token}"
     return links
 
 
@@ -1861,6 +1910,70 @@ def telemetry_delete():
     return jsonify({"deleted": deleted})
 
 
+def _usable_pro_key_rows(email):
+    """Active keys this address can still use, newest first.
+
+    A manual key counts while its row is active. A Stripe key counts only
+    while the subscription is active or trialing.
+    """
+    api = _api()
+    db = api.get_db()
+    try:
+        rows = db.execute(
+            """
+            SELECT * FROM pro_keys
+            WHERE email = ? AND status = 'active' AND reveal_blob != ''
+            ORDER BY id DESC
+            """,
+            (email,),
+        ).fetchall()
+        usable = []
+        for row in rows:
+            if row["source"] == "manual":
+                usable.append(row)
+                continue
+            if not row["subscription_id"]:
+                continue
+            sub = db.execute(
+                "SELECT status FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+                (row["subscription_id"],),
+            ).fetchone()
+            if sub and sub["status"] in ("active", "trialing"):
+                usable.append(row)
+        return usable
+    finally:
+        db.close()
+
+
+def _recovery_choice(rows):
+    """One key for the app to activate.
+
+    Prefer a key that has no active device, so a second computer can be
+    set up without taking the seat of the first. If every key already has
+    a computer, use the most recently issued key.
+    """
+    for row in rows:
+        if _active_device("pro", row["id"]) is None:
+            return row
+    return rows[0]
+
+
+def _recovery_key_mail(plains):
+    text_keys = "\n\n".join(plains)
+    text = (
+        "Your Professional licence keys:\n\n"
+        f"{text_keys}\n\n"
+        "Enter one key in Welcome to Node Control.\n\n"
+        "Each key is active on one computer at a time.\n"
+    )
+    parts = ["<p>Your Professional licence keys:</p>"]
+    for plain in plains:
+        parts.append(f"<p><strong>{html.escape(plain)}</strong></p>")
+    parts.append("<p>Enter one key in Welcome to Node Control.</p>")
+    parts.append("<p>Each key is active on one computer at a time.</p>")
+    return text, "".join(parts)
+
+
 def pro_key_resend():
     if get_flags()["maintenance"]:
         return maintenance_response()
@@ -1877,31 +1990,9 @@ def pro_key_resend():
     limited = _enforce_limits("resend", {"email": email, "ip": ip, "key": email})
     if limited:
         return limited
-    api = _api()
-    db = api.get_db()
-    row = db.execute(
-        """
-        SELECT * FROM pro_keys
-        WHERE email = ? AND status = 'active'
-        ORDER BY id DESC LIMIT 1
-        """,
-        (email,),
-    ).fetchone()
-    db.close()
-    eligible = False
-    if row and row["reveal_blob"]:
-        if row["source"] == "manual":
-            eligible = True
-        else:
-            db = api.get_db()
-            sub = db.execute(
-                "SELECT status FROM pro_subscriptions WHERE stripe_subscription_id = ?",
-                (row["subscription_id"],),
-            ).fetchone()
-            db.close()
-            eligible = bool(sub and sub["status"] in ("active", "trialing"))
-    if eligible:
+    if _usable_pro_key_rows(email):
         code = _issue_code("pro_resend", email)
+        api = _api()
         api._send_mail(
             email,
             "Your Node Control Professional key",
@@ -1929,31 +2020,25 @@ def pro_key_resend_confirm():
     failed = _check_code("pro_resend", email, str(data.get("code") or ""))
     if failed:
         return failed
-    api = _api()
-    db = api.get_db()
-    row = db.execute(
-        """
-        SELECT * FROM pro_keys
-        WHERE email = ? AND status = 'active' AND reveal_blob != ''
-        ORDER BY id DESC LIMIT 1
-        """,
-        (email,),
-    ).fetchone()
-    db.close()
-    if not row:
+    rows = _usable_pro_key_rows(email)
+    revealed = []
+    for row in rows:
+        try:
+            plain = decrypt_secret(row["reveal_blob"])
+        except Exception:
+            logger.error("Could not recover a Professional key")
+            continue
+        if plain:
+            revealed.append((row, plain))
+    if not revealed:
         return error(403, "code_invalid", "That code is wrong or has expired.", details={"attempts_remaining": 0})
-    try:
-        plain = decrypt_secret(row["reveal_blob"])
-    except Exception:
-        logger.exception("Could not recover a Professional key")
-        return error(500, "internal", "The licence key could not be recovered.")
-    api._send_mail(
-        email,
-        "Your Node Control Professional key",
-        f"Your Professional licence key:\n{plain}\n\nEnter it in Welcome to Node Control.\n",
-        f"<p>Your Professional licence key: <strong>{plain}</strong></p>",
-    )
-    logger.info("Resent Professional key ending %s", row["key_last4"])
+    chosen = _recovery_choice([row for row, _plain in revealed])
+    plain = next(item for row, item in revealed if row["id"] == chosen["id"])
+    plains = [item for _row, item in revealed]
+    text, html_body = _recovery_key_mail(plains)
+    api = _api()
+    api._send_mail(email, "Your Node Control Professional key", text, html_body)
+    logger.info("Resent Professional key ending %s", chosen["key_last4"])
     return jsonify({"licence_key": plain, "tier": "pro"})
 
 
@@ -2038,6 +2123,68 @@ def _queue_free_download_alert(license_id, platform, described):
         alerts.queue(payload)
     except Exception:
         logging.getLogger("alerts").error("Admin alert was not sent")
+
+
+def download_pro_beta(platform):
+    """First-install link for a hand-added Professional key. One key, one computer."""
+    if get_flags()["maintenance"]:
+        return maintenance_response()
+    if platform not in ("mac", "win"):
+        return error(404, "not_found", "That download was not found.")
+    data, reason = read_pro_beta_download_token(request.args.get("t") or "")
+    if reason or not data or data.get("platform") != platform:
+        return error(403, "link_expired", "This download link has expired.")
+    key_id = int(data["kid"])
+    limited = _enforce_limits("pro-download", {
+        "licence": str(key_id),
+        "ip": client_ip(),
+        "key": str(key_id),
+    })
+    if limited:
+        return limited
+    api = _api()
+    db = api.get_db()
+    row = db.execute(
+        "SELECT id, status, source FROM pro_keys WHERE id = ?",
+        (key_id,),
+    ).fetchone()
+    db.close()
+    if not row or row["source"] != "manual":
+        return error(403, "link_expired", "This download link is not valid.")
+    if row["status"] == "revoked":
+        return error(403, "revoked", "This licence key has been revoked.")
+    if row["status"] != "active":
+        return error(403, "link_expired", "This download link is not valid.")
+    try:
+        location = api._pro_asset_redirect(platform)
+    except Exception:
+        logger.exception("Pro beta download redirect failed")
+        return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    try:
+        db = api.get_db()
+        try:
+            db.execute(
+                """
+                INSERT INTO download_events (license_id, platform, kind, created_at)
+                VALUES (?, ?, 'pro_redirect', ?)
+                """,
+                (row["id"], platform, iso(utcnow())),
+            )
+            db.commit()
+        finally:
+            db.close()
+    except Exception:
+        logger.error("Pro beta download was not recorded")
+    try:
+        import alerts
+        alerts.queue({
+            "kind": "pro_beta_download",
+            "licence_id": row["id"],
+            "platform": platform,
+        })
+    except Exception:
+        logging.getLogger("alerts").error("Admin alert was not sent")
+    return redirect(location, code=302)
 
 
 def status():
@@ -2181,13 +2328,85 @@ def issue_manual_pro_key(email):
     key_id = cursor.lastrowid
     db.close()
     logger.info("Issued manual Professional key ending %s", plain[-4:])
-    emailed = api._send_mail(
-        email,
-        "Your Node Control Professional key",
-        f"Your Professional licence key:\n{plain}\n\nEnter it in Welcome to Node Control.\n",
-        f"<p>Your Professional licence key: <strong>{plain}</strong></p>",
-    )
+    emailed = _send_manual_key_email(email, key_id, plain)
     return {"id": key_id, "email": email, "licence_key": plain, "emailed": bool(emailed), "source": "manual"}
+
+
+def _beta_download_message(plain, links):
+    """Plain text and HTML for the first-install mail. No customer address."""
+    mac = links["mac"]
+    win = links["win"]
+    if plain:
+        key_text = f"Your Node Control Professional key is:\n\n{plain}\n\n"
+        key_html = (
+            "<p>Your Node Control Professional key is:</p>"
+            f"<p><strong>{html.escape(plain)}</strong></p>"
+        )
+    else:
+        key_text = (
+            "The key itself is not in this email. "
+            "In the app, choose Email me a code to recover it.\n\n"
+        )
+        key_html = (
+            "<p>The key itself is not in this email. "
+            "In the app, choose Email me a code to recover it.</p>"
+        )
+    text = (
+        f"{key_text}"
+        f"Mac:\n{mac}\n\n"
+        f"Windows:\n{win}\n\n"
+        "Install Node Control.\n\n"
+        "Open Node Control.\n\n"
+        "Enter the key in Welcome to Node Control.\n\n"
+        "These links are for the first install. After that, the app updates itself.\n\n"
+        "The links expire after 7 days. The key is active on one computer at a time.\n\n"
+        "Mike\n"
+    )
+    html_body = (
+        f"{key_html}"
+        f"<p>Mac:<br>{html.escape(mac)}</p>"
+        f"<p>Windows:<br>{html.escape(win)}</p>"
+        "<p>Install Node Control.</p>"
+        "<p>Open Node Control.</p>"
+        "<p>Enter the key in Welcome to Node Control.</p>"
+        "<p>These links are for the first install. After that, the app updates itself.</p>"
+        "<p>The links expire after 7 days. The key is active on one computer at a time.</p>"
+        "<p>Mike</p>"
+    )
+    return "Your Node Control Professional key", text, html_body
+
+
+def _send_manual_key_email(email, key_id, plain):
+    api = _api()
+    try:
+        links = pro_beta_download_links(key_id)
+        subject, text, html_body = _beta_download_message(plain, links)
+        return api._send_mail(email, subject, text, html_body)
+    except Exception:
+        logger.error("Manual key email was not sent")
+        return False
+
+
+def send_manual_pro_links(key_id):
+    """Send the first-install mail again. The key string is not changed."""
+    api = _api()
+    db = api.get_db()
+    row = db.execute(
+        "SELECT id, email, source, status, reveal_blob, key_last4 FROM pro_keys WHERE id = ?",
+        (int(key_id),),
+    ).fetchone()
+    db.close()
+    if not row or row["source"] != "manual" or row["status"] != "active":
+        return None
+    plain = ""
+    if row["reveal_blob"]:
+        try:
+            plain = decrypt_secret(row["reveal_blob"])
+        except Exception:
+            logger.error("Could not read a Professional key for the download email")
+            plain = ""
+    emailed = _send_manual_key_email(row["email"], row["id"], plain or None)
+    return {"id": int(row["id"]), "sent": 1 if emailed else 0, "revealed": bool(plain)}
 
 
 def revoke_pro_key(key_id):
@@ -2356,6 +2575,17 @@ def _admin_pro_key_revoke(key_id):
     return jsonify({"revoked": True, "id": int(key_id)})
 
 
+def _admin_pro_key_send_links(key_id):
+    try:
+        result = send_manual_pro_links(key_id)
+    except Exception:
+        logger.error("Manual download links were not sent")
+        return jsonify({"error": "The links were not sent"}), 500
+    if not result:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(result)
+
+
 def _admin_device_reset(licence):
     record = reset_device(licence)
     if not record:
@@ -2420,7 +2650,9 @@ def admin_stats_v1():
     Device resets are not stored: the admin reset deletes the device rows.
     Move requests are not kept after the code is used. Telemetry has no
     separate event log and no opt-out deletion log. Rate-limit rows are
-    request counters, not 429 outcomes. Pro installer downloads are not recorded.
+    request counters, not 429 outcomes. Stripe checkout downloads are not
+    recorded. A hand-added key's first-install redirect is stored as kind
+    pro_redirect and is left out of the free downloads count.
     """
     api = _api()
     since = api._utc_day(request.args.get("since"), "0000-01-01")
@@ -2647,6 +2879,9 @@ def register(flask_app):
     flask_app.add_url_rule(
         API_PREFIX + "/download/free/<platform>", "v1_download_free", download_free, methods=["GET"]
     )
+    flask_app.add_url_rule(
+        API_PREFIX + "/download/pro/<platform>", "v1_download_pro_beta", download_pro_beta, methods=["GET"]
+    )
 
     flask_app.add_url_rule(
         "/api/admin/flags",
@@ -2682,6 +2917,12 @@ def register(flask_app):
         "/api/admin/pro-keys/<int:key_id>/revoke",
         "admin_pro_key_revoke",
         api.require_admin(_admin_pro_key_revoke),
+        methods=["POST"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/pro-keys/<int:key_id>/send-links",
+        "admin_pro_key_send_links",
+        api.require_admin(_admin_pro_key_send_links),
         methods=["POST"],
     )
     flask_app.add_url_rule(

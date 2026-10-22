@@ -20,6 +20,7 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py flags set free_downloads_paused false
     python3 admin_cli.py pro-key issue --email person@example.com
     python3 admin_cli.py pro-key revoke --id 12
+    python3 admin_cli.py pro-key send-links --id 12
     python3 admin_cli.py reset-device --licence NC-ABCD-2345
     python3 admin_cli.py pro-resync --subscription sub_123
     python3 admin_cli.py maintenance --local
@@ -168,6 +169,21 @@ def cmd_pro_revoke(args):
     _print_json(*api("POST", f"/api/admin/pro-keys/{int(args.id)}/revoke"))
 
 
+def cmd_pro_send_links(args):
+    """Resend the first-install mail. Prints a count and an id, never an address."""
+    status, payload = api("POST", f"/api/admin/pro-keys/{int(args.id)}/send-links")
+    if status != 200 or not isinstance(payload, dict):
+        print("The links were not sent.", file=sys.stderr)
+        sys.exit(1)
+    sent = payload.get("sent")
+    key_id = payload.get("id")
+    if type(sent) is not int or type(key_id) is not int or sent != 1:
+        print("API response was not counts.", file=sys.stderr)
+        sys.exit(1)
+    print(f"sent {sent}")
+    print(f"id {key_id}")
+
+
 def cmd_reset_device(args):
     quoted = urllib.request.quote(args.licence, safe="")
     _print_json(*api("POST", "/api/admin/devices/" + quoted + "/reset"))
@@ -311,7 +327,7 @@ def main(argv=None):
     flags_set.add_argument("value")
     flags_set.set_defaults(func=cmd_flags_set)
 
-    pro_key = sub.add_parser("pro-key", help="Issue or revoke a manual Professional key")
+    pro_key = sub.add_parser("pro-key", help="Issue, revoke, or resend links for a manual Professional key")
     pro_sub = pro_key.add_subparsers(dest="pro_command", required=True)
     issue = pro_sub.add_parser("issue", help="Create a key for a hand-added beta address")
     issue.add_argument("--email", required=True)
@@ -319,6 +335,9 @@ def main(argv=None):
     pro_revoke = pro_sub.add_parser("revoke", help="Revoke one Professional key by id")
     pro_revoke.add_argument("--id", required=True, type=int)
     pro_revoke.set_defaults(func=cmd_pro_revoke)
+    send_links = pro_sub.add_parser("send-links", help="Email the first-install links again")
+    send_links.add_argument("--id", required=True, type=int)
+    send_links.set_defaults(func=cmd_pro_send_links)
 
     reset = sub.add_parser("reset-device", help="Clear the active device and the move counter")
     reset.add_argument("--licence", required=True, help="NC- or NCP- key")
