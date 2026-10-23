@@ -206,7 +206,7 @@
 </ol>
 <p><strong>Config Push Script</strong> appears only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. A configured <a href="../settings/scripts.html">custom script</a> appears as <code>Script: &lt;name&gt;</code>. On Free that task is greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>, and <strong>Run</strong> refuses. Safe Mode hides it on every tier.</p>
 <p>On Free only <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong> are enabled. The rest are greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
-<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, and <strong>Find Device</strong>. <strong>HTTPS</strong> is hidden, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
+<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, <strong>Find Device</strong> (read-only), and <strong>Config Compliance Audit</strong>. The audit&#x27;s remediation offer is suppressed. <strong>Config Compliance Remediate</strong> is not in the list. <strong>HTTPS</strong> is hidden, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <p>The bar across the top is a command bar, in labelled groups:</p>
 <ul>
 <li><strong>Task</strong> — which task to run
@@ -220,7 +220,7 @@
 <li><strong>Connections</strong>
 </li>
 </ul>
-<p><strong>Run</strong> sits at the right of that bar.</p>
+<p>From 0.9.40, tasks can run in parallel. <strong>Run</strong> stays enabled while a task runs. <strong>Stop</strong> asks which task to stop, or all of them. The state label lists every running task.</p>
 <p>Under the bar, a status strip shows the mode badge, the state, the progress, and the <strong>Library</strong> menu. The domain suffix setting lives in that Library menu.</p>
 <h2 id="settings-and-the-menus">Settings and the menus</h2>
 <p><strong>Settings</strong> is in the navigation footer (the sidebar). It is also <strong>Edit → Settings...</strong>.</p>

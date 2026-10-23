@@ -17,7 +17,7 @@
 
 The log line per device is `<ip>: vrfs=N lrs=N pid=... gw=...`. At the end: `Done. Variables captured on X/Y device(s); stored in device library.`
 
-No files are written. The table's Status column is not updated. Dry run is ignored. Stop does not cancel it.
+No files are written. The table's Status column is not updated. Dry run is ignored. Stop reaches it from 0.9.40.
 
 Tick **AI Summary** before you run if you want an end-of-task summary. See [AI provider](../settings/ai.md).
 

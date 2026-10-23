@@ -37,7 +37,7 @@ Every HTML report has an **Export CSV** button above each table. You can also ex
 
 Report email sends in the background, with a timeout long enough for a slow relay. The app does not freeze while it waits. If the email is skipped, the log says why: the option was unticked, or there were no recipients.
 
-The Reports tab has **AI Summary** and **Preview before sending**. **AI headline on emailed assessment** is off by default and applies only when the Lifecycle report is emailed. See [AI provider](../settings/ai.md).
+The Reports tab has **AI Summary** and **Preview before sending**. **AI Summary** starts from **Enable AI analysis by default across all features**, which is off on a fresh install, so the box starts unticked. **Preview before sending** starts unticked. Each time the tab loads it takes its starting state from **Show preview before sending data to AI** (off by default). It is enabled only while **AI Summary** is ticked, and you can change it for that run. **AI headline on emailed assessment** is off by default and applies only when the Lifecycle report is emailed. See [AI provider](../settings/ai.md).
 
 ## Caching
 

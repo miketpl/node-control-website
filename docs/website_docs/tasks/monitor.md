@@ -124,7 +124,7 @@ From 0.9.41, on Pro and the AI edition, the Monitor tab has three buttons. They 
 - **Ask Network AI**, which opens the dialog **Ask AI — Network**
 - **Architect Review**, for the whole estate or one site
 
-On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs **Enable AI analysis by default across all features** on. It has no separate switch. It never runs on Free.
+On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. **Enable AI analysis by default across all features** is off on a fresh install, so the alert narratives and the analyst review do not run until you turn it on. There is no separate switch. It never runs on Free.
 
 **AI Chat** and the **AI Dashboard** stay on the AI edition. See [AI features overview](../settings/ai-features.md).
 

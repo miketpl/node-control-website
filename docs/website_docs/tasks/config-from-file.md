@@ -20,7 +20,13 @@
 
 There are no output files. There is no save option. Use [Save Config](config-backup.md) for that.
 
-**Dry run (log only)** on the main window logs `would push N config lines` per device. Threads come from the main-window spinbox. The default is 6.
+**Dry run (log only)** on the main window logs `would push N config lines` per device. How many devices run at once comes from the **Conns** spinner on the Engineer page.
+
+From 0.9.40, **Stop** reaches this task.
+
+## Global config
+
+Config Push has no global mode. Put global-only config here.
 
 ## Next steps
 

@@ -66,7 +66,7 @@ If the repo is empty:
 
 The diff-and-confirm flow is intentional — you won't accidentally nuke your local library on a fetch.
 
-Only one fetch runs at a time. A startup sync and a manual pull used to overlap, and the second one showed the same diff again after you clicked Apply. That stale diff is gone.
+Pull logs each step. It never opens a second review dialog.
 
 ## Conflict resolution
 
