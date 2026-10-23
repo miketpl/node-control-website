@@ -33,8 +33,9 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
   on the free section. Do not make the page all about Free.
 - **Professional includes bring-your-own AI.** Lead with "Bring your own
   AI provider". It uses the user's own API key. There is no Node Control
-  AI subscription and no markup. Anthropic (Claude), OpenAI, and a local
-  Ollama model are supported. Do not make Claude the headline.
+  AI subscription and no markup. The providers are Anthropic, OpenAI,
+  Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local
+  Ollama (or your own on-prem backend). Do not make Claude the headline.
 - **The AI edition is a separate product.** Nine specialist agents on
   infrastructure you host. No price, no buy button, no download. The badge
   is "Coming to customers soon". Register interest uses the existing
@@ -122,9 +123,10 @@ sentences. If a claim can't be made concretely, don't make it.
   added at checkout where applicable. Checkout is built and stays off. The only switch is
   `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until the owner
   turns it on. Do not point Pro buttons at a GitHub release. Professional
-  AI is bring-your-own: Anthropic (Claude), OpenAI, and local Ollama. The
-  AI edition badge is "Coming to customers soon", with no price, buy
-  button, or download. The old `?paid=true&download=`
+  AI is bring-your-own: Anthropic, OpenAI, Google Gemini, xAI Grok, any
+  OpenAI-compatible endpoint, or local Ollama (or your own on-prem
+  backend). The AI edition badge is "Coming to customers soon", with no
+  price, buy button, or download. The old `?paid=true&download=`
   redirect has been removed.
 - `privacy.html` and `terms.html` are drafts pending review. Do not remove
   the draft notice or fill `[PLACEHOLDER]` markers without the owner.
