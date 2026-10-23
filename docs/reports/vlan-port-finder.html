@@ -155,7 +155,7 @@
 <li><strong>Reports</strong> in the left sidebar → <strong>VLAN Port Finder</strong> → set Scope → set VLAN filter → <strong>Run</strong>
 </li>
 </ul>
-<p>The export from this report is what <a href="../tasks/config-push.html">Config Push</a> uses to target never-active ports, or ports inactive for at least N hours. The report records each switch&#x27;s uptime so that push can warn you when the threshold is longer than the uptime.</p>
+<p><a href="../tasks/config-push.html">Config Push</a> reads this export. Activity uses <strong>Last Active</strong>: never active, or inactive for at least N hours. The report records each switch&#x27;s uptime so the push can warn you when the threshold is longer than the uptime.</p>
 <h2 id="configure">Configure</h2>
 <table>
 <thead>

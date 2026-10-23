@@ -102,7 +102,7 @@ The Catalyst 9000 series runs IOS-XE which has minor CLI differences from IOS cl
 Maps, inventory, and the show-command reports are read-only. On Cisco the write paths are:
 
 - [Find Device](../tasks/find-device.md#port-actions-shut-no-shut) port shut and re-enable
-- [Config Push](../tasks/config-push.md) — a per-port template, on Pro and the AI edition
+- [Config Push](../tasks/config-push.md) — commands to ports from a file, on Pro and the AI edition. Full support is Cisco IOS, IOS-XE, and NX-OS
 - [Config Compliance](../tasks/config-compliance.md) remediation — IOS, IOS-XE, and NX-OS, on Pro and the AI edition
 
 Each one asks you to confirm before it sends anything. Safe Mode blocks compliance remediation.

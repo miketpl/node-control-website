@@ -25,5 +25,5 @@ There are no output files. There is no save option. Use [Save Config](config-bac
 ## Next steps
 
 - [Config Backup](config-backup.md)
-- [Config Push](config-push.md) — a template with placeholders, not a verbatim file
+- [Config Push](config-push.md) — commands to a list of ports from a file, with placeholders. This task is a verbatim file, with none
 - [Safe Mode](../settings/safe-mode.md)

@@ -12,7 +12,7 @@ The classic "where is VLAN 100 carried?" question, answered fleet-wide in one re
 
 - **Reports** in the left sidebar → **VLAN Port Finder** → set Scope → set VLAN filter → **Run**
 
-The export from this report is what [Config Push](../tasks/config-push.md) uses to target never-active ports, or ports inactive for at least N hours. The report records each switch's uptime so that push can warn you when the threshold is longer than the uptime.
+[Config Push](../tasks/config-push.md) reads this export. Activity uses **Last Active**: never active, or inactive for at least N hours. The report records each switch's uptime so the push can warn you when the threshold is longer than the uptime.
 
 ## Configure
 

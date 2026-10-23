@@ -57,4 +57,4 @@ After the push, the config is pulled again and audited again. A full transcript 
 
 - [Security Audit](../reports/security-audit.md) — optional baseline section in the same SSH session as the PSIRT check
 - [Safe Mode](../settings/safe-mode.md)
-- [Config Push](config-push.md) — a different task, for per-port templates
+- [Config Push](config-push.md) — a different task. It pushes commands to ports from a file
