@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI on Professional — NodeControl Docs</title>
-    <meta name="description" content="AI on Professional: bring your own AI provider. Your own API key. Anthropic (Claude), OpenAI, and local Ollama.">
+    <meta name="description" content="AI on Professional: bring your own key. Auto-detect, Backend, Anthropic, OpenAI, Gemini, Grok, an OpenAI-compatible endpoint, Ollama, or Disabled.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
@@ -45,6 +45,8 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../getting-started/updating.html" class="docs-nav-link">Updating</a>
       <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -144,13 +146,25 @@
                 <h1 id="ai-on-professional">AI on Professional</h1>
 <p>Bring your own AI provider. Professional uses your own API key. There is no AI subscription and no markup.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
-<p>Supported:</p>
+<p>Supported. Pro uses your own API key:</p>
 <ul>
-<li>Anthropic (Claude), with your own API key
+<li>Auto-detect
 </li>
-<li>OpenAI, with your own API key
+<li>Backend (DGX / on-prem)
 </li>
-<li>a local Ollama model on your own machine
+<li>Anthropic
+</li>
+<li>OpenAI
+</li>
+<li>Google Gemini
+</li>
+<li>xAI Grok
+</li>
+<li>an OpenAI-compatible endpoint
+</li>
+<li>Ollama
+</li>
+<li>Disabled
 </li>
 </ul>
 <h2 id="what-can-go-to-the-ai">What can go to the AI</h2>
@@ -183,7 +197,7 @@
 <p>with opaque tokens such as <code>[IP_1]</code> and <code>[HOST_1]</code>. The app swaps the real values back locally. You read real names. The provider never sees them.</p>
 <p>An optional preview shows exactly what will be sent before you approve it. AI is opt-in per run. Nothing is sent without that. With a local Ollama model, nothing leaves your network at all.</p>
 <h2 id="architect-review">Architect review and network-wide chat</h2>
-<p>From 0.9.40, Professional can review the entire estate, or one site, like an architect on a design review. That covers single points of failure, the addressing plan, design risks, and an overall architecture view. You can also chat with the AI about the whole network.</p>
+<p>From 0.9.41, <strong>Architect Review</strong> looks at the whole estate, or one site, on Pro and the AI edition. That covers single points of failure, the addressing plan, design risks, and an overall architecture view. <strong>Ask Network AI</strong> is on the Monitor tab. Both arrived in 0.9.41.</p>
 <h2 id="free">Free</h2>
 <p>On Free, AI is preview only. You can see the anonymised payload. Nothing is ever sent. Configuring a provider, and sending, is the upgrade to Professional.</p>
 <h2 id="ai-edition">Node Control AI edition</h2>

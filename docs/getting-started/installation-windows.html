@@ -47,6 +47,8 @@
       <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link active">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="licence.html" class="docs-nav-link">Your licence</a>
+      <a href="updating.html" class="docs-nav-link">Updating</a>
       <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -157,12 +159,14 @@
 <h2 id="download">Download</h2>
 <p>From <a href="https://nodecontrol.io">nodecontrol.io</a>:</p>
 <ul>
-<li><strong>Free</strong> — sign up with your email to receive a download link and activation code
+<li><strong>Free</strong> — sign up with your email to receive a download link and an <code>NC-XXXX-XXXX</code> activation code
 </li>
-<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal
+<li><strong>Pro</strong> — the confirmation email after purchase contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself
+</li>
+<li><strong>AI</strong> — there is no download on the site. The edition is not yet available to buy
 </li>
 </ul>
-<p>The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI). The site always hands you the current build. Do not bookmark an old filename.</p>
+<p>The file is the NSIS installer for the edition you downloaded. The installer file is downloaded from GitHub. Do not bookmark an old filename.</p>
 <h2 id="install">Install</h2>
 <ol>
 <li>Double-click the downloaded <code>Setup.exe</code>
@@ -182,7 +186,7 @@
 <li><strong>Finish</strong>. Tick &quot;Launch Node Control&quot; to start it immediately
 </li>
 </ol>
-<p>You&#x27;ll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., &quot;Node Control Free&quot;).</p>
+<p>You&#x27;ll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., &quot;Node Control Free&quot;). On first run you <a href="first-launch-activation.html">activate</a>. Free uses its activation code. Pro uses the NCP key.</p>
 <h2 id="the-installer-is-signed">The installer is signed</h2>
 <p>The installer and the app are signed. They show <strong>The Promised Lan Limited</strong> as the verified publisher, in the UAC prompt and in the installer&#x27;s properties. The <strong>Unknown publisher</strong> block is gone.</p>
 <p>SmartScreen reputation builds with downloads, so an early download may still show a <strong>More info</strong> prompt.</p>
@@ -209,16 +213,18 @@
 </ul>
 <p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
 <h2 id="updating">Updating</h2>
-<p>Use <strong>Help → Check for Updates...</strong> inside the app. When an update is available:</p>
+<p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. Before <strong>Install &amp; Restart</strong>, the app checks the checksum and the Authenticode publisher, <strong>The Promised Lan Limited</strong>. Downloads resume.</p>
 <ol>
 <li>Click <strong>Download</strong>
 </li>
-<li>The new installer downloads to your <code>%TEMP%</code> folder
+<li>The new installer downloads to your <code>%TEMP%</code> folder. A dropped connection can resume
 </li>
-<li>Click <strong>Install &amp; Restart</strong> — Node Control closes, a UAC prompt appears, the installer runs silently and re-launches the app on the new version
+<li>Click <strong>Install &amp; Restart</strong>. Node Control closes, a UAC prompt appears, the installer runs silently, and the app opens on the new version
 </li>
 </ol>
-<p>Your library, settings, and credentials carry over.</p>
+<p><strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<p>0.9.40 and earlier cannot self-update. Install the current build by hand from <a href="https://nodecontrol.io">nodecontrol.io</a>. Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.</p>
+<p>See <a href="updating.html">Updating Node Control</a>.</p>
 <h2 id="crash-logs">Crash logs</h2>
 <p>If Node Control crashes, a log file is written to:</p>
 <pre><code>%USERPROFILE%\NodeControl_crash.log

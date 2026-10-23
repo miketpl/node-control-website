@@ -47,6 +47,8 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../getting-started/updating.html" class="docs-nav-link">Updating</a>
       <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -160,7 +162,7 @@
 <tbody>
 <tr>
 <td><strong>General</strong></td>
-<td>Theme, font size, <strong>Startup Mode</strong> (what the Select Mode dialog defaults to), default library, auto-update behaviour</td>
+<td>Theme, font size, <strong>Startup Mode</strong> (what the Select Mode dialog defaults to), default library, and <strong>Deactivate this computer</strong></td>
 </tr>
 <tr>
 <td><strong>Credentials</strong></td>
@@ -212,11 +214,15 @@
 </tr>
 <tr>
 <td><strong>AI / LLM</strong></td>
-<td>Bring your own AI provider, with your own API key. Anthropic (Claude), OpenAI, and local Ollama, plus Workspace ID. <a href="ai.html">Feature-level AI</a>. Pro and AI</td>
+<td>Bring your own AI provider, with your own API key. The provider list is on <a href="ai-llm.html">AI on Professional</a>. <a href="ai.html">Feature-level AI</a>. Pro and the AI edition</td>
+</tr>
+<tr>
+<td><strong>Privacy</strong></td>
+<td><strong>Send anonymous usage statistics</strong></td>
 </tr>
 <tr>
 <td><strong>Advanced</strong></td>
-<td>Crash log location, telemetry opt-in, debug logging</td>
+<td>Crash log location, debug logging</td>
 </tr>
 </tbody>
 </table>
@@ -296,12 +302,12 @@
 <td><strong>Terminal</strong> → uncheck Log session output</td>
 </tr>
 <tr>
-<td>Auto-update aggressively</td>
-<td><strong>General</strong> → Auto-check for updates daily</td>
+<td>Check for an update now</td>
+<td><strong>Help → Check for Updates...</strong>. 0.9.41 checks once at launch, right after the licence check, and there is no timer after that. See <a href="../getting-started/updating.html">Updating</a></td>
 </tr>
 <tr>
-<td>Disable telemetry</td>
-<td><strong>Advanced</strong> → uncheck Send anonymous usage data. Those counts are stored against the licence. They are not anonymous. The <a href="../../privacy.html">privacy notice</a> describes them.</td>
+<td>Turn off usage statistics</td>
+<td><strong>Privacy</strong> → uncheck <strong>Send anonymous usage statistics</strong>. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out</td>
 </tr>
 </tbody>
 </table>

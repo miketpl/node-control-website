@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>document.documentElement.classList.add("docs-js")</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Updating Node Control — NodeControl Docs</title>
+    <meta name="description" content="How Node Control updates from 0.9.41, what is checked before install, and what to do on an older build.">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/docs.css?v=20261017">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+    <button type="button" class="docs-menu-toggle" id="docsMenuToggle" aria-expanded="false" aria-controls="docsSidebar">Docs menu</button>
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">latest</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="licence.html" class="docs-nav-link">Your licence</a>
+      <a href="updating.html" class="docs-nav-link active">Updating</a>
+      <a href="navigation.html" class="docs-nav-link">Where things are</a>
+      <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Custom Scripts</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
+      <a href="../settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+</nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/getting-started/">Getting Started</a> &rsaquo; Updating
+                </div>
+                <h1 id="updating-node-control">Updating Node Control</h1>
+<p>0.9.41 is a required release. It is the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
+<h2 id="updating-from-0-9-41">Updating from 0.9.41</h2>
+<p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.</p>
+<h2 id="help-check-for-updates">Help &gt; Check for Updates...</h2>
+<p>0.9.41 checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again.</p>
+<p>If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
+<p>The start-up check stays silent if it fails. When it finds an update, it asks <strong>Update Available</strong>.</p>
+<p><strong>Help → Check for Updates...</strong> shows one of these:</p>
+<ul>
+<li><strong>Could not check for updates.</strong> The line underneath is the server&#x27;s message, <code>Update check failed (&lt;status&gt; &lt;code&gt;)</code>, or the network error.
+</li>
+<li><strong>Downloads are paused.</strong> On Free the text is <code>Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.</code>
+</li>
+<li><strong>Download failed.</strong>
+</li>
+<li><strong>You&#x27;re running the latest version (v0.9.41).</strong>
+</li>
+<li><strong>Update available!</strong>
+</li>
+</ul>
+<h2 id="what-is-checked-before-installing">What is checked before installing</h2>
+<p>Before <strong>Install &amp; Restart</strong>, the app checks:</p>
+<ul>
+<li>the checksum
+</li>
+<li>on macOS, the code signature: <code>codesign</code>, <code>spctl</code>, and the Team ID
+</li>
+<li>on Windows, the Authenticode publisher, <strong>The Promised Lan Limited</strong>
+</li>
+<li>the version
+</li>
+</ul>
+<p>If a check fails, the log names the check that failed: checksum, codesign, spctl, Team ID, publisher, or version.</p>
+<h2 id="install-restart-on-mac-and-windows">Install &amp; Restart on Mac and Windows</h2>
+<p>Downloads resume if the connection drops.</p>
+<p>On a Mac, <strong>Install &amp; Restart</strong> replaces the app after those checks pass.</p>
+<p>On Windows:</p>
+<ol>
+<li>The new installer downloads to <code>%TEMP%</code>
+</li>
+<li><strong>Install &amp; Restart</strong> closes Node Control
+</li>
+<li>A UAC prompt appears, the installer runs, and the app opens on the new version
+</li>
+</ol>
+<p>The library, settings, and credentials carry over.</p>
+<h2 id="the-previous-app-copy-on-macos">The .previous.app copy on macOS</h2>
+<p>macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
+<h2 id="update-required">Update required</h2>
+<p>The dialog is <strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<h2 id="when-free-downloads-are-paused">When Free downloads are paused</h2>
+<p>The dialog is <strong>Downloads are paused.</strong> On Free the text is <code>Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.</code> If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
+<h2 id="on-0-9-40-or-earlier-install-by-hand">On 0.9.40 or earlier: install by hand</h2>
+<p>0.9.40 and earlier cannot self-update. Download the current installer from <a href="https://nodecontrol.io">nodecontrol.io</a> and install it over the old one. The library is kept. Do not install an older build. The licence server refuses anything below 0.9.41.</p>
+<p>A 0.9.40 Pro install emails a 6-digit code to the registration address when the activation dialog opens. See <a href="licence.html">Your licence</a>.</p>
+<h2 id="oldest-supported-version">Oldest supported version</h2>
+<p>0.9.41 is the oldest version the licence server accepts. There is no downgrade path.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../troubleshooting/update-issues.html">Update problems</a>
+</li>
+<li><a href="licence.html">Your licence</a>
+</li>
+<li><a href="installation-mac.html">Installing on macOS</a>
+</li>
+<li><a href="installation-windows.html">Installing on Windows</a>
+</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer footer-social-bar">
+        <div class="container">
+            <div class="footer-bottom">
+                <nav class="footer-social" aria-label="Node Control on social media">
+                    <a href="https://x.com/node_control_" target="_blank" rel="noopener" aria-label="Node Control on X">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/company/node-control/" target="_blank" rel="noopener" aria-label="Node Control on LinkedIn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Node_Control" target="_blank" rel="noopener" aria-label="Node Control on YouTube">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+    <script src="../../js/docs.js?v=20261017"></script>
+</body>
+</html>

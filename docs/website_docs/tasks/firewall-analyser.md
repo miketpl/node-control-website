@@ -43,7 +43,7 @@ The tester is where you try a rule before you commit it anywhere. Object names a
 
 ## AI advisory
 
-The **AI advisory** checkbox is off unless you tick it. On Pro it uses the provider you configure: your own API key, with no AI subscription and no markup. Anthropic (Claude), OpenAI, and local Ollama are supported. The deterministic findings do not need it.
+The **AI advisory** checkbox is off unless you tick it. On Pro it uses the provider you configure: your own API key, with no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. The deterministic findings do not need it.
 
 ## Next steps
 

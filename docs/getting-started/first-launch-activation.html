@@ -47,6 +47,8 @@
       <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link active">First Launch &amp; Activation</a>
+      <a href="licence.html" class="docs-nav-link">Your licence</a>
+      <a href="updating.html" class="docs-nav-link">Updating</a>
       <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -144,7 +146,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/getting-started/">Getting Started</a> &rsaquo; First launch and activation
                 </div>
                 <h1 id="first-launch-and-activation">First launch and activation</h1>
-<p>On first launch, Node Control needs to verify your tier — different flows for Free vs Pro/AI users.</p>
+<p>On first launch, Node Control checks the licence at api.nodecontrol.io. Pro activates with the NCP licence key alone. Free activates with its activation code. There is no GitHub licence check, and there is no email allow-list.</p>
 <h2 id="free-tier-activation-code">Free tier — activation code</h2>
 <p>When you launch Node Control Free for the first time, an <strong>Activate Node Control Free</strong> dialog appears.</p>
 <h3 id="where-the-code-comes-from">Where the code comes from</h3>
@@ -155,7 +157,7 @@
 </li>
 <li>Check your inbox for a 6-digit verification code; enter it on the website
 </li>
-<li>The website then generates your activation code in the format <code>NC-XXXX-XXXX</code> (e.g., <code>NC-TH7G-6VNI</code>)
+<li>The website then generates your activation code in the format <code>NC-XXXX-XXXX</code>
 </li>
 <li>Save the code somewhere safe — your password manager is ideal
 </li>
@@ -166,7 +168,7 @@
 </li>
 <li>Click <strong>Activate</strong>
 </li>
-<li>The app contacts the license server (~1–2 seconds), confirms the code is valid, and stores it locally
+<li>The app contacts api.nodecontrol.io, confirms the code is valid, and stores it locally
 </li>
 <li>The dialog closes and the main app window appears
 </li>
@@ -184,83 +186,82 @@
 <li>The dashes are required
 </li>
 </ul>
-<h3 id="if-activation-fails">If activation fails</h3>
+<h2 id="pro-ncp-key">Pro — NCP key</h2>
+<p>Pro activates with the NCP licence key. The confirmation email after purchase contains it.</p>
+<ol>
+<li>Enter the key
+</li>
+<li>Click <strong>Activate</strong>
+</li>
+<li>The app checks the key at api.nodecontrol.io
+</li>
+</ol>
+<p>One computer per licence. The full move and deactivate steps are on <a href="licence.html">Your licence</a>.</p>
+<h3 id="upgrading-a-0-9-40-pro-install">Upgrading a 0.9.40 Pro install</h3>
+<p>When the dialog opens on a 0.9.40 Pro install, a 6-digit code is emailed to the registration address. Enter that code.</p>
+<h3 id="lost-your-key">Lost your key</h3>
+<p><strong>Email me a code</strong>, then <strong>Confirm code</strong>, recovers a lost key. The same key is sent.</p>
+<h3 id="licence-in-use">Licence in use</h3>
+<p>If the key is already on another computer, <strong>Licence in use</strong> offers <strong>Move licence here</strong>. Confirm with the emailed code. The server allows two moves in 30 days.</p>
+<p><strong>Settings → General → Deactivate this computer</strong> frees the licence on the computer you are leaving.</p>
+<h3 id="when-youll-see-this-again">When you&#x27;ll see this again</h3>
+<ul>
+<li>After installing on a new machine
+</li>
+<li>After a clean uninstall and reinstall
+</li>
+<li>If you cancel activation and re-open the app
+</li>
+</ul>
+<h2 id="if-activation-fails">If activation fails</h2>
 <table>
 <thead>
 <tr>
-<th>Error</th>
+<th>Dialog or message</th>
 <th>What it means</th>
 <th>What to do</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><strong>Verifying Licence</strong></td>
+<td>The app is checking the licence at api.nodecontrol.io</td>
+<td>Wait. <strong>Retry</strong> if it sits there. <strong>Enter a licence key</strong> to use a different one</td>
+</tr>
+<tr>
+<td><strong>Offline Mode</strong></td>
+<td>The check could not run, and the 7-day grace still has time</td>
+<td><strong>Continue</strong>. <strong>Retry</strong> when the laptop can reach api.nodecontrol.io. <strong>Enter a licence key</strong> to change it</td>
+</tr>
+<tr>
+<td><strong>Licence Not Accepted</strong></td>
+<td>The key or the Free code was refused</td>
+<td><strong>Retry</strong>, or <strong>Enter a licence key</strong></td>
+</tr>
+<tr>
+<td><strong>Grace Period Expired</strong></td>
+<td>The 7-day offline grace has run out</td>
+<td>Connect, then <strong>Retry</strong>. <strong>Enter a licence key</strong> if this computer should use a different one</td>
+</tr>
+<tr>
+<td><strong>Licence Check Failed</strong></td>
+<td>The check failed</td>
+<td><strong>Retry</strong>. <strong>Enter a licence key</strong> if the stored one is wrong</td>
+</tr>
+<tr>
 <td>&quot;Code must be in the format NC-XXXX-XXXX&quot;</td>
-<td>The code is malformed or wrong length</td>
-<td>Re-paste from the website / email</td>
+<td>The Free code is malformed or the wrong length</td>
+<td>Re-paste it from the website or the email</td>
 </tr>
 <tr>
 <td>&quot;This license code is not active&quot;</td>
-<td>The code wasn&#x27;t found in our active licenses list</td>
-<td>Confirm you copied it correctly; if so, request a fresh code at nodecontrol.io</td>
-</tr>
-<tr>
-<td>&quot;Unable to verify your license&quot; with no prior check</td>
-<td>Network failure on first activation. The app could not reach the licence server at <code>api.nodecontrol.io</code>. Older builds checked <code>api.github.com</code>.</td>
-<td>Check your internet connection, firewall, proxy settings</td>
-</tr>
-<tr>
-<td>&quot;Offline grace period: N days remaining&quot;</td>
-<td>The online check failed, and you still have grace left</td>
-<td>Close the message. The app retries on the next launch</td>
-</tr>
-<tr>
-<td>App blocked after days offline</td>
-<td>The 7-day grace period has run out</td>
-<td>Connect so the app can check the code again</td>
+<td>The Free code is not an active licence</td>
+<td>Confirm you copied it. If you did, request a fresh code at nodecontrol.io</td>
 </tr>
 </tbody>
 </table>
-<h2 id="pro-ai-tier-email-registration">Pro / AI tier — email registration</h2>
-<p>When you launch Node Control Pro (or AI) for the first time, a <strong>Welcome to Node Control</strong> registration dialog appears.</p>
-<h3 id="registration-form">Registration form</h3>
-<p>Fill in:</p>
-<ul>
-<li><strong>Name</strong> — your full name
-</li>
-<li><strong>Email</strong> — the email address associated with your Pro purchase or beta access
-</li>
-<li><strong>Organisation</strong> (optional) — your company name
-</li>
-<li><strong>Role</strong> (optional) — e.g., Network Engineer, IT Manager
-</li>
-</ul>
-<p>Click <strong>Submit</strong>. The app:</p>
-<ol>
-<li>Records your registration locally
-</li>
-<li>Submits the name, email, organisation, and role to the licence server at api.nodecontrol.io
-</li>
-<li>Checks the Professional licence with that server. Older builds checked an email allow-list
-</li>
-<li>If the licence is active, you&#x27;re in
-</li>
-<li>If not, a message appears with contact info for support
-</li>
-</ol>
-<h3 id="when-youll-see-this-again">When you&#x27;ll see this again</h3>
-<ul>
-<li>After installing on a new machine
-</li>
-<li>After a clean uninstall + reinstall
-</li>
-<li>If you cancel the registration and re-open the app
-</li>
-</ul>
-<h3 id="license-re-check">License re-check</h3>
-<p>On every launch, Pro / AI checks the licence with the licence server. Same 7-day offline grace period applies. That is useful if you are on a customer site without internet for a few days.</p>
 <h2 id="why-we-check-at-all">Why we check at all</h2>
-<p>The license check exists to:</p>
+<p>The licence check exists to:</p>
 <ul>
 <li>See which licences are in use, so support and product notices can reach them
 </li>
@@ -272,9 +273,11 @@
 <p>Service email, including a notice that a version will stop working, is described in the <a href="https://nodecontrol.io/privacy.html">privacy notice</a>. That notice also says what is not a promotional mailing list.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="adding-first-device.html">Adding your first device</a>
+<li><a href="licence.html">Your licence and moving between computers</a>
 </li>
-<li><a href="credentials.html">Setting up credentials</a>
+<li><a href="updating.html">Updating Node Control</a>
+</li>
+<li><a href="adding-first-device.html">Adding your first device</a>
 </li>
 <li><a href="../tiers/overview.html">Tier comparison</a>
 </li>

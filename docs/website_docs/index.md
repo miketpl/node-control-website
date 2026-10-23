@@ -9,6 +9,8 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Installing on macOS](getting-started/installation-mac.md)
 - [Installing on Windows](getting-started/installation-windows.md)
 - [First launch and activation](getting-started/first-launch-activation.md)
+- [Your licence and moving between computers](getting-started/licence.md)
+- [Updating Node Control](getting-started/updating.md)
 - [Where things are](getting-started/navigation.md) — sidebar, Home, the Engineer command bar
 - [Adding your first device](getting-started/adding-first-device.md)
 - [Setting up credentials](getting-started/credentials.md)

@@ -12,10 +12,11 @@ Node Control ships as a standard Windows installer (`.exe`) built with NSIS.
 
 From [nodecontrol.io](https://nodecontrol.io):
 
-- **Free** — sign up with your email to receive a download link and activation code
-- **Pro** / **AI** — log in to your customer portal
+- **Free** — sign up with your email to receive a download link and an `NC-XXXX-XXXX` activation code
+- **Pro** — the confirmation email after purchase contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself
+- **AI** — there is no download on the site. The edition is not yet available to buy
 
-The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI). The site always hands you the current build. Do not bookmark an old filename.
+The file is the NSIS installer for the edition you downloaded. The installer file is downloaded from GitHub. Do not bookmark an old filename.
 
 ## Install
 
@@ -27,7 +28,7 @@ The file is the NSIS installer for the edition you downloaded (Free, Pro, or AI)
 4. Click **Install** — files copy in ~30 seconds
 5. **Finish**. Tick "Launch Node Control" to start it immediately
 
-You'll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., "Node Control Free").
+You'll find shortcuts on your Desktop and in the Start Menu under the app name (e.g., "Node Control Free"). On first run you [activate](first-launch-activation.md). Free uses its activation code. Pro uses the NCP key.
 
 ## The installer is signed
 
@@ -60,13 +61,17 @@ Typically expands to `C:\Users\<you>\AppData\Roaming\netOps\`. Contains:
 
 ## Updating
 
-Use **Help → Check for Updates...** inside the app. When an update is available:
+From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. Before **Install & Restart**, the app checks the checksum and the Authenticode publisher, **The Promised Lan Limited**. Downloads resume.
 
 1. Click **Download**
-2. The new installer downloads to your `%TEMP%` folder
-3. Click **Install & Restart** — Node Control closes, a UAC prompt appears, the installer runs silently and re-launches the app on the new version
+2. The new installer downloads to your `%TEMP%` folder. A dropped connection can resume
+3. Click **Install & Restart**. Node Control closes, a UAC prompt appears, the installer runs silently, and the app opens on the new version
 
-Your library, settings, and credentials carry over.
+**Update required.** The text is `This version (v…) is no longer supported. Version v… must be installed to continue.` It cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
+
+0.9.40 and earlier cannot self-update. Install the current build by hand from [nodecontrol.io](https://nodecontrol.io). Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.
+
+See [Updating Node Control](updating.md).
 
 ## Crash logs
 

@@ -1,6 +1,6 @@
 # First launch and activation
 
-On first launch, Node Control needs to verify your tier — different flows for Free vs Pro/AI users.
+On first launch, Node Control checks the licence at api.nodecontrol.io. Pro activates with the NCP licence key alone. Free activates with its activation code. There is no GitHub licence check, and there is no email allow-list.
 
 ## Free tier — activation code
 
@@ -11,14 +11,14 @@ When you launch Node Control Free for the first time, an **Activate Node Control
 1. Visit [nodecontrol.io](https://nodecontrol.io) and click **Get Free**
 2. Enter your email
 3. Check your inbox for a 6-digit verification code; enter it on the website
-4. The website then generates your activation code in the format `NC-XXXX-XXXX` (e.g., `NC-TH7G-6VNI`)
+4. The website then generates your activation code in the format `NC-XXXX-XXXX`
 5. Save the code somewhere safe — your password manager is ideal
 
 ### Entering the code in the app
 
 1. Type or paste the code into the **Activation code** field
 2. Click **Activate**
-3. The app contacts the license server (~1–2 seconds), confirms the code is valid, and stores it locally
+3. The app contacts api.nodecontrol.io, confirms the code is valid, and stores it locally
 4. The dialog closes and the main app window appears
 
 The Free code is checked online. If that check cannot run, you get a **7-day offline grace period**. While the grace period still has days left, the app opens. When the grace period runs out, the app is blocked until it can check the code again.
@@ -32,50 +32,51 @@ You will also be stopped if the code is later revoked.
 - Uppercase letters and digits only (the app auto-uppercases lowercase input)
 - The dashes are required
 
-### If activation fails
+## Pro — NCP key
 
-| Error | What it means | What to do |
-|---|---|---|
-| "Code must be in the format NC-XXXX-XXXX" | The code is malformed or wrong length | Re-paste from the website / email |
-| "This license code is not active" | The code wasn't found in our active licenses list | Confirm you copied it correctly; if so, request a fresh code at nodecontrol.io |
-| "Unable to verify your license" with no prior check | Network failure on first activation. The app could not reach the licence server at `api.nodecontrol.io`. Older builds checked `api.github.com`. | Check your internet connection, firewall, and proxy settings |
-| "Offline grace period: N days remaining" | The online check failed, and you still have grace left | Close the message. The app retries on the next launch |
-| App blocked after days offline | The 7-day grace period has run out | Connect so the app can check the code again |
+Pro activates with the NCP licence key. The confirmation email after purchase contains it.
 
-## Pro / AI tier — email registration
+1. Enter the key
+2. Click **Activate**
+3. The app checks the key at api.nodecontrol.io
 
-When you launch Node Control Pro (or AI) for the first time, a **Welcome to Node Control** registration dialog appears.
+One computer per licence. The full move and deactivate steps are on [Your licence](licence.md).
 
-### Registration form
+### Upgrading a 0.9.40 Pro install
 
-Fill in:
+When the dialog opens on a 0.9.40 Pro install, a 6-digit code is emailed to the registration address. Enter that code.
 
-- **Name** — your full name
-- **Email** — the email address associated with your Pro purchase or beta access
-- **Organisation** (optional) — your company name
-- **Role** (optional) — e.g., Network Engineer, IT Manager
+### Lost your key
 
-Click **Submit**. The app:
+**Email me a code**, then **Confirm code**, recovers a lost key. The same key is sent.
 
-1. Records your registration locally
-2. Submits the name, email, organisation, and role to the licence server at api.nodecontrol.io
-3. Checks the Professional licence with that server. Older builds checked an email allow-list
-4. If the licence is active, you're in
-5. If not, a message appears with contact info for support
+### Licence in use
+
+If the key is already on another computer, **Licence in use** offers **Move licence here**. Confirm with the emailed code. The server allows two moves in 30 days.
+
+**Settings → General → Deactivate this computer** frees the licence on the computer you are leaving.
 
 ### When you'll see this again
 
 - After installing on a new machine
-- After a clean uninstall + reinstall
-- If you cancel the registration and re-open the app
+- After a clean uninstall and reinstall
+- If you cancel activation and re-open the app
 
-### License re-check
+## If activation fails
 
-On every launch, Pro / AI checks the licence with the licence server. Same 7-day offline grace period applies. That is useful if you are on a customer site without internet for a few days.
+| Dialog or message | What it means | What to do |
+|---|---|---|
+| **Verifying Licence** | The app is checking the licence at api.nodecontrol.io | Wait. **Retry** if it sits there. **Enter a licence key** to use a different one |
+| **Offline Mode** | The check could not run, and the 7-day grace still has time | **Continue**. **Retry** when the laptop can reach api.nodecontrol.io. **Enter a licence key** to change it |
+| **Licence Not Accepted** | The key or the Free code was refused | **Retry**, or **Enter a licence key** |
+| **Grace Period Expired** | The 7-day offline grace has run out | Connect, then **Retry**. **Enter a licence key** if this computer should use a different one |
+| **Licence Check Failed** | The check failed | **Retry**. **Enter a licence key** if the stored one is wrong |
+| "Code must be in the format NC-XXXX-XXXX" | The Free code is malformed or the wrong length | Re-paste it from the website or the email |
+| "This license code is not active" | The Free code is not an active licence | Confirm you copied it. If you did, request a fresh code at nodecontrol.io |
 
 ## Why we check at all
 
-The license check exists to:
+The licence check exists to:
 
 - See which licences are in use, so support and product notices can reach them
 - Revoke a code or a subscription that is misused
@@ -85,6 +86,7 @@ Service email, including a notice that a version will stop working, is described
 
 ## Next steps
 
+- [Your licence and moving between computers](licence.md)
+- [Updating Node Control](updating.md)
 - [Adding your first device](adding-first-device.md)
-- [Setting up credentials](credentials.md)
 - [Tier comparison](../tiers/overview.md)

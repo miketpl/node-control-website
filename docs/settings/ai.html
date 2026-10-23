@@ -45,6 +45,8 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../getting-started/updating.html" class="docs-nav-link">Updating</a>
       <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -147,15 +149,7 @@
 <p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.</p>
 <p>The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
-<p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Supported:</p>
-<ul>
-<li>Anthropic (Claude)
-</li>
-<li>OpenAI
-</li>
-<li>a local Ollama model
-</li>
-</ul>
+<p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="ai-llm.html">AI on Professional</a>.</p>
 <p>Identity-linked keys use the <strong>Workspace ID</strong> field. The connection test names the real failure: a rejected key, a retired model, a rate limit, a proxy problem, or a timeout. It does not blame the key for all of them.</p>
 <p>If you tick an AI option and nothing is configured, the app prompts immediately and offers <strong>Open Settings</strong>. It does not wait until the end of the run and then skip quietly.</p>
 <h2 id="what-is-sent">What is sent</h2>
@@ -187,7 +181,7 @@
 </li>
 <li>the lifecycle assessment narrative, and the emailed AI briefing (off by default)
 </li>
-<li>Monitor, on Pro: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review
+<li>Monitor, on Pro and the AI edition: alert narratives, an analyst review of alerted devices, Ask AI for a device, and, from 0.9.41, <strong>Ask Network AI</strong> and <strong>Architect Review</strong>
 </li>
 </ul>
 <p>The firewall analyser AI advisor uses the same provider. Tick it for that run.</p>

@@ -14,7 +14,7 @@ Settings is organised by section. Pick the one you need.
 
 | Tab | What it controls |
 |---|---|
-| **General** | Theme, font size, **Startup Mode** (what the Select Mode dialog defaults to), default library, auto-update behaviour |
+| **General** | Theme, font size, **Startup Mode** (what the Select Mode dialog defaults to), default library, and **Deactivate this computer** |
 | **Credentials** | Profiles, try order, and the device-type map. No star, and no per-tab memory. See [Credentials](../getting-started/credentials.md) |
 | **Library** | Library file path, [GitHub sync](../library/github-sync.md), import/export defaults |
 | **Site Detection** | [Hostname-to-site-code regex](site-detection.md) |
@@ -27,8 +27,9 @@ Settings is organised by section. Pick the one you need.
 | **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
 | **Scripts** | [Custom scripts](scripts.md) that run as tasks. Pro and the AI edition. On Free the page is there, and the task is greyed |
-| **AI / LLM** | Bring your own AI provider, with your own API key. Anthropic (Claude), OpenAI, and local Ollama, plus Workspace ID. [Feature-level AI](ai.md). Pro and AI |
-| **Advanced** | Crash log location, telemetry opt-in, debug logging |
+| **AI / LLM** | Bring your own AI provider, with your own API key. The provider list is on [AI on Professional](ai-llm.md). [Feature-level AI](ai.md). Pro and the AI edition |
+| **Privacy** | **Send anonymous usage statistics** |
+| **Advanced** | Crash log location, debug logging |
 
 ## Where settings are stored
 
@@ -82,8 +83,8 @@ A future release may add named settings profiles to skip the manual copy — let
 | Topology maps look right | **Topology** → Endpoint filter patterns |
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |
 | Don't want SSH session logging | **Terminal** → uncheck Log session output |
-| Auto-update aggressively | **General** → Auto-check for updates daily |
-| Disable telemetry | **Advanced** → uncheck Send anonymous usage data. Those counts are stored against the licence. They are not anonymous. The privacy notice describes them. |
+| Check for an update now | **Help → Check for Updates...**. 0.9.41 checks once at launch, right after the licence check, and there is no timer after that. See [Updating](../getting-started/updating.md) |
+| Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out |
 
 ## Settings audit log
 

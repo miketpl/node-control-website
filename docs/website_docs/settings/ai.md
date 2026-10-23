@@ -10,11 +10,7 @@ The maps, the Inventory report, and L2 Topology Builder all work with no provide
 
 ## Settings → AI / LLM
 
-Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Supported:
-
-- Anthropic (Claude)
-- OpenAI
-- a local Ollama model
+Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](ai-llm.md).
 
 Identity-linked keys use the **Workspace ID** field. The connection test names the real failure: a rejected key, a retired model, a rate limit, a proxy problem, or a timeout. It does not blame the key for all of them.
 
@@ -46,7 +42,7 @@ The same provider is used for:
 
 - the report executive summary
 - the lifecycle assessment narrative, and the emailed AI briefing (off by default)
-- Monitor, on Pro: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review
+- Monitor, on Pro and the AI edition: alert narratives, an analyst review of alerted devices, Ask AI for a device, and, from 0.9.41, **Ask Network AI** and **Architect Review**
 
 The firewall analyser AI advisor uses the same provider. Tick it for that run.
 
