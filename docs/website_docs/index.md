@@ -77,10 +77,13 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Custom scripts](settings/scripts.md) — Pro and the AI edition. On Free the task is greyed
 - [Safe Mode](settings/safe-mode.md)
 - [AI provider](settings/ai.md)
+- [AI on Professional](settings/ai-llm.md)
+- [AI features overview](settings/ai-features.md)
 
 ## Security
 
 - [How credentials are stored](security/credential-storage.md)
+- [What leaves your laptop](security/data-and-privacy.md)
 - [Safe Mode and the command allowlist](security/safe-mode.md)
 - [Audit log](security/audit-log.md)
 

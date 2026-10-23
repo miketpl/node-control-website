@@ -4,7 +4,7 @@
 
 There is no standards picker and no list of named standards.
 
-The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. The **AI advisory** checkbox uses the provider in Settings → AI / LLM. On Pro you opt in for that run. See [AI on Professional](../settings/ai-llm.md).
+The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. **AI review** is an option on the Assess row, and it is on by default. The AI advisor stays a Pro feature. It uses the provider in Settings → AI / LLM. See [AI on Professional](../settings/ai-llm.md).
 
 Inner tabs: **Rulebase Analyser**, **Compare**, **Proposed Rule Tester**.
 
@@ -41,9 +41,9 @@ The **Compare** tab loads an earlier policy against the current one. Every rule 
 
 The tester is where you try a rule before you commit it anywhere. Object names autocomplete on the fields. The assessment uses the screen, rather than a small pane.
 
-## AI advisory
+## AI review
 
-The **AI advisory** checkbox is off unless you tick it. On Pro it uses the provider you configure: your own API key, with no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. The deterministic findings do not need it.
+**AI review** is an option on the Assess row, and it is on by default. The AI advisor stays a Pro feature. It uses the provider you configure: your own API key, with no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. The deterministic findings do not need it.
 
 ## Next steps
 

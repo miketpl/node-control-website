@@ -35,9 +35,9 @@ Most reports give you a sortable, filterable table. Click a column header to sor
 
 Every HTML report has an **Export CSV** button above each table. You can also export HTML. The HTML file is self-contained.
 
-Report email sends in the background, with a timeout long enough for a slow relay. The app does not freeze while it waits. If the email is skipped, the log says why: the option was unticked, or there were no recipients. A report email can carry a headline summary.
+Report email sends in the background, with a timeout long enough for a slow relay. The app does not freeze while it waits. If the email is skipped, the log says why: the option was unticked, or there were no recipients.
 
-An optional AI executive summary uses your own provider and only runs if you tick it. See [AI provider](../settings/ai.md).
+The Reports tab has **AI Summary** and **Preview before sending**. **AI headline on emailed assessment** is off by default and applies only when the Lifecycle report is emailed. See [AI provider](../settings/ai.md).
 
 ## Caching
 

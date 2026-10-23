@@ -12,38 +12,54 @@ Supported. Pro uses your own API key:
 - OpenAI
 - Google Gemini
 - xAI Grok
-- an OpenAI-compatible endpoint
+- OpenAI-compatible endpoint
 - Ollama
 - Disabled
 
 ## What can go to the AI
 
-- Reports: inventory, end-of-life and lifecycle, and the Security Audit (PSIRT) checks
-- End-of-task summaries, including topologies, the compliance audit, and Find Device
-- The lifecycle replace or upgrade plan narrative
-- The firewall analyser AI advisor
-- Per-device **Ask AI** on the Monitor tab
+- **AI Summary** on the Reports tab, with **Preview before sending**
+- End-of-task **AI Summary** on the Engineer page: topology, VLAN Port Finder, Library Updater, Find Device, Discover Variables, Verify Device Types, and Config Compliance Audit
+- **AI headline on emailed assessment**, off by default, and only when the Lifecycle report is emailed
+- **AI review** on the Firewall Analyser Assess row. The AI advisor stays a Pro feature
+- From 0.9.41, on Monitor: **Ask AI**, **Ask Network AI**, **Architect Review**, and the **Findings** tab
 
 ## How the prompt is framed
 
-Prompts cast the AI as a senior network operations analyst, a security analyst, or a principal network architect. The answer is written to read like an experienced engineer's.
+Answers are written as a senior network engineer at a large enterprise.
 
 ## Privacy
 
-The anonymiser is on by default. Before anything leaves the machine it replaces:
+Three switches sit on Settings → AI / LLM. See [AI features overview](ai-features.md).
+
+**Anonymise identifiable data before sending to AI** is on by default. Before anything leaves the machine it replaces:
 
 - IPv4 and IPv6 addresses
 - MAC addresses
 - serial numbers
 - hostnames and FQDNs
 
-with opaque tokens such as `[IP_1]` and `[HOST_1]`. The app swaps the real values back locally. You read real names. The provider never sees them.
+with tokens such as `[IP_1]` and `[HOST_1]`. The app swaps the real values back locally. You read real names. The provider sees the tokens.
 
-An optional preview shows exactly what will be sent before you approve it. AI is opt-in per run. Nothing is sent without that. With a local Ollama model, nothing leaves your network at all.
+**Show preview before sending data to AI** is off by default. When it is on, the preview shows those tokens.
 
-## Architect review and network-wide chat
+**Enable AI analysis by default across all features** is the switch the Monitor Findings review uses. That review has no separate switch.
 
-From 0.9.41, **Architect Review** looks at the whole estate, or one site, on Pro and the AI edition. That covers single points of failure, the addressing plan, design risks, and an overall architecture view. **Ask Network AI** is on the Monitor tab. Both arrived in 0.9.41.
+With a local Ollama model, nothing leaves your network at all.
+
+## Monitor, from 0.9.41
+
+From 0.9.41, on Pro and the AI edition, the Monitor tab has:
+
+- **Ask AI**, per device
+- **Ask Network AI**, which opens the dialog **Ask AI — Network**
+- **Architect Review**, for the whole estate or one site. That covers single points of failure, the addressing plan, design risks, and an overall architecture view
+
+On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs **Enable AI analysis by default across all features** on. It has no separate switch. It never runs on Free.
+
+## Background Learning
+
+**Allow the backend and background jobs to log into devices with my credentials** is off by default. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
 
 ## Free
 
@@ -51,9 +67,10 @@ On Free, AI is preview only. You can see the anonymised payload. Nothing is ever
 
 ## Node Control AI edition
 
-The AI edition is a separate product. It runs nine specialist AI agents on infrastructure you host, on an on-prem GPU server, so the AI runs entirely inside your network. It is not yet available to buy. The site has no price and no download for it. Register interest from the [contact section](https://nodecontrol.io/#contact).
+The AI edition is a separate product. It runs nine specialist AI agents on infrastructure you host, on an on-prem GPU server, so the AI runs entirely inside your network. **AI Chat** and the **AI Dashboard** are the AI edition only. It is not yet available to buy. The site has no price and no download for it. Register interest from the [contact section](https://nodecontrol.io/#contact).
 
 ## Next steps
 
-- [Tier comparison](../tiers/overview.md)
+- [AI features overview](ai-features.md)
 - [AI provider settings](ai.md)
+- [Tier comparison](../tiers/overview.md)

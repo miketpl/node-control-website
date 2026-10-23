@@ -85,10 +85,16 @@
     <loc>https://nodecontrol.io/docs/security/credential-storage.html</loc>
   </url>
   <url>
+    <loc>https://nodecontrol.io/docs/security/data-and-privacy.html</loc>
+  </url>
+  <url>
     <loc>https://nodecontrol.io/docs/security/safe-mode.html</loc>
   </url>
   <url>
     <loc>https://nodecontrol.io/docs/settings/ai.html</loc>
+  </url>
+  <url>
+    <loc>https://nodecontrol.io/docs/settings/ai-features.html</loc>
   </url>
   <url>
     <loc>https://nodecontrol.io/docs/settings/ai-llm.html</loc>

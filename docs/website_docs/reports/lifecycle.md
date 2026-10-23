@@ -51,7 +51,7 @@ After a lifecycle run, a popup builds a replacement and upgrade plan. Each phase
 - **Hardware end-of-life — replace**
 - **Software end-of-life — upgrade**
 
-A banner marks where one ends and the other begins. The same split is in the popup, the exported report, and the optional AI briefing.
+A banner marks where one ends and the other begins. The same split is in the popup and the exported report.
 
 Wording in the plan:
 
@@ -59,7 +59,7 @@ Wording in the plan:
 - **plan now** when the date is inside 18 months
 - for a device further out, the plan states when planning should begin (from one year before end of life)
 
-The assessment exports and emails as its own document. An optional AI briefing can lead the emailed assessment. It is off by default. It uses your own provider. See [AI provider](../settings/ai.md).
+The assessment exports and emails as its own document. **AI headline on emailed assessment** is off by default and applies only when the Lifecycle report is emailed. It uses your own provider. See [AI provider](../settings/ai.md).
 
 ## Update tab
 
