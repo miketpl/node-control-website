@@ -22,7 +22,7 @@ See [Safe Mode](../settings/safe-mode.md) for how the mode is chosen and what it
 
 Safe Mode is session-wide. It is not a per-tab setting.
 
-The **Select Mode** dialog at startup uses the default in **Settings → General → Startup Mode**. Mid-session, the **Edit** menu or the mode badge switches it. In Safe Mode, **HTTPS** is hidden, the task list is trimmed, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked.
+The **Select Mode** dialog at startup uses the default in **Settings → General → Startup Mode**. Mid-session, the **Edit** menu or the mode badge switches it. In Safe Mode, **HTTPS** is hidden, **Console** is hidden, the [local network terminal](../tasks/local-terminal.md) on the log header stays visible, the task list is trimmed, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See [Serial console](../tasks/serial-console.md).
 
 ## Compliance use cases
 

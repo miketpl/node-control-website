@@ -25,6 +25,8 @@ Each SSH session lives in its own tab. Open as many as you need:
 
 The session controls are **SSH**, **HTTPS**, **Exit**, **Exit All**, **Broadcast**, **Paginate**, **Record**, **Fullscreen**, and **Hostnames**. Each tab has **Stay in config** and **Terminal Mode**.
 
+**Console** sits beside **SSH** and **HTTPS** on the Engineer tab. See [Serial console](serial-console.md). **Terminal** is a button on the log header. See [Local network terminal](local-terminal.md).
+
 **Esc** leaves the fullscreen terminal.
 
 The only other shortcut in the app is **Ctrl+C**, which copies a table selection as tab-separated text. There is no Ctrl+, or Cmd+, shortcut.
@@ -81,7 +83,7 @@ There is no Auto-reconnect checkbox. When a session times out, a red banner read
 
 ## Safe Mode and the terminal
 
-Safe Mode is session-wide. In Safe Mode, **HTTPS** is hidden, and a command that is not read-only is blocked in the SSH session. See [Safe Mode](../settings/safe-mode.md).
+Safe Mode is session-wide. In Safe Mode, **HTTPS** is hidden, **Console** is hidden, and a command that is not read-only is blocked in the SSH session. The **Terminal** button on the log header stays visible. See [Safe Mode](../settings/safe-mode.md).
 
 ## Session sharing
 

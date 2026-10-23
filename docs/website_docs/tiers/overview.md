@@ -24,8 +24,8 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | GitHub push and pull | pull keeps the first 25, sorted by IP | ✓ | ✓, and a fallback repository |
 | **Engineer tasks** | | | |
 | None | ✓ | ✓ | ✓ |
-| Serial Console, beside SSH/HTTPS on the Engineer tab | ✓ | ✓ | ✓ |
-| Local Terminal, in the log header. Networking commands only. No shell | ✓ | ✓ | ✓ |
+| [Serial console](../tasks/serial-console.md), beside SSH/HTTPS on the Engineer tab | ✓ | ✓ | ✓ |
+| [Local network terminal](../tasks/local-terminal.md), in the log header. Networking commands only. No shell | ✓ | ✓ | ✓ |
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |

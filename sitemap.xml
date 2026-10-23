@@ -148,6 +148,9 @@
     <loc>https://nodecontrol.io/docs/tasks/ipam.html</loc>
   </url>
   <url>
+    <loc>https://nodecontrol.io/docs/tasks/local-terminal.html</loc>
+  </url>
+  <url>
     <loc>https://nodecontrol.io/docs/tasks/meraki-configurator.html</loc>
   </url>
   <url>
@@ -155,6 +158,9 @@
   </url>
   <url>
     <loc>https://nodecontrol.io/docs/tasks/packet-capture.html</loc>
+  </url>
+  <url>
+    <loc>https://nodecontrol.io/docs/tasks/serial-console.html</loc>
   </url>
   <url>
     <loc>https://nodecontrol.io/docs/tasks/ssh-terminal.html</loc>

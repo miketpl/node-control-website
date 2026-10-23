@@ -76,6 +76,8 @@
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
+      <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
       <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
       <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
@@ -163,6 +165,7 @@
 </ul>
 <h2 id="engineer">Engineer</h2>
 <p>Engineer is the library and the place tasks run from.</p>
+<p><strong>Console</strong> is on the Engineer tab, beside <strong>SSH</strong> and <strong>HTTPS</strong>. It needs a USB serial cable or adapter. See <a href="../tasks/serial-console.html">Serial console</a>. <strong>Terminal</strong> is a button on the log header. It is a local network terminal, with no shell. See <a href="../tasks/local-terminal.html">Local network terminal</a>.</p>
 <p>The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in this order:</p>
 <ol>
 <li><strong>None</strong>
@@ -206,7 +209,7 @@
 </ol>
 <p><strong>Config Push Script</strong> appears only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. A configured <a href="../settings/scripts.html">custom script</a> appears as <code>Script: &lt;name&gt;</code>. On Free that task is greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>, and <strong>Run</strong> refuses. Safe Mode hides it on every tier.</p>
 <p>On Free only <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong> are enabled. The rest are greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
-<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, <strong>Find Device</strong> (read-only), and <strong>Config Compliance Audit</strong>. The audit&#x27;s remediation offer is suppressed. <strong>Config Compliance Remediate</strong> is not in the list. <strong>HTTPS</strong> is hidden, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
+<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, <strong>Find Device</strong> (read-only), and <strong>Config Compliance Audit</strong>. The audit&#x27;s remediation offer is suppressed. <strong>Config Compliance Remediate</strong> is not in the list. <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, the <strong>Terminal</strong> button on the log header stays visible, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <p>The bar across the top is a command bar, in labelled groups:</p>
 <ul>
 <li><strong>Task</strong> — which task to run

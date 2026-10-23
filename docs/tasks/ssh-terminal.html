@@ -78,6 +78,8 @@
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
       <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="ssh-terminal.html" class="docs-nav-link active">SSH Terminal</a>
+      <a href="serial-console.html" class="docs-nav-link">Serial console</a>
+      <a href="local-terminal.html" class="docs-nav-link">Local network terminal</a>
       <a href="monitor.html" class="docs-nav-link">Monitor</a>
       <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
       <a href="ipam.html" class="docs-nav-link">IPAM</a>
@@ -171,6 +173,7 @@
 </ul>
 <h2 id="session-controls">Session controls</h2>
 <p>The session controls are <strong>SSH</strong>, <strong>HTTPS</strong>, <strong>Exit</strong>, <strong>Exit All</strong>, <strong>Broadcast</strong>, <strong>Paginate</strong>, <strong>Record</strong>, <strong>Fullscreen</strong>, and <strong>Hostnames</strong>. Each tab has <strong>Stay in config</strong> and <strong>Terminal Mode</strong>.</p>
+<p><strong>Console</strong> sits beside <strong>SSH</strong> and <strong>HTTPS</strong> on the Engineer tab. See <a href="serial-console.html">Serial console</a>. <strong>Terminal</strong> is a button on the log header. See <a href="local-terminal.html">Local network terminal</a>.</p>
 <p><strong>Esc</strong> leaves the fullscreen terminal.</p>
 <p>The only other shortcut in the app is <strong>Ctrl+C</strong>, which copies a table selection as tab-separated text. There is no Ctrl+, or Cmd+, shortcut.</p>
 <h2 id="terminal-features">Terminal features</h2>
@@ -219,7 +222,7 @@
 <h2 id="when-a-session-times-out">When a session times out</h2>
 <p>There is no Auto-reconnect checkbox. When a session times out, a red banner reads <strong>Session timed out -</strong> and the reason, with a <strong>Reconnect</strong> button. Reconnect uses the same tab and the current credential profile.</p>
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
-<p>Safe Mode is session-wide. In Safe Mode, <strong>HTTPS</strong> is hidden, and a command that is not read-only is blocked in the SSH session. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
+<p>Safe Mode is session-wide. In Safe Mode, <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, and a command that is not read-only is blocked in the SSH session. The <strong>Terminal</strong> button on the log header stays visible. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <h2 id="session-sharing">Session sharing</h2>
 <p>You cannot currently share an SSH session between users — each session is local to your machine. For collaborative troubleshooting, screen-share works.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
