@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">latest</span>
+    <span class="docs-version">Updated 23 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -156,9 +156,11 @@
 <li>Netmiko: <code>arista_eos</code></li>
 </ul>
 <h2 id="what-works">What works</h2>
-<p>Most things work through the EOS CLI:</p>
+<p>Most things work through the EOS CLI. EOS reads LLDP and the MAC table. It does not read CDP.</p>
 <ul>
-<li>Native L2 and L3 topology reads LLDP, STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways</li>
+<li>L2 topology maps are LLDP-only. The L2 Topology Builder does not use the MAC table. The native L2 and L3 reads also include STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways</li>
+<li>The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report</li>
+<li>Find Device&#x27;s per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP</li>
 <li>Port Utilisation</li>
 <li>Bandwidth</li>
 <li>VLAN Port Finder</li>
@@ -173,7 +175,7 @@
 <li>Banner: <code>SSH-2.0-OpenSSH_for_Arista</code></li>
 </ul>
 <h2 id="mlag-multi-chassis-link-aggregation">MLAG (Multi-Chassis Link Aggregation)</h2>
-<p>MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in CDP/LLDP.</p>
+<p>MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in LLDP.</p>
 <h2 id="varp">VARP</h2>
 <p>A VARP gateway resolves by subnet ownership.</p>
 <h2 id="cloudvision">CloudVision</h2>

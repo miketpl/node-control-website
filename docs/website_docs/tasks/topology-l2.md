@@ -4,6 +4,8 @@
 
 The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.
 
+On Arista EOS the map is LLDP-only. The L2 Topology Builder does not use the MAC table on EOS, and EOS does not answer CDP.
+
 ## Open the task
 
 - Engineer command bar → **Task** → **L2 Topology Builder** → **Run**
@@ -29,6 +31,8 @@ An optional AI summary of the map (structure, single points of failure, failed d
 4. Builds a graph: nodes = devices, edges = links
 5. Classifies each device's role (access / distribution / wan / firewall)
 6. Renders the result as an HTML file
+
+On Arista EOS the neighbour read is LLDP only. The builder does not run the MAC-table command, and it does not run CDP.
 
 Typical timing: 30–60 seconds per switch (parallelised). A 30-switch site map takes ~3–5 minutes.
 
@@ -90,7 +94,7 @@ L2 topology works on every vendor Node Control supports:
 - HP ProCurve (with the recent classifier fixes — see [HP ProCurve notes](../vendors/hp-procurve.md))
 - Aruba CX, Aruba OS-Switch
 - Juniper Junos
-- Arista EOS
+- Arista EOS. Maps are LLDP-only. The builder does not use the MAC table, and EOS does not answer CDP
 - Dell OS6, OS10
 - Extreme EXOS, VSP
 

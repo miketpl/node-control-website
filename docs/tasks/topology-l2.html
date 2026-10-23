@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">latest</span>
+    <span class="docs-version">Updated 23 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -152,6 +152,7 @@
                 <h1 id="layer-2-topology-map">Layer 2 topology map</h1>
 <p><strong>L2 Topology Builder</strong> runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. On Free it is one of the five tasks that are not greyed out. Safe Mode leaves it in the list.</p>
 <p>The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.</p>
+<p>On Arista EOS the map is LLDP-only. The L2 Topology Builder does not use the MAC table on EOS, and EOS does not answer CDP.</p>
 <h2 id="open-the-task">Open the task</h2>
 <ul>
 <li>Engineer command bar → <strong>Task</strong> → <strong>L2 Topology Builder</strong> → <strong>Run</strong>
@@ -204,6 +205,7 @@
 <li>Renders the result as an HTML file
 </li>
 </ol>
+<p>On Arista EOS the neighbour read is LLDP only. The builder does not run the MAC-table command, and it does not run CDP.</p>
 <p>Typical timing: 30–60 seconds per switch (parallelised). A 30-switch site map takes ~3–5 minutes.</p>
 <h2 id="reading-the-map">Reading the map</h2>
 <p>The map opens in your browser. Each node represents one device:</p>
@@ -279,7 +281,7 @@
 </li>
 <li>Juniper Junos
 </li>
-<li>Arista EOS
+<li>Arista EOS. Maps are LLDP-only. The builder does not use the MAC table, and EOS does not answer CDP
 </li>
 <li>Dell OS6, OS10
 </li>
