@@ -148,9 +148,9 @@
 <p><strong>Config Push</strong> sends commands to a list of switch ports from a file. You get a preview, safety exclusions, and a revert. It was called Interface Config Push until 0.9.39.</p>
 <h2 id="what-it-does">What it does</h2>
 <ul>
-<li><strong>Config template</strong> is the default. It uses config mode, once per matched port.
+<li><strong>Config template</strong> is the default. Config mode (<code>conf t</code>) applies the template to every matched interface. There is no global mode.
 </li>
-<li>The <strong>Exec mode</strong> checkbox sends those same per-port lines without entering config mode. Use it for show, clear, and cable-test.
+<li>The <strong>Exec mode</strong> checkbox runs show, clear, and cable-test commands per port, without entering config mode.
 </li>
 <li><strong>Admin shutdown</strong>.
 </li>
@@ -223,7 +223,7 @@
 <li><strong>Include admin-down / disabled ports</strong>.
 </li>
 </ul>
-<p>There is no up-only option.</p>
+<p>Config Push targets live ports by default. Ports that are down, notconnect, disabled, err-disabled, or admin down are excluded unless <strong>Include admin-down / disabled ports</strong> is ticked, or an activity filter is on. There is no separate up-only option.</p>
 <p>If the switch uptime is less than the threshold, you get a warning.</p>
 <h2 id="placeholders">Placeholders</h2>
 <table>
@@ -268,7 +268,7 @@
 <h2 id="preview-and-run">Preview and run</h2>
 <p>The preview is on by default. There is no separate dry run. The preview is the dry run.</p>
 <p>It shows the switches and interfaces, with ticks, editable config per switch, last-active times, and exclusions by reason. A final Yes/No then shows the counts.</p>
-<p>Up to 4 switches run in parallel, on separate SSH sessions.</p>
+<p>How many switches run at once follows the <strong>Conns</strong> spinner on the main Engineer page. That spinner is 1 to 50, and the default is 6. Config Push caps it at 4, so the run is <code>min(4, Conns)</code> switches at once, on separate SSH sessions. Settings <strong>Default Thread Count</strong> does not drive it.</p>
 <p>A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.</p>
 <p>Saving is opt-in and off by default. It uses the vendor save command.</p>
 <h2 id="revert">Revert</h2>
@@ -291,7 +291,7 @@
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Safe Mode removes Config Push.</p>
 <h2 id="config-from-file">Config from File</h2>
-<p><a href="config-from-file.html">Config from File</a> is a separate task. It sends the lines in a file verbatim. There are no placeholders.</p>
+<p><a href="config-from-file.html">Config from File</a> is a separate task. It sends the lines in a file verbatim. There are no placeholders. Global-only config belongs there.</p>
 <h2 id="what-changed">What changed</h2>
 <ul>
 <li>0.9.36: activity targeting, Admin shutdown, and Default interface.
