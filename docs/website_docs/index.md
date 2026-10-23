@@ -39,7 +39,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Serial console](tasks/serial-console.md) — Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — Free and Pro; visible in Safe Mode
 - [Monitor](tasks/monitor.md) — Pro and AI; not on Free
-- [Config Push](tasks/config-push.md) — Pro and AI; Cisco IOS, IOS-XE, NX-OS
+- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. Safe Mode removes it
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
 - [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
@@ -61,6 +61,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 ## Vendors
 
+- [Vendor overview](vendors/overview.md)
 - [Cisco IOS / IOS-XE / NX-OS](vendors/cisco.md)
 - [Palo Alto PAN-OS](vendors/palo-alto.md)
 - [HP ProCurve](vendors/hp-procurve.md)
