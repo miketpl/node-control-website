@@ -115,10 +115,12 @@
       <a href="safe-mode.html" class="docs-nav-link">Safe Mode</a>
       <a href="ai.html" class="docs-nav-link active">AI provider</a>
       <a href="ai-llm.html" class="docs-nav-link">AI on Professional</a>
+      <a href="ai-features.html" class="docs-nav-link">AI features overview</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
       <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
@@ -145,50 +147,64 @@
                 </div>
                 <h1 id="ai-provider">AI provider</h1>
 <p>Feature-level AI runs on <strong>Pro</strong>, on a provider you configure. See <a href="ai-llm.html">AI on Professional</a>. Free opens the payload dialog and sends nothing.</p>
-<p>The Node Control AI edition is a separate product: nine specialist agents on infrastructure you host. It is not yet available to buy. It is not the provider setting on this page.</p>
+<p>The Node Control AI edition is a separate product: nine specialist agents on infrastructure you host. It is not yet available to buy. It is not the provider setting on this page. <strong>AI Chat</strong> and the <strong>AI Dashboard</strong> are the AI edition only.</p>
 <p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.</p>
 <p>The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
-<p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="ai-llm.html">AI on Professional</a>.</p>
+<p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="ai-llm.html">AI on Professional</a>.</p>
 <p>Identity-linked keys use the <strong>Workspace ID</strong> field. The connection test names the real failure: a rejected key, a retired model, a rate limit, a proxy problem, or a timeout. It does not blame the key for all of them.</p>
 <p>If you tick an AI option and nothing is configured, the app prompts immediately and offers <strong>Open Settings</strong>. It does not wait until the end of the run and then skip quietly.</p>
 <h2 id="what-is-sent">What is sent</h2>
-<p>Nothing is sent unless you tick the option for that run. With <strong>Preview AI</strong> on, you approve the anonymised payload before it leaves the machine. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.</p>
-<p>On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.</p>
-<p>The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.</p>
-<h2 id="where-it-shows-up">Where it shows up</h2>
-<p>End-of-task summaries, when you tick them, cover:</p>
+<p>Three switches sit on Settings → AI / LLM:</p>
 <ul>
-<li>L2, L3, and WAN topology (structure, single points of failure, failed devices)
+<li><strong>Enable AI analysis by default across all features</strong>
 </li>
-<li>Config Compliance Audit (posture and the common gaps)
+<li><strong>Anonymise identifiable data before sending to AI</strong> (on by default)
 </li>
-<li>Find Device
+<li><strong>Show preview before sending data to AI</strong> (off by default)
+</li>
+</ul>
+<p>The preview shows tokens such as <code>[IP_1]</code> and <code>[HOST_1]</code>. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.</p>
+<p>End-of-task <strong>AI Summary</strong> is a checkbox on the Engineer page. You tick it for that run. The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.</p>
+<p>On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.</p>
+<p>The Findings review on Monitor is separate from that checkbox. It runs on every poll when <strong>Enable AI analysis by default across all features</strong> is on. It has no separate switch, and it never runs on Free.</p>
+<h2 id="where-it-shows-up">Where it shows up</h2>
+<p>End-of-task summaries, when you tick them on the Engineer page, cover:</p>
+<ul>
+<li>Topology (L2, L3, and WAN: structure, single points of failure, failed devices)
+</li>
+<li>VLAN Port Finder
 </li>
 <li>Library Updater
 </li>
-<li>Verify Device Types
+<li>Find Device
 </li>
 <li>Discover Variables
 </li>
-<li>VLAN Port Finder
+<li>Verify Device Types
+</li>
+<li>Config Compliance Audit (posture and the common gaps)
 </li>
 </ul>
 <p>Where the task writes HTML, the summary is a panel at the top of that page, and it is also in the log. The page opens after the summary lands.</p>
 <p>The same provider is used for:</p>
 <ul>
-<li>the report executive summary
+<li><strong>AI Summary</strong> and <strong>Preview before sending</strong> on the Reports tab
 </li>
-<li>the lifecycle assessment narrative, and the emailed AI briefing (off by default)
+<li><strong>AI headline on emailed assessment</strong> (off by default; only when the Lifecycle report is emailed)
 </li>
-<li>Monitor, on Pro and the AI edition: alert narratives, an analyst review of alerted devices, Ask AI for a device, and, from 0.9.41, <strong>Ask Network AI</strong> and <strong>Architect Review</strong>
+<li>Monitor, from 0.9.41, on Pro and the AI edition: <strong>Ask AI</strong> (per device), <strong>Ask Network AI</strong> (opens the dialog <strong>Ask AI — Network</strong>), <strong>Architect Review</strong> (whole estate or one site), and the <strong>Findings</strong> tab
 </li>
 </ul>
-<p>The firewall analyser AI advisor uses the same provider. Tick it for that run.</p>
+<p><strong>AI review</strong> is an option on the Firewall Analyser Assess row, and it is on by default. The AI advisor stays a Pro feature.</p>
 <p><strong>Vuln Plan</strong> is the AI edition only. It is a button on the Update tab, next to <strong>Check PSIRT</strong>, and it works from that tab&#x27;s PSIRT results. Pro has neither the Update tab nor Vuln Plan.</p>
-<p>That Monitor chat is the feature on Pro. It is not the AI-edition dashboard.</p>
+<p><strong>AI Chat</strong> and the <strong>AI Dashboard</strong> stay on the AI edition.</p>
+<h2 id="background-learning">Background Learning</h2>
+<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is on Settings → AI / LLM. It is off by default. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log. See <a href="../security/data-and-privacy.html">What leaves your laptop</a>.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
+<li><a href="ai-features.html">AI features overview</a>
+</li>
 <li><a href="../tiers/overview.html">Tier comparison</a>
 </li>
 <li><a href="../reports/security-audit.html">Security Audit</a>

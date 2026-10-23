@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -88,7 +88,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; other vendors get a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
-- Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. The anonymiser is on by default. You opt in per run. From 0.9.41, **Architect Review** of the whole estate or one site, and **Ask Network AI** on the Monitor tab, on Pro and the AI edition. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
+- Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. **Anonymise identifiable data before sending to AI** is on by default. From 0.9.41, Monitor on Pro and the AI edition has **Ask AI**, **Ask Network AI**, and **Architect Review**. Alerted devices are reviewed into the **Findings** tab on every poll when **Enable AI analysis by default across all features** is on. **AI review** on the Firewall Analyser Assess row is on by default, and the AI advisor stays a Pro feature. See [AI features overview](../settings/ai-features.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 
 ### How to get it
@@ -105,7 +105,7 @@ It is a working product. It is not yet available to buy. There is no price and n
 
 These parts stay on this edition, not on Pro:
 
-- the AI dashboard and chat
+- **AI Chat** and the **AI Dashboard**
 - the backend assistant
 - the Update tab
 - **Vuln Plan**, a button on the Update tab, next to **Check PSIRT**. It works from that tab's PSIRT results

@@ -137,7 +137,12 @@ The audit log doesn't contain credentials — only the events.
 - **Don't share Node Control's underlying DB across users** — each user should have their own keychain for separation
 - **Lock your screen** when stepping away — keychain access is gated by your login session
 
+## Background Learning
+
+**Allow the backend and background jobs to log into devices with my credentials** is under Settings → AI / LLM. It is off by default. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](data-and-privacy.md).
+
 ## Next steps
 
+- [What leaves your laptop](data-and-privacy.md)
 - [Safe Mode](../settings/safe-mode.md) — defence in depth on top of credential isolation
 - [Audit log](audit-log.md)

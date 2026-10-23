@@ -27,7 +27,7 @@ Settings is organised by section. Pick the one you need.
 | **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
 | **Scripts** | [Custom scripts](scripts.md) that run as tasks. Pro and the AI edition. On Free the page is there, and the task is greyed |
-| **AI / LLM** | Bring your own AI provider, with your own API key. The provider list is on [AI on Professional](ai-llm.md). [Feature-level AI](ai.md). Pro and the AI edition |
+| **AI / LLM** | Bring your own AI provider, with your own API key. The provider list is on [AI on Professional](ai-llm.md). [Feature-level AI](ai.md). The switches and where they apply are on [AI features overview](ai-features.md). Pro and the AI edition |
 | **Privacy** | **Send anonymous usage statistics** |
 | **Advanced** | Crash log location, debug logging |
 
@@ -73,6 +73,8 @@ A future release may add named settings profiles to skip the manual copy — let
 - [Safe Mode](safe-mode.md)
 - [Custom scripts](scripts.md)
 - [AI provider](ai.md)
+- [AI on Professional](ai-llm.md)
+- [AI features overview](ai-features.md)
 
 ## Common configurations
 

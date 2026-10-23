@@ -31,7 +31,7 @@ These are the PSIRT checks. They are on Pro and the AI edition.
 
 The HTML report has an **Export CSV** button above each table. You can email the report. The send runs in the background. If the email is skipped, the log says why: the option was unticked, or there were no recipients.
 
-An AI executive summary is optional, and off unless you tick it for that run. It uses the provider in [Settings → AI / LLM](../settings/ai.md). Nothing is sent if you leave the box unticked.
+The Reports tab has **AI Summary** and **Preview before sending**. Tick **AI Summary** for that run. It uses the provider in [Settings → AI / LLM](../settings/ai.md). **AI headline on emailed assessment** is a Lifecycle email control, and it is off by default. See [Lifecycle and EoX](lifecycle.md).
 
 ## Next steps
 

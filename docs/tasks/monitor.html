@@ -117,10 +117,12 @@
       <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
       <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
       <a href="../settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
+      <a href="../settings/ai-features.html" class="docs-nav-link">AI features overview</a>
     </div>
     <div class="docs-nav-section">
       <h4>Security</h4>
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
       <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
@@ -372,8 +374,17 @@
 </tbody>
 </table>
 <h2 id="ai-on-monitor">AI on Monitor</h2>
-<p>On Pro and the AI edition, Monitor can use the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>: alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review. Nothing is sent unless you ask. Free does not send.</p>
-<p>This chat is not the AI-edition dashboard. That dashboard stays on the AI edition.</p>
+<p>From 0.9.41, on Pro and the AI edition, the Monitor tab has three buttons. They use the provider in <a href="../settings/ai.html">Settings → AI / LLM</a>.</p>
+<ul>
+<li><strong>Ask AI</strong>, per device
+</li>
+<li><strong>Ask Network AI</strong>, which opens the dialog <strong>Ask AI — Network</strong>
+</li>
+<li><strong>Architect Review</strong>, for the whole estate or one site
+</li>
+</ul>
+<p>On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom <strong>Findings</strong> tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs <strong>Enable AI analysis by default across all features</strong> on. It has no separate switch. It never runs on Free.</p>
+<p><strong>AI Chat</strong> and the <strong>AI Dashboard</strong> stay on the AI edition. See <a href="../settings/ai-features.html">AI features overview</a>.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../reports/overview.html">Reports</a> — for point-in-time snapshots

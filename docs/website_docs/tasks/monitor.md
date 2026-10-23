@@ -118,9 +118,15 @@ Vendor-specific gaps are documented in [Vendors](../vendors/overview.md).
 
 ## AI on Monitor
 
-On Pro and the AI edition, Monitor can use the provider in [Settings → AI / LLM](../settings/ai.md): alert narratives, an analyst review of alerted devices, Ask AI for a device, whole-network chat, and the architect review. Nothing is sent unless you ask. Free does not send.
+From 0.9.41, on Pro and the AI edition, the Monitor tab has three buttons. They use the provider in [Settings → AI / LLM](../settings/ai.md).
 
-This chat is not the AI-edition dashboard. That dashboard stays on the AI edition.
+- **Ask AI**, per device
+- **Ask Network AI**, which opens the dialog **Ask AI — Network**
+- **Architect Review**, for the whole estate or one site
+
+On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs **Enable AI analysis by default across all features** on. It has no separate switch. It never runs on Free.
+
+**AI Chat** and the **AI Dashboard** stay on the AI edition. See [AI features overview](../settings/ai-features.md).
 
 ## Next steps
 
