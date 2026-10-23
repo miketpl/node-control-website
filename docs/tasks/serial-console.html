@@ -155,12 +155,17 @@
 <p>A USB serial cable or adapter.</p>
 <h2 id="opening-a-console">Opening a console</h2>
 <p>Open it with <strong>Console</strong>, beside <strong>SSH</strong> and <strong>HTTPS</strong> on the Engineer tab.</p>
+<p>The <strong>Open Console</strong> dialog says <strong>Plug the console cable in and pick its port.</strong></p>
+<p>The port list has <strong>Refresh</strong>. Known console chips are listed first: FTDI, Prolific, Silicon Labs, Cisco, and WCH. Other USB devices follow. An entry looks like <code>COM3 (FTDI FT232)</code> on Windows, or <code>/dev/cu.usbserial-…</code> on macOS. Bluetooth and debug ports are hidden. The last working port and settings are preselected. Driver hints show if nothing is found.</p>
+<p>Then <strong>Baud rate</strong>, <strong>Data bits</strong>, <strong>Parity</strong>, <strong>Stop bits</strong>, <strong>Flow control</strong>, and <strong>Open</strong>.</p>
+<p>The default is 9600 baud, 8 data bits, no parity, 1 stop bit, and no flow control. The offered rates are 1200, 2400, 4800, 9600, 19200, 38400, 57600, and 115200.</p>
 <h2 id="send-break-ctrl-pause">Send Break (Ctrl+Pause)</h2>
 <p><strong>Send Break</strong> sends a break on the serial line. The shortcut is <strong>Ctrl+Pause</strong>.</p>
 <h2 id="pasting-at-the-line-s-baud-rate">Pasting at the line&#x27;s baud rate</h2>
 <p>A paste is paced to the baud rate of the line.</p>
 <h2 id="log-to-file">Log to file</h2>
-<p><strong>Log to file</strong> records the console session.</p>
+<p><strong>Log to file…</strong> opens <strong>Log console session to file</strong>. It defaults to the session recordings folder. That folder is the Output Directory session output, otherwise the app&#x27;s sessions folder. The file is named <code>console_&lt;port&gt;_&lt;date_time&gt;.log</code>. The extension can be <code>.log</code> or <code>.txt</code>. The folder and the name can both be changed.</p>
+<p>The Engineer bar&#x27;s <strong>Record</strong> toggle also records console tabs automatically.</p>
 <h2 id="reconnecting-by-adapter">Reconnecting by adapter</h2>
 <p>Reconnect by the adapter.</p>
 <h2 id="safe-mode">Safe Mode</h2>

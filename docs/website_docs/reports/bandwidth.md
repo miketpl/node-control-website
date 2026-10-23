@@ -41,7 +41,7 @@ Interfaces are resolved by device capability, not a fixed Cisco command.
 | HP ProCurve | `show interfaces detail` — new ProCurve branch added in 0.9.x for proper parsing |
 | Aruba CX | `show interface` extended |
 | Juniper | `show interfaces extensive` |
-| Arista | Cisco-compatible |
+| Arista | supported, with Arista-specific uplink detection (Port-Channel naming and LLDP-based uplinks) |
 
 ## Time window
 

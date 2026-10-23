@@ -8,9 +8,11 @@ Arista switches (7050, 7150, 7280, 7320, 7500-series and cloud-grade boxes) are 
 
 ## What works
 
-Most things work through the EOS CLI:
+Most things work through the EOS CLI. EOS reads LLDP and the MAC table. It does not read CDP.
 
-- Native L2 and L3 topology reads LLDP, STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways
+- L2 topology maps are LLDP-only. The L2 Topology Builder does not use the MAC table. The native L2 and L3 reads also include STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways
+- The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report
+- Find Device's per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP
 - Port Utilisation
 - Bandwidth
 - VLAN Port Finder
@@ -27,7 +29,7 @@ Most things work through the EOS CLI:
 
 ## MLAG (Multi-Chassis Link Aggregation)
 
-MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in CDP/LLDP.
+MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in LLDP.
 
 ## VARP
 
