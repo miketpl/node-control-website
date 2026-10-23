@@ -93,7 +93,7 @@ When a blocked command is attempted, Node Control:
 
 ## SSH sessions
 
-In Safe Mode, a command that is not read-only is blocked in the [SSH terminal](../tasks/ssh-terminal.md). **HTTPS** is hidden for the session.
+In Safe Mode, a command that is not read-only is blocked in the [SSH terminal](../tasks/ssh-terminal.md). **HTTPS** is hidden for the session. **Console** is hidden. The [local network terminal](../tasks/local-terminal.md) on the log header stays visible.
 
 ## Switching mode
 

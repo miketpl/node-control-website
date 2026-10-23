@@ -36,6 +36,8 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Find Device](tasks/find-device.md) — on Free, one switch at a time
 - [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
+- [Serial console](tasks/serial-console.md) — Free and Pro; hidden in Safe Mode
+- [Local network terminal](tasks/local-terminal.md) — Free and Pro; visible in Safe Mode
 - [Monitor](tasks/monitor.md) — Pro and AI; not on Free
 - [Config Push](tasks/config-push.md) — Pro and AI; Cisco IOS, IOS-XE, NX-OS
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
