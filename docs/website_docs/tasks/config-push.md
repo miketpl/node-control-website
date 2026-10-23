@@ -6,8 +6,8 @@
 
 ## What it does
 
-- **Config template** is the default. It uses config mode, once per matched port.
-- The **Exec mode** checkbox sends those same per-port lines without entering config mode. Use it for show, clear, and cable-test.
+- **Config template** is the default. Config mode (`conf t`) applies the template to every matched interface. There is no global mode.
+- The **Exec mode** checkbox runs show, clear, and cable-test commands per port, without entering config mode.
 - **Admin shutdown**.
 - **Default interface**, on Cisco IOS, IOS-XE, and NX-OS only.
 
@@ -41,7 +41,7 @@ Rows are grouped per switch, with the ports sorted. Each switch is one block.
 - Activity: any, never active, or inactive for at least N hours. N is from 1 to 8760. The default is 720. Unknown activity is always excluded.
 - **Include admin-down / disabled ports**.
 
-There is no up-only option.
+Config Push targets live ports by default. Ports that are down, notconnect, disabled, err-disabled, or admin down are excluded unless **Include admin-down / disabled ports** is ticked, or an activity filter is on. There is no separate up-only option.
 
 If the switch uptime is less than the threshold, you get a warning.
 
@@ -76,7 +76,7 @@ The preview is on by default. There is no separate dry run. The preview is the d
 
 It shows the switches and interfaces, with ticks, editable config per switch, last-active times, and exclusions by reason. A final Yes/No then shows the counts.
 
-Up to 4 switches run in parallel, on separate SSH sessions.
+How many switches run at once follows the **Conns** spinner on the main Engineer page. That spinner is 1 to 50, and the default is 6. Config Push caps it at 4, so the run is `min(4, Conns)` switches at once, on separate SSH sessions. Settings **Default Thread Count** does not drive it.
 
 A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.
 
@@ -110,7 +110,7 @@ Safe Mode removes Config Push.
 
 ## Config from File
 
-[Config from File](config-from-file.md) is a separate task. It sends the lines in a file verbatim. There are no placeholders.
+[Config from File](config-from-file.md) is a separate task. It sends the lines in a file verbatim. There are no placeholders. Global-only config belongs there.
 
 ## What changed
 
