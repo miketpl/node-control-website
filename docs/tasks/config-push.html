@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Config Push — NodeControl Docs</title>
-    <meta name="description" content="Config Push — NodeControl documentation">
+    <meta name="description" content="Push commands to switch ports from a file, with a preview, safety exclusions, and revert. Pro and AI. Full support is Cisco IOS, IOS-XE, and NX-OS.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
@@ -143,97 +143,175 @@
                 </div>
                 <h1 id="config-push">Config Push</h1>
 <blockquote>
-<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode hides it.</p>
+<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is listed but greyed, with an upgrade prompt. Safe Mode removes it.</p>
 </blockquote>
-<p>Documented for <strong>Cisco IOS, IOS-XE, and NX-OS</strong>. Config Push sends the template through Netmiko&#x27;s config mode on any device type. Other vendors are not refused. They are untested.</p>
-<p>The save command is vendor aware: <code>write memory</code>; <code>copy running-config startup-config</code> on NX-OS and Dell OS6; <code>commit</code> on Junos and PAN-OS; <code>save configuration</code> on EXOS.</p>
-<p>The <strong>Default interface</strong> action tooltip says other vendors are skipped. The code does not skip them. Treat that tooltip as the intent.</p>
-<p><strong>Config Push</strong> pushes a per-port template: interface configuration, captures, ACLs, or clears. It used to be called <strong>Interface Config Push</strong>. The old name still runs.</p>
-<p>This is not the <a href="meraki-configurator.html">Meraki Configurator</a>, and it is not <a href="config-compliance.html">Config Compliance</a>. Compliance checks a hardening baseline. Config Push targets ports.</p>
-<h2 id="choose-the-ports">Choose the ports</h2>
-<p>The usual source is a <a href="../reports/vlan-port-finder.html">VLAN Port Finder</a> export. You can target:</p>
+<p><strong>Config Push</strong> sends commands to a list of switch ports from a file. You get a preview, safety exclusions, and a revert. It was called Interface Config Push until 0.9.39.</p>
+<h2 id="what-it-does">What it does</h2>
 <ul>
-<li>ports that have never been active
+<li><strong>Config template</strong> is the default. It uses config mode, once per matched port.
 </li>
-<li>ports inactive for at least N hours, which includes never-active ports
+<li>The <strong>Exec mode</strong> checkbox sends those same per-port lines without entering config mode. Use it for show, clear, and cable-test.
+</li>
+<li><strong>Admin shutdown</strong>.
+</li>
+<li><strong>Default interface</strong>, on Cisco IOS, IOS-XE, and NX-OS only.
 </li>
 </ul>
-<p>Ports whose activity is unknown are always excluded. Nothing is pushed without evidence.</p>
-<p>VLAN Port Finder records each switch&#x27;s uptime. The preview shows that uptime beside <strong>Last Active</strong>. If your inactivity threshold is longer than the switch&#x27;s uptime, you get a warning first. &quot;Never active&quot; only means never since the last reboot.</p>
-<p>If no ports match, the message counts how many were excluded, and why.</p>
-<p>The safety layers stay in place: uplink detection, the interface blacklist, a tick per interface, and a confirmation before anything is sent. In Prepare Config, excluded interfaces are a count plus a button that lists them in full, grouped by reason, so a large selection does not push the button off the screen.</p>
-<h2 id="what-you-can-send">What you can send</h2>
+<h2 id="input-file">Input file</h2>
+<p>The file is <code>.xlsx</code> or <code>.json</code>. CSV is not accepted.</p>
+<p>Columns are matched by name. Only Port is mandatory.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Port/Interface</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Switch/Hostname</td>
+<td>No</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>No</td>
+</tr>
+<tr>
+<td>VLAN</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Voice VLAN</td>
+<td>No</td>
+</tr>
+<tr>
+<td>MAC</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Last Active</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Switch Uptime</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>A <a href="../reports/vlan-port-finder.html">VLAN Port Finder</a> export is the native source. Any file with the same columns works.</p>
+<p>Rows are grouped per switch, with the ports sorted. Each switch is one block.</p>
+<h2 id="filters">Filters</h2>
 <ul>
-<li>A config template
+<li>Target VLANs, as lists or ranges.
 </li>
-<li><strong>Admin shutdown</strong>
+<li>Port mode: access, access+voice, trunk, or voice.
 </li>
-<li><strong>Default interface</strong>, which wipes the port back to defaults
+<li>Activity: any, never active, or inactive for at least N hours. N is from 1 to 8760. The default is 720. Unknown activity is always excluded.
 </li>
-<li>Exec-mode commands, for per-interface <code>show</code> and <code>clear</code>. Configuration mode rejects those
+<li><strong>Include admin-down / disabled ports</strong>.
 </li>
 </ul>
-<h3 id="placeholders">Placeholders</h3>
-<p>Double braces:</p>
+<p>There is no up-only option.</p>
+<p>If the switch uptime is less than the threshold, you get a warning.</p>
+<h2 id="placeholders">Placeholders</h2>
 <table>
 <thead>
 <tr>
 <th>Placeholder</th>
-<th>Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>{{interface}}</code></td>
-<td>The interface. A bare <code>{{}}</code> is the same</td>
 </tr>
 <tr>
 <td><code>{{vlan}}</code></td>
-<td>VLAN</td>
 </tr>
 <tr>
 <td><code>{{voice_vlan}}</code></td>
-<td>Voice VLAN</td>
 </tr>
 <tr>
 <td><code>{{hostname}}</code></td>
-<td>Hostname</td>
 </tr>
 <tr>
 <td><code>{{ip}}</code></td>
-<td>IP</td>
 </tr>
 <tr>
 <td><code>{{n}}</code></td>
-<td>1-based port position on that device</td>
 </tr>
 <tr>
 <td><code>{{date}}</code></td>
-<td><code>YYYYmmdd</code></td>
 </tr>
 <tr>
 <td><code>{{time}}</code></td>
-<td><code>HHMMSS</code></td>
 </tr>
 </tbody>
 </table>
-<p>Filters chain with <code>|</code>: <code>short</code>, <code>safe</code>, <code>num</code>, <code>lower</code>, <code>upper</code>. <code>{{interface|short|safe}}</code> gives <code>Gi1_0_1</code>.</p>
-<p>Legacy single-brace <code>{interface}</code>, <code>{vlan}</code>, <code>{voice_vlan}</code>, <code>{hostname}</code>, and <code>{ip}</code> still work.</p>
-<p>Values come from the source file row only. There is no <code>{{site}}</code> and no per-device variables. <a href="discover-variables.html">Discover Variables</a> output is not used here.</p>
-<h3 id="uplinks">Uplinks</h3>
-<p>A typed <code>UPLINK</code> override, and only in trunk mode, is the one deliberate way past the uplink safety layers. It lets a push reach port-channels and their members. Vlan, Loopback, Management, Tunnel, and other virtual interfaces stay blocked no matter what you tick.</p>
-<h2 id="run">Run</h2>
-<p>Pick <strong>Config Push</strong> in the Engineer <strong>Task</strong> group and click <strong>Run</strong>. The credential prompt remembers the profile you accepted for this task, separate from other tasks.</p>
+<p>Filters are <code>short</code>, <code>safe</code>, <code>num</code>, <code>lower</code>, and <code>upper</code>. Chain them with <code>|</code>. <code>{{interface|short|safe}}</code> is an example. A misspelt placeholder is flagged red.</p>
+<p>Templates can be loaded from a file.</p>
+<h2 id="safety">Safety</h2>
+<p>A hard blacklist blocks Loopback, Vlan SVIs, Management, Tunnel, NVE, Port-channel, Null, and BDI.</p>
+<p>Uplink detection skips a port with more than 2 VLANs. Trunk mode has a checkbox override for that skip.</p>
+<p>Port-channel members are detected live and block that switch. The only override is a trunk-mode option armed by typing <code>UPLINK</code>. It never unblocks SVIs, loopbacks, management, or tunnels.</p>
+<h2 id="preview-and-run">Preview and run</h2>
+<p>The preview is on by default. There is no separate dry run. The preview is the dry run.</p>
+<p>It shows the switches and interfaces, with ticks, editable config per switch, last-active times, and exclusions by reason. A final Yes/No then shows the counts.</p>
+<p>Up to 4 switches run in parallel, on separate SSH sessions.</p>
+<p>A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.</p>
+<p>Saving is opt-in and off by default. It uses the vendor save command.</p>
 <h2 id="revert">Revert</h2>
-<p>Every push stores a pre-change snapshot of each interface. <strong>Revert a previous push</strong> lets you pick the push, tick the interfaces to restore, review and edit the commands, and confirm by typing <code>REVERT</code>. Each selected interface is wiped back to defaults and its original config is replayed.</p>
-<p>Pushes made before this snapshot behaviour have nothing to restore. They cannot be auto-reverted.</p>
+<p>The running config of each target interface is snapshotted before the push. The last 20 pushes are kept.</p>
+<p><strong>Revert a previous push</strong> lets you pick a run, tick devices and interfaces, see and edit the restore commands, and confirm by typing <code>REVERT</code>. A revert saves by default.</p>
+<p>Only interface config can be reverted.</p>
+<ul>
+<li>Exec pushes cannot be reverted.
+</li>
+<li>A change outside the interface block cannot be reverted.
+</li>
+<li>A push from before 0.9.37 has no snapshot.
+</li>
+</ul>
+<p>Revert warns about drift. It does not detect drift.</p>
+<h2 id="vendors-and-edition">Vendors and edition</h2>
+<p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.</p>
+<p>Full support is Cisco IOS, IOS-XE, and NX-OS only. On any other vendor the task can send a template, and nothing else: no activity targeting, and no reliable revert.</p>
+<p>The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.</p>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>Safe Mode removes Config Push.</p>
+<h2 id="config-from-file">Config from File</h2>
+<p><a href="config-from-file.html">Config from File</a> is a separate task. It sends the lines in a file verbatim. There are no placeholders.</p>
+<h2 id="what-changed">What changed</h2>
+<ul>
+<li>0.9.36: activity targeting, Admin shutdown, and Default interface.
+</li>
+<li>0.9.37: revert.
+</li>
+<li>0.9.38: Exec mode.
+</li>
+<li>0.9.39: the task was renamed.
+</li>
+<li>0.9.40: the UPLINK override.
+</li>
+</ul>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="packet-capture.html">Packet Capture</a>
+<li><a href="config-from-file.html">Config from File</a>
 </li>
 <li><a href="../reports/vlan-port-finder.html">VLAN Port Finder</a>
 </li>
-<li><a href="change-ise-password.html">Change ISE Password</a> — the credential prompt remembers a different profile for that task
+<li><a href="../settings/safe-mode.html">Safe Mode</a>
 </li>
 </ul>
             </div>

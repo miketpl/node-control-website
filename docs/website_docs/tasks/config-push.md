@@ -1,76 +1,127 @@
 # Config Push
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
+> On **Pro** and the **AI** edition. On Free the task is listed but greyed, with an upgrade prompt. Safe Mode removes it.
 
-Documented for **Cisco IOS, IOS-XE, and NX-OS**. Config Push sends the template through Netmiko's config mode on any device type. Other vendors are not refused. They are untested.
+**Config Push** sends commands to a list of switch ports from a file. You get a preview, safety exclusions, and a revert. It was called Interface Config Push until 0.9.39.
 
-The save command is vendor aware: `write memory`; `copy running-config startup-config` on NX-OS and Dell OS6; `commit` on Junos and PAN-OS; `save configuration` on EXOS.
+## What it does
 
-The **Default interface** action tooltip says other vendors are skipped. The code does not skip them. Treat that tooltip as the intent.
+- **Config template** is the default. It uses config mode, once per matched port.
+- The **Exec mode** checkbox sends those same per-port lines without entering config mode. Use it for show, clear, and cable-test.
+- **Admin shutdown**.
+- **Default interface**, on Cisco IOS, IOS-XE, and NX-OS only.
 
-**Config Push** pushes a per-port template: interface configuration, captures, ACLs, or clears. It used to be called **Interface Config Push**. The old name still runs.
+## Input file
 
-This is not the [Meraki Configurator](meraki-configurator.md), and it is not [Config Compliance](config-compliance.md). Compliance checks a hardening baseline. Config Push targets ports.
+The file is `.xlsx` or `.json`. CSV is not accepted.
 
-## Choose the ports
+Columns are matched by name. Only Port is mandatory.
 
-The usual source is a [VLAN Port Finder](../reports/vlan-port-finder.md) export. You can target:
-
-- ports that have never been active
-- ports inactive for at least N hours, which includes never-active ports
-
-Ports whose activity is unknown are always excluded. Nothing is pushed without evidence.
-
-VLAN Port Finder records each switch's uptime. The preview shows that uptime beside **Last Active**. If your inactivity threshold is longer than the switch's uptime, you get a warning first. "Never active" only means never since the last reboot.
-
-If no ports match, the message counts how many were excluded, and why.
-
-The safety layers stay in place: uplink detection, the interface blacklist, a tick per interface, and a confirmation before anything is sent. In Prepare Config, excluded interfaces are a count plus a button that lists them in full, grouped by reason, so a large selection does not push the button off the screen.
-
-## What you can send
-
-- A config template
-- **Admin shutdown**
-- **Default interface**, which wipes the port back to defaults
-- Exec-mode commands, for per-interface `show` and `clear`. Configuration mode rejects those
-
-### Placeholders
-
-Double braces:
-
-| Placeholder | Value |
+| Column | Required |
 |---|---|
-| `{{interface}}` | The interface. A bare `{{}}` is the same |
-| `{{vlan}}` | VLAN |
-| `{{voice_vlan}}` | Voice VLAN |
-| `{{hostname}}` | Hostname |
-| `{{ip}}` | IP |
-| `{{n}}` | 1-based port position on that device |
-| `{{date}}` | `YYYYmmdd` |
-| `{{time}}` | `HHMMSS` |
+| Port/Interface | Yes |
+| Switch/Hostname | No |
+| IP | No |
+| Mode | No |
+| VLAN | No |
+| Voice VLAN | No |
+| MAC | No |
+| Status | No |
+| Last Active | No |
+| Switch Uptime | No |
 
-Filters chain with `|`: `short`, `safe`, `num`, `lower`, `upper`. `{{interface|short|safe}}` gives `Gi1_0_1`.
+A [VLAN Port Finder](../reports/vlan-port-finder.md) export is the native source. Any file with the same columns works.
 
-Legacy single-brace `{interface}`, `{vlan}`, `{voice_vlan}`, `{hostname}`, and `{ip}` still work.
+Rows are grouped per switch, with the ports sorted. Each switch is one block.
 
-Values come from the source file row only. There is no `{{site}}` and no per-device variables. [Discover Variables](discover-variables.md) output is not used here.
+## Filters
 
-### Uplinks
+- Target VLANs, as lists or ranges.
+- Port mode: access, access+voice, trunk, or voice.
+- Activity: any, never active, or inactive for at least N hours. N is from 1 to 8760. The default is 720. Unknown activity is always excluded.
+- **Include admin-down / disabled ports**.
 
-A typed `UPLINK` override, and only in trunk mode, is the one deliberate way past the uplink safety layers. It lets a push reach port-channels and their members. Vlan, Loopback, Management, Tunnel, and other virtual interfaces stay blocked no matter what you tick.
+There is no up-only option.
 
-## Run
+If the switch uptime is less than the threshold, you get a warning.
 
-Pick **Config Push** in the Engineer **Task** group and click **Run**. The credential prompt remembers the profile you accepted for this task, separate from other tasks.
+## Placeholders
+
+| Placeholder |
+|---|
+| `{{interface}}` |
+| `{{vlan}}` |
+| `{{voice_vlan}}` |
+| `{{hostname}}` |
+| `{{ip}}` |
+| `{{n}}` |
+| `{{date}}` |
+| `{{time}}` |
+
+Filters are `short`, `safe`, `num`, `lower`, and `upper`. Chain them with `|`. `{{interface|short|safe}}` is an example. A misspelt placeholder is flagged red.
+
+Templates can be loaded from a file.
+
+## Safety
+
+A hard blacklist blocks Loopback, Vlan SVIs, Management, Tunnel, NVE, Port-channel, Null, and BDI.
+
+Uplink detection skips a port with more than 2 VLANs. Trunk mode has a checkbox override for that skip.
+
+Port-channel members are detected live and block that switch. The only override is a trunk-mode option armed by typing `UPLINK`. It never unblocks SVIs, loopbacks, management, or tunnels.
+
+## Preview and run
+
+The preview is on by default. There is no separate dry run. The preview is the dry run.
+
+It shows the switches and interfaces, with ticks, editable config per switch, last-active times, and exclusions by reason. A final Yes/No then shows the counts.
+
+Up to 4 switches run in parallel, on separate SSH sessions.
+
+A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.
+
+Saving is opt-in and off by default. It uses the vendor save command.
 
 ## Revert
 
-Every push stores a pre-change snapshot of each interface. **Revert a previous push** lets you pick the push, tick the interfaces to restore, review and edit the commands, and confirm by typing `REVERT`. Each selected interface is wiped back to defaults and its original config is replayed.
+The running config of each target interface is snapshotted before the push. The last 20 pushes are kept.
 
-Pushes made before this snapshot behaviour have nothing to restore. They cannot be auto-reverted.
+**Revert a previous push** lets you pick a run, tick devices and interfaces, see and edit the restore commands, and confirm by typing `REVERT`. A revert saves by default.
+
+Only interface config can be reverted.
+
+- Exec pushes cannot be reverted.
+- A change outside the interface block cannot be reverted.
+- A push from before 0.9.37 has no snapshot.
+
+Revert warns about drift. It does not detect drift.
+
+## Vendors and edition
+
+Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.
+
+Full support is Cisco IOS, IOS-XE, and NX-OS only. On any other vendor the task can send a template, and nothing else: no activity targeting, and no reliable revert.
+
+The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
+
+## Safe Mode
+
+Safe Mode removes Config Push.
+
+## Config from File
+
+[Config from File](config-from-file.md) is a separate task. It sends the lines in a file verbatim. There are no placeholders.
+
+## What changed
+
+- 0.9.36: activity targeting, Admin shutdown, and Default interface.
+- 0.9.37: revert.
+- 0.9.38: Exec mode.
+- 0.9.39: the task was renamed.
+- 0.9.40: the UPLINK override.
 
 ## Next steps
 
-- [Packet Capture](packet-capture.md)
+- [Config from File](config-from-file.md)
 - [VLAN Port Finder](../reports/vlan-port-finder.md)
-- [Change ISE Password](change-ise-password.md) — the credential prompt remembers a different profile for that task
+- [Safe Mode](../settings/safe-mode.md)
