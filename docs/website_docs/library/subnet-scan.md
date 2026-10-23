@@ -56,6 +56,8 @@ For each ping-alive IP, attempts SSH using your configured credential profiles. 
 3. Picks the right Netmiko driver
 4. Extracts the hostname
 
+Library Updater reads each vendor's inventory keyword.
+
 ### Phase 3 — Library write
 
 For each successfully-classified device:

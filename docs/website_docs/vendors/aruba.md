@@ -14,7 +14,7 @@ For OS-Switch specifically, see the [HP ProCurve page](hp-procurve.md). The same
 ## Aruba CX — what works
 
 - Detection via SSH banner sniff + post-connect probe
-- L2 topology (CDP/LLDP + MAC table)
+- L2 topology (CDP, LLDP, and the MAC table). AOS-CX LLDP is supported
 - L3 topology (OSPF + BGP + VRF)
 - Port Utilisation
 - Bandwidth

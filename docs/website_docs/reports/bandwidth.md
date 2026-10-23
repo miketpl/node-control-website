@@ -32,6 +32,8 @@ Useful for "where's most of our traffic going through?" — the answer is usuall
 
 ## Per-vendor command set
 
+Interfaces are resolved by device capability, not a fixed Cisco command.
+
 | Vendor | Commands |
 |---|---|
 | Cisco IOS / IOS-XE | `show interfaces` — average / peak rates parsed from output |

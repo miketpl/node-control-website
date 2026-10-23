@@ -47,10 +47,10 @@ Hover a multi-VRF edge to see the per-VRF breakdown.
 
 | Vendor | Notes |
 |---|---|
-| Cisco IOS / IOS-XE / NX-OS | Full OSPF + BGP + EIGRP, multi-VRF |
+| Cisco IOS / IOS-XE / NX-OS | Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. NX-OS routes are read correctly |
 | Palo Alto PAN-OS | Walks every Logical Router via `show routing protocol` commands, unions across them. Several recent fixes in 0.9.x to capture all peers correctly |
 | Juniper | OSPF + BGP via `show ospf neighbour` and `show bgp summary` |
-| Arista EOS | Cisco-compatible commands |
+| Arista EOS | Routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways. A VARP gateway resolves by subnet ownership |
 | HP ProCurve / Aruba CX | OSPF + BGP if licensed and configured |
 
 Devices without L3 capability (pure L2 access switches) don't appear on the L3 map even if they're in the library — only L3 hops show up.

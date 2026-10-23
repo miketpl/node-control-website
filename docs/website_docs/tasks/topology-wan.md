@@ -57,7 +57,7 @@ For "where does this packet go?" type questions, L3 + WAN together usually answe
 - Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels
 - Velocloud, Viptela — SD-WAN overlay
 - Juniper — BGP, IPSec, MPLS pseudowires
-- Arista — BGP, EVPN
+- Arista — BGP
 
 ## Troubleshooting
 

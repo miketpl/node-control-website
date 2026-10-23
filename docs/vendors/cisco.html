@@ -195,7 +195,7 @@
 <ul>
 <li>L2 topology with full CDP/LLDP + MAC table
 </li>
-<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF
+<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF. HSRP and VRRP gateways on IOS, IOS-XE, and NX-OS resolve to the active router on the L3 map instead of an Internet node. A routed campus keeps proper rows
 </li>
 <li>WAN topology with BGP + IPSec tunnel detection
 </li>
@@ -244,6 +244,7 @@
 <li>VPC and FEX add their own commands (<code>show vpc</code>, <code>show fex</code>) — Node Control includes these in the catalog
 </li>
 </ul>
+<p>NX-OS routes are read correctly.</p>
 <h2 id="asa">ASA</h2>
 <p>Cisco ASA firewalls are supported with these caveats:</p>
 <ul>
