@@ -26,28 +26,31 @@ Pro uses your own API key. There is no AI subscription and no markup. With Ollam
 
 These three switches are on Settings → AI / LLM:
 
-- **Enable AI analysis by default across all features**
+- **Enable AI analysis by default across all features** (off on a fresh install)
 - **Anonymise identifiable data before sending to AI** (on by default)
 - **Show preview before sending data to AI** (off by default)
 
 The preview shows tokens such as `[IP_1]` and `[HOST_1]`. You read real names. The provider sees the tokens when the anonymiser is on.
 
-The Findings review on Monitor needs **Enable AI analysis by default across all features** on. It has no separate switch.
+**Enable AI analysis by default across all features** also sets the starting state of the **AI Summary** checkboxes on the Engineer page and the Reports tab. On a fresh install those boxes start unticked.
+
+The Monitor alert narratives and the analyst review (the **Findings** tab) need that switch on. They do not run until you turn it on. There is no separate switch. They never run on Free.
 
 ## Where AI shows up
 
 | Feature | Where | Default | Edition |
 |---|---|---|---|
-| End-of-task AI Summary | Engineer page checkbox | Tick it for that run | Pro and AI. Free opens a preview and sends nothing |
+| End-of-task AI Summary | Engineer page checkbox | Starts from **Enable AI analysis by default across all features**. Off on a fresh install | Pro and AI. Free opens a preview and sends nothing |
 | Ask AI | Monitor, per device | You open it | Pro and AI, from 0.9.41 |
 | Ask Network AI | Monitor. The dialog is **Ask AI — Network** | You open it | Pro and AI, from 0.9.41 |
 | Architect Review | Monitor, whole estate or one site | You open it | Pro and AI, from 0.9.41 |
-| Findings | Every Monitor poll. Alert row tooltip and the Findings tab | Runs when **Enable AI analysis by default across all features** is on. No separate switch | Pro and AI. It never runs on Free |
-| AI Summary | Reports tab | Tick it on the report | Pro and AI |
-| Preview before sending | Reports tab | Set on that tab | Pro and AI |
+| Findings | Every Monitor poll. Alert row tooltip and the Findings tab | Off until you turn **Enable AI analysis by default across all features** on. No separate switch | Pro and AI. It never runs on Free |
+| AI Summary | Reports tab | Starts from the same switch. Off on a fresh install | Pro and AI |
+| Preview before sending | Reports tab | Starts unticked. Each time the tab loads it takes its starting state from **Show preview before sending data to AI** (off by default). Enabled only while **AI Summary** is ticked. You can change it for that run | Pro and AI |
 | AI headline on emailed assessment | Only when the Lifecycle report is emailed | Off | Pro and AI |
-| AI review | Firewall Analyser, Assess row | On | Pro. The AI advisor stays a Pro feature |
-| Background Learning | Settings → AI / LLM | Off | Pro and AI |
+| AI review | Firewall Analyser, Assess row | Ticked | Pro and AI. Free has no Firewall Analyser tab |
+| AI advisory | Firewall Analyser | Shown with **AI review** | Pro and AI. Free has no Firewall Analyser tab |
+| Background Learning | Settings → AI / LLM | Off | Pro and AI. The setting is visible on Free. Nothing on Free uses it |
 
 ## Monitor: Ask AI, Ask Network AI, Architect Review, Findings
 
@@ -57,13 +60,13 @@ From 0.9.41, on Pro and the AI edition:
 - **Ask Network AI** opens the dialog **Ask AI — Network**
 - **Architect Review** covers the whole estate, or one site
 
-On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs **Enable AI analysis by default across all features** on. It has no separate switch. It never runs on Free.
+On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom **Findings** tab. The columns are When, Device, Category, Sev, Headline, and Narrative. **Enable AI analysis by default across all features** is off on a fresh install, so the alert narratives and the analyst review do not run until you turn it on. There is no separate switch. It never runs on Free.
 
 See [Monitor](../tasks/monitor.md).
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is off by default. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
+**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
 
 ## How answers are written
 

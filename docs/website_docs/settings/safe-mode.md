@@ -20,7 +20,10 @@ In Safe Mode the Engineer dropdown is cut to:
 - **Refresh Hostnames**
 - **Verify Device Types**
 - **Discover Variables**
-- **Find Device**
+- **Find Device** (read-only)
+- **Config Compliance Audit**
+
+**Find Device** runs read-only. **Config Compliance Audit** is in the list. Its remediation offer is suppressed in Safe Mode.
 
 Safe Mode hides these from the dropdown:
 
@@ -34,7 +37,7 @@ Safe Mode hides these from the dropdown:
 - **Packet Capture**
 - **Change ISE Password**
 
-**Config Compliance Audit** is not in the reduced list, so it is not offered in Safe Mode either.
+**Config Compliance Remediate** stays out of Safe Mode. The audit task above does not offer remediation while Safe Mode is on.
 
 When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip **Upgrade to Pro to unlock this feature**.
 

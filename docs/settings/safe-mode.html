@@ -174,9 +174,12 @@
 </li>
 <li><strong>Discover Variables</strong>
 </li>
-<li><strong>Find Device</strong>
+<li><strong>Find Device</strong> (read-only)
+</li>
+<li><strong>Config Compliance Audit</strong>
 </li>
 </ul>
+<p><strong>Find Device</strong> runs read-only. <strong>Config Compliance Audit</strong> is in the list. Its remediation offer is suppressed in Safe Mode.</p>
 <p>Safe Mode hides these from the dropdown:</p>
 <ul>
 <li><strong>Config Push</strong>
@@ -198,7 +201,7 @@
 <li><strong>Change ISE Password</strong>
 </li>
 </ul>
-<p><strong>Config Compliance Audit</strong> is not in the reduced list, so it is not offered in Safe Mode either.</p>
+<p><strong>Config Compliance Remediate</strong> stays out of Safe Mode. The audit task above does not offer remediation while Safe Mode is on.</p>
 <p>When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
 <p>While Safe Mode is on:</p>
 <ul>

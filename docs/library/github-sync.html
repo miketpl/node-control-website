@@ -226,7 +226,7 @@
 </li>
 </ol>
 <p>The diff-and-confirm flow is intentional — you won&#x27;t accidentally nuke your local library on a fetch.</p>
-<p>Only one fetch runs at a time. A startup sync and a manual pull used to overlap, and the second one showed the same diff again after you clicked Apply. That stale diff is gone.</p>
+<p>Pull logs each step. It never opens a second review dialog.</p>
 <h2 id="conflict-resolution">Conflict resolution</h2>
 <p>If two engineers edit and push at the same time, the second push fails with a Git conflict. Resolution:</p>
 <ol>

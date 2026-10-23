@@ -20,17 +20,17 @@ If you tick an AI option and nothing is configured, the app prompts immediately 
 
 Three switches sit on Settings → AI / LLM:
 
-- **Enable AI analysis by default across all features**
+- **Enable AI analysis by default across all features** (off on a fresh install)
 - **Anonymise identifiable data before sending to AI** (on by default)
 - **Show preview before sending data to AI** (off by default)
 
 The preview shows tokens such as `[IP_1]` and `[HOST_1]`. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.
 
-End-of-task **AI Summary** is a checkbox on the Engineer page. You tick it for that run. The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.
+End-of-task **AI Summary** is a checkbox on the Engineer page. Its starting state comes from **Enable AI analysis by default across all features**, so on a fresh install it starts unticked. You can tick it for that run. The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.
 
 On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.
 
-The Findings review on Monitor is separate from that checkbox. It runs on every poll when **Enable AI analysis by default across all features** is on. It has no separate switch, and it never runs on Free.
+The Monitor alert narratives and the analyst review (the **Findings** tab) need **Enable AI analysis by default across all features** on. That switch is off on a fresh install, so they do not run until you turn it on. There is no separate switch, and it never runs on Free.
 
 ## Where it shows up
 
@@ -48,11 +48,12 @@ Where the task writes HTML, the summary is a panel at the top of that page, and 
 
 The same provider is used for:
 
-- **AI Summary** and **Preview before sending** on the Reports tab
+- **AI Summary** on the Reports tab. It starts from **Enable AI analysis by default across all features**, so it is unticked on a fresh install
+- **Preview before sending** on the Reports tab. It starts unticked. Each time the tab loads it takes its starting state from **Show preview before sending data to AI** (off by default). It is enabled only while **AI Summary** is ticked, and you can change it for that run
 - **AI headline on emailed assessment** (off by default; only when the Lifecycle report is emailed)
 - Monitor, from 0.9.41, on Pro and the AI edition: **Ask AI** (per device), **Ask Network AI** (opens the dialog **Ask AI — Network**), **Architect Review** (whole estate or one site), and the **Findings** tab
 
-**AI review** is an option on the Firewall Analyser Assess row, and it is on by default. The AI advisor stays a Pro feature.
+**AI review** is on the Firewall Analyser Assess row, and it is ticked by default. **AI advisory** is on the same page. Both show on Pro and the AI edition. Free has no Firewall Analyser tab.
 
 **Vuln Plan** is the AI edition only. It is a button on the Update tab, next to **Check PSIRT**, and it works from that tab's PSIRT results. Pro has neither the Update tab nor Vuln Plan.
 
@@ -60,7 +61,7 @@ The same provider is used for:
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is on Settings → AI / LLM. It is off by default. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](../security/data-and-privacy.md).
+**Allow the backend and background jobs to log into devices with my credentials** is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](../security/data-and-privacy.md).
 
 ## Next steps
 

@@ -157,7 +157,7 @@
 <h2 id="what-is-sent">What is sent</h2>
 <p>Three switches sit on Settings → AI / LLM:</p>
 <ul>
-<li><strong>Enable AI analysis by default across all features</strong>
+<li><strong>Enable AI analysis by default across all features</strong> (off on a fresh install)
 </li>
 <li><strong>Anonymise identifiable data before sending to AI</strong> (on by default)
 </li>
@@ -165,9 +165,9 @@
 </li>
 </ul>
 <p>The preview shows tokens such as <code>[IP_1]</code> and <code>[HOST_1]</code>. Responses are de-anonymised before you see them. Raw tokens are not written to the log you read.</p>
-<p>End-of-task <strong>AI Summary</strong> is a checkbox on the Engineer page. You tick it for that run. The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.</p>
+<p>End-of-task <strong>AI Summary</strong> is a checkbox on the Engineer page. Its starting state comes from <strong>Enable AI analysis by default across all features</strong>, so on a fresh install it starts unticked. You can tick it for that run. The checkbox is greyed out for tasks that have nothing to summarise, such as a backup, a save, a file transfer, or a push.</p>
 <p>On Free the same dialog opens and then stops. Nothing is sent, and there is no provider to send it.</p>
-<p>The Findings review on Monitor is separate from that checkbox. It runs on every poll when <strong>Enable AI analysis by default across all features</strong> is on. It has no separate switch, and it never runs on Free.</p>
+<p>The Monitor alert narratives and the analyst review (the <strong>Findings</strong> tab) need <strong>Enable AI analysis by default across all features</strong> on. That switch is off on a fresh install, so they do not run until you turn it on. There is no separate switch, and it never runs on Free.</p>
 <h2 id="where-it-shows-up">Where it shows up</h2>
 <p>End-of-task summaries, when you tick them on the Engineer page, cover:</p>
 <ul>
@@ -189,18 +189,20 @@
 <p>Where the task writes HTML, the summary is a panel at the top of that page, and it is also in the log. The page opens after the summary lands.</p>
 <p>The same provider is used for:</p>
 <ul>
-<li><strong>AI Summary</strong> and <strong>Preview before sending</strong> on the Reports tab
+<li><strong>AI Summary</strong> on the Reports tab. It starts from <strong>Enable AI analysis by default across all features</strong>, so it is unticked on a fresh install
+</li>
+<li><strong>Preview before sending</strong> on the Reports tab. It starts unticked. Each time the tab loads it takes its starting state from <strong>Show preview before sending data to AI</strong> (off by default). It is enabled only while <strong>AI Summary</strong> is ticked, and you can change it for that run
 </li>
 <li><strong>AI headline on emailed assessment</strong> (off by default; only when the Lifecycle report is emailed)
 </li>
 <li>Monitor, from 0.9.41, on Pro and the AI edition: <strong>Ask AI</strong> (per device), <strong>Ask Network AI</strong> (opens the dialog <strong>Ask AI — Network</strong>), <strong>Architect Review</strong> (whole estate or one site), and the <strong>Findings</strong> tab
 </li>
 </ul>
-<p><strong>AI review</strong> is an option on the Firewall Analyser Assess row, and it is on by default. The AI advisor stays a Pro feature.</p>
+<p><strong>AI review</strong> is on the Firewall Analyser Assess row, and it is ticked by default. <strong>AI advisory</strong> is on the same page. Both show on Pro and the AI edition. Free has no Firewall Analyser tab.</p>
 <p><strong>Vuln Plan</strong> is the AI edition only. It is a button on the Update tab, next to <strong>Check PSIRT</strong>, and it works from that tab&#x27;s PSIRT results. Pro has neither the Update tab nor Vuln Plan.</p>
 <p><strong>AI Chat</strong> and the <strong>AI Dashboard</strong> stay on the AI edition.</p>
 <h2 id="background-learning">Background Learning</h2>
-<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is on Settings → AI / LLM. It is off by default. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log. See <a href="../security/data-and-privacy.html">What leaves your laptop</a>.</p>
+<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log. See <a href="../security/data-and-privacy.html">What leaves your laptop</a>.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="ai-features.html">AI features overview</a>

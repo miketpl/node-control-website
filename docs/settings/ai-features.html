@@ -175,7 +175,7 @@
 <h2 id="the-three-global-switches">The three global switches</h2>
 <p>These three switches are on Settings → AI / LLM:</p>
 <ul>
-<li><strong>Enable AI analysis by default across all features</strong>
+<li><strong>Enable AI analysis by default across all features</strong> (off on a fresh install)
 </li>
 <li><strong>Anonymise identifiable data before sending to AI</strong> (on by default)
 </li>
@@ -183,7 +183,8 @@
 </li>
 </ul>
 <p>The preview shows tokens such as <code>[IP_1]</code> and <code>[HOST_1]</code>. You read real names. The provider sees the tokens when the anonymiser is on.</p>
-<p>The Findings review on Monitor needs <strong>Enable AI analysis by default across all features</strong> on. It has no separate switch.</p>
+<p><strong>Enable AI analysis by default across all features</strong> also sets the starting state of the <strong>AI Summary</strong> checkboxes on the Engineer page and the Reports tab. On a fresh install those boxes start unticked.</p>
+<p>The Monitor alert narratives and the analyst review (the <strong>Findings</strong> tab) need that switch on. They do not run until you turn it on. There is no separate switch. They never run on Free.</p>
 <h2 id="where-ai-shows-up">Where AI shows up</h2>
 <table>
 <thead>
@@ -198,7 +199,7 @@
 <tr>
 <td>End-of-task AI Summary</td>
 <td>Engineer page checkbox</td>
-<td>Tick it for that run</td>
+<td>Starts from <strong>Enable AI analysis by default across all features</strong>. Off on a fresh install</td>
 <td>Pro and AI. Free opens a preview and sends nothing</td>
 </tr>
 <tr>
@@ -222,19 +223,19 @@
 <tr>
 <td>Findings</td>
 <td>Every Monitor poll. Alert row tooltip and the Findings tab</td>
-<td>Runs when <strong>Enable AI analysis by default across all features</strong> is on. No separate switch</td>
+<td>Off until you turn <strong>Enable AI analysis by default across all features</strong> on. No separate switch</td>
 <td>Pro and AI. It never runs on Free</td>
 </tr>
 <tr>
 <td>AI Summary</td>
 <td>Reports tab</td>
-<td>Tick it on the report</td>
+<td>Starts from the same switch. Off on a fresh install</td>
 <td>Pro and AI</td>
 </tr>
 <tr>
 <td>Preview before sending</td>
 <td>Reports tab</td>
-<td>Set on that tab</td>
+<td>Starts unticked. Each time the tab loads it takes its starting state from <strong>Show preview before sending data to AI</strong> (off by default). Enabled only while <strong>AI Summary</strong> is ticked. You can change it for that run</td>
 <td>Pro and AI</td>
 </tr>
 <tr>
@@ -246,14 +247,20 @@
 <tr>
 <td>AI review</td>
 <td>Firewall Analyser, Assess row</td>
-<td>On</td>
-<td>Pro. The AI advisor stays a Pro feature</td>
+<td>Ticked</td>
+<td>Pro and AI. Free has no Firewall Analyser tab</td>
+</tr>
+<tr>
+<td>AI advisory</td>
+<td>Firewall Analyser</td>
+<td>Shown with <strong>AI review</strong></td>
+<td>Pro and AI. Free has no Firewall Analyser tab</td>
 </tr>
 <tr>
 <td>Background Learning</td>
 <td>Settings → AI / LLM</td>
 <td>Off</td>
-<td>Pro and AI</td>
+<td>Pro and AI. The setting is visible on Free. Nothing on Free uses it</td>
 </tr>
 </tbody>
 </table>
@@ -267,10 +274,10 @@
 <li><strong>Architect Review</strong> covers the whole estate, or one site
 </li>
 </ul>
-<p>On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom <strong>Findings</strong> tab. The columns are When, Device, Category, Sev, Headline, and Narrative. It needs <strong>Enable AI analysis by default across all features</strong> on. It has no separate switch. It never runs on Free.</p>
+<p>On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom <strong>Findings</strong> tab. The columns are When, Device, Category, Sev, Headline, and Narrative. <strong>Enable AI analysis by default across all features</strong> is off on a fresh install, so the alert narratives and the analyst review do not run until you turn it on. There is no separate switch. It never runs on Free.</p>
 <p>See <a href="../tasks/monitor.html">Monitor</a>.</p>
 <h2 id="background-learning">Background Learning</h2>
-<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is off by default. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log.</p>
+<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log.</p>
 <h2 id="how-answers-are-written">How answers are written</h2>
 <p>Answers are written as a senior network engineer at a large enterprise.</p>
 <h2 id="free-preview-only">Free: preview only</h2>

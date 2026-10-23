@@ -4,7 +4,7 @@
 
 There is no standards picker and no list of named standards.
 
-The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. **AI review** is an option on the Assess row, and it is on by default. The AI advisor stays a Pro feature. It uses the provider in Settings → AI / LLM. See [AI on Professional](../settings/ai-llm.md).
+The tab has **Load Config File...**, **Edit Standards...**, and **Analyse**. **AI review** is on the Assess row, and it is ticked by default. **AI advisory** is on the same page. Both show on Pro and the AI edition. Free has no Firewall Analyser tab. They use the provider in Settings → AI / LLM. See [AI on Professional](../settings/ai-llm.md).
 
 Inner tabs: **Rulebase Analyser**, **Compare**, **Proposed Rule Tester**.
 
@@ -43,7 +43,7 @@ The tester is where you try a rule before you commit it anywhere. Object names a
 
 ## AI review
 
-**AI review** is an option on the Assess row, and it is on by default. The AI advisor stays a Pro feature. It uses the provider you configure: your own API key, with no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. The deterministic findings do not need it.
+**AI review** is on the Assess row, and it is ticked by default. **AI advisory** is shown as well. Both show on Pro and the AI edition. Free has no Firewall Analyser tab. They use the provider you configure: your own API key, with no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. The deterministic findings do not need them.
 
 ## Next steps
 
