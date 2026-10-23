@@ -148,9 +148,24 @@
                 <h1 id="updating-node-control">Updating Node Control</h1>
 <p>0.9.41 is a required release. It is the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
 <h2 id="updating-from-0-9-41">Updating from 0.9.41</h2>
-<p>From 0.9.41 the app updates itself. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.</p>
+<p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.</p>
 <h2 id="help-check-for-updates">Help &gt; Check for Updates...</h2>
-<p><strong>Help → Check for Updates...</strong> asks the licence server now. The app also checks for updates itself. There is no Daily, Weekly, or Never setting for that check.</p>
+<p>0.9.41 checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again.</p>
+<p>If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
+<p>The start-up check stays silent if it fails. When it finds an update, it asks <strong>Update Available</strong>.</p>
+<p><strong>Help → Check for Updates...</strong> shows one of these:</p>
+<ul>
+<li><strong>Could not check for updates.</strong> The line underneath is the server&#x27;s message, <code>Update check failed (&lt;status&gt; &lt;code&gt;)</code>, or the network error.
+</li>
+<li><strong>Downloads are paused.</strong> On Free the text is <code>Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.</code>
+</li>
+<li><strong>Download failed.</strong>
+</li>
+<li><strong>You&#x27;re running the latest version (v0.9.41).</strong>
+</li>
+<li><strong>Update available!</strong>
+</li>
+</ul>
 <h2 id="what-is-checked-before-installing">What is checked before installing</h2>
 <p>Before <strong>Install &amp; Restart</strong>, the app checks:</p>
 <ul>
@@ -179,10 +194,10 @@
 <p>The library, settings, and credentials carry over.</p>
 <h2 id="the-previous-app-copy-on-macos">The .previous.app copy on macOS</h2>
 <p>macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
-<h2 id="update-required">Update Required</h2>
-<p><strong>Update Required</strong> cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<h2 id="update-required">Update required</h2>
+<p>The dialog is <strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
 <h2 id="when-free-downloads-are-paused">When Free downloads are paused</h2>
-<p>Free in-app downloads may be paused briefly after a release. The check then reports that Free downloads are paused. Pro downloads are not paused by that switch. Install the current Free build from <a href="https://nodecontrol.io">nodecontrol.io</a> if you cannot wait.</p>
+<p>The dialog is <strong>Downloads are paused.</strong> On Free the text is <code>Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.</code> If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
 <h2 id="on-0-9-40-or-earlier-install-by-hand">On 0.9.40 or earlier: install by hand</h2>
 <p>0.9.40 and earlier cannot self-update. Download the current installer from <a href="https://nodecontrol.io">nodecontrol.io</a> and install it over the old one. The library is kept. Do not install an older build. The licence server refuses anything below 0.9.41.</p>
 <p>A 0.9.40 Pro install emails a 6-digit code to the registration address when the activation dialog opens. See <a href="licence.html">Your licence</a>.</p>

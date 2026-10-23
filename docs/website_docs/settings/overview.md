@@ -83,8 +83,8 @@ A future release may add named settings profiles to skip the manual copy — let
 | Topology maps look right | **Topology** → Endpoint filter patterns |
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |
 | Don't want SSH session logging | **Terminal** → uncheck Log session output |
-| Check for an update now | **Help → Check for Updates...**. The app also checks for updates itself. See [Updating](../getting-started/updating.md) |
-| Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. The session row stores how long the app ran, how many connections it opened, how many errors it counted, and task counts, plus the app version, OS family, OS major version, and architecture. It is stored against the licence and the install id. The [privacy notice](https://nodecontrol.io/privacy.html) says that row is not anonymous. Turning the setting off deletes those session rows on the server |
+| Check for an update now | **Help → Check for Updates...**. 0.9.41 checks once at launch, right after the licence check, and there is no timer after that. See [Updating](../getting-started/updating.md) |
+| Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out |
 
 ## Settings audit log
 

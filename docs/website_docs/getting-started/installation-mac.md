@@ -54,9 +54,9 @@ This includes:
 
 ## Updating
 
-From 0.9.41 the app updates itself. **Help → Check for Updates...** asks the licence server, which never offers a downgrade. The app checks the checksum and the code signature (`codesign`, `spctl`, and the Team ID) before **Install & Restart**. Downloads resume. macOS keeps `Node Control Pro.previous.app` until the new version starts.
+From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. The app checks the checksum and the code signature (`codesign`, `spctl`, and the Team ID) before **Install & Restart**. Downloads resume. macOS keeps `Node Control Pro.previous.app` until the new version starts.
 
-**Update Required** cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
+**Update required.** The text is `This version (v…) is no longer supported. Version v… must be installed to continue.` It cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
 
 0.9.40 and earlier cannot self-update. Install the current build by hand from [nodecontrol.io](https://nodecontrol.io). Anything below 0.9.41 is refused. The library is kept.
 

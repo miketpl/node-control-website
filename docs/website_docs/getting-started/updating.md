@@ -4,11 +4,23 @@
 
 ## Updating from 0.9.41
 
-From 0.9.41 the app updates itself. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.
+From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.
 
 ## Help > Check for Updates...
 
-**Help → Check for Updates...** asks the licence server now. The app also checks for updates itself. There is no Daily, Weekly, or Never setting for that check.
+0.9.41 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
+
+If the server says it is busy or paused, the app backs off for 24 hours by default.
+
+The start-up check stays silent if it fails. When it finds an update, it asks **Update Available**.
+
+**Help → Check for Updates...** shows one of these:
+
+- **Could not check for updates.** The line underneath is the server's message, `Update check failed (<status> <code>)`, or the network error.
+- **Downloads are paused.** On Free the text is `Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.`
+- **Download failed.**
+- **You're running the latest version (v0.9.41).**
+- **Update available!**
 
 ## What is checked before installing
 
@@ -39,13 +51,13 @@ The library, settings, and credentials carry over.
 
 macOS keeps `Node Control Pro.previous.app` until the new version starts.
 
-## Update Required
+## Update required
 
-**Update Required** cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
+The dialog is **Update required.** The text is `This version (v…) is no longer supported. Version v… must be installed to continue.` It cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
 
 ## When Free downloads are paused
 
-Free in-app downloads may be paused briefly after a release. The check then reports that Free downloads are paused. Pro downloads are not paused by that switch. Install the current Free build from [nodecontrol.io](https://nodecontrol.io) if you cannot wait.
+The dialog is **Downloads are paused.** On Free the text is `Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.` If the server says it is busy or paused, the app backs off for 24 hours by default.
 
 ## On 0.9.40 or earlier: install by hand
 

@@ -61,13 +61,13 @@ Typically expands to `C:\Users\<you>\AppData\Roaming\netOps\`. Contains:
 
 ## Updating
 
-From 0.9.41 the app updates itself. **Help → Check for Updates...** asks the licence server, which never offers a downgrade. Before **Install & Restart**, the app checks the checksum and the Authenticode publisher, **The Promised Lan Limited**. Downloads resume.
+From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. Before **Install & Restart**, the app checks the checksum and the Authenticode publisher, **The Promised Lan Limited**. Downloads resume.
 
 1. Click **Download**
 2. The new installer downloads to your `%TEMP%` folder. A dropped connection can resume
 3. Click **Install & Restart**. Node Control closes, a UAC prompt appears, the installer runs silently, and the app opens on the new version
 
-**Update Required** cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
+**Update required.** The text is `This version (v…) is no longer supported. Version v… must be installed to continue.` It cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
 
 0.9.40 and earlier cannot self-update. Install the current build by hand from [nodecontrol.io](https://nodecontrol.io). Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.
 

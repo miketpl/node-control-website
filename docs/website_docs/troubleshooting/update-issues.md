@@ -2,17 +2,15 @@
 
 When **Help → Check for Updates...** does not work, or a download fails, or an install hangs. The check asks the licence server at api.nodecontrol.io. The installer file is then downloaded from GitHub. The server never offers a downgrade. See [Updating Node Control](../getting-started/updating.md).
 
-## Symptom 1 — "No update available" when you know there's a newer version
+## Symptom 1 — you expected a newer version
+
+**Help → Check for Updates...** says **You're running the latest version (v0.9.41).** when nothing newer is offered. The version in parentheses is the one you are running.
 
 ### You're on a different edition
 
-Free and Pro are different products. A Pro release is not an update for a Free install.
+Free and Pro are different products. A Pro update is not offered to a Free install.
 
-Confirm the edition in Help → About. The current installer for that edition is on [nodecontrol.io](https://nodecontrol.io). From 0.9.41, **Help → Check for Updates...** asks the licence server for that edition.
-
-### The release is not published yet
-
-If nothing newer is published for that edition, the client is right to say there is no update.
+Confirm the edition in Help → About. The current installer for that edition is on [nodecontrol.io](https://nodecontrol.io).
 
 ### You are below 0.9.41
 
@@ -38,11 +36,11 @@ For a corporate firewall that intercepts SSL:
 
 ## Symptom 3 — Download fails partway through
 
-The downloader resumes. Run **Help → Check for Updates...** again and it picks up where it stopped.
+The dialog is **Download failed.** The downloader resumes. Run **Help → Check for Updates...** again and it picks up where it stopped.
 
 If that keeps failing, download the current installer from nodecontrol.io and install it by hand. That is the same end state. Do not install an older build.
 
-Free in-app downloads may be paused briefly after a release. The check says so. Pro is not paused by that switch.
+**Downloads are paused.** On Free the text is `Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.` If the server says it is busy or paused, the app backs off for 24 hours by default.
 
 ## Symptom 4 — "Install & Restart" fails on Windows
 
@@ -102,9 +100,9 @@ The launch screen is **Licence Check Failed**, **Licence Not Accepted**, or **Gr
 - Send it to support with the version you came from and the version you installed
 - Install the current build again from nodecontrol.io. The library is kept. There is no downgrade
 
-## Update Required
+## Update required
 
-**Update Required** cannot be dismissed. **Download Update** starts the install. **Open nodecontrol.io** opens the site. **Quit** closes the app.
+The dialog is **Update required.** The text is `This version (v…) is no longer supported. Version v… must be installed to continue.` It cannot be dismissed. **Download Update** starts the install. **Open nodecontrol.io** opens the site. **Quit** closes the app.
 
 ## Install by hand
 
@@ -117,9 +115,15 @@ The launch screen is **Licence Check Failed**, **Licence Not Accepted**, or **Gr
 - Help → About
 - Or, on a Mac: the **Node Control** menu → About Node Control
 
-## The app checks for updates itself
+## When the check runs
 
-There is no auto-check schedule in Settings. The app checks for updates itself. **Help → Check for Updates...** checks now.
+0.9.41 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
+
+If the server says it is busy or paused, the app backs off for 24 hours by default.
+
+The start-up check stays silent if it fails. The failure dialog is only from **Help → Check for Updates...**: **Could not check for updates.** The line underneath is the server's message, `Update check failed (<status> <code>)`, or the network error.
+
+When the start-up check finds an update, it asks **Update Available**. **Help → Check for Updates...** says **Update available!**
 
 ## Next steps
 

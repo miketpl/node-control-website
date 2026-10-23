@@ -213,7 +213,7 @@
 </ul>
 <p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
 <h2 id="updating">Updating</h2>
-<p>From 0.9.41 the app updates itself. <strong>Help → Check for Updates...</strong> asks the licence server, which never offers a downgrade. Before <strong>Install &amp; Restart</strong>, the app checks the checksum and the Authenticode publisher, <strong>The Promised Lan Limited</strong>. Downloads resume.</p>
+<p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. Before <strong>Install &amp; Restart</strong>, the app checks the checksum and the Authenticode publisher, <strong>The Promised Lan Limited</strong>. Downloads resume.</p>
 <ol>
 <li>Click <strong>Download</strong>
 </li>
@@ -222,7 +222,7 @@
 <li>Click <strong>Install &amp; Restart</strong>. Node Control closes, a UAC prompt appears, the installer runs silently, and the app opens on the new version
 </li>
 </ol>
-<p><strong>Update Required</strong> cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<p><strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
 <p>0.9.40 and earlier cannot self-update. Install the current build by hand from <a href="https://nodecontrol.io">nodecontrol.io</a>. Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.</p>
 <p>See <a href="updating.html">Updating Node Control</a>.</p>
 <h2 id="crash-logs">Crash logs</h2>

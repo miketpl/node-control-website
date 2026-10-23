@@ -147,12 +147,11 @@
                 </div>
                 <h1 id="update-problems">Update problems</h1>
 <p>When <strong>Help → Check for Updates...</strong> does not work, or a download fails, or an install hangs. The check asks the licence server at api.nodecontrol.io. The installer file is then downloaded from GitHub. The server never offers a downgrade. See <a href="../getting-started/updating.html">Updating Node Control</a>.</p>
-<h2 id="symptom-1-no-update-available-when-you-know-theres-a-newer-version">Symptom 1 — &quot;No update available&quot; when you know there&#x27;s a newer version</h2>
+<h2 id="symptom-1-you-expected-a-newer-version">Symptom 1 — you expected a newer version</h2>
+<p><strong>Help → Check for Updates...</strong> says <strong>You&#x27;re running the latest version (v0.9.41).</strong> when nothing newer is offered. The version in parentheses is the one you are running.</p>
 <h3 id="youre-on-a-different-edition">You&#x27;re on a different edition</h3>
-<p>Free and Pro are different products. A Pro release is not an update for a Free install.</p>
-<p>Confirm the edition in Help → About. The current installer for that edition is on <a href="https://nodecontrol.io">nodecontrol.io</a>. From 0.9.41, <strong>Help → Check for Updates...</strong> asks the licence server for that edition.</p>
-<h3 id="the-release-is-not-published-yet">The release is not published yet</h3>
-<p>If nothing newer is published for that edition, the client is right to say there is no update.</p>
+<p>Free and Pro are different products. A Pro update is not offered to a Free install.</p>
+<p>Confirm the edition in Help → About. The current installer for that edition is on <a href="https://nodecontrol.io">nodecontrol.io</a>.</p>
 <h3 id="you-are-below-0-9-41">You are below 0.9.41</h3>
 <p>0.9.40 and earlier cannot self-update. Install the current build by hand from nodecontrol.io. Anything below 0.9.41 is refused.</p>
 <h2 id="symptom-2-the-check-cannot-reach-the-licence-server">Symptom 2 — the check cannot reach the licence server</h2>
@@ -169,9 +168,9 @@ ping api.github.com</code></pre>
 </li>
 </ul>
 <h2 id="symptom-3-download-fails-partway-through">Symptom 3 — Download fails partway through</h2>
-<p>The downloader resumes. Run <strong>Help → Check for Updates...</strong> again and it picks up where it stopped.</p>
+<p>The dialog is <strong>Download failed.</strong> The downloader resumes. Run <strong>Help → Check for Updates...</strong> again and it picks up where it stopped.</p>
 <p>If that keeps failing, download the current installer from nodecontrol.io and install it by hand. That is the same end state. Do not install an older build.</p>
-<p>Free in-app downloads may be paused briefly after a release. The check says so. Pro is not paused by that switch.</p>
+<p><strong>Downloads are paused.</strong> On Free the text is <code>Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.</code> If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
 <h2 id="symptom-4-install-restart-fails-on-windows">Symptom 4 — &quot;Install &amp; Restart&quot; fails on Windows</h2>
 <ol>
 <li>Node Control downloads the new Setup.exe
@@ -224,8 +223,8 @@ ping api.github.com</code></pre>
 <li>Install the current build again from nodecontrol.io. The library is kept. There is no downgrade
 </li>
 </ul>
-<h2 id="update-required">Update Required</h2>
-<p><strong>Update Required</strong> cannot be dismissed. <strong>Download Update</strong> starts the install. <strong>Open nodecontrol.io</strong> opens the site. <strong>Quit</strong> closes the app.</p>
+<h2 id="update-required">Update required</h2>
+<p>The dialog is <strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. <strong>Download Update</strong> starts the install. <strong>Open nodecontrol.io</strong> opens the site. <strong>Quit</strong> closes the app.</p>
 <h2 id="install-by-hand">Install by hand</h2>
 <ol>
 <li>Download the current installer from https://nodecontrol.io
@@ -242,8 +241,11 @@ ping api.github.com</code></pre>
 <li>Or, on a Mac: the <strong>Node Control</strong> menu → About Node Control
 </li>
 </ul>
-<h2 id="the-app-checks-for-updates-itself">The app checks for updates itself</h2>
-<p>There is no auto-check schedule in Settings. The app checks for updates itself. <strong>Help → Check for Updates...</strong> checks now.</p>
+<h2 id="when-the-check-runs">When the check runs</h2>
+<p>0.9.41 checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again.</p>
+<p>If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
+<p>The start-up check stays silent if it fails. The failure dialog is only from <strong>Help → Check for Updates...</strong>: <strong>Could not check for updates.</strong> The line underneath is the server&#x27;s message, <code>Update check failed (&lt;status&gt; &lt;code&gt;)</code>, or the network error.</p>
+<p>When the start-up check finds an update, it asks <strong>Update Available</strong>. <strong>Help → Check for Updates...</strong> says <strong>Update available!</strong></p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../getting-started/updating.html">Updating Node Control</a>

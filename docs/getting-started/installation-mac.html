@@ -206,8 +206,8 @@
 </ul>
 <p><strong>Uninstalling</strong>: drag the app from Applications to Trash. To fully remove your data, also delete <code>~/Library/Application Support/netOps/</code> and clear any Node Control entries from Keychain Access.</p>
 <h2 id="updating">Updating</h2>
-<p>From 0.9.41 the app updates itself. <strong>Help → Check for Updates...</strong> asks the licence server, which never offers a downgrade. The app checks the checksum and the code signature (<code>codesign</code>, <code>spctl</code>, and the Team ID) before <strong>Install &amp; Restart</strong>. Downloads resume. macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
-<p><strong>Update Required</strong> cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. The app checks the checksum and the code signature (<code>codesign</code>, <code>spctl</code>, and the Team ID) before <strong>Install &amp; Restart</strong>. Downloads resume. macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
+<p><strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
 <p>0.9.40 and earlier cannot self-update. Install the current build by hand from <a href="https://nodecontrol.io">nodecontrol.io</a>. Anything below 0.9.41 is refused. The library is kept.</p>
 <p>See <a href="updating.html">Updating Node Control</a>.</p>
 <h2 id="crash-logs">Crash logs</h2>

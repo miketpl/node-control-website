@@ -18,7 +18,7 @@ Before deep-diving into a specific issue, run through these basics:
 ### Confirm the app is on the latest version
 
 - Help → About → check version number
-- Help → Check for Updates... → install if there's a newer version
+- 0.9.41 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again. If you are current it says **You're running the latest version (v0.9.41).**
 - Many issues are fixed in newer releases (especially detection / vendor parsing)
 
 ### Confirm device is reachable from your machine
