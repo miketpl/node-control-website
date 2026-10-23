@@ -154,10 +154,9 @@
 <li>Netmiko: <code>arista_eos</code></li>
 </ul>
 <h2 id="what-works">What works</h2>
-<p>Most things, because Arista EOS is largely Cisco-compatible at the CLI level:</p>
+<p>Most things work through the EOS CLI:</p>
 <ul>
-<li>L2 topology (CDP + LLDP + MAC table)</li>
-<li>L3 topology (OSPF, BGP, EIGRP)</li>
+<li>Native L2 and L3 topology reads LLDP, STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways</li>
 <li>Port Utilisation</li>
 <li>Bandwidth</li>
 <li>VLAN Port Finder</li>
@@ -173,16 +172,8 @@
 </ul>
 <h2 id="mlag-multi-chassis-link-aggregation">MLAG (Multi-Chassis Link Aggregation)</h2>
 <p>MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in CDP/LLDP.</p>
-<h2 id="varp-anycast-gateway">VARP / Anycast gateway</h2>
-<p>Arista VARP is detected at the L3 level — the anycast IP appears as a routing endpoint on each member switch.</p>
-<h2 id="evpn-vxlan">EVPN-VXLAN</h2>
-<p>EVPN-VXLAN overlay is increasingly common on Arista. Node Control covers:</p>
-<ul>
-<li>BGP-EVPN peering visible in L3 topology</li>
-<li>The VXLAN underlay routing is mapped</li>
-<li>The VXLAN-encapsulated overlay (VTEP-to-VTEP) is not specifically rendered — it appears as BGP peers between VTEP loopbacks</li>
-</ul>
-<p>For deep EVPN-VXLAN visualisation, dedicated tools (Arista CloudVision, third-party SDN viewers) are better.</p>
+<h2 id="varp">VARP</h2>
+<p>A VARP gateway resolves by subnet ownership.</p>
 <h2 id="cloudvision">CloudVision</h2>
 <p>Arista CloudVision is the vendor's centralised management. Node Control doesn't integrate with CloudVision — they're separate products. CloudVision provides the rich change-management, config push, and analytics; Node Control provides the multi-vendor read-only operational view.</p>
 <h2 id="common-gotchas">Common gotchas</h2>
@@ -214,7 +205,7 @@
 </table>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../tasks/topology-l3.html">L3 topology</a> — BGP-EVPN is well-covered</li>
+<li><a href="../tasks/topology-l3.html">L3 topology</a></li>
 </ul>
             </div>
         </main>

@@ -8,10 +8,9 @@ Arista switches (7050, 7150, 7280, 7320, 7500-series and cloud-grade boxes) are 
 
 ## What works
 
-Most things, because Arista EOS is largely Cisco-compatible at the CLI level:
+Most things work through the EOS CLI:
 
-- L2 topology (CDP + LLDP + MAC table)
-- L3 topology (OSPF, BGP, EIGRP)
+- Native L2 and L3 topology reads LLDP, STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways
 - Port Utilisation
 - Bandwidth
 - VLAN Port Finder
@@ -30,19 +29,9 @@ Most things, because Arista EOS is largely Cisco-compatible at the CLI level:
 
 MLAG-paired Arista switches appear as two separate devices in topology. The MLAG peer relationship is visible through the inter-switch link in CDP/LLDP.
 
-## VARP / Anycast gateway
+## VARP
 
-Arista VARP is detected at the L3 level — the anycast IP appears as a routing endpoint on each member switch.
-
-## EVPN-VXLAN
-
-EVPN-VXLAN overlay is increasingly common on Arista. Node Control covers:
-
-- BGP-EVPN peering visible in L3 topology
-- The VXLAN underlay routing is mapped
-- The VXLAN-encapsulated overlay (VTEP-to-VTEP) is not specifically rendered — it appears as BGP peers between VTEP loopbacks
-
-For deep EVPN-VXLAN visualisation, dedicated tools (Arista CloudVision, third-party SDN viewers) are better.
+A VARP gateway resolves by subnet ownership.
 
 ## CloudVision
 
@@ -58,4 +47,4 @@ Arista CloudVision is the vendor's centralised management. Node Control doesn't 
 
 ## Next steps
 
-- [L3 topology](../tasks/topology-l3.md) — BGP-EVPN is well-covered
+- [L3 topology](../tasks/topology-l3.md)
