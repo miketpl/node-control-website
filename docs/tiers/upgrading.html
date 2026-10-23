@@ -47,6 +47,8 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../getting-started/updating.html" class="docs-nav-link">Updating</a>
       <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -156,7 +158,7 @@
 </ul>
 <h2 id="what-changes">What changes</h2>
 <ul>
-<li><strong>Activation flow</strong>: instead of entering an <code>NC-XXXX-XXXX</code> code, Pro asks for the email address you used when purchasing
+<li><strong>Activation flow</strong>: instead of entering an <code>NC-XXXX-XXXX</code> code, Pro asks for the NCP licence key. Click <strong>Activate</strong>
 </li>
 <li><strong>App bundle name</strong>: macOS shows &quot;Node Control Pro.app&quot; instead of &quot;Node Control Free.app&quot; in Applications
 </li>
@@ -174,7 +176,7 @@
 <li>Billing address and payment details
 </li>
 </ul>
-<p>When Stripe confirms the payment, that email is added to the Pro allowed-users list. You&#x27;ll receive a confirmation email with the download page.</p>
+<p>When Stripe confirms the payment, the confirmation email contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains macOS and Windows links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own Mac and Windows links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself. The installer file is downloaded from GitHub.</p>
 <h3 id="2-download-node-control-pro">2. Download Node Control Pro</h3>
 <p>From the email or the checkout success page, download:</p>
 <ul>
@@ -187,20 +189,19 @@
 <p>You can keep Node Control Free installed while you set up Pro — they coexist as separate applications.</p>
 <p><strong>Mac</strong>: drag Pro to Applications normally. You&#x27;ll have both <code>Node Control Free.app</code> and <code>Node Control Pro.app</code>.</p>
 <p><strong>Windows</strong>: run the Pro Setup.exe. Installs to <code>C:\Program Files\Node Control Pro\</code> alongside Free&#x27;s <code>C:\Program Files\Node Control Free\</code>.</p>
-<h3 id="4-launch-pro-and-register">4. Launch Pro and register</h3>
+<h3 id="4-launch-pro-and-activate">4. Launch Pro and activate</h3>
 <p>On first launch of Pro:</p>
 <ol>
-<li>The <strong>Welcome to Node Control</strong> registration dialog appears
+<li>Enter the NCP licence key
 </li>
-<li>Enter your name, email (must match your purchase email), organisation
+<li>Click <strong>Activate</strong>
 </li>
-<li>Click <strong>Submit</strong>
-</li>
-<li>The app checks your email against the Pro allowed-users list
-</li>
-<li>If your email is on the list — you&#x27;re in. If not — confirm the email matches, or contact support
+<li>The app checks the key at api.nodecontrol.io
 </li>
 </ol>
+<p>There is no email allow-list, and there is no GitHub licence check.</p>
+<p>If this install is upgrading a 0.9.40 Pro install, the dialog emails a 6-digit code to the registration address. Enter that code.</p>
+<p>If the key is lost, use <strong>Email me a code</strong>, then <strong>Confirm code</strong>. See <a href="../getting-started/licence.html">Your licence</a>.</p>
 <h3 id="5-verify-your-library-transferred">5. Verify your library transferred</h3>
 <p>Open <strong>Engineer</strong> from the sidebar. You should see the devices that were in your Free library, without the 25-device cap. The library is stored in <code>~/Library/Application Support/netOps/netOps.db</code> (Mac) or <code>%APPDATA%\netOps\</code> (Windows), shared across all tiers on the same machine.</p>
 <h3 id="6-uninstall-free-optional">6. Uninstall Free (optional)</h3>
@@ -208,29 +209,31 @@
 <p><strong>Mac</strong>: drag <code>Node Control Free.app</code> from Applications to Trash. Your data is unaffected.</p>
 <p><strong>Windows</strong>: <strong>Settings → Apps → Node Control Free → Uninstall</strong>. Data preserved.</p>
 <p>The Free activation code you entered remains valid — if you ever want to install Free again on this or another machine, the same code works.</p>
-<h2 id="what-if-my-pro-email-isnt-on-the-allowed-list-yet">What if my Pro email isn&#x27;t on the allowed list yet?</h2>
-<p>If you&#x27;ve just paid and your registration is rejected:</p>
+<h2 id="if-your-key-is-not-accepted">If your key is not accepted</h2>
+<p>The launch screen is <strong>Licence Not Accepted</strong> or <strong>Licence Check Failed</strong>. Each has <strong>Retry</strong> and <strong>Enter a licence key</strong>.</p>
 <ol>
-<li>Wait a few minutes for the allowed list to update
+<li>Check the key against the confirmation email
 </li>
-<li>Click <strong>Re-register</strong> in the rejection dialog and try again
+<li>Click <strong>Retry</strong>, or <strong>Enter a licence key</strong>
 </li>
-<li>If still rejected after 15 minutes, email <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a> with the email you paid with — we&#x27;ll check the subscription and add you manually if the payment is there
+<li>If it is still refused, email <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a>
 </li>
 </ol>
-<h2 id="sharing-one-pro-license-across-machines">Sharing one Pro license across machines</h2>
-<p>A Pro license is per-user, not per-machine. You can install Pro on as many machines as you personally use — laptop, desktop, lab box. Each registration adds an entry to the Pro user list, but only your email needs to match.</p>
-<p>If you change machines (e.g., new laptop):</p>
+<h2 id="one-computer-per-licence">One computer per licence</h2>
+<p>A licence runs on one computer. See <a href="../getting-started/licence.html">Your licence</a>.</p>
+<p>On a new laptop:</p>
 <ol>
 <li>Install Pro on the new machine
 </li>
-<li>Register with the same email
+<li>Activate with the same NCP key
 </li>
-<li>The Pro library and settings don&#x27;t auto-sync — use <a href="../library/github-sync.html">GitHub library sync</a> if you want a single source of truth
+<li>If the key is already in use, <strong>Licence in use</strong> offers <strong>Move licence here</strong>. Confirm with the emailed code. Or, on the old computer, open <strong>Settings → General → Deactivate this computer</strong>
+</li>
+<li>The library and settings do not auto-sync. Use <a href="../library/github-sync.html">GitHub library sync</a> if you want a single source of truth
 </li>
 </ol>
 <h2 id="renewing-or-transferring-a-license">Renewing or transferring a license</h2>
-<p>Professional is a subscription: £25/month ex VAT, or £255/year ex VAT. Cancelling stops the next renewal. The app keeps working until the end of the period you have already paid. When that period ends, or a renewal fails, the email comes off the allowed-users list. The app then blocks. If it cannot check in, it blocks after the 7-day offline grace.</p>
+<p>Professional is a subscription: £25/month ex VAT, or £255/year ex VAT. Cancelling stops the next renewal. The app keeps working until the end of the period you have already paid. When that period ends, or a renewal fails, the licence is no longer accepted. The app then blocks. If it cannot check in, it blocks after the 7-day offline grace.</p>
 <p>Manage the card or cancel from the link on <a href="https://nodecontrol.io/#manage">nodecontrol.io</a>. That page emails a billing link. It does not show whether the address has a subscription.</p>
 <p>To transfer a license to a different email (e.g., job change, company restructure), contact <a href="mailto:support@nodecontrol.io">support@nodecontrol.io</a>. We&#x27;ll move the licensed email and disable the old one.</p>
 <h2 id="downgrading-from-pro-back-to-free">Downgrading from Pro back to Free</h2>

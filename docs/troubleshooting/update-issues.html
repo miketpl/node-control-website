@@ -47,6 +47,8 @@
       <a href="../getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
       <a href="../getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="../getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../getting-started/updating.html" class="docs-nav-link">Updating</a>
       <a href="../getting-started/navigation.html" class="docs-nav-link">Where things are</a>
       <a href="../getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="../getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -144,163 +146,108 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/troubleshooting/">Troubleshooting</a> &rsaquo; Update problems
                 </div>
                 <h1 id="update-problems">Update problems</h1>
-<p>When <strong>Help → Check for Updates...</strong> doesn&#x27;t work, or downloads fail, or installs hang.</p>
+<p>When <strong>Help → Check for Updates...</strong> does not work, or a download fails, or an install hangs. The check asks the licence server at api.nodecontrol.io. The installer file is then downloaded from GitHub. The server never offers a downgrade. See <a href="../getting-started/updating.html">Updating Node Control</a>.</p>
 <h2 id="symptom-1-no-update-available-when-you-know-theres-a-newer-version">Symptom 1 — &quot;No update available&quot; when you know there&#x27;s a newer version</h2>
-<p>Possible causes:</p>
-<h3 id="youre-on-a-different-tiers-update-channel">You&#x27;re on a different tier&#x27;s update channel</h3>
-<p>Pro builds check the Pro releases repo; Free builds check the Free releases repo. A Pro release does not appear as an update for a Free install. They are different products.</p>
-<p>Confirm: Help → About → check the tier. Confirm the latest version available for THAT tier on:</p>
-<ul>
-<li>Free: download the latest installer from <a href="https://nodecontrol.io">nodecontrol.io</a>
-</li>
-<li>Pro: (Pro release channel — your customer portal has the URL)
-</li>
-</ul>
-<h3 id="the-releases-page-hasnt-been-published-yet">The releases page hasn&#x27;t been published yet</h3>
-<p>Sometimes a build is tested before the release is published. If the releases page for your tier has nothing newer, the client is right to say there is no update.</p>
-<h3 id="cached-lookup">Cached lookup</h3>
-<p>The updater caches the latest-known version for ~1 hour. To force re-check:</p>
-<ul>
-<li>Quit and re-launch
-</li>
-<li>Try Check for Updates again
-</li>
-</ul>
-<h2 id="symptom-2-could-not-reach-any-release-repo">Symptom 2 — &quot;Could not reach any release repo&quot;</h2>
-<p>The updater can&#x27;t fetch the latest release info. Causes:</p>
-<h3 id="network-connectivity">Network connectivity</h3>
+<h3 id="youre-on-a-different-edition">You&#x27;re on a different edition</h3>
+<p>Free and Pro are different products. A Pro release is not an update for a Free install.</p>
+<p>Confirm the edition in Help → About. The current installer for that edition is on <a href="https://nodecontrol.io">nodecontrol.io</a>. From 0.9.41, <strong>Help → Check for Updates...</strong> asks the licence server for that edition.</p>
+<h3 id="the-release-is-not-published-yet">The release is not published yet</h3>
+<p>If nothing newer is published for that edition, the client is right to say there is no update.</p>
+<h3 id="you-are-below-0-9-41">You are below 0.9.41</h3>
+<p>0.9.40 and earlier cannot self-update. Install the current build by hand from nodecontrol.io. Anything below 0.9.41 is refused.</p>
+<h2 id="symptom-2-the-check-cannot-reach-the-licence-server">Symptom 2 — the check cannot reach the licence server</h2>
+<p>The update check goes to api.nodecontrol.io. The installer file is downloaded from GitHub, so a network that blocks GitHub can still fail the download after the check succeeds.</p>
 <pre><code>ping api.nodecontrol.io
-ping api.github.com
-</code></pre>
-<p>The update check goes to the licence server at api.nodecontrol.io. That server reads the release from GitHub. The installer file is then downloaded from GitHub, so a network that blocks GitHub can still fail the download. Older builds contacted GitHub for the check itself. This is common on corporate networks behind strict proxies.</p>
+ping api.github.com</code></pre>
 <h3 id="proxy-firewall">Proxy / firewall</h3>
-<p>Settings → Advanced → check if HTTP/HTTPS proxy needs to be configured. Node Control uses the system proxy by default.</p>
-<p>For corporate firewalls that proxy-intercept SSL:</p>
+<p>Settings → Advanced → check if an HTTP/HTTPS proxy needs to be configured. Node Control uses the system proxy by default.</p>
+<p>For a corporate firewall that intercepts SSL:</p>
 <ul>
-<li>The proxy CA needs to be trusted by Node Control&#x27;s bundled <code>certifi</code> cert store
+<li>The proxy CA needs to be trusted by Node Control&#x27;s bundled <code>certifi</code> store
 </li>
-<li>Workaround: Settings → Advanced → check <strong>Use system cert store</strong> (uses macOS / Windows root CAs instead of bundled certifi)
+<li>Workaround: Settings → Advanced → <strong>Use system cert store</strong> (macOS or Windows root CAs instead of bundled certifi)
 </li>
 </ul>
-<p>Update checks contact api.nodecontrol.io over HTTPS. The installer download then comes from GitHub.</p>
 <h2 id="symptom-3-download-fails-partway-through">Symptom 3 — Download fails partway through</h2>
-<p>Cause: connection dropped mid-download.</p>
-<p>The downloader supports resume — re-trigger the download and it&#x27;ll pick up where it stopped:</p>
-<ol>
-<li>Help → Check for Updates... → Download
-</li>
-</ol>
-<p>For chronic download failures:</p>
-<ul>
-<li>Download the latest installer from nodecontrol.io and install it manually
-</li>
-<li>Install manually — same end-state as the in-app downloader
-</li>
-</ul>
+<p>The downloader resumes. Run <strong>Help → Check for Updates...</strong> again and it picks up where it stopped.</p>
+<p>If that keeps failing, download the current installer from nodecontrol.io and install it by hand. That is the same end state. Do not install an older build.</p>
+<p>Free in-app downloads may be paused briefly after a release. The check says so. Pro is not paused by that switch.</p>
 <h2 id="symptom-4-install-restart-fails-on-windows">Symptom 4 — &quot;Install &amp; Restart&quot; fails on Windows</h2>
-<p>When the in-app installer runs (Windows):</p>
 <ol>
 <li>Node Control downloads the new Setup.exe
 </li>
-<li>Triggers an elevated PowerShell script that:
-<ul>
-<li>Sleeps 2 seconds (lets Node Control fully exit)
+<li>An elevated PowerShell script waits 2 seconds so Node Control has exited, then <code>Start-Process -Verb RunAs</code> starts the installer
 </li>
-<li><code>Start-Process -Verb RunAs</code> invokes the installer with UAC
-</li>
-</ul>
-</li>
-<li>The installer runs silently and re-launches Node Control on the new version
+<li>The installer runs and opens Node Control on the new version
 </li>
 </ol>
-<p>Failure modes:</p>
-<h3 id="error-opening-file-for-writing-windows-specific">&quot;Error opening file for writing&quot; (Windows-specific)</h3>
-<p>Old Node Control held a lock on a file in its install dir while the installer tried to overwrite it. Fixed in 0.9.x — the 2-second sleep before launch closes Node Control fully before UAC.</p>
-<p>If you see this on an older version, manually run the downloaded Setup.exe after closing Node Control.</p>
+<p>Before that, the app checks the checksum and the Authenticode publisher, <strong>The Promised Lan Limited</strong>. If a check fails, the log names it: checksum, publisher, or version.</p>
+<h3 id="error-opening-file-for-writing">&quot;Error opening file for writing&quot;</h3>
+<p>An old build could still hold a file in its install directory. Close Node Control, then run the downloaded Setup.exe yourself.</p>
 <h3 id="uac-declined">UAC declined</h3>
-<p>User clicked No on the UAC prompt. The installer doesn&#x27;t run. Re-trigger from Help → Check for Updates... → Install &amp; Restart.</p>
+<p><strong>No</strong> on the UAC prompt means the installer does not run. Use <strong>Help → Check for Updates...</strong> → <strong>Install &amp; Restart</strong> again.</p>
 <h3 id="antivirus-quarantining-the-installer">Antivirus quarantining the installer</h3>
-<p>Some AVs flag installers as suspicious. Whitelist <code>Node Control Free-X.Y.Z-Setup.exe</code> (or Pro equivalent) in your AV.</p>
+<p>Whitelist the Setup.exe for the edition you installed.</p>
 <h2 id="symptom-5-mac-install-hangs">Symptom 5 — Mac install hangs</h2>
-<p>Cause: Gatekeeper checking the downloaded DMG online for notarization status.</p>
-<p>Wait 30-60 seconds. If still hung after that:</p>
+<p>Gatekeeper may be checking the downloaded disk image.</p>
+<p>Wait 30–60 seconds. If it is still hung:</p>
 <ul>
-<li>The Mac is likely trying to fetch the notarization ticket from Apple&#x27;s CDN and failing
+<li>Quit Node Control
 </li>
-<li>Quit Node Control (Cmd+Q)
-</li>
-<li>Open the DMG manually from your Downloads folder
+<li>Open the disk image from Downloads
 </li>
 <li>Drag the app to Applications
 </li>
 </ul>
-<p>The stapled notarization ticket makes Gatekeeper checks instant (no online lookup), but if the staple is somehow missing (rare), Gatekeeper falls back to online.</p>
-<h2 id="symptom-6-new-version-installs-but-app-doesnt-restart">Symptom 6 — New version installs but app doesn&#x27;t restart</h2>
-<p>Cause: macOS LaunchServices cache out of date.</p>
-<p>Fix:</p>
+<p>Before <strong>Install &amp; Restart</strong>, the app checks the checksum and the code signature (<code>codesign</code>, <code>spctl</code>, and the Team ID). If a check fails, the log names it: checksum, codesign, spctl, Team ID, or version.</p>
+<p>macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
+<h2 id="symptom-6-new-version-installs-but-the-app-does-not-restart">Symptom 6 — New version installs but the app does not restart</h2>
+<p>Quit Node Control, then open the app from Applications.</p>
+<p>Or, on a Mac:</p>
+<pre><code>/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain system -domain user</code></pre>
+<h2 id="symptom-7-licence-check-fails-after-the-update">Symptom 7 — Licence check fails after the update</h2>
+<p>The launch screen is <strong>Licence Check Failed</strong>, <strong>Licence Not Accepted</strong>, or <strong>Grace Period Expired</strong>. Each has <strong>Retry</strong> and <strong>Enter a licence key</strong>.</p>
 <ul>
-<li>Quit Node Control fully
+<li><strong>Retry</strong> runs the check again
 </li>
-<li>Open Applications → double-click the app
+<li><strong>Enter a licence key</strong> if this computer should use a different key
+</li>
+<li>Anything below 0.9.41 is refused. Install 0.9.41 or later from nodecontrol.io
 </li>
 </ul>
-<p>Or use the LaunchServices register command (Mac power-user):</p>
-<pre><code>/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain system -domain user
-</code></pre>
-<h2 id="symptom-7-license-re-check-fails-after-update">Symptom 7 — License re-check fails after update</h2>
-<p>After updating, the license check fails with &quot;Unable to verify your license.&quot;</p>
-<p>Cause: the new version may have a different license check endpoint (rare, but possible during major changes). Free&#x27;s license check now points at <code>licenses-free</code> repo, for example — a very old Free build won&#x27;t have known to check there.</p>
-<p>Fix:</p>
+<h2 id="symptom-8-app-crashes-after-the-update">Symptom 8 — App crashes after the update</h2>
 <ul>
-<li>Re-launch the app (often a one-time issue)
+<li>Read the <a href="crash-logs.html">crash log</a>
 </li>
-<li>If persistent, do a clean re-activation: enter your code again at the dialog
+<li>Send it to support with the version you came from and the version you installed
 </li>
-<li>For Pro: re-register with your email
+<li>Install the current build again from nodecontrol.io. The library is kept. There is no downgrade
 </li>
 </ul>
-<h2 id="symptom-8-app-crashes-after-update">Symptom 8 — App crashes after update</h2>
-<p>Hopefully rare. If it happens:</p>
-<ul>
-<li>Check the <a href="crash-logs.html">crash log</a> — what does the latest crash say?
-</li>
-<li>Send to support with the version you upgraded FROM and TO
-</li>
-<li>Workaround: downgrade by running the previous installer (Setup.exe / DMG) — your data is preserved
-</li>
-</ul>
-<h2 id="manual-update-flow">Manual update flow</h2>
-<p>If the in-app updater is unreliable, you can always:</p>
+<h2 id="update-required">Update Required</h2>
+<p><strong>Update Required</strong> cannot be dismissed. <strong>Download Update</strong> starts the install. <strong>Open nodecontrol.io</strong> opens the site. <strong>Quit</strong> closes the app.</p>
+<h2 id="install-by-hand">Install by hand</h2>
 <ol>
-<li>Download the latest installer from https://nodecontrol.io
+<li>Download the current installer from https://nodecontrol.io
 </li>
 <li>Install over the top (Mac: drag to Applications; Windows: run Setup.exe)
 </li>
-<li>Library, settings, credentials all preserved
+<li>The library, settings, and credentials are kept
 </li>
 </ol>
 <h2 id="checking-what-version-youre-on">Checking what version you&#x27;re on</h2>
 <ul>
 <li>Help → About
 </li>
-<li>Or: <code>Node Control</code> menu (Mac) → About Node Control
-</li>
-<li>Or: command line on Mac: <code>defaults read /Applications/Node\ Control\ Free.app/Contents/Info CFBundleShortVersionString</code>
+<li>Or, on a Mac: the <strong>Node Control</strong> menu → About Node Control
 </li>
 </ul>
-<h2 id="auto-update-channel">Auto-update channel</h2>
-<p>Settings → General → <strong>Auto-check for updates</strong>:</p>
-<ul>
-<li><strong>Daily</strong> (default): silent background check at app launch + every 24h while running
-</li>
-<li><strong>Weekly</strong>: same but every 7 days
-</li>
-<li><strong>Never</strong>: only checks when you explicitly use Help → Check for Updates...
-</li>
-</ul>
-<p>Notifications appear in the status bar; clicking opens the download dialog.</p>
+<h2 id="the-app-checks-for-updates-itself">The app checks for updates itself</h2>
+<p>There is no auto-check schedule in Settings. The app checks for updates itself. <strong>Help → Check for Updates...</strong> checks now.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
+<li><a href="../getting-started/updating.html">Updating Node Control</a>
+</li>
 <li><a href="../getting-started/installation-mac.html">Installation Mac</a>
 </li>
 <li><a href="../getting-started/installation-windows.html">Installation Windows</a>

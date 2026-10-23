@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Anthropic (Claude), OpenAI, and a local Ollama model are supported. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -9,7 +9,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | Feature | Free | Pro | AI |
 |---|:---:|:---:|:---:|
 | Device library | 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
-| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again | Paid licence | Not yet available to buy |
+| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again. One computer per licence. In-app updates from 0.9.41 | Paid licence. One computer per licence. In-app updates from 0.9.41 | Not yet available to buy |
 | FREE VERSION badge in the status bar | ✓ | — | — |
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
 | **Sidebar** | | | |
@@ -24,6 +24,8 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | GitHub push and pull | pull keeps the first 25, sorted by IP | ✓ | ✓, and a fallback repository |
 | **Engineer tasks** | | | |
 | None | ✓ | ✓ | ✓ |
+| Serial Console, beside SSH/HTTPS on the Engineer tab | ✓ | ✓ | ✓ |
+| Local Terminal, in the log header. Networking commands only. No shell | ✓ | ✓ | ✓ |
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
@@ -84,16 +86,16 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
 - Find Device across a site or a fabric, with Meraki wireless lookup
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
-- Config Push (Cisco IOS, IOS-XE, and NX-OS; other vendors untested), the File Transfer task, Packet Capture, Config from File, and config compliance
+- Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; other vendors get a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
-- Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. Anthropic (Claude), OpenAI, and a local Ollama model are supported. The anonymiser is on by default. You opt in per run. From 0.9.40, an architect review of the whole estate or one site, and chat about the whole network. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
+- Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, an OpenAI-compatible endpoint, Ollama, and Disabled. The anonymiser is on by default. You opt in per run. From 0.9.41, **Architect Review** of the whole estate or one site, and **Ask Network AI** on the Monitor tab, on Pro and the AI edition. The firewall analyser AI advisor uses the same provider. See [AI on Professional](../settings/ai-llm.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 
 ### How to get it
 
 Buy from [nodecontrol.io](https://nodecontrol.io), or email [support@nodecontrol.io](mailto:support@nodecontrol.io).
 
-Pro is licensed per user. Each licensed email can be used on as many machines as that user owns.
+Pro is one computer per licence. **Licence in use** offers **Move licence here**, confirmed with an emailed code. **Settings → General → Deactivate this computer** frees the licence. See [Your licence](../getting-started/licence.md).
 
 ## AI edition
 

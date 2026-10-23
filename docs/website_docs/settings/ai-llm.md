@@ -4,11 +4,17 @@ Bring your own AI provider. Professional uses your own API key. There is no AI s
 
 ## Settings → AI / LLM
 
-Supported:
+Supported. Pro uses your own API key:
 
-- Anthropic (Claude), with your own API key
-- OpenAI, with your own API key
-- a local Ollama model on your own machine
+- Auto-detect
+- Backend (DGX / on-prem)
+- Anthropic
+- OpenAI
+- Google Gemini
+- xAI Grok
+- an OpenAI-compatible endpoint
+- Ollama
+- Disabled
 
 ## What can go to the AI
 
@@ -37,7 +43,7 @@ An optional preview shows exactly what will be sent before you approve it. AI is
 
 ## Architect review and network-wide chat
 
-From 0.9.40, Professional can review the entire estate, or one site, like an architect on a design review. That covers single points of failure, the addressing plan, design risks, and an overall architecture view. You can also chat with the AI about the whole network.
+From 0.9.41, **Architect Review** looks at the whole estate, or one site, on Pro and the AI edition. That covers single points of failure, the addressing plan, design risks, and an overall architecture view. **Ask Network AI** is on the Monitor tab. Both arrived in 0.9.41.
 
 ## Free
 

@@ -47,6 +47,8 @@
       <a href="installation-mac.html" class="docs-nav-link active">Installing on macOS</a>
       <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
       <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="licence.html" class="docs-nav-link">Your licence</a>
+      <a href="updating.html" class="docs-nav-link">Updating</a>
       <a href="navigation.html" class="docs-nav-link">Where things are</a>
       <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
       <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
@@ -157,12 +159,14 @@
 <h2 id="download">Download</h2>
 <p>Go to <a href="https://nodecontrol.io">nodecontrol.io</a> and choose your tier:</p>
 <ul>
-<li><strong>Free</strong> — sign up with your email to receive a download link and activation code
+<li><strong>Free</strong> — sign up with your email to receive a download link and an <code>NC-XXXX-XXXX</code> activation code
 </li>
-<li><strong>Pro</strong> / <strong>AI</strong> — log in to your customer portal to download
+<li><strong>Pro</strong> — the confirmation email after purchase contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself
+</li>
+<li><strong>AI</strong> — there is no download on the site. The edition is not yet available to buy
 </li>
 </ul>
-<p>The download is a <code>.dmg</code> for the edition you chose (Free, Pro, or AI). The site always hands you the current build.</p>
+<p>The file is a <code>.dmg</code>. The installer file is downloaded from GitHub.</p>
 <h2 id="install">Install</h2>
 <ol>
 <li>Double-click the downloaded <code>.dmg</code>
@@ -176,7 +180,7 @@
 <li>Open <strong>Applications</strong> in Finder → double-click <strong>Node Control Free</strong> (or Pro)
 </li>
 </ol>
-<p>That&#x27;s it — the app launches. On first run you&#x27;ll be asked to <a href="first-launch-activation.html">activate</a> (Free) or <a href="first-launch-activation.html">register</a> (Pro / AI).</p>
+<p>That&#x27;s it — the app launches. On first run you <a href="first-launch-activation.html">activate</a>. Free uses its activation code. Pro uses the NCP key.</p>
 <h2 id="apple-cannot-check-it-for-malicious-software-warning">&quot;Apple cannot check it for malicious software&quot; warning</h2>
 <p>You should <em>not</em> see this dialog — Node Control is signed with a Developer ID certificate and notarized by Apple. If you do see it:</p>
 <ul>
@@ -202,8 +206,10 @@
 </ul>
 <p><strong>Uninstalling</strong>: drag the app from Applications to Trash. To fully remove your data, also delete <code>~/Library/Application Support/netOps/</code> and clear any Node Control entries from Keychain Access.</p>
 <h2 id="updating">Updating</h2>
-<p>Use <strong>Help → Check for Updates...</strong> inside the app. On a Mac, <strong>Settings...</strong> lives in the application menu. Qt puts it there. There is no separate shortcut. Node Control will tell you when a newer version is available and offer to download the updated DMG.</p>
-<p>You can also manually re-download from <a href="https://nodecontrol.io">nodecontrol.io</a> — the new version installs over the old one with no data loss.</p>
+<p>From 0.9.41 the app updates itself. <strong>Help → Check for Updates...</strong> asks the licence server, which never offers a downgrade. The app checks the checksum and the code signature (<code>codesign</code>, <code>spctl</code>, and the Team ID) before <strong>Install &amp; Restart</strong>. Downloads resume. macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
+<p><strong>Update Required</strong> cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
+<p>0.9.40 and earlier cannot self-update. Install the current build by hand from <a href="https://nodecontrol.io">nodecontrol.io</a>. Anything below 0.9.41 is refused. The library is kept.</p>
+<p>See <a href="updating.html">Updating Node Control</a>.</p>
 <h2 id="crash-logs">Crash logs</h2>
 <p>If Node Control crashes, a log file is written to:</p>
 <pre><code>~/NodeControl_crash.log

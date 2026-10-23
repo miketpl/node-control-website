@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>document.documentElement.classList.add("docs-js")</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your licence and moving between computers — NodeControl Docs</title>
+    <meta name="description" content="One computer per NCP key or Free code, how to move it, and what the launch screens mean.">
+    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
+    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/docs.css?v=20261017">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../../index.html#features">Features</a></li>
+                <li><a href="../../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../../index.html#download">Download</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../docs/" class="active">Docs</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+    <button type="button" class="docs-menu-toggle" id="docsMenuToggle" aria-expanded="false" aria-controls="docsSidebar">Docs menu</button>
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">latest</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="licence.html" class="docs-nav-link active">Your licence</a>
+      <a href="updating.html" class="docs-nav-link">Updating</a>
+      <a href="navigation.html" class="docs-nav-link">Where things are</a>
+      <a href="adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../settings/scripts.html" class="docs-nav-link">Custom Scripts</a>
+      <a href="../settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../settings/ai.html" class="docs-nav-link">AI provider</a>
+      <a href="../settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+</nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/getting-started/">Getting Started</a> &rsaquo; Your licence
+                </div>
+                <h1 id="your-licence-and-moving-between-computers">Your licence and moving between computers</h1>
+<p>Pro activates with the NCP licence key alone. Free activates with its activation code. Both are checked at api.nodecontrol.io. There is no GitHub licence check, and there is no email allow-list.</p>
+<h2 id="one-computer-per-licence">One computer per licence</h2>
+<p>One licence runs on one computer. A second computer needs <strong>Move licence here</strong>, or <strong>Deactivate this computer</strong> on the computer that already has it.</p>
+<p>The server allows two moves in 30 days. The move code expires after 15 minutes.</p>
+<h2 id="activating-pro-with-your-ncp-key">Activating Pro with your NCP key</h2>
+<p>The confirmation email after purchase contains the NCP key.</p>
+<ol>
+<li>Install Pro. The download links are in that email, and on the checkout success page. See <a href="installation-mac.html">Installing on macOS</a> or <a href="installation-windows.html">Installing on Windows</a>
+</li>
+<li>Enter the NCP key
+</li>
+<li>Click <strong>Activate</strong>
+</li>
+<li>The app checks the key at api.nodecontrol.io
+</li>
+</ol>
+<h2 id="activating-free-with-your-code">Activating Free with your code</h2>
+<ol>
+<li>Request Free at <a href="https://nodecontrol.io">nodecontrol.io</a> and verify the 6-digit email code
+</li>
+<li>Copy the <code>NC-XXXX-XXXX</code> activation code
+</li>
+<li>On first launch, paste it into <strong>Activation code</strong>
+</li>
+<li>Click <strong>Activate</strong>
+</li>
+</ol>
+<p>The code is checked at api.nodecontrol.io.</p>
+<h2 id="upgrading-a-0-9-40-pro-install">Upgrading a 0.9.40 Pro install</h2>
+<p>0.9.41 is a required release. When the dialog opens on a 0.9.40 Pro install, a 6-digit code is emailed to the registration address. Enter that code. After 0.9.41 is installed, the app updates itself. See <a href="updating.html">Updating Node Control</a>.</p>
+<h2 id="lost-your-key-email-me-a-code">Lost your key: Email me a code</h2>
+<p><strong>Email me a code</strong> sends a 6-digit code to the registration address. <strong>Confirm code</strong> returns the NCP key. The same key is sent.</p>
+<h2 id="licence-in-use-move-licence-here">Licence in use: Move licence here</h2>
+<p>If the key is already active on another computer, the <strong>Licence in use</strong> dialog offers <strong>Move licence here</strong>.</p>
+<ol>
+<li>Click <strong>Move licence here</strong>
+</li>
+<li>Enter the code from the email
+</li>
+<li>This computer becomes the one active computer for that licence
+</li>
+</ol>
+<h2 id="deactivate-this-computer">Deactivate this computer</h2>
+<p><strong>Settings → General → Deactivate this computer</strong> frees the licence on this computer. The key can then be activated on another computer, still within the two moves in 30 days.</p>
+<h2 id="working-offline-the-7-day-grace">Working offline: the 7-day grace</h2>
+<p>A successful check is good for 7 days offline. While those days remain, <strong>Offline Mode</strong> offers <strong>Continue</strong>. When the 7 days run out, the app stays on <strong>Grace Period Expired</strong> until it can check again.</p>
+<h2 id="what-the-launch-screens-mean">What the launch screens mean</h2>
+<p>Each of these has <strong>Retry</strong> and <strong>Enter a licence key</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Screen</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Verifying Licence</strong></td>
+<td>The app is checking the licence at api.nodecontrol.io</td>
+</tr>
+<tr>
+<td><strong>Offline Mode</strong></td>
+<td>The check could not run, and grace remains. <strong>Continue</strong> opens the app</td>
+</tr>
+<tr>
+<td><strong>Licence Not Accepted</strong></td>
+<td>The key or the Free code was refused</td>
+</tr>
+<tr>
+<td><strong>Grace Period Expired</strong></td>
+<td>The 7-day offline grace has run out. The app stays here until a check succeeds</td>
+</tr>
+<tr>
+<td><strong>Licence Check Failed</strong></td>
+<td>The check failed. <strong>Retry</strong> runs it again</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="first-launch-activation.html">First launch and activation</a>
+</li>
+<li><a href="updating.html">Updating Node Control</a>
+</li>
+<li><a href="../tiers/upgrading.html">Upgrading from Free to Pro</a>
+</li>
+</ul>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer footer-social-bar">
+        <div class="container">
+            <div class="footer-bottom">
+                <nav class="footer-social" aria-label="Node Control on social media">
+                    <a href="https://x.com/node_control_" target="_blank" rel="noopener" aria-label="Node Control on X">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/company/node-control/" target="_blank" rel="noopener" aria-label="Node Control on LinkedIn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Node_Control" target="_blank" rel="noopener" aria-label="Node Control on YouTube">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+    <script src="../../js/docs.js?v=20261017"></script>
+</body>
+</html>

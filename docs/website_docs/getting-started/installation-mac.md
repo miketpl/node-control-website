@@ -12,10 +12,11 @@ Node Control is distributed as a notarized macOS application bundle. Installatio
 
 Go to [nodecontrol.io](https://nodecontrol.io) and choose your tier:
 
-- **Free** — sign up with your email to receive a download link and activation code
-- **Pro** / **AI** — log in to your customer portal to download
+- **Free** — sign up with your email to receive a download link and an `NC-XXXX-XXXX` activation code
+- **Pro** — the confirmation email after purchase contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself
+- **AI** — there is no download on the site. The edition is not yet available to buy
 
-The download is a `.dmg` for the edition you chose (Free, Pro, or AI). The site always hands you the current build.
+The file is a `.dmg`. The installer file is downloaded from GitHub.
 
 ## Install
 
@@ -25,7 +26,7 @@ The download is a `.dmg` for the edition you chose (Free, Pro, or AI). The site 
 4. Eject the DMG (right-click → Eject, or drag to Trash)
 5. Open **Applications** in Finder → double-click **Node Control Free** (or Pro)
 
-That's it — the app launches. On first run you'll be asked to [activate](first-launch-activation.md) (Free) or [register](first-launch-activation.md) (Pro / AI).
+That's it — the app launches. On first run you [activate](first-launch-activation.md). Free uses its activation code. Pro uses the NCP key.
 
 ## "Apple cannot check it for malicious software" warning
 
@@ -53,9 +54,13 @@ This includes:
 
 ## Updating
 
-Use **Help → Check for Updates...** inside the app. On a Mac, **Settings...** lives in the application menu. Qt puts it there. There is no separate shortcut. Node Control will tell you when a newer version is available and offer to download the updated DMG.
+From 0.9.41 the app updates itself. **Help → Check for Updates...** asks the licence server, which never offers a downgrade. The app checks the checksum and the code signature (`codesign`, `spctl`, and the Team ID) before **Install & Restart**. Downloads resume. macOS keeps `Node Control Pro.previous.app` until the new version starts.
 
-You can also manually re-download from [nodecontrol.io](https://nodecontrol.io) — the new version installs over the old one with no data loss.
+**Update Required** cannot be dismissed. The buttons are **Download Update**, **Open nodecontrol.io**, and **Quit**.
+
+0.9.40 and earlier cannot self-update. Install the current build by hand from [nodecontrol.io](https://nodecontrol.io). Anything below 0.9.41 is refused. The library is kept.
+
+See [Updating Node Control](updating.md).
 
 ## Crash logs
 
