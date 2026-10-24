@@ -37,7 +37,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -74,7 +74,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -102,6 +101,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -208,19 +208,19 @@
 <td>Ask AI</td>
 <td>Monitor, per device</td>
 <td>You open it</td>
-<td>Pro and AI, from 0.9.41</td>
+<td>Pro and AI</td>
 </tr>
 <tr>
 <td>Ask Network AI</td>
 <td>Monitor. The dialog is <strong>Ask AI — Network</strong></td>
 <td>You open it</td>
-<td>Pro and AI, from 0.9.41</td>
+<td>Pro and AI</td>
 </tr>
 <tr>
 <td>Architect Review</td>
 <td>Monitor, whole estate or one site</td>
 <td>You open it</td>
-<td>Pro and AI, from 0.9.41</td>
+<td>Pro and AI</td>
 </tr>
 <tr>
 <td>Findings</td>
@@ -262,7 +262,7 @@
 <td>Background Learning</td>
 <td>Settings → AI / LLM</td>
 <td>Off</td>
-<td>Pro and AI. The setting is visible on Free. Nothing on Free uses it</td>
+<td>Pro and AI. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it</td>
 </tr>
 </tbody>
 </table>
@@ -279,11 +279,11 @@
 <p>On every poll, alerted devices are reviewed. The narrative appears in the alert row tooltip and fills the bottom <strong>Findings</strong> tab. The columns are When, Device, Category, Sev, Headline, and Narrative. <strong>Enable AI analysis by default across all features</strong> is off on a fresh install, so the alert narratives and the analyst review do not run until you turn it on. There is no separate switch. It never runs on Free.</p>
 <p>See <a href="../tasks/monitor.html">Monitor</a>.</p>
 <h2 id="background-learning">Background Learning</h2>
-<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log.</p>
+<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log.</p>
 <h2 id="how-answers-are-written">How answers are written</h2>
 <p>Answers are written as a senior network engineer at a large enterprise.</p>
 <h2 id="free-preview-only">Free: preview only</h2>
-<p>On Free, AI is a preview. The payload dialog opens so you can read what would have been sent. Nothing is sent. Findings never runs on Free. Configuring a provider, and sending, is the upgrade to Professional.</p>
+<p>On Free, AI is a preview. The payload dialog opens so you can read what would have been sent. Nothing is sent. Findings never runs on Free. The Settings → AI / LLM tab is not shown. Configuring a provider, and sending, is the upgrade to Professional.</p>
 <h2 id="what-stays-on-the-ai-edition">What stays on the AI edition</h2>
 <p><strong>AI Chat</strong> and the <strong>AI Dashboard</strong> are the AI edition only. The nine specialist agents, the Update tab, and <strong>Vuln Plan</strong> stay on that edition too. The AI edition is not yet available to buy. The site has no price and no download for it.</p>
 <h2 id="next-steps">Next steps</h2>

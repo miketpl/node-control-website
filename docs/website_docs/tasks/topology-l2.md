@@ -4,7 +4,7 @@
 
 The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.
 
-On Arista EOS the map is LLDP-only. The L2 Topology Builder does not use the MAC table on EOS, and EOS does not answer CDP.
+On Arista EOS the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers, for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table.
 
 ## Open the task
 
@@ -32,9 +32,15 @@ An optional AI summary of the map (structure, single points of failure, failed d
 5. Classifies each device's role (access / distribution / wan / firewall)
 6. Renders the result as an HTML file
 
-On Arista EOS the neighbour read is LLDP only. The builder does not run the MAC-table command, and it does not run CDP.
+On Arista EOS the neighbour read uses the EOS parsers for LLDP and CDP. The builder does not run the MAC-table command.
 
 Typical timing: 30–60 seconds per switch (parallelised). A 30-switch site map takes ~3–5 minutes.
+
+## One cable, one link
+
+A cable reported from both ends, with different port names, is drawn once. The link count in the header matches the number of cables.
+
+A link that would pass straight through another switch curves around it.
 
 ## Reading the map
 
@@ -92,9 +98,9 @@ L2 topology works on every vendor Node Control supports:
 
 - Cisco IOS, IOS-XE, NX-OS, IOS-XR
 - HP ProCurve (with the recent classifier fixes — see [HP ProCurve notes](../vendors/hp-procurve.md))
-- Aruba CX, Aruba OS-Switch
+- Aruba AOS-CX. The builder reads the LLDP neighbour table, then one per-port query per neighbour for its management address. MC-LAG legs to a VSX pair, the ISL, and LAG members are drawn and labelled like Cisco port-channel members. See [Aruba AOS-CX](../vendors/aruba-aos-cx.md). Aruba OS-Switch is supported as well
 - Juniper Junos
-- Arista EOS. Maps are LLDP-only. The builder does not use the MAC table, and EOS does not answer CDP
+- Arista EOS. The builder uses EOS parsers, not Cisco IOS parsers, for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table
 - Dell OS6, OS10
 - Extreme EXOS, VSP
 

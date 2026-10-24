@@ -37,7 +37,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -74,7 +74,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -102,6 +101,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -152,6 +152,7 @@
 <p>On <strong>Pro</strong> and the <strong>AI</strong> edition. Free does not run this report.</p>
 </blockquote>
 <p>This report answers a plain question: which hardware and which software in scope are at end of sale or end of life, and when.</p>
+<p>On AOS-CX, Asset Lifecycle reads model, serial, version, and uptime. On Arista EOS it reads the EOS inventory and the EOS version.</p>
 <h2 id="where-the-dates-come-from">Where the dates come from</h2>
 <p><strong>Catalyst Center</strong> is the authoritative source for devices it manages. A completed Catalyst Center answer is never overwritten by another source. A failed Catalyst Center scan is not the same thing as &quot;this device has no end-of-life date&quot;. An empty answer from a failed scan does not wipe the other sources either.</p>
 <p>If Catalyst Center is unreachable (VPN down, DNS failure), the log says so in one line. You do not get a traceback. A refused login — wrong password, or a password that has expired — is a plain message that names the account.</p>

@@ -37,7 +37,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -74,7 +74,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -102,6 +101,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -165,7 +165,7 @@
 </ul>
 <h2 id="engineer">Engineer</h2>
 <p>Engineer is the library and the place tasks run from.</p>
-<p><strong>Console</strong> is on the Engineer tab, beside <strong>SSH</strong> and <strong>HTTPS</strong>. It needs a USB serial cable or adapter. See <a href="../tasks/serial-console.html">Serial console</a>. <strong>Terminal</strong> is a button on the log header. It is a local network terminal, with no shell. See <a href="../tasks/local-terminal.html">Local network terminal</a>.</p>
+<p><strong>Console</strong> is on the Engineer tab, beside <strong>SSH</strong> and <strong>HTTPS</strong>. It needs a USB serial cable or adapter. See <a href="../tasks/serial-console.html">Serial console</a>. <strong>Terminal</strong> is a button on the Engineer tab, on the log header. It is a local network terminal, with no shell. See <a href="../tasks/local-terminal.html">Local network terminal</a>.</p>
 <p>The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in this order:</p>
 <ol>
 <li><strong>None</strong>
@@ -203,8 +203,6 @@
 <li><strong>Discover Variables</strong>
 </li>
 <li><strong>Find Device</strong>
-</li>
-<li><strong>Change ISE Password</strong>
 </li>
 </ol>
 <p><strong>Config Push Script</strong> appears only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. A configured <a href="../settings/scripts.html">custom script</a> appears as <code>Script: &lt;name&gt;</code>. On Free that task is greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>, and <strong>Run</strong> refuses. Safe Mode hides it on every tier.</p>

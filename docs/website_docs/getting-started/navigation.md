@@ -19,7 +19,7 @@ Home is the front of the app.
 
 Engineer is the library and the place tasks run from.
 
-**Console** is on the Engineer tab, beside **SSH** and **HTTPS**. It needs a USB serial cable or adapter. See [Serial console](../tasks/serial-console.md). **Terminal** is a button on the log header. It is a local network terminal, with no shell. See [Local network terminal](../tasks/local-terminal.md).
+**Console** is on the Engineer tab, beside **SSH** and **HTTPS**. It needs a USB serial cable or adapter. See [Serial console](../tasks/serial-console.md). **Terminal** is a button on the Engineer tab, on the log header. It is a local network terminal, with no shell. See [Local network terminal](../tasks/local-terminal.md).
 
 The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in this order:
 
@@ -41,7 +41,6 @@ The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in
 16. **Verify Device Types**
 17. **Discover Variables**
 18. **Find Device**
-19. **Change ISE Password**
 
 **Config Push Script** appears only when **Settings → Paths → Config Push Script** points at an existing file. A configured [custom script](../settings/scripts.md) appears as `Script: <name>`. On Free that task is greyed, with the tooltip **Upgrade to Pro to unlock this feature**, and **Run** refuses. Safe Mode hides it on every tier.
 

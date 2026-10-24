@@ -11,7 +11,7 @@ Juniper switches, routers, and SRX firewalls are supported via the standard Juno
 - L2 topology with LLDP (Juniper doesn't do CDP)
 - L3 topology with OSPF + BGP
 - Port Utilisation
-- Bandwidth
+- Bandwidth and Path Bandwidth. Interfaces and routes are read with Junos parsing
 - VLAN Port Finder
 - Find Device (full BFS walk + port disable)
 - Inventory (chassis, modules, virtual chassis members)

@@ -139,7 +139,7 @@ The audit log doesn't contain credentials — only the events.
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is under Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](data-and-privacy.md).
+**Allow the backend and background jobs to log into devices with my credentials** is under Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](data-and-privacy.md).
 
 ## Next steps
 

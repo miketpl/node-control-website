@@ -1,6 +1,6 @@
 # Local network terminal
 
-The **Terminal** button is on the log header. It is on Free and Pro. It stays visible in Safe Mode.
+The **Terminal** button is on the Engineer tab, on the log header. It is on Free and Pro. It stays visible in Safe Mode.
 
 ## What it is (no shell)
 

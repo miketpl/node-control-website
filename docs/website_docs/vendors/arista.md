@@ -8,16 +8,18 @@ Arista switches (7050, 7150, 7280, 7320, 7500-series and cloud-grade boxes) are 
 
 ## What works
 
-Most things work through the EOS CLI. EOS reads LLDP and the MAC table. It does not read CDP.
+Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9.42 the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers.
 
-- L2 topology maps are LLDP-only. The L2 Topology Builder does not use the MAC table. The native L2 and L3 reads also include STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways
+- L2 topology uses those EOS parsers for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table
 - The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report
 - Find Device's per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP
 - Port Utilisation
-- Bandwidth
+- Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family
 - VLAN Port Finder
 - Find Device
-- Inventory
+- Inventory reads the model, the serials, and the EOS version from EOS output
+- On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed
+- On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. Site Subnets has its L3 command
 - Monitor
 
 ## Detection

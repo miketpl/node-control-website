@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -192,7 +191,7 @@
 <td>✓ First-class</td>
 </tr>
 <tr>
-<td><a href="aruba.html">Aruba CX</a></td>
+<td><a href="aruba-aos-cx.html">Aruba AOS-CX</a></td>
 <td><code>aruba_os</code></td>
 <td>✓</td>
 </tr>
@@ -320,6 +319,10 @@
 <li>For each device, on each command run, the result is recorded as "succeeded" or "failed"</li>
 <li>Next time the same capability is needed on that device, the proven-working variant is tried first</li>
 <li>Known-failed variants are skipped</li>
+<li>A command that answers, but cannot be read, is logged as &quot;answered but parsed to no entries&quot;. It is not stored as the preferred form. The next known form is tried</li>
+<li>A blank answer does not mark a valid command as failed</li>
+<li>The first form a device answers stays its preferred form. It does not flip between runs</li>
+<li>When a vendor parser reads nothing, a generic table reader and a key/value reader are used</li>
 </ul>
 <p>This auto-tuning means a switch running an older firmware that doesn't understand <code>show mac-address</code> (modern Cisco) but does understand <code>show mac address</code> (older Cisco) gets the right command without manual configuration.</p>
 <p>See <a href="../settings/custom-commands.html">Custom command catalogs</a> for how to add or override commands.</p>
@@ -374,7 +377,8 @@
 <li><a href="cisco.html">Cisco IOS / IOS-XE / NX-OS / ASA</a></li>
 <li><a href="palo-alto.html">Palo Alto PAN-OS</a></li>
 <li><a href="hp-procurve.html">HP ProCurve</a></li>
-<li><a href="aruba.html">Aruba (CX, OS-Switch)</a></li>
+<li><a href="aruba-aos-cx.html">Aruba AOS-CX</a></li>
+<li><a href="aruba.html">Aruba OS-Switch</a></li>
 <li><a href="juniper.html">Juniper Junos</a></li>
 <li><a href="arista.html">Arista EOS</a></li>
 <li><a href="dell.html">Dell OS6 / OS10</a></li>

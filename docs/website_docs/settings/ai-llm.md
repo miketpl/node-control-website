@@ -59,11 +59,11 @@ On every poll, alerted devices are reviewed. The narrative appears in the alert 
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
+**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
 
 ## Free
 
-On Free, AI is preview only. You can see the anonymised payload. Nothing is ever sent. Configuring a provider, and sending, is the upgrade to Professional.
+On Free, AI is preview only. You can see the anonymised payload. Nothing is ever sent. The Settings → AI / LLM tab is not shown. Configuring a provider, and sending, is the upgrade to Professional.
 
 ## Node Control AI edition
 

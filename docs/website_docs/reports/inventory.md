@@ -55,9 +55,9 @@ Different vendors expose different inventory data:
 | Cisco IOS / IOS-XE | Full inventory via `show inventory` |
 | Cisco NX-OS | `show inventory` plus per-line-card detail |
 | HP ProCurve | `show system` for chassis, `show flash` for OS version |
-| Aruba CX | `show system`, `show version`, `show software` |
+| Aruba AOS-CX | Model, serial, version, and uptime |
 | Juniper Junos | `show version`, `show chassis hardware` for stack/cluster detail |
-| Arista EOS | `show version`, `show inventory` |
+| Arista EOS | Model, serials, and the EOS version, from EOS output |
 | Dell OS6/OS10 | `show system`, `show version` |
 | Extreme EXOS | `show system`, `show version` |
 | Palo Alto PAN-OS | `show system info` |

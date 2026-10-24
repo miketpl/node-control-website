@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -231,11 +231,11 @@
 <tbody>
 <tr>
 <td>Cisco IOS / IOS-XE / NX-OS</td>
-<td>Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. NX-OS routes are read correctly</td>
+<td>Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. Point-to-point OSPF neighbours are handled. When the VRF field is blank, the device&#x27;s own VRFs from <code>show vrf</code> are walked. NX-OS route tables with long via lines are read correctly</td>
 </tr>
 <tr>
 <td>Palo Alto PAN-OS</td>
-<td>Walks every Logical Router via <code>show routing protocol</code> commands, unions across them. Several recent fixes in 0.9.x to capture all peers correctly</td>
+<td>Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall&#x27;s routers are listed first and each router&#x27;s FIB is read. Route tables are kept per router, one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error</td>
 </tr>
 <tr>
 <td>Juniper</td>
@@ -243,11 +243,15 @@
 </tr>
 <tr>
 <td>Arista EOS</td>
-<td>Routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways. A VARP gateway resolves by subnet ownership</td>
+<td>Routes, interfaces, and BGP peers are read as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed. A VARP gateway resolves by subnet ownership</td>
 </tr>
 <tr>
-<td>HP ProCurve / Aruba CX</td>
+<td>HP ProCurve</td>
 <td>OSPF + BGP if licensed and configured</td>
+</tr>
+<tr>
+<td>Aruba AOS-CX</td>
+<td>An access switch whose only default route is in the management VRF does not use that route as its gateway. Its VLANs resolve over LLDP to the nearest switch with an SVI for them. A VSX pair answers with its active-gateway virtual address, drawn as one link to each member. OSPF neighbours show their area</td>
 </tr>
 </tbody>
 </table>

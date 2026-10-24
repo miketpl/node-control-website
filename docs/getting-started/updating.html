@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Updating Node Control — NodeControl Docs</title>
-    <meta name="description" content="How Node Control updates from 0.9.41, what is checked before install, and what to do on an older build.">
+    <meta name="description" content="How Node Control updates. The current release is 0.9.42. The minimum version is 0.9.41.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -150,11 +150,11 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/getting-started/">Getting Started</a> &rsaquo; Updating
                 </div>
                 <h1 id="updating-node-control">Updating Node Control</h1>
-<p>0.9.41 is a required release. It is the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
+<p>The current release is 0.9.42. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
 <h2 id="updating-from-0-9-41">Updating from 0.9.41</h2>
 <p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.</p>
 <h2 id="help-check-for-updates">Help &gt; Check for Updates...</h2>
-<p>0.9.41 checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again.</p>
+<p>0.9.42 checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again.</p>
 <p>If the server says it is busy or paused, the app backs off for 24 hours by default.</p>
 <p>The start-up check stays silent if it fails. When it finds an update, it asks <strong>Update Available</strong>.</p>
 <p><strong>Help → Check for Updates...</strong> shows one of these:</p>
@@ -165,7 +165,7 @@
 </li>
 <li><strong>Download failed.</strong>
 </li>
-<li><strong>You&#x27;re running the latest version (v0.9.41).</strong>
+<li><strong>You&#x27;re running the latest version (v0.9.42).</strong>
 </li>
 <li><strong>Update available!</strong>
 </li>

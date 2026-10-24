@@ -31,6 +31,10 @@ For each device in scope:
 4. Compare detected type against the type stored in the library
 5. Log: matched / mismatched / unreachable / not enough info
 
+## Command catalog
+
+On Pro and the AI edition. Verify Device Types identifies Cisco, Palo Alto, and Dell OS10 through the same command catalog and the same learning as every other task. A command the device refuses moves to the back of that device's list.
+
 ## Results
 
 A summary dialog appears when the sweep completes:

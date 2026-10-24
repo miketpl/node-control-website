@@ -41,16 +41,16 @@ The Monitor alert narratives and the analyst review (the **Findings** tab) need 
 | Feature | Where | Default | Edition |
 |---|---|---|---|
 | End-of-task AI Summary | Engineer page checkbox | Starts from **Enable AI analysis by default across all features**. Off on a fresh install | Pro and AI. Free opens a preview and sends nothing |
-| Ask AI | Monitor, per device | You open it | Pro and AI, from 0.9.41 |
-| Ask Network AI | Monitor. The dialog is **Ask AI — Network** | You open it | Pro and AI, from 0.9.41 |
-| Architect Review | Monitor, whole estate or one site | You open it | Pro and AI, from 0.9.41 |
+| Ask AI | Monitor, per device | You open it | Pro and AI |
+| Ask Network AI | Monitor. The dialog is **Ask AI — Network** | You open it | Pro and AI |
+| Architect Review | Monitor, whole estate or one site | You open it | Pro and AI |
 | Findings | Every Monitor poll. Alert row tooltip and the Findings tab | Off until you turn **Enable AI analysis by default across all features** on. No separate switch | Pro and AI. It never runs on Free |
 | AI Summary | Reports tab | Starts from the same switch. Off on a fresh install | Pro and AI |
 | Preview before sending | Reports tab | Starts unticked. Each time the tab loads it takes its starting state from **Show preview before sending data to AI** (off by default). Enabled only while **AI Summary** is ticked. You can change it for that run | Pro and AI |
 | AI headline on emailed assessment | Only when the Lifecycle report is emailed | Off | Pro and AI |
 | AI review | Firewall Analyser, Assess row | Ticked | Pro and AI. Free has no Firewall Analyser tab |
 | AI advisory | Firewall Analyser | Shown with **AI review** | Pro and AI. Free has no Firewall Analyser tab |
-| Background Learning | Settings → AI / LLM | Off | Pro and AI. The setting is visible on Free. Nothing on Free uses it |
+| Background Learning | Settings → AI / LLM | Off | Pro and AI. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it |
 
 ## Monitor: Ask AI, Ask Network AI, Architect Review, Findings
 
@@ -66,7 +66,7 @@ See [Monitor](../tasks/monitor.md).
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
+**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log.
 
 ## How answers are written
 
@@ -74,7 +74,7 @@ Answers are written as a senior network engineer at a large enterprise.
 
 ## Free: preview only
 
-On Free, AI is a preview. The payload dialog opens so you can read what would have been sent. Nothing is sent. Findings never runs on Free. Configuring a provider, and sending, is the upgrade to Professional.
+On Free, AI is a preview. The payload dialog opens so you can read what would have been sent. Nothing is sent. Findings never runs on Free. The Settings → AI / LLM tab is not shown. Configuring a provider, and sending, is the upgrade to Professional.
 
 ## What stays on the AI edition
 

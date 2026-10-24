@@ -50,7 +50,9 @@ Reports knows which command to run on each vendor:
 | Juniper | `show vlans extensive` |
 | Arista | Cisco-compatible |
 
-For vendors without native "show VLAN X interfaces" support, Node Control walks every interface and filters client-side. Slower but works.
+For vendors without a native per-VLAN interface command, Node Control walks every interface and filters on the laptop.
+
+On AOS-CX the report fills description, port status, Last Active, and the switch uptime. A LAG the switch calls a trunk is listed as a trunk.
 
 ## Use cases
 

@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="aruba.html" class="docs-nav-link active">Aruba</a>
+      <a href="aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -150,7 +150,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Aruba (CX, OS-Switch)
                 </div>
                 <h1 id="aruba-cx-os-switch">Aruba (CX, OS-Switch)</h1>
-<p>Aruba sells two distinct switch operating systems. Same brand, completely different CLIs — Node Control treats them separately.</p>
+<p>Aruba sells two switch operating systems. Same brand, different CLIs. Node Control treats them separately.</p>
 <h2 id="two-aruba-oses">Two Aruba OSes</h2>
 <table>
 <thead>
@@ -162,49 +162,19 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>Aruba CX</strong></td>
-<td>Modern OS for CX 6000 / 8000 / 10000-series — built ground-up by Aruba post-HP merger. JSON-aware CLI.</td>
+<td><strong>Aruba AOS-CX</strong></td>
+<td>Modern OS for the CX 6000, 8000, and 10000 series. Its own platform from 0.9.42.</td>
 <td><code>aruba_os</code></td>
 </tr>
 <tr>
 <td><strong>Aruba OS-Switch</strong></td>
-<td>Legacy OS from the HPE ProCurve line, rebranded after Aruba acquisition. Includes 2530, 2920, 2930F/M, 5400zl.</td>
+<td>Legacy OS from the HPE ProCurve line. Includes 2530, 2920, 2930F/M, and 5400zl.</td>
 <td><code>aruba_osswitch</code> (alias <code>hp_procurve_cli</code>)</td>
 </tr>
 </tbody>
 </table>
-<p>For OS-Switch specifically, see the <a href="hp-procurve.html">HP ProCurve page</a>. The same parsers and notes apply.</p>
-<h2 id="aruba-cx-what-works">Aruba CX — what works</h2>
-<ul>
-<li>Detection via SSH banner sniff + post-connect probe
-</li>
-<li>L2 topology (CDP, LLDP, and the MAC table). AOS-CX LLDP is supported
-</li>
-<li>L3 topology (OSPF + BGP + VRF)
-</li>
-<li>Port Utilisation
-</li>
-<li>Bandwidth
-</li>
-<li>VLAN Port Finder
-</li>
-<li>Find Device (full BFS walk + port shut/no-shut)
-</li>
-<li>Inventory
-</li>
-<li>Monitor
-</li>
-</ul>
-<h2 id="detection">Detection</h2>
-<p>Aruba CX has clean detection — its <code>show version</code> output identifies the platform unambiguously. SSH banners often include <code>SSH-2.0-ARUBA</code> or <code>SSH-2.0-OpenSSH_for_Aruba</code>.</p>
-<h2 id="vsf-virtual-switching-framework-stacks">VSF (Virtual Switching Framework) stacks</h2>
-<p>Aruba CX supports VSF stacking. Members are inventoried separately and tagged with their VSF member ID.</p>
-<h2 id="vsx-virtual-switching-extension">VSX (Virtual Switching Extension)</h2>
-<p>VSX-paired CX switches appear as two separate devices in topology. The peer relationship is detected via LLDP and rendered as a dedicated VSX edge in L2 topology.</p>
-<h2 id="configuration-model">Configuration model</h2>
-<p>Aruba CX uses a structured CLI with explicit <code>configure terminal</code> / <code>exit</code> boundaries. The write path I can confirm here is <a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device port actions</a>. Config compliance remediation is Cisco IOS, IOS-XE, and NX-OS only.</p>
-<h2 id="rest-api">REST API</h2>
-<p>Aruba CX exposes a comprehensive REST API. Node Control currently uses SSH only; REST API integration is on the roadmap if there&#x27;s customer demand.</p>
+<p>AOS-CX is documented on its own page: <a href="aruba-aos-cx.html">Aruba AOS-CX</a>.</p>
+<p>For OS-Switch, see <a href="hp-procurve.html">HP ProCurve</a>. The same parsers and notes apply.</p>
 <h2 id="common-gotchas">Common gotchas</h2>
 <table>
 <thead>
@@ -216,17 +186,17 @@
 </thead>
 <tbody>
 <tr>
-<td>Aruba CX detected as Cisco</td>
-<td>Both share a similar prompt style</td>
-<td>Updated detection in 0.9.x catches this via banner sniff</td>
+<td>AOS-CX detected as ProCurve or Cisco</td>
+<td>An older build used the banner, or the banner had no vendor name</td>
+<td>0.9.42 reads <code>show version</code> and <code>show system</code> and records the device as AOS-CX</td>
 </tr>
 <tr>
-<td>VLAN-based reports show different output between CX and OS-Switch</td>
+<td>VLAN reports differ between CX and OS-Switch</td>
 <td>Different VLAN models</td>
-<td>Expected — they ARE different OSes</td>
+<td>Expected. They are different operating systems</td>
 </tr>
 <tr>
-<td>Looking for an OS-Switch parser by <code>aruba_os</code> driver name</td>
+<td>An OS-Switch parser looked up as <code>aruba_os</code></td>
 <td>Wrong driver</td>
 <td>Use <code>aruba_osswitch</code> (or <code>hp_procurve_cli</code>) for OS-Switch, not <code>aruba_os</code></td>
 </tr>
@@ -235,21 +205,24 @@
 <h2 id="wireless-aruba-iap-aruba-controller">Wireless (Aruba IAP, Aruba Controller)</h2>
 <p>Wireless products (IAP, ArubaOS-controlled APs, Mobility Controllers) are partially supported:</p>
 <ul>
-<li><strong>Controllers (Mobility Master / Mobility Controller)</strong>: SSH inventory works; topology / reports limited
+<li><strong>Controllers (Mobility Master / Mobility Controller)</strong>: SSH inventory works. Topology and reports are limited
 </li>
-<li><strong>Aruba IAP</strong>: managed via cluster — inventory works through the master IAP&#x27;s CLI
+<li><strong>Aruba IAP</strong>: managed via the cluster. Inventory works through the master IAP CLI
 </li>
-<li><strong>AP-205, AP-505, etc.</strong> in a CAPWAP design: managed through the controller; individual APs are not directly SSH&#x27;d
+<li><strong>AP-205, AP-505, and similar</strong> in a CAPWAP design: managed through the controller. Individual APs are not opened over SSH
 </li>
 </ul>
-<p>For comprehensive Aruba wireless management, the Aruba Central / AirWave platforms are the right tools. Node Control&#x27;s wireless support is best for Meraki and basic Aruba IAP — see <a href="meraki.html">Meraki</a> for the deeper wireless story.</p>
+<p>For Aruba wireless management, Aruba Central or AirWave is the vendor tool. In Node Control, wireless coverage is Meraki and basic Aruba IAP. See <a href="meraki.html">Meraki</a>.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="hp-procurve.html">HP ProCurve</a> — for OS-Switch specifically
+<li><a href="aruba-aos-cx.html">Aruba AOS-CX</a>
 </li>
-<li><a href="meraki.html">Meraki</a> — for full wireless coverage in Node Control
+<li><a href="hp-procurve.html">HP ProCurve</a>
+</li>
+<li><a href="meraki.html">Meraki</a>
 </li>
 </ul>
+
             </div>
         </main>
     </div>

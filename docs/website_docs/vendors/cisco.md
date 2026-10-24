@@ -19,7 +19,7 @@ Node Control's most comprehensive vendor coverage. All Cisco platforms are first
 Everything Node Control does works on Cisco:
 
 - L2 topology with full CDP/LLDP + MAC table
-- L3 topology with OSPF, BGP, EIGRP, multi-VRF. HSRP and VRRP gateways on IOS, IOS-XE, and NX-OS resolve to the active router on the L3 map instead of an Internet node. A routed campus keeps proper rows
+- L3 topology with OSPF, BGP, EIGRP, multi-VRF. HSRP and VRRP gateways on IOS, IOS-XE, and NX-OS resolve to the active router on the L3 map instead of an Internet node. A routed campus keeps proper rows. Point-to-point OSPF neighbours are handled. When the VRF field is blank, the device's own VRFs from `show vrf` are walked
 - WAN topology with BGP + IPSec tunnel detection
 - Port Utilisation (including PoE)
 - Bandwidth (5-min averages, peaks)
@@ -50,7 +50,7 @@ NX-OS has subtle CLI differences from IOS-XE:
 - `show ip route vrf <vrf>` includes VRF as a separate context
 - VPC and FEX add their own commands (`show vpc`, `show fex`) — Node Control includes these in the catalog
 
-NX-OS routes are read correctly.
+NX-OS route tables are read correctly, including long via lines.
 
 ## ASA
 

@@ -4,14 +4,15 @@
     <script>document.documentElement.classList.add("docs-js")</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change ISE Password — NodeControl Docs</title>
-    <meta name="description" content="Change ISE Password — NodeControl documentation">
+    <title>Aruba AOS-CX — NodeControl Docs</title>
+    <meta name="description" content="Aruba AOS-CX — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
 
+    <!-- Navigation -->
     <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
         <div class="nav-container">
             <a href="../../index.html" class="nav-logo">
@@ -32,12 +33,13 @@
         </div>
     </nav>
 
+    <!-- Docs Layout -->
     <div class="docs-layout">
     <button type="button" class="docs-menu-toggle" id="docsMenuToggle" aria-expanded="false" aria-controls="docsSidebar">Docs menu</button>
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -61,27 +63,26 @@
     </div>
     <div class="docs-nav-section">
       <h4>Tasks</h4>
-      <a href="topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
-      <a href="topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
-      <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
-      <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
-      <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
-      <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
-      <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
-      <a href="discovery.html" class="docs-nav-link">Discover</a>
-      <a href="find-device.html" class="docs-nav-link">Find Device</a>
-      <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
-      <a href="config-push.html" class="docs-nav-link">Config Push</a>
-      <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
-      <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="change-ise-password.html" class="docs-nav-link active">Change ISE Password</a>
-      <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
-      <a href="serial-console.html" class="docs-nav-link">Serial console</a>
-      <a href="local-terminal.html" class="docs-nav-link">Local network terminal</a>
-      <a href="monitor.html" class="docs-nav-link">Monitor</a>
-      <a href="firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
-      <a href="ipam.html" class="docs-nav-link">IPAM</a>
-      <a href="meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+      <a href="../tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
+      <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
+      <a href="../tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
     </div>
     <div class="docs-nav-section">
       <h4>Reports</h4>
@@ -97,16 +98,17 @@
     </div>
     <div class="docs-nav-section">
       <h4>Vendors</h4>
-      <a href="../vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
-      <a href="../vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
-      <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
-      <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
-      <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
-      <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
-      <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
-      <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
-      <a href="../vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
-      <a href="../vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+      <a href="overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="aruba-aos-cx.html" class="docs-nav-link active">Aruba AOS-CX</a>
+      <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="meraki.html" class="docs-nav-link">Cisco Meraki</a>
     </div>
     <div class="docs-nav-section">
       <h4>Settings</h4>
@@ -145,65 +147,62 @@
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Change ISE Password
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Aruba AOS-CX
                 </div>
-                <h1 id="change-ise-password">Change ISE Password</h1>
-<blockquote>
-<p>On <strong>Pro</strong> and the <strong>AI</strong> edition. On Free the task is greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>. Safe Mode hides it.</p>
-</blockquote>
-<p><strong>Change ISE Password</strong> changes an internal Cisco ISE network-access user. It uses ISE ERS on port 9060 (<code>PUT /ers/config/internaluser/&lt;id&gt;</code>).</p>
-<p>No ISE API changes an admin account&#x27;s password. A locked-out account still needs an ISE administrator.</p>
-<h2 id="settings-api-platforms">Settings → API Platforms</h2>
-<p>The group is <strong>Cisco ISE (Identity Services Engine)</strong>:</p>
-<ul>
-<li><strong>Enable</strong>
-</li>
-<li><strong>Base URL:</strong> placeholder <code>https://ise.example.com</code>
-</li>
-<li><strong>Username:</strong>
-</li>
-<li><strong>Password:</strong> with <strong>Set Credentials</strong>, and a status that reads <strong>Configured</strong> or <strong>Not set</strong>
-</li>
-<li><strong>Test Connection</strong>
-</li>
-<li><strong>Password min length:</strong> 4 to 64, default 12
-</li>
-<li><strong>Password requires:</strong> checkboxes A-Z, a-z, 0-9, Special
-</li>
-<li><strong>Allowed specials:</strong> default <code>!@#$%^&amp;*-_=+</code>
-</li>
-</ul>
-<p>This is a local mirror of the ISE policy. ISE publishes no API for that policy, and ISE has the final say.</p>
-<p>There is no verify-SSL control. Certificate verification is off for all API clients.</p>
-<h2 id="the-task-dialog">The task dialog</h2>
-<ul>
-<li><strong>ISE username:</strong>
-</li>
-<li><strong>Current password:</strong>
-</li>
-<li><strong>New password:</strong> with <strong>Generate</strong> and <strong>Show</strong> / <strong>Hide</strong>
-</li>
-<li><strong>Confirm new password:</strong>
-</li>
-<li><strong>Also update saved credential:</strong> The first item is <strong>(do not update a saved credential)</strong>
-</li>
-<li>A policy line
-</li>
-<li><strong>Change Password</strong> / Cancel
-</li>
-</ul>
-<p>Then a Yes/No confirmation: <code>Change the password for &lt;user&gt; now?</code> There is no typed word.</p>
-<p>The task generates a random password against the policy above, and it checks the entries before it sends them.</p>
-<p>The last profile chosen for this task is pre-selected the next time it runs.</p>
-<h2 id="login-notices">Login notices</h2>
-<p>When ISE (TACACS+) says at login that a password is about to expire, the terminal shows it. See <a href="ssh-terminal.html">SSH Terminal</a>.</p>
+                <h1 id="aruba-aos-cx">Aruba AOS-CX</h1>
+<p>AOS-CX is its own platform in 0.9.42. It is not ProCurve, and it is not Cisco. OS-Switch stays on the <a href="aruba.html">Aruba</a> page, with the HP ProCurve notes.</p>
+<p>The driver is <code>aruba_os</code>. Node Control uses SSH. It does not use the AOS-CX REST API.</p>
+<h2 id="detection">Detection</h2>
+<p>Detection reads <code>show version</code> and <code>show system</code>, including when the SSH banner has no vendor name. The device is recorded as AOS-CX.</p>
+<p>Only AOS-CX 10.x command forms are sent. ProCurve forms are not tried. Cisco forms are not tried.</p>
+<h2 id="l2-topology">L2 topology</h2>
+<p>On Free, Pro, and the AI edition.</p>
+<p>The L2 Topology Builder reads the LLDP neighbour table, then runs one per-port query per neighbour for its management address.</p>
+<p>MC-LAG legs to a VSX pair, the ISL, and LAG members are drawn and labelled the same way as Cisco port-channel members.</p>
+<p>See <a href="../tasks/topology-l2.html">L2 topology</a>.</p>
+<h2 id="config-backup-and-save-config">Config Backup and Save Config</h2>
+<p>On Free, Pro, and the AI edition.</p>
+<p>An operators-level login cannot read the config. The task tells you an admin or manager user is needed. It does not save an empty file.</p>
+<p>The same login is required for Save Config.</p>
+<h2 id="find-device">Find Device</h2>
+<p>The wired search reads the AOS-CX MAC address table and the LLDP table.</p>
+<p>On Free, Find Device is one switch at a time. On Pro and the AI edition it walks the site.</p>
+<h2 id="inventory">Inventory</h2>
+<p>On Free, Pro, and the AI edition. Inventory reads the model, serial, version, and uptime.</p>
+<h2 id="l3-topology">L3 topology</h2>
+<p>On Pro and the AI edition. On Free the task is greyed out.</p>
+<p>An access switch whose only default route is in the management VRF does not use that route as its gateway. Its VLANs resolve over LLDP to the nearest switch that has an SVI for them.</p>
+<p>A VSX pair answers with its active-gateway virtual address. The map draws one link to each member. OSPF neighbours show their area.</p>
+<h2 id="config-compliance">Config compliance</h2>
+<p>On Pro and the AI edition.</p>
+<p>The compliance pull needs an admin or manager login, the same as Config Backup. An operators-level login cannot read the config.</p>
+<h2 id="port-utilisation">Port Utilisation</h2>
+<p>On Pro and the AI edition.</p>
+<p>A port with no description does not take the next line as its description. Activity comes from the rate and packet counters, so a busy uplink shows In Use. LAG, VLAN, and loopback rows are left out of the physical counts.</p>
+<h2 id="vlan-port-finder">VLAN Port Finder</h2>
+<p>On Pro and the AI edition.</p>
+<p>The report fills description, port status, Last Active, and switch uptime. A LAG the switch calls a trunk is listed as a trunk.</p>
+<h2 id="bandwidth">Bandwidth</h2>
+<p>On Pro and the AI edition.</p>
+<p>An all-AOS-CX site reports interfaces, rates, utilisation, and key links. LAG rates are summed from the members. The default route resolves to the egress port and the LAG, as it does on Cisco.</p>
+<h2 id="lifecycle-and-health-monitor">Lifecycle and Health Monitor</h2>
+<p>On Pro and the AI edition.</p>
+<p>Asset Lifecycle and Health Monitor read model, serial, version, uptime, CPU, and memory.</p>
+<h2 id="site-subnets">Site Subnets</h2>
+<p>On Pro and the AI edition.</p>
+<p>Site Subnets reads the per-VRF interface listing. <a href="../tasks/ipam.html">IPAM</a> fills from that report.</p>
+<h2 id="vsf-stacks">VSF stacks</h2>
+<p>VSF members are inventoried separately and tagged with their VSF member ID.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="../getting-started/credentials.html">Setting up credentials</a>
+<li><a href="aruba.html">Aruba OS-Switch and wireless</a>
 </li>
-<li><a href="ssh-terminal.html">SSH Terminal</a>
+<li><a href="../tasks/topology-l2.html">L2 topology</a>
+</li>
+<li><a href="../tasks/topology-l3.html">L3 topology</a>
 </li>
 </ul>
+
             </div>
         </main>
     </div>
