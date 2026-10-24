@@ -82,7 +82,7 @@ FLAG_KEYS = (
 )
 PAUSED_MESSAGE = (
     "Node Control Free downloads are temporarily paused while we ship an update "
-    "(v0.9.42). Please check back soon."
+    "(v0.9.41). Please check back soon."
 )
 
 # Checked in this order. Each window is its own bucket: the key includes

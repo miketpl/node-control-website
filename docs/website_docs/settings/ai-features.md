@@ -41,9 +41,9 @@ The Monitor alert narratives and the analyst review (the **Findings** tab) need 
 | Feature | Where | Default | Edition |
 |---|---|---|---|
 | End-of-task AI Summary | Engineer page checkbox | Starts from **Enable AI analysis by default across all features**. Off on a fresh install | Pro and AI. Free opens a preview and sends nothing |
-| Ask AI | Monitor, per device | You open it | Pro and AI, from 0.9.42 |
-| Ask Network AI | Monitor. The dialog is **Ask AI — Network** | You open it | Pro and AI, from 0.9.42 |
-| Architect Review | Monitor, whole estate or one site | You open it | Pro and AI, from 0.9.42 |
+| Ask AI | Monitor, per device | You open it | Pro and AI |
+| Ask Network AI | Monitor. The dialog is **Ask AI — Network** | You open it | Pro and AI |
+| Architect Review | Monitor, whole estate or one site | You open it | Pro and AI |
 | Findings | Every Monitor poll. Alert row tooltip and the Findings tab | Off until you turn **Enable AI analysis by default across all features** on. No separate switch | Pro and AI. It never runs on Free |
 | AI Summary | Reports tab | Starts from the same switch. Off on a fresh install | Pro and AI |
 | Preview before sending | Reports tab | Starts unticked. Each time the tab loads it takes its starting state from **Show preview before sending data to AI** (off by default). Enabled only while **AI Summary** is ticked. You can change it for that run | Pro and AI |
