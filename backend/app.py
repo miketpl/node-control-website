@@ -1172,6 +1172,17 @@ def _send_mail(to_email, subject, text_body, html_body, log_recipient=True):
         return False
 
 
+def _html_link(url, label):
+    """A labelled link, with the full address still visible underneath."""
+    href = html.escape(url, quote=True)
+    shown = html.escape(url)
+    return (
+        f'<p><a href="{href}"><strong>{html.escape(label)}</strong></a></p>'
+        "<p>If the link doesn't work, copy this address:<br>"
+        f'<a href="{href}">{shown}</a></p>'
+    )
+
+
 def _send_pro_welcome(row):
     site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
     if row["plan"] == "annual":
@@ -1194,8 +1205,10 @@ def _send_pro_welcome(row):
             "If you lose it, ask for it again. The same key is sent.\n\n"
         )
     session_id = row["stripe_checkout_session_id"] or ""
+    manage = f"{site}/#manage"
     if session_id:
         download_text = f"{site}/pro-success.html?session_id={session_id}"
+        download_html = _html_link(download_text, "Download Pro")
     else:
         mac = _make_download_token(
             row["email"], row["stripe_subscription_id"], "mac", DOWNLOAD_EMAIL_TTL
@@ -1203,10 +1216,17 @@ def _send_pro_welcome(row):
         win = _make_download_token(
             row["email"], row["stripe_subscription_id"], "win", DOWNLOAD_EMAIL_TTL
         )
+        mac_url = "https://api.nodecontrol.io/api/pro/download?token=" + mac
+        win_url = "https://api.nodecontrol.io/api/pro/download?token=" + win
         download_text = (
-            "macOS: https://api.nodecontrol.io/api/pro/download?token=" + mac + "\n"
-            "Windows: https://api.nodecontrol.io/api/pro/download?token=" + win + "\n"
+            "macOS: " + mac_url + "\n"
+            "Windows: " + win_url + "\n"
             "These links last 24 hours and only work while the subscription is active."
+        )
+        download_html = (
+            _html_link(mac_url, "Download for Mac")
+            + _html_link(win_url, "Download for Windows")
+            + "<p>These links last 24 hours and only work while the subscription is active.</p>"
         )
     text = (
         f"Hi {row['name'] or 'there'},\n\n"
@@ -1218,7 +1238,7 @@ def _send_pro_welcome(row):
         "Download Pro:\n"
         f"{download_text}\n\n"
         "To cancel or update the card, request a link here:\n"
-        f"{site}/#manage\n\n"
+        f"{manage}\n\n"
         "Cancelling stops the next renewal. Access continues until the end of the "
         "period already paid. After that the app blocks, once its 7-day offline "
         "grace runs out if it cannot check in.\n\n"
@@ -1226,10 +1246,30 @@ def _send_pro_welcome(row):
         "Node Control by The Promised LAN\n"
         f"{site}\n"
     )
+    key_html = ""
+    if plain_key:
+        key_html = (
+            "<p>Your Professional licence key:</p>"
+            f"<p>{html.escape(plain_key)}</p>"
+            "<p>In the app, open Welcome to Node Control and enter this key.</p>"
+            "<p>If you lose it, ask for it again. The same key is sent.</p>"
+        )
     html_body = (
-        '<pre style="font-family: sans-serif; white-space: pre-wrap;">'
-        + html.escape(text)
-        + "</pre>"
+        f"<p>Hi {html.escape(row['name'] or 'there')},</p>"
+        "<p>Your Node Control Professional subscription is active.</p>"
+        f"<p>Plan: {html.escape(plan_text)}</p>"
+        f"{key_html}"
+        "<p>The subscription email is:</p>"
+        f"<p>{html.escape(row['email'])}</p>"
+        "<p>Download Pro:</p>"
+        f"{download_html}"
+        "<p>To cancel or update the card, request a link here:</p>"
+        f"{_html_link(manage, 'Manage your subscription')}"
+        "<p>Cancelling stops the next renewal. Access continues until the end of the "
+        "period already paid. After that the app blocks, once its 7-day offline "
+        "grace runs out if it cannot check in.</p>"
+        "<p>Node Control by The Promised LAN</p>"
+        f"{_html_link(site, 'nodecontrol.io')}"
     )
     return _send_mail(
         row["email"], "Your Node Control Professional subscription", text, html_body
@@ -1238,20 +1278,30 @@ def _send_pro_welcome(row):
 
 def _send_portal_email(email, portal_url):
     site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    manage = f"{site}/#manage"
     text = (
         "Hi,\n\n"
         "Use this link to cancel Node Control Professional or update the card:\n"
         f"{portal_url}\n\n"
-        f"The link expires. If it does, request another from {site}/#manage\n\n"
+        f"The link expires. If it does, request another from {manage}\n\n"
         "---\n"
         "Node Control by The Promised LAN\n"
         f"{site}\n"
+    )
+    html_body = (
+        "<p>Hi,</p>"
+        "<p>Use this link to cancel Node Control Professional or update the card:</p>"
+        f"{_html_link(portal_url, 'Cancel or update the card')}"
+        "<p>The link expires. If it does, request another from:</p>"
+        f"{_html_link(manage, 'Request another link')}"
+        "<p>Node Control by The Promised LAN</p>"
+        f"{_html_link(site, 'nodecontrol.io')}"
     )
     return _send_mail(
         email,
         "Manage your Node Control subscription",
         text,
-        "<pre>" + html.escape(text) + "</pre>",
+        html_body,
     )
 
 
