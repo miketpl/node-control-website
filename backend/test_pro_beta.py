@@ -3,6 +3,7 @@
 Addresses in this file are example.com only. One key is one computer.
 """
 
+import html as html_lib
 import io
 import logging
 import os
@@ -262,8 +263,15 @@ class ProBetaTests(unittest.TestCase):
         self.assertNotIn(ADDRESS, html)
         self.assertNotIn("@", text)
         self.assertNotIn("@", html)
+        self.assertNotIn("<a", text)
+        self.assertIn(">Download for Mac</", html)
+        self.assertIn(">Download for Windows</", html)
+        self.assertIn("If the link doesn't work, copy this address:", html)
 
         mac = next(line for line in text.splitlines() if "/api/v1/download/pro/mac?t=" in line)
+        win = next(line for line in text.splitlines() if "/api/v1/download/pro/win?t=" in line)
+        self.assertIn(f'href="{html_lib.escape(mac, quote=True)}"', html)
+        self.assertIn(f'href="{html_lib.escape(win, quote=True)}"', html)
         path = mac.split(".io", 1)[1]
         with patch.object(api, "_pro_asset_redirect", return_value=ASSET) as redirect:
             followed = self.client.get(path)
@@ -279,6 +287,35 @@ class ProBetaTests(unittest.TestCase):
         other = self.client.get("/api/v1/download/free/mac?t=" + pro_token)
         self.assertEqual(other.status_code, 403)
         self.assertEqual(other.get_json()["error"]["code"], "code_invalid")
+
+    def test_download_message_escapes_link_attributes(self):
+        mac = 'https://downloads.example/mac?t=a&b=1"q'
+        win = "https://downloads.example/win?t=c&d=2"
+        subject, text, html_body = licence_v1._beta_download_message(
+            "NCP-TEST-KEY1",
+            {"mac": mac, "win": win},
+        )
+        self.assertEqual(subject, "Your Node Control Professional key")
+        self.assertIn("Mac:\n" + mac + "\n", text)
+        self.assertIn("Windows:\n" + win + "\n", text)
+        self.assertNotIn("<", text)
+        mac_href = html_lib.escape(mac, quote=True)
+        win_href = html_lib.escape(win, quote=True)
+        self.assertIn(f'href="{mac_href}"', html_body)
+        self.assertIn(f'href="{win_href}"', html_body)
+        self.assertIn("&amp;b=1", html_body)
+        self.assertIn("&quot;", html_body)
+        self.assertNotIn('href="' + mac + '"', html_body)
+        self.assertNotIn("&b=", html_body)
+        self.assertIn(">Download for Mac</", html_body)
+        self.assertIn(">Download for Windows</", html_body)
+        self.assertIn("If the link doesn't work, copy this address:", html_body)
+        self.assertIn("The links expire after 7 days.", text)
+        self.assertIn("The links expire after 7 days.", html_body)
+        self.assertNotIn(ADDRESS, text)
+        self.assertNotIn(ADDRESS, html_body)
+        self.assertNotIn("@", text)
+        self.assertNotIn("@", html_body)
 
     def test_revoked_expired_and_foreign_keys(self):
         issued = self._issue()

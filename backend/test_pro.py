@@ -1,6 +1,7 @@
 """Pro subscription checkout, webhooks, allow-list, and gated downloads."""
 
 import base64
+import html
 import json
 import os
 import tempfile
@@ -18,6 +19,7 @@ os.environ["LEGACY_ALLOWLIST_SYNC"] = "false"
 
 import stripe
 import app
+import licence_v1
 
 
 BETA_DOC = {
@@ -413,6 +415,90 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(app._get_pro_row_by_subscription("sub_mail")["email"], "payer@example.com")
         self.assertNotIn("payer@example.com", [item.lower() for item in self.github.doc["allowed_emails"]])
         self.assertIn("beta.user@example.com", [item.lower() for item in self.github.doc["allowed_emails"]])
+
+    def test_welcome_and_portal_html_are_clickable(self):
+        captured = []
+
+        def capture(to_email, subject, text_body, html_body, log_recipient=True):
+            captured.append((to_email, subject, text_body, html_body))
+            return True
+
+        def token(email, subscription_id, platform, ttl_seconds=app.DOWNLOAD_EMAIL_TTL):
+            self.assertEqual(email, "payer@example.com")
+            self.assertEqual(subscription_id, "sub_html")
+            self.assertEqual(ttl_seconds, app.DOWNLOAD_EMAIL_TTL)
+            return platform + '&sig=1"x'
+
+        self.welcome_patch.stop()
+        row = {
+            "plan": "monthly",
+            "name": "Ada",
+            "email": "payer@example.com",
+            "stripe_subscription_id": "sub_html",
+            "stripe_checkout_session_id": "",
+        }
+        try:
+            with patch.object(app, "_send_mail", side_effect=capture), \
+                 patch.object(app, "_make_download_token", side_effect=token), \
+                 patch.object(licence_v1, "plaintext_for_subscription", return_value="NCP-AAAA-BBBB"):
+                self.assertTrue(app._send_pro_welcome(row))
+            session = dict(row)
+            session["plan"] = "annual"
+            session["stripe_checkout_session_id"] = 'cs_1&x="y'
+
+            def unexpected_token(*_args, **_kwargs):
+                raise AssertionError("a checkout session must keep its success-page link")
+
+            with patch.object(app, "_send_mail", side_effect=capture), \
+                 patch.object(app, "_make_download_token", side_effect=unexpected_token), \
+                 patch.object(licence_v1, "plaintext_for_subscription", return_value=""):
+                self.assertTrue(app._send_pro_welcome(session))
+            portal = 'https://billing.stripe.test/p?a=1&b=2"x'
+            with patch.object(app, "_send_mail", side_effect=capture):
+                self.assertTrue(app._send_portal_email("payer@example.com", portal))
+        finally:
+            self.welcome_patch.start()
+
+        _to, subject, text, html_body = captured[0]
+        mac_url = 'https://api.nodecontrol.io/api/pro/download?token=mac&sig=1"x'
+        win_url = 'https://api.nodecontrol.io/api/pro/download?token=win&sig=1"x'
+        self.assertEqual(subject, "Your Node Control Professional subscription")
+        self.assertIn("macOS: " + mac_url + "\n", text)
+        self.assertIn("Windows: " + win_url + "\n", text)
+        self.assertIn("These links last 24 hours and only work while the subscription is active.", text)
+        self.assertIn("Professional, £25/month ex VAT", text)
+        self.assertIn("NCP-AAAA-BBBB", text)
+        self.assertIn("https://nodecontrol.io/#manage", text)
+        self.assertNotIn("<a", text)
+        self.assertIn(f'href="{html.escape(mac_url, quote=True)}"', html_body)
+        self.assertIn(f'href="{html.escape(win_url, quote=True)}"', html_body)
+        self.assertIn(">Download for Mac</", html_body)
+        self.assertIn(">Download for Windows</", html_body)
+        self.assertIn("If the link doesn't work, copy this address:", html_body)
+        self.assertIn("These links last 24 hours and only work while the subscription is active.", html_body)
+        self.assertNotIn('href="' + mac_url + '"', html_body)
+        self.assertNotIn("&sig=", html_body)
+
+        _to, subject, text, html_body = captured[1]
+        page = 'https://nodecontrol.io/pro-success.html?session_id=cs_1&x="y'
+        self.assertIn(page + "\n", text)
+        self.assertIn("Professional, £255/year ex VAT", text)
+        self.assertNotIn("api/pro/download?token=", text)
+        self.assertNotIn("<a", text)
+        self.assertIn(f'href="{html.escape(page, quote=True)}"', html_body)
+        self.assertIn(">Download Pro</", html_body)
+        self.assertNotIn('href="' + page + '"', html_body)
+
+        _to, subject, text, html_body = captured[2]
+        self.assertEqual(subject, "Manage your Node Control subscription")
+        self.assertIn("\n" + portal + "\n", text)
+        self.assertIn("The link expires. If it does, request another from https://nodecontrol.io/#manage", text)
+        self.assertNotIn("<a", text)
+        self.assertIn(f'href="{html.escape(portal, quote=True)}"', html_body)
+        self.assertIn('href="https://nodecontrol.io/#manage"', html_body)
+        self.assertIn(">Cancel or update the card</", html_body)
+        self.assertNotIn('href="' + portal + '"', html_body)
+        self.assertNotIn("&b=", html_body)
 
     def test_allowlist_defaults_are_the_live_repo(self):
         source_path = os.path.join(os.path.dirname(__file__), "app.py")

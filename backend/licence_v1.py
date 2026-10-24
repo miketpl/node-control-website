@@ -2332,6 +2332,17 @@ def issue_manual_pro_key(email):
     return {"id": key_id, "email": email, "licence_key": plain, "emailed": bool(emailed), "source": "manual"}
 
 
+def _html_download_link(url, label):
+    """A labelled link, with the full address still visible underneath."""
+    href = html.escape(url, quote=True)
+    shown = html.escape(url)
+    return (
+        f'<p><a href="{href}"><strong>{html.escape(label)}</strong></a></p>'
+        "<p>If the link doesn't work, copy this address:<br>"
+        f'<a href="{href}">{shown}</a></p>'
+    )
+
+
 def _beta_download_message(plain, links):
     """Plain text and HTML for the first-install mail. No customer address."""
     mac = links["mac"]
@@ -2364,8 +2375,8 @@ def _beta_download_message(plain, links):
     )
     html_body = (
         f"{key_html}"
-        f"<p>Mac:<br>{html.escape(mac)}</p>"
-        f"<p>Windows:<br>{html.escape(win)}</p>"
+        f"{_html_download_link(mac, 'Download for Mac')}"
+        f"{_html_download_link(win, 'Download for Windows')}"
         "<p>Install Node Control.</p>"
         "<p>Open Node Control.</p>"
         "<p>Enter the key in Welcome to Node Control.</p>"
