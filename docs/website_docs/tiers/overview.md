@@ -25,7 +25,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | **Engineer tasks** | | | |
 | None | ✓ | ✓ | ✓ |
 | [Serial console](../tasks/serial-console.md), beside SSH/HTTPS on the Engineer tab | ✓ | ✓ | ✓ |
-| [Local network terminal](../tasks/local-terminal.md), in the log header. Networking commands only. No shell | ✓ | ✓ | ✓ |
+| [Local network terminal](../tasks/local-terminal.md), on the Engineer tab, in the log header. Networking commands only. No shell | ✓ | ✓ | ✓ |
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
@@ -52,7 +52,7 @@ Free is a working copy for a small estate, not a timed demo.
 - Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
 - The Inventory report
 - Workbook import, cut to the first 25. GitHub push and pull, with your own repository and token. A pull keeps the first 25, sorted by IP. Library Updater is greyed out
-- An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
+- An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending. The Settings → AI / LLM tab is not shown
 - The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 
 ### What is on Pro instead
@@ -87,7 +87,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Find Device across a site or a fabric, with Meraki wireless lookup
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 - Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; other vendors get a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
-- [Custom scripts](../settings/scripts.md) under Settings → Scripts, and Change ISE Password
+- [Custom scripts](../settings/scripts.md) under Settings → Scripts
 - Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. **Anonymise identifiable data before sending to AI** is on by default. **Enable AI analysis by default across all features** is off on a fresh install, so the Findings review does not run until you turn it on. From 0.9.41, Monitor on Pro and the AI edition has **Ask AI**, **Ask Network AI**, and **Architect Review**. **AI review** (Assess row, ticked by default) and **AI advisory** show on Pro and the AI edition. Free has no Firewall Analyser tab. See [AI features overview](../settings/ai-features.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token
 

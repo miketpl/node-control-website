@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -266,7 +266,7 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
-<td><a href="../tasks/local-terminal.html">Local network terminal</a>, in the log header. Networking commands only. No shell</td>
+<td><a href="../tasks/local-terminal.html">Local network terminal</a>, on the Engineer tab, in the log header. Networking commands only. No shell</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
@@ -371,7 +371,7 @@
 </li>
 <li>Workbook import, cut to the first 25. GitHub push and pull, with your own repository and token. A pull keeps the first 25, sorted by IP. Library Updater is greyed out
 </li>
-<li>An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending
+<li>An AI payload dialog that opens and sends nothing. You cannot configure a provider for sending. The Settings → AI / LLM tab is not shown
 </li>
 <li>The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 </li>
@@ -423,7 +423,7 @@
 </li>
 <li>Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; other vendors get a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
 </li>
-<li><a href="../settings/scripts.html">Custom scripts</a> under Settings → Scripts, and Change ISE Password
+<li><a href="../settings/scripts.html">Custom scripts</a> under Settings → Scripts
 </li>
 <li>Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. <strong>Anonymise identifiable data before sending to AI</strong> is on by default. <strong>Enable AI analysis by default across all features</strong> is off on a fresh install, so the Findings review does not run until you turn it on. From 0.9.41, Monitor on Pro and the AI edition has <strong>Ask AI</strong>, <strong>Ask Network AI</strong>, and <strong>Architect Review</strong>. <strong>AI review</strong> (Assess row, ticked by default) and <strong>AI advisory</strong> show on Pro and the AI edition. Free has no Firewall Analyser tab. See <a href="../settings/ai-features.html">AI features overview</a>
 </li>

@@ -4,7 +4,7 @@ Feature-level AI runs on **Pro**, on a provider you configure. See [AI on Profes
 
 The Node Control AI edition is a separate product: nine specialist agents on infrastructure you host. It is not yet available to buy. It is not the provider setting on this page. **AI Chat** and the **AI Dashboard** are the AI edition only.
 
-On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.
+On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending. The Settings → AI / LLM tab is not shown.
 
 The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.
 
@@ -61,7 +61,7 @@ The same provider is used for:
 
 ## Background Learning
 
-**Allow the backend and background jobs to log into devices with my credentials** is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](../security/data-and-privacy.md).
+**Allow the backend and background jobs to log into devices with my credentials** is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [What leaves your laptop](../security/data-and-privacy.md).
 
 ## Next steps
 

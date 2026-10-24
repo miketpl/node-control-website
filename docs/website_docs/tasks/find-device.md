@@ -9,6 +9,8 @@ The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and
 | Free | One switch at a time, single thread. No site model and no cores model. It walks that switch's MAC table |
 | Pro / AI | Pick a site (or All); Find Device walks every site's cores in parallel, recursively follows CDP/LLDP into the fabric, and includes Meraki wireless lookup |
 
+On AOS-CX the wired search reads the MAC address table and the LLDP table.
+
 ## Open the task
 
 - Engineer command bar → **Task** → **Find Device** → **Run**

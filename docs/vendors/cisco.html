@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -195,7 +195,7 @@
 <ul>
 <li>L2 topology with full CDP/LLDP + MAC table
 </li>
-<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF. HSRP and VRRP gateways on IOS, IOS-XE, and NX-OS resolve to the active router on the L3 map instead of an Internet node. A routed campus keeps proper rows
+<li>L3 topology with OSPF, BGP, EIGRP, multi-VRF. HSRP and VRRP gateways on IOS, IOS-XE, and NX-OS resolve to the active router on the L3 map instead of an Internet node. A routed campus keeps proper rows. Point-to-point OSPF neighbours are handled. When the VRF field is blank, the device&#x27;s own VRFs from <code>show vrf</code> are walked
 </li>
 <li>WAN topology with BGP + IPSec tunnel detection
 </li>
@@ -244,7 +244,7 @@
 <li>VPC and FEX add their own commands (<code>show vpc</code>, <code>show fex</code>) — Node Control includes these in the catalog
 </li>
 </ul>
-<p>NX-OS routes are read correctly.</p>
+<p>NX-OS route tables are read correctly, including long via lines.</p>
 <h2 id="asa">ASA</h2>
 <p>Cisco ASA firewalls are supported with these caveats:</p>
 <ul>

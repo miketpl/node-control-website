@@ -41,7 +41,7 @@ Interfaces are resolved by device capability, not a fixed Cisco command.
 | HP ProCurve | `show interfaces detail` — new ProCurve branch added in 0.9.x for proper parsing |
 | Aruba CX | `show interface` extended |
 | Juniper | `show interfaces extensive` |
-| Arista | supported, with Arista-specific uplink detection (Port-Channel naming and LLDP-based uplinks) |
+| Arista | Supported, with Arista-specific uplink detection (Port-Channel naming and LLDP-based uplinks). Bandwidth and Path Bandwidth read the EOS route table |
 
 ## Time window
 
@@ -61,7 +61,11 @@ In the result table, utilisation cells are colour-coded:
 - 🟡 Yellow: 50% – 80%
 - 🔴 Red: > 80%
 
-Sort by In or Out utilisation to find saturated links instantly.
+Sort by In or Out utilisation to find saturated links.
+
+On an all-AOS-CX site, Bandwidth reports interfaces, rates, utilisation, and key links. LAG rates are summed from the members. The default route resolves to the egress port and the LAG, as it does on Cisco.
+
+The per-VRF pass runs on the Cisco family and on EOS. Bandwidth and Path Bandwidth read Junos interfaces and routes with Junos parsing.
 
 ## Use cases
 

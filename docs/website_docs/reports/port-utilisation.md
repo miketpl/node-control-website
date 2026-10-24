@@ -47,7 +47,9 @@ The filter bar narrows the table by substring across all columns. Common filters
 | Arista | Cisco-compatible commands |
 | Extreme | `show ports`, `show ports configuration` |
 
-The 0.9.x improvements added a dedicated ProCurve parser path so HP devices produce the same column layout as Cisco — this used to fail silently with empty columns.
+The 0.9.x improvements added a dedicated ProCurve parser path so HP devices produce the same column layout as Cisco. This used to fail silently with empty columns.
+
+On AOS-CX, a port with no description does not take the next line as its description. Activity comes from the rate and packet counters, so a busy uplink shows In Use. LAG, VLAN, and loopback rows are left out of the physical counts.
 
 ## Use cases
 

@@ -66,7 +66,10 @@ If only one device needs a special command (not the whole vendor):
 Even without custom commands, Node Control tunes itself:
 
 - Runs the catalog's primary command first
-- If that fails (syntax error, empty output, error keywords), tries the next variant
+- If that fails because of a syntax error or an error keyword, the next variant is tried. A blank answer does not mark a valid command as failed
+- A command that answers, but cannot be read, is logged as "answered but parsed to no entries". It is not learned as the preferred form. The next known form is tried
+- The first form a device answers stays its preferred form. It does not flip between runs
+- When a vendor parser reads nothing, a generic table reader and a key/value reader are used
 - Records the winning variant in `device_command_prefs`
 - Next time the same capability is needed on that device, tries the recorded winner first
 - Variants that have failed are skipped

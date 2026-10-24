@@ -19,6 +19,9 @@ On Free the tasks that run are **None**, **L2 Topology Builder**, **Config Backu
    - Junos: `show configuration | no-more`. There is no startup variant
    - PAN-OS: `show config running` / `show config saved`
    - Aruba, Extreme, and Dell have their own variants
+
+On AOS-CX, an operators-level login cannot read the config. Config Backup tells you an admin or manager user is needed. It does not save an empty file. Save Config needs the same login.
+
 5. One file per device:
 
 ```

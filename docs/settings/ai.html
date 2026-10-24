@@ -37,7 +37,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -74,7 +74,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -102,6 +101,7 @@
       <a href="../vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="../vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="../vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="../vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="../vendors/arista.html" class="docs-nav-link">Arista EOS</a>
       <a href="../vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -150,7 +150,7 @@
                 <h1 id="ai-provider">AI provider</h1>
 <p>Feature-level AI runs on <strong>Pro</strong>, on a provider you configure. See <a href="ai-llm.html">AI on Professional</a>. Free opens the payload dialog and sends nothing.</p>
 <p>The Node Control AI edition is a separate product: nine specialist agents on infrastructure you host. It is not yet available to buy. It is not the provider setting on this page. <strong>AI Chat</strong> and the <strong>AI Dashboard</strong> are the AI edition only.</p>
-<p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending.</p>
+<p>On Free, an AI option opens the payload dialog so you can read what would have been sent. Nothing is ever sent. Free does not let you configure a provider for sending. The Settings → AI / LLM tab is not shown.</p>
 <p>The maps, the Inventory report, and L2 Topology Builder all work with no provider. On Pro, with no provider configured, the deterministic output is what you get and the AI option reports that.</p>
 <h2 id="settings-ai-llm">Settings → AI / LLM</h2>
 <p>Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="ai-llm.html">AI on Professional</a>.</p>
@@ -204,7 +204,7 @@
 <p><strong>Vuln Plan</strong> is the AI edition only. It is a button on the Update tab, next to <strong>Check PSIRT</strong>, and it works from that tab&#x27;s PSIRT results. Pro has neither the Update tab nor Vuln Plan.</p>
 <p><strong>AI Chat</strong> and the <strong>AI Dashboard</strong> stay on the AI edition.</p>
 <h2 id="background-learning">Background Learning</h2>
-<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log. See <a href="../security/data-and-privacy.html">What leaves your laptop</a>.</p>
+<p><strong>Allow the backend and background jobs to log into devices with my credentials</strong> is on Settings → AI / LLM. It is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an <strong>[AUTO]</strong> line in the log. See <a href="../security/data-and-privacy.html">What leaves your laptop</a>.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="ai-features.html">AI features overview</a>

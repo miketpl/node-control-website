@@ -61,7 +61,6 @@ What is remembered is the last profile chosen for that task, pre-selected the ne
 
 When ISE (TACACS+) says at login that your password is about to expire, or that you must change it, Node Control shows that message. The terminal replays it before the prompt and repeats each notice in bold yellow. Tasks log it as well. See [SSH Terminal](../tasks/ssh-terminal.md).
 
-Changing an ISE network-access password is a Pro task: [Change ISE Password](../tasks/change-ise-password.md).
 
 ## Troubleshooting authentication
 

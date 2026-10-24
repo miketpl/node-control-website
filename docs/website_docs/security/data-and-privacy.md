@@ -30,7 +30,7 @@ With Ollama, the request stays on your network. See [AI features overview](../se
 
 ## Unattended device logins ([AUTO] lines)
 
-**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. The setting is visible on Free. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [How credentials are stored](credential-storage.md).
+**Allow the backend and background jobs to log into devices with my credentials** is off by default. Background Learning is a Pro and AI feature. On Free, the Settings → AI / LLM tab is not shown. Nothing on Free uses it. Unattended logins are opt-in. Every unattended login appears as an **[AUTO]** line in the log. See [How credentials are stored](credential-storage.md).
 
 ## Update checks and downloads
 

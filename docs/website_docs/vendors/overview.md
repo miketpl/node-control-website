@@ -12,7 +12,7 @@ Node Control connects to network devices over SSH using vendor-specific drivers 
 | [Cisco Meraki](meraki.md) | (Dashboard API, not SSH) | ✓ |
 | [Palo Alto PAN-OS](palo-alto.md) | `paloalto_panos` | ✓ First-class |
 | [HP ProCurve](hp-procurve.md) | `hp_procurve_cli` (aliased to `aruba_osswitch`) | ✓ First-class |
-| [Aruba CX](aruba.md) | `aruba_os` | ✓ |
+| [Aruba AOS-CX](aruba-aos-cx.md) | `aruba_os` | ✓ |
 | [Aruba OS-Switch](aruba.md) | `aruba_osswitch` | ✓ |
 | [Juniper Junos](juniper.md) | `juniper_junos` | ✓ |
 | [Arista EOS](arista.md) | `arista_eos` | ✓ |
@@ -63,6 +63,10 @@ Different firmware versions of the same vendor sometimes use slightly different 
 - For each device, on each command run, the result is recorded as "succeeded" or "failed"
 - Next time the same capability is needed on that device, the proven-working variant is tried first
 - Known-failed variants are skipped
+- A command that answers, but cannot be read, is logged as "answered but parsed to no entries". It is not stored as the preferred form. The next known form is tried
+- A blank answer does not mark a valid command as failed
+- The first form a device answers stays its preferred form. It does not flip between runs
+- When a vendor parser reads nothing, a generic table reader and a key/value reader are used
 
 This auto-tuning means a switch running an older firmware that doesn't understand `show mac-address` (modern Cisco) but does understand `show mac address` (older Cisco) gets the right command without manual configuration.
 
@@ -92,7 +96,8 @@ For quirks, gotchas, and feature gaps:
 - [Cisco IOS / IOS-XE / NX-OS / ASA](cisco.md)
 - [Palo Alto PAN-OS](palo-alto.md)
 - [HP ProCurve](hp-procurve.md)
-- [Aruba (CX, OS-Switch)](aruba.md)
+- [Aruba AOS-CX](aruba-aos-cx.md)
+- [Aruba OS-Switch](aruba.md)
 - [Juniper Junos](juniper.md)
 - [Arista EOS](arista.md)
 - [Dell OS6 / OS10](dell.md)

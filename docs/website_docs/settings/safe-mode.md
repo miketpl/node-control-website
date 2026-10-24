@@ -35,7 +35,6 @@ Safe Mode hides these from the dropdown:
 - **Save Config**
 - **File Transfer** (the task, not the File Transfer sidebar page)
 - **Packet Capture**
-- **Change ISE Password**
 
 **Config Compliance Remediate** stays out of Safe Mode. The audit task above does not offer remediation while Safe Mode is on.
 

@@ -20,6 +20,8 @@ Open **Reports** in the left sidebar. It is its own page, not a task in the Engi
 
 The Reports page is on Free. The only report that runs there is Inventory, and it covers the whole library, up to 25 devices. Every other report is Pro and the AI edition.
 
+Site Subnets is Pro and the AI edition. On AOS-CX it reads the per-VRF interface listing. On Arista EOS it has its own L3 command.
+
 ## Running a report
 
 1. **Reports** → pick a report from the list

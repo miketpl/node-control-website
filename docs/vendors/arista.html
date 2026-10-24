@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
       <a href="../tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="../tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="../tasks/change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="../tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="../tasks/serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="../tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -104,6 +103,7 @@
       <a href="palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
       <a href="hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
       <a href="aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
       <a href="juniper.html" class="docs-nav-link">Juniper Junos</a>
       <a href="arista.html" class="docs-nav-link active">Arista EOS</a>
       <a href="dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
@@ -156,16 +156,18 @@
 <li>Netmiko: <code>arista_eos</code></li>
 </ul>
 <h2 id="what-works">What works</h2>
-<p>Most things work through the EOS CLI. EOS reads LLDP and the MAC table. It does not read CDP.</p>
+<p>Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9.42 the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers.</p>
 <ul>
-<li>L2 topology maps are LLDP-only. The L2 Topology Builder does not use the MAC table. The native L2 and L3 reads also include STP, routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways</li>
+<li>L2 topology uses those EOS parsers for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table</li>
 <li>The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report</li>
 <li>Find Device&#x27;s per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP</li>
 <li>Port Utilisation</li>
-<li>Bandwidth</li>
+<li>Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family</li>
 <li>VLAN Port Finder</li>
 <li>Find Device</li>
-<li>Inventory</li>
+<li>Inventory reads the model, the serials, and the EOS version from EOS output</li>
+<li>On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed</li>
+<li>On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from <code>show version</code>. Site Subnets has its L3 command</li>
 <li>Monitor</li>
 </ul>
 <h2 id="detection">Detection</h2>

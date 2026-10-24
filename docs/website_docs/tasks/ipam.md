@@ -19,6 +19,8 @@ Columns:
 
 The list is the **Site Subnets** report. Run that report once and IPAM fills from it. The two cannot disagree, because IPAM does not keep a second copy of the list.
 
+On AOS-CX, Site Subnets reads the per-VRF interface listing. On Arista EOS, Site Subnets has its own L3 command.
+
 ## Scan usage
 
 **Scan usage** reads the ARP tables of the devices you select. An optional ping sweep catches hosts that are up but quiet.

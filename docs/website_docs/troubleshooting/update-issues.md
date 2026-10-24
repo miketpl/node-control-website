@@ -4,7 +4,7 @@ When **Help → Check for Updates...** does not work, or a download fails, or an
 
 ## Symptom 1 — you expected a newer version
 
-**Help → Check for Updates...** says **You're running the latest version (v0.9.41).** when nothing newer is offered. The version in parentheses is the one you are running.
+**Help → Check for Updates...** says **You're running the latest version (v0.9.42).** when nothing newer is offered. The version in parentheses is the one you are running.
 
 ### You're on a different edition
 
@@ -117,7 +117,7 @@ The dialog is **Update required.** The text is `This version (v…) is no longer
 
 ## When the check runs
 
-0.9.41 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
+0.9.42 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
 
 If the server says it is busy or paused, the app backs off for 24 hours by default.
 

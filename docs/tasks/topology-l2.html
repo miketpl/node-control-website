@@ -39,7 +39,7 @@
         <aside class="docs-sidebar" id="docsSidebar">
   <div class="docs-sidebar-header">
     <h3>Documentation</h3>
-    <span class="docs-version">Updated 23 October 2026</span>
+    <span class="docs-version">Updated 24 October 2026</span>
   </div>
   <nav class="docs-nav">
     <div class="docs-nav-section">
@@ -76,7 +76,6 @@
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
       <a href="packet-capture.html" class="docs-nav-link">Packet Capture</a>
       <a href="file-transfer.html" class="docs-nav-link">File Transfer</a>
-      <a href="change-ise-password.html" class="docs-nav-link">Change ISE Password</a>
       <a href="ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
       <a href="serial-console.html" class="docs-nav-link">Serial console</a>
       <a href="local-terminal.html" class="docs-nav-link">Local network terminal</a>
@@ -152,7 +151,7 @@
                 <h1 id="layer-2-topology-map">Layer 2 topology map</h1>
 <p><strong>L2 Topology Builder</strong> runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. On Free it is one of the five tasks that are not greyed out. Safe Mode leaves it in the list.</p>
 <p>The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.</p>
-<p>On Arista EOS the map is LLDP-only. The L2 Topology Builder does not use the MAC table on EOS, and EOS does not answer CDP.</p>
+<p>On Arista EOS the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers, for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table.</p>
 <h2 id="open-the-task">Open the task</h2>
 <ul>
 <li>Engineer command bar → <strong>Task</strong> → <strong>L2 Topology Builder</strong> → <strong>Run</strong>
@@ -205,8 +204,11 @@
 <li>Renders the result as an HTML file
 </li>
 </ol>
-<p>On Arista EOS the neighbour read is LLDP only. The builder does not run the MAC-table command, and it does not run CDP.</p>
+<p>On Arista EOS the neighbour read uses the EOS parsers for LLDP and CDP. The builder does not run the MAC-table command.</p>
 <p>Typical timing: 30–60 seconds per switch (parallelised). A 30-switch site map takes ~3–5 minutes.</p>
+<h2 id="one-cable-one-link">One cable, one link</h2>
+<p>A cable reported from both ends, with different port names, is drawn once. The link count in the header matches the number of cables.</p>
+<p>A link that would pass straight through another switch curves around it.</p>
 <h2 id="reading-the-map">Reading the map</h2>
 <p>The map opens in your browser. Each node represents one device:</p>
 <ul>
@@ -277,11 +279,11 @@
 </li>
 <li>HP ProCurve (with the recent classifier fixes — see <a href="../vendors/hp-procurve.html">HP ProCurve notes</a>)
 </li>
-<li>Aruba CX, Aruba OS-Switch
+<li>Aruba AOS-CX. The builder reads the LLDP neighbour table, then one per-port query per neighbour for its management address. MC-LAG legs to a VSX pair, the ISL, and LAG members are drawn and labelled like Cisco port-channel members. See <a href="../vendors/aruba-aos-cx.html">Aruba AOS-CX</a>. Aruba OS-Switch is supported as well
 </li>
 <li>Juniper Junos
 </li>
-<li>Arista EOS. Maps are LLDP-only. The builder does not use the MAC table, and EOS does not answer CDP
+<li>Arista EOS. The builder uses EOS parsers, not Cisco IOS parsers, for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table
 </li>
 <li>Dell OS6, OS10
 </li>

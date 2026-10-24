@@ -47,11 +47,12 @@ Hover a multi-VRF edge to see the per-VRF breakdown.
 
 | Vendor | Notes |
 |---|---|
-| Cisco IOS / IOS-XE / NX-OS | Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. NX-OS routes are read correctly |
-| Palo Alto PAN-OS | Walks every Logical Router via `show routing protocol` commands, unions across them. Several recent fixes in 0.9.x to capture all peers correctly |
+| Cisco IOS / IOS-XE / NX-OS | Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. Point-to-point OSPF neighbours are handled. When the VRF field is blank, the device's own VRFs from `show vrf` are walked. NX-OS route tables with long via lines are read correctly |
+| Palo Alto PAN-OS | Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall's routers are listed first and each router's FIB is read. Route tables are kept per router, one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error |
 | Juniper | OSPF + BGP via `show ospf neighbour` and `show bgp summary` |
-| Arista EOS | Routes, interfaces, IPv4 BGP, OSPF neighbours, and VRRP gateways. A VARP gateway resolves by subnet ownership |
-| HP ProCurve / Aruba CX | OSPF + BGP if licensed and configured |
+| Arista EOS | Routes, interfaces, and BGP peers are read as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed. A VARP gateway resolves by subnet ownership |
+| HP ProCurve | OSPF + BGP if licensed and configured |
+| Aruba AOS-CX | An access switch whose only default route is in the management VRF does not use that route as its gateway. Its VLANs resolve over LLDP to the nearest switch with an SVI for them. A VSX pair answers with its active-gateway virtual address, drawn as one link to each member. OSPF neighbours show their area |
 
 Devices without L3 capability (pure L2 access switches) don't appear on the L3 map even if they're in the library — only L3 hops show up.
 
