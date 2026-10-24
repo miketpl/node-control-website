@@ -9,7 +9,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | Feature | Free | Pro | AI |
 |---|:---:|:---:|:---:|
 | Device library | 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
-| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again. One computer per licence. In-app updates from 0.9.41 | Paid licence. One computer per licence. In-app updates from 0.9.41 | Not yet available to buy |
+| Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again. One computer per licence. In-app updates from 0.9.42 | Paid licence. One computer per licence. In-app updates from 0.9.42 | Not yet available to buy |
 | FREE VERSION badge in the status bar | ✓ | — | — |
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
 | **Sidebar** | | | |
