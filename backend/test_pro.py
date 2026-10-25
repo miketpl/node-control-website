@@ -500,6 +500,97 @@ class ProBillingTests(unittest.TestCase):
         self.assertNotIn('href="' + portal + '"', html_body)
         self.assertNotIn("&b=", html_body)
 
+    def test_public_stripe_routes_are_rate_limited(self):
+        def checkout(ip):
+            return self.client.post(
+                "/api/checkout",
+                json={"plan": "monthly"},
+                headers={"CF-Connecting-IP": ip},
+            )
+
+        with patch.object(
+            app.stripe.checkout.Session, "create",
+            return_value={"url": "https://checkout.stripe.test/c/pay", "id": "cs_rate"},
+        ):
+            for _ in range(10):
+                allowed = checkout("203.0.113.10")
+                self.assertEqual(allowed.status_code, 200)
+            blocked = checkout("203.0.113.10")
+            other = checkout("203.0.113.11")
+        self.assertEqual(blocked.status_code, 429)
+        self.assertGreater(int(blocked.headers["Retry-After"]), 0)
+        self.assertEqual(blocked.get_json()["error"], "Too many requests. Try again later.")
+        self.assertEqual(other.status_code, 200)
+
+        generic = {
+            "success": True,
+            "message": "If that address has a Professional subscription, we sent a link to manage it.",
+        }
+
+        def portal(ip, email):
+            return self.client.post(
+                "/api/portal",
+                json={"email": email},
+                headers={"CF-Connecting-IP": ip},
+            )
+
+        for _ in range(3):
+            known = portal("203.0.113.20", "Person@Example.com")
+            self.assertEqual(known.status_code, 200)
+            self.assertEqual(known.get_json(), generic)
+        limited_email = portal("203.0.113.20", "person@example.com")
+        self.assertEqual(limited_email.status_code, 429)
+        self.assertEqual(limited_email.get_json(), generic)
+        self.assertGreater(int(limited_email.headers["Retry-After"]), 0)
+        still_open = portal("203.0.113.20", "other@example.com")
+        self.assertEqual(still_open.status_code, 200)
+        self.assertEqual(still_open.get_json(), generic)
+        for n in range(8):
+            res = portal("203.0.113.21", f"user{n}@example.com")
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(res.get_json(), generic)
+        # Two of the ten are already used by the email-limit checks above? No, different IP.
+        # 203.0.113.21 has 8. Two more, then the eleventh.
+        self.assertEqual(portal("203.0.113.21", "user8@example.com").status_code, 200)
+        self.assertEqual(portal("203.0.113.21", "user9@example.com").status_code, 200)
+        ip_blocked = portal("203.0.113.21", "user10@example.com")
+        self.assertEqual(ip_blocked.status_code, 429)
+        self.assertEqual(ip_blocked.get_json(), generic)
+        unknown = portal("203.0.113.22", "nobody@example.com")
+        self.assertEqual(unknown.status_code, 200)
+        self.assertEqual(unknown.get_json(), generic)
+
+        def session(ip, session_id="cs_rate_session"):
+            return self.client.get(
+                "/api/pro/session?session_id=" + session_id,
+                headers={"CF-Connecting-IP": ip},
+            )
+
+        with patch.object(app.stripe.checkout.Session, "retrieve", return_value={"status": "open"}):
+            for _ in range(30):
+                self.assertNotEqual(session("203.0.113.30").status_code, 429)
+            ip_session = session("203.0.113.30")
+            for n in range(60):
+                self.assertNotEqual(session(f"203.0.113.{40 + n}", "cs_same").status_code, 429)
+            same_session = session("198.51.100.9", "cs_same")
+        self.assertEqual(ip_session.status_code, 429)
+        self.assertIn("Retry-After", ip_session.headers)
+        self.assertEqual(same_session.status_code, 429)
+        self.assertIn("Retry-After", same_session.headers)
+
+        def download(ip):
+            return self.client.get(
+                "/api/pro/download?token=not-a-token",
+                headers={"CF-Connecting-IP": ip},
+            )
+
+        for _ in range(20):
+            self.assertEqual(download("203.0.113.90").status_code, 403)
+        limited_download = download("203.0.113.90")
+        self.assertEqual(limited_download.status_code, 429)
+        self.assertGreater(int(limited_download.headers["Retry-After"]), 0)
+        self.assertEqual(download("203.0.113.91").status_code, 403)
+
     def test_allowlist_defaults_are_the_live_repo(self):
         source_path = os.path.join(os.path.dirname(__file__), "app.py")
         with open(source_path, encoding="utf-8") as handle:
