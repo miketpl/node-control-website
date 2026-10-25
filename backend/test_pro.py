@@ -108,6 +108,7 @@ class ProBillingTests(unittest.TestCase):
         db.execute("DELETE FROM pro_subscriptions")
         db.execute("DELETE FROM stripe_events")
         db.execute("DELETE FROM pro_keys")
+        db.execute("DELETE FROM purchase_intents")
         db.commit()
         db.close()
 
@@ -499,6 +500,95 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn(">Cancel or update the card</", html_body)
         self.assertNotIn('href="' + portal + '"', html_body)
         self.assertNotIn("&b=", html_body)
+
+    def test_website_checkout_does_not_need_an_intent(self):
+        self._sub("sub_site")
+        res = self._post_event("evt_site", "checkout.session.completed", {
+            "id": "cs_site",
+            "mode": "subscription",
+            "payment_status": "paid",
+            "customer": "cus_1",
+            "customer_email": "payer@example.com",
+            "customer_details": {"email": "payer@example.com", "name": "Ada"},
+            "subscription": "sub_site",
+            "metadata": {"plan": "monthly"},
+        })
+        self.assertEqual(res.status_code, 200)
+        db = app.get_db()
+        count = db.execute("SELECT COUNT(*) AS c FROM purchase_intents").fetchone()["c"]
+        db.close()
+        self.assertEqual(count, 0)
+        self.assertEqual(app._get_pro_row_by_subscription("sub_site")["status"], "active")
+
+        self._sub("sub_unknown_intent")
+        unknown = self._post_event("evt_unknown_intent", "checkout.session.completed", {
+            "id": "cs_unknown",
+            "mode": "subscription",
+            "payment_status": "paid",
+            "customer": "cus_1",
+            "customer_email": "payer@example.com",
+            "customer_details": {"email": "payer@example.com", "name": "Ada"},
+            "subscription": "sub_unknown_intent",
+            "client_reference_id": "deadbeef" * 4,
+            "metadata": {"plan": "monthly", "intent_id": "deadbeef" * 4, "source": "app"},
+        })
+        self.assertEqual(unknown.status_code, 200)
+        self.assertEqual(app._get_pro_row_by_subscription("sub_unknown_intent")["status"], "active")
+        db = app.get_db()
+        count = db.execute("SELECT COUNT(*) AS c FROM purchase_intents").fetchone()["c"]
+        db.close()
+        self.assertEqual(count, 0)
+
+    def test_invoice_events_read_newer_subscription_ids(self):
+        self._checkout("evt_parent_seed", "sub_parent", "payer@example.com", session_id="cs_parent")
+        self.subs["sub_parent"]["current_period_end"] = 1910000000
+        parent = self._post_event("evt_parent_invoice", "invoice.paid", {
+            "customer": "cus_1",
+            "customer_email": "payer@example.com",
+            "parent": {"subscription_details": {"subscription": "sub_parent"}},
+        })
+        self.assertEqual(parent.status_code, 200)
+        self.assertEqual(
+            app._get_pro_row_by_subscription("sub_parent")["current_period_end"],
+            app._period_end_iso(self.subs["sub_parent"]),
+        )
+
+        self._checkout("evt_line_seed", "sub_line", "payer@example.com", session_id="cs_line")
+        self.subs["sub_line"]["current_period_end"] = 1920000000
+        lines = self._post_event("evt_line_invoice", "invoice.paid", {
+            "customer": "cus_1",
+            "customer_email": "payer@example.com",
+            "lines": {"data": [{
+                "parent": {"subscription_item_details": {"subscription": "sub_line"}},
+            }]},
+        })
+        self.assertEqual(lines.status_code, 200)
+        self.assertEqual(
+            app._get_pro_row_by_subscription("sub_line")["current_period_end"],
+            app._period_end_iso(self.subs["sub_line"]),
+        )
+
+        self._checkout("evt_line_sub_seed", "sub_line_direct", "payer@example.com", session_id="cs_line_direct")
+        self.subs["sub_line_direct"]["current_period_end"] = 1930000000
+        direct = self._post_event("evt_line_direct", "invoice.paid", {
+            "customer": "cus_1",
+            "customer_email": "payer@example.com",
+            "lines": {"data": [{"subscription": "sub_line_direct"}]},
+        })
+        self.assertEqual(direct.status_code, 200)
+        self.assertEqual(
+            app._get_pro_row_by_subscription("sub_line_direct")["current_period_end"],
+            app._period_end_iso(self.subs["sub_line_direct"]),
+        )
+
+        self._checkout("evt_fail_shape", "sub_fail_shape", "payer@example.com", session_id="cs_fail_shape")
+        self.subs["sub_fail_shape"]["status"] = "past_due"
+        failed = self._post_event("evt_fail_shape_invoice", "invoice.payment_failed", {
+            "customer_email": "payer@example.com",
+            "parent": {"subscription_details": {"subscription": {"id": "sub_fail_shape"}}},
+        })
+        self.assertEqual(failed.status_code, 200)
+        self.assertEqual(app._get_pro_row_by_subscription("sub_fail_shape")["status"], "past_due")
 
     def test_allowlist_defaults_are_the_live_repo(self):
         source_path = os.path.join(os.path.dirname(__file__), "app.py")

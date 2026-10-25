@@ -731,6 +731,11 @@ class LicenceApiTests(unittest.TestCase):
             events = db.execute(
                 "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'download_events'"
             ).fetchone()
+            key_cols = {row["name"] for row in db.execute("PRAGMA table_info(pro_keys)")}
+            intents = db.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
+            ).fetchone()
+            intent_cols = {row["name"] for row in db.execute("PRAGMA table_info(purchase_intents)")}
         finally:
             db.close()
             os.unlink(path.name)
@@ -749,6 +754,114 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(row["landing_page"], "")
         self.assertIsNotNone(index)
         self.assertIsNotNone(events)
+        self.assertIn("free_license_id", key_cols)
+        self.assertIsNotNone(intents)
+        self.assertIn("claimed_at", intent_cols)
+
+    def test_migrate_adds_free_license_id_to_an_existing_pro_keys_table(self):
+        path = tempfile.NamedTemporaryFile(prefix="nc-migrate-pro-", suffix=".db", delete=False)
+        path.close()
+        raw = sqlite3.connect(path.name)
+        raw.execute("""
+            CREATE TABLE licenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                company TEXT DEFAULT '',
+                platform TEXT DEFAULT '',
+                tier TEXT DEFAULT 'free',
+                status TEXT DEFAULT 'active',
+                created_at TEXT NOT NULL,
+                verified_at TEXT,
+                redeemed_at TEXT,
+                download_count INTEGER DEFAULT 0,
+                ip_address TEXT DEFAULT '',
+                utm_source TEXT DEFAULT '',
+                utm_medium TEXT DEFAULT '',
+                utm_campaign TEXT DEFAULT ''
+            )
+        """)
+        raw.execute(
+            """INSERT INTO licenses
+               (code, name, email, created_at, download_count)
+               VALUES (?, ?, ?, ?, 1)""",
+            ("NC-PART-0003", "Person", "part@example.com", "2026-01-03T00:00:00"),
+        )
+        raw.execute("""
+            CREATE TABLE pro_keys (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key_hash TEXT UNIQUE NOT NULL,
+                key_last4 TEXT NOT NULL,
+                email TEXT NOT NULL,
+                source TEXT NOT NULL,
+                status TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
+        raw.execute(
+            """INSERT INTO pro_keys (key_hash, key_last4, email, source, status, created_at)
+               VALUES ('hash', '1234', 'kept@example.com', 'manual', 'active', '2026-01-03T00:00:00')"""
+        )
+        raw.execute("""
+            CREATE TABLE purchase_intents (
+                id TEXT PRIMARY KEY,
+                free_license_id INTEGER NOT NULL,
+                install_id TEXT NOT NULL,
+                plan TEXT NOT NULL,
+                status TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                expires_at TEXT NOT NULL
+            )
+        """)
+        raw.execute(
+            """INSERT INTO purchase_intents (
+                   id, free_license_id, install_id, plan, status, created_at, updated_at, expires_at
+               ) VALUES ('old-intent', 1, 'install-old', 'monthly', 'pending',
+                         '2026-01-03T00:00:00', '2026-01-03T00:00:00', '2026-01-04T00:00:00')"""
+        )
+        raw.commit()
+        raw.close()
+
+        ctx = multiprocessing.get_context("fork")
+        proc = ctx.Process(target=_migrate_in_child, args=(path.name,))
+        proc.start()
+        proc.join(15)
+        self.assertFalse(proc.is_alive())
+        self.assertEqual(proc.exitcode, 0, f"migrate process exited {proc.exitcode}")
+
+        db = sqlite3.connect(path.name)
+        db.row_factory = sqlite3.Row
+        try:
+            cols = {row["name"] for row in db.execute("PRAGMA table_info(pro_keys)")}
+            row = db.execute("SELECT email, free_license_id FROM pro_keys").fetchone()
+            intents = db.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
+            ).fetchone()
+            intent_cols = {item["name"] for item in db.execute("PRAGMA table_info(purchase_intents)")}
+            old_intent = db.execute(
+                "SELECT status, claimed_at FROM purchase_intents WHERE id = 'old-intent'"
+            ).fetchone()
+        finally:
+            db.close()
+            os.unlink(path.name)
+            lock = path.name + ".migrate.lock"
+            if os.path.exists(lock):
+                os.unlink(lock)
+        self.assertIn("free_license_id", cols)
+        self.assertEqual(row["email"], "kept@example.com")
+        self.assertIsNone(row["free_license_id"])
+        self.assertIsNotNone(intents)
+        self.assertIn("claimed_at", intent_cols)
+        self.assertEqual(old_intent["status"], "pending")
+        self.assertIn(old_intent["claimed_at"], ("", None))
+
+        empty = sqlite3.connect(":memory:")
+        try:
+            api._add_free_license_column(empty)
+        finally:
+            empty.close()
 
 
 if __name__ == "__main__":

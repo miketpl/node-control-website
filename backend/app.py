@@ -270,6 +270,46 @@ def _add_license_column(db, column):
             raise
 
 
+def _add_free_license_column(db):
+    """Add pro_keys.free_license_id on databases created before the in-app upgrade.
+
+    A missing table is left alone. A duplicate column means the other worker won.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'pro_keys'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(pro_keys)")}
+    if "free_license_id" in have:
+        return
+    try:
+        db.execute("ALTER TABLE pro_keys ADD COLUMN free_license_id INTEGER")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_claimed_at_column(db):
+    """Add purchase_intents.claimed_at on databases created before repeatable claim.
+
+    A missing table is left alone. A duplicate column means the other worker won.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(purchase_intents)")}
+    if "claimed_at" in have:
+        return
+    try:
+        db.execute("ALTER TABLE purchase_intents ADD COLUMN claimed_at TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
 def _apply_schema(db, statement):
     """Run one CREATE TABLE or CREATE INDEX. IF NOT EXISTS, and ignore a race."""
     try:
@@ -325,6 +365,8 @@ def migrate_db():
             from alerts import SCHEMA as ALERT_SCHEMA
             for statement in ALERT_SCHEMA:
                 _apply_schema(db, statement)
+            _add_free_license_column(db)
+            _add_claimed_at_column(db)
             db.commit()
         except Exception:
             db.rollback()
@@ -844,6 +886,40 @@ def _stripe_id(value):
     if isinstance(value, str):
         return value
     return _as_mapping(value).get("id") or ""
+
+
+def _invoice_subscription_id(invoice):
+    """Subscription id from an invoice, including newer Stripe API shapes.
+
+    Older invoices put it on invoice.subscription. Newer ones nest it under
+    parent.subscription_details, or on a line item.
+    """
+    invoice = _as_mapping(invoice)
+    found = _stripe_id(invoice.get("subscription"))
+    if found:
+        return found
+    parent = _as_mapping(invoice.get("parent"))
+    details = _as_mapping(parent.get("subscription_details"))
+    found = _stripe_id(details.get("subscription"))
+    if found:
+        return found
+    lines = invoice.get("lines") or {}
+    if not isinstance(lines, dict):
+        lines = _as_mapping(lines)
+    data = lines.get("data") or []
+    if isinstance(data, dict):
+        data = [data]
+    for line in data:
+        line = _as_mapping(line)
+        line_parent = _as_mapping(line.get("parent"))
+        item = _as_mapping(line_parent.get("subscription_item_details"))
+        found = _stripe_id(item.get("subscription"))
+        if found:
+            return found
+        found = _stripe_id(line.get("subscription"))
+        if found:
+            return found
+    return ""
 
 
 def _registrations_pat():
@@ -1432,6 +1508,69 @@ def _handle_checkout_completed(session):
     # is not paid yet does not either.
     if session.get("payment_status") == "paid":
         _queue_pro_purchase_alert(subscription_id)
+    _link_purchase_intent(session, subscription_id)
+
+
+def _link_purchase_intent(session, subscription_id):
+    """Mark an in-app upgrade paid and remember which Free licence it came from.
+
+    Website checkouts have no intent id. Those return without changing anything.
+    A matching intent with no stored key is a failure, so Stripe retries.
+    """
+    session = _as_mapping(session)
+    metadata = session.get("metadata") or {}
+    if not isinstance(metadata, dict):
+        metadata = _as_mapping(metadata)
+    intent_id = str(session.get("client_reference_id") or metadata.get("intent_id") or "").strip()
+    if not intent_id:
+        return
+    import licence_v1
+    db = get_db()
+    try:
+        intent = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        if not intent:
+            return
+        key = db.execute(
+            "SELECT id FROM pro_keys WHERE subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+        if not key:
+            raise RuntimeError("Professional key was not stored for this checkout")
+        now = licence_v1.iso(licence_v1.utcnow())
+        session_id = session.get("id") or intent["stripe_session_id"] or ""
+        if intent["status"] in ("pending", "expired"):
+            # A late webhook still pays an intent whose 24-hour window already closed.
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET status = 'paid', stripe_session_id = ?, pro_key_id = ?, updated_at = ?
+                WHERE id = ? AND status IN ('pending', 'expired')
+                """,
+                (session_id, int(key["id"]), now, intent_id),
+            )
+        elif not intent["pro_key_id"]:
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET stripe_session_id = ?, pro_key_id = ?, updated_at = ?
+                WHERE id = ? AND pro_key_id IS NULL
+                """,
+                (session_id, int(key["id"]), now, intent_id),
+            )
+        db.execute(
+            """
+            UPDATE pro_keys
+            SET free_license_id = ?
+            WHERE id = ? AND (free_license_id IS NULL OR free_license_id = 0)
+            """,
+            (int(intent["free_license_id"]), int(key["id"])),
+        )
+        db.commit()
+    finally:
+        db.close()
 
 
 def _queue_pro_purchase_alert(subscription_id):
@@ -1455,7 +1594,7 @@ def _queue_pro_purchase_alert(subscription_id):
 
 def _handle_invoice_paid(invoice):
     invoice = _as_mapping(invoice)
-    subscription_id = _stripe_id(invoice.get("subscription"))
+    subscription_id = _invoice_subscription_id(invoice)
     if not subscription_id:
         return
     sub = _load_subscription(subscription_id)
@@ -1520,7 +1659,7 @@ def _handle_subscription_change(sub, deleted=False):
 
 def _handle_payment_failed(invoice):
     invoice = _as_mapping(invoice)
-    subscription_id = _stripe_id(invoice.get("subscription"))
+    subscription_id = _invoice_subscription_id(invoice)
     if not subscription_id:
         return
     sub = _load_subscription(subscription_id)
@@ -1624,6 +1763,35 @@ def _pro_asset_redirect(platform):
     if not location or pat in location:
         raise RuntimeError("Pro asset redirect was missing a usable URL")
     return location
+
+
+def create_app_checkout_session(email, plan, intent_id):
+    """Stripe Checkout for an in-app Free-to-Pro upgrade. Raises if Stripe is down."""
+    price = (
+        app.config.get("STRIPE_PRICE_PRO_MONTHLY")
+        if plan == "monthly"
+        else app.config.get("STRIPE_PRICE_PRO_ANNUAL")
+    )
+    if not (app.config.get("STRIPE_SECRET_KEY") or "").strip() or not (price or "").strip():
+        raise RuntimeError("Stripe checkout is not configured")
+    site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    params = {
+        "mode": "subscription",
+        "line_items": [{"price": price, "quantity": 1}],
+        "success_url": site + "/pro-success.html?session_id={CHECKOUT_SESSION_ID}&from=app",
+        "cancel_url": site + "/#pricing",
+        "automatic_tax": {"enabled": True},
+        "billing_address_collection": "required",
+        "tax_id_collection": {"enabled": True},
+        "client_reference_id": intent_id,
+        "metadata": {"plan": plan, "intent_id": intent_id, "source": "app"},
+        "subscription_data": {"metadata": {"plan": plan}},
+    }
+    email = (email or "").strip().lower()
+    if email and "@" in email:
+        params["customer_email"] = email
+    stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+    return _as_mapping(stripe.checkout.Session.create(**params))
 
 
 @app.route("/api/checkout", methods=["POST"])
