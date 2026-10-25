@@ -2655,6 +2655,200 @@ def _rollup_bounds(since, until):
     return start, end, exclusive
 
 
+_USAGE_TIERS = ("free", "pro", "ai")
+
+
+def _usage_number(value):
+    """A stored counter. Bool is a subclass of int and is not a count."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    if value < 0:
+        return None
+    return value
+
+
+def _median(sorted_values):
+    count = len(sorted_values)
+    if count == 0:
+        return 0
+    middle = count // 2
+    if count % 2:
+        return int(sorted_values[middle])
+    left = int(sorted_values[middle - 1])
+    right = int(sorted_values[middle])
+    average = (left + right) / 2
+    if average.is_integer():
+        return int(average)
+    return average
+
+
+def _nearest_rank(sorted_values, numerator, denominator):
+    """Nearest-rank percentile. p90 is numerator 9, denominator 10."""
+    count = len(sorted_values)
+    if count == 0:
+        return 0
+    rank = (numerator * count + denominator - 1) // denominator
+    index = min(count - 1, max(0, rank - 1))
+    return int(sorted_values[index])
+
+
+def _count_by_label(db, column):
+    """Distinct installs per a fixed telemetry column. Blank labels are omitted."""
+    rows = db.execute(
+        f"""
+        SELECT COALESCE({column}, '') AS label, COUNT(DISTINCT install_id) AS count
+        FROM telemetry_sessions
+        GROUP BY {column}
+        ORDER BY label
+        """
+    ).fetchall()
+    return {row["label"]: int(row["count"] or 0) for row in rows if row["label"]}
+
+
+def _usage_counts(db, now):
+    """Counts from telemetry_sessions and telemetry_monthly.
+
+    No install ids leave this function. Monthly rows have already summed
+    installs inside each month, so adding install_count can count one
+    install again when it spans two months. Session rows are still distinct.
+    Opt-outs are not stored, so this object has no opt-out count.
+    """
+    cutoffs = {
+        "1": iso(now - timedelta(days=1)),
+        "7": iso(now - timedelta(days=7)),
+        "30": iso(now - timedelta(days=30)),
+    }
+    active = {label: {tier: 0 for tier in _USAGE_TIERS} for label in cutoffs}
+    seen = db.execute(
+        """
+        SELECT COALESCE(tier, '') AS tier, install_id, MAX(last_received_at) AS seen
+        FROM telemetry_sessions
+        WHERE last_received_at >= ?
+        GROUP BY tier, install_id
+        """,
+        (cutoffs["30"],),
+    ).fetchall()
+    for row in seen:
+        tier = row["tier"]
+        for label, cutoff in cutoffs.items():
+            if (row["seen"] or "") < cutoff:
+                continue
+            bucket = active[label]
+            if tier not in bucket:
+                bucket[tier] = 0
+            bucket[tier] += 1
+
+    today = now.date()
+    start_day = (today - timedelta(days=29)).isoformat()
+    end_day = today.isoformat()
+    per_day = {
+        row["day"]: int(row["count"] or 0)
+        for row in db.execute(
+            """
+            SELECT session_start_date AS day, COUNT(*) AS count
+            FROM telemetry_sessions
+            WHERE session_start_date >= ? AND session_start_date <= ?
+            GROUP BY session_start_date
+            """,
+            (start_day, end_day),
+        )
+    }
+    sessions_per_day = []
+    for offset in range(29, -1, -1):
+        day = (today - timedelta(days=offset)).isoformat()
+        sessions_per_day.append({"day": day, "sessions": per_day.get(day, 0)})
+
+    uses = {}
+    session_hits = {}
+    install_hits = {}
+    for row in db.execute("SELECT install_id, tasks_json FROM telemetry_sessions"):
+        try:
+            parsed = json.loads(row["tasks_json"] or "{}")
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(parsed, dict):
+            continue
+        for name, value in parsed.items():
+            if not isinstance(name, str) or not name:
+                continue
+            number = _usage_number(value)
+            if number is None:
+                continue
+            uses[name] = uses.get(name, 0) + number
+            if number <= 0:
+                continue
+            session_hits[name] = session_hits.get(name, 0) + 1
+            install_hits.setdefault(name, set()).add(row["install_id"])
+
+    extra_duration = 0
+    extra_connections = 0
+    extra_errors = 0
+    monthly_installs = {}
+    for row in db.execute(
+        """
+        SELECT counter_name,
+               COALESCE(SUM(total), 0) AS total,
+               COALESCE(SUM(session_count), 0) AS sessions,
+               COALESCE(SUM(install_count), 0) AS installs
+        FROM telemetry_monthly
+        GROUP BY counter_name
+        """
+    ):
+        name = row["counter_name"] or ""
+        total = int(row["total"] or 0)
+        if name == "duration_s":
+            extra_duration += total
+        elif name == "connections_opened":
+            extra_connections += total
+        elif name == "errors":
+            extra_errors += total
+        elif name:
+            uses[name] = uses.get(name, 0) + total
+            session_hits[name] = session_hits.get(name, 0) + int(row["sessions"] or 0)
+            monthly_installs[name] = monthly_installs.get(name, 0) + int(row["installs"] or 0)
+
+    tasks = {}
+    for name in sorted(set(uses) | set(session_hits) | set(monthly_installs)):
+        task_uses = int(uses.get(name, 0))
+        task_sessions = int(session_hits.get(name, 0))
+        task_installs = len(install_hits.get(name, ())) + int(monthly_installs.get(name, 0))
+        if task_uses == 0 and task_sessions == 0 and task_installs == 0:
+            continue
+        tasks[name] = {
+            "uses": task_uses,
+            "sessions": task_sessions,
+            "installs": task_installs,
+        }
+
+    durations = []
+    connections = extra_connections
+    errors = extra_errors
+    for row in db.execute(
+        "SELECT duration_s, connections_opened, errors FROM telemetry_sessions"
+    ):
+        durations.append(int(row["duration_s"] or 0))
+        connections += int(row["connections_opened"] or 0)
+        errors += int(row["errors"] or 0)
+    durations.sort()
+    total_seconds = sum(durations) + extra_duration
+    return {
+        "active_installs": active,
+        "sessions_per_day": sessions_per_day,
+        "tasks": tasks,
+        "session_length": {
+            "median_s": _median(durations),
+            "p90_s": _nearest_rank(durations, 9, 10),
+            "total_hours": round(total_seconds / 3600, 2),
+        },
+        "connections": connections,
+        "errors": errors,
+        "installs_by_app_version": _count_by_label(db, "app_version"),
+        "installs_by_os": _count_by_label(db, "os_family"),
+        "installs_by_os_version": _count_by_label(db, "os_major"),
+        "installs_by_chip": _count_by_label(db, "arch"),
+    }
+
+
 def admin_stats_v1():
     """Aggregate counts for a read-only dashboard. No emails, keys, install ids, or IPs.
 
@@ -2783,6 +2977,7 @@ def admin_stats_v1():
                 ORDER BY month, tier, version, os
             """
         rollups = db.execute(rollup_sql, (month_start, month_end)).fetchall()
+        usage = _usage_counts(db, utcnow())
         telemetry = (
             _labelled(sessions, ("status", "tier", "version", "os"))
             + _labelled(installs, ("status", "tier"))
@@ -2831,6 +3026,7 @@ def admin_stats_v1():
         "devices": devices,
         "registrations": registrations,
         "telemetry": telemetry,
+        "usage": usage,
         "downloads": downloads,
         "update_checks": update_checks,
         "flags": {
