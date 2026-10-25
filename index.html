@@ -18,7 +18,7 @@
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="css/style.css?v=20261025safety">
 </head>
 <body>
 
@@ -180,6 +180,24 @@
                     <p>Bring your own AI provider, with your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend). Reports, task summaries, the firewall analyser, and an architect review of the estate. The anonymiser runs first.</p>
                 </div>
 
+            </div>
+
+            <div class="safety-block">
+                <h2 class="section-title">Built to be safe on production networks</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Read-only stays read-only</h3>
+                        <p>Read-only reports and tasks can't run config-altering commands by mistake. The safe list applies in Safe Mode and in Config Mode, on Free and on Pro: a report command has to match the report allowlist or it is refused, and each read-only task checks its own allowlist.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Safe Mode</h3>
+                        <p>The app has Safe Mode and Config Mode. Safe Mode blocks tasks that change config, and it blocks config commands typed at the terminal prompt.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Config Push <span class="tier-badge">Pro</span></h3>
+                        <p>Config Push never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. A revert restores the interface config saved before the push, only on Cisco IOS, IOS-XE, and NX-OS, and you type REVERT to arm it.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
