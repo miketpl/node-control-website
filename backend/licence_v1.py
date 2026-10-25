@@ -71,15 +71,14 @@ TASK_ALLOW = {
     "save_configs",
     "interface_config_pushes",
     "scripts_run",
-    # The desktop app also counts these. The app repo was not readable
-    # here, so the names follow the existing counter style. See the PR.
-    "compliance_audits",
-    "compliance_remediations",
+    # Keys match controllers/tasks.py in the app.
+    "config_compliance_audits",
+    "config_compliance_remediations",
     "hostname_refreshes",
-    "device_type_checks",
-    "variable_discovery",
+    "device_type_verifications",
+    "variable_discoveries",
     "ise_password_changes",
-    "find_device",
+    "find_device_searches",
 }
 DROP_FIELDS = {"user_name", "company", "hostname", "machine_id", "machine_hash"}
 FLAG_KEYS = (
