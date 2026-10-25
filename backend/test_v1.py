@@ -721,6 +721,53 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(removed.status_code, 200)
         self.assertGreaterEqual(removed.get_json()["deleted"], 1)
 
+    def test_telemetry_stores_the_extra_task_counters(self):
+        self._activate(self.free["code"], self.install_a)
+        expected = {
+            "config_compliance_audits": 1,
+            "config_compliance_remediations": 2,
+            "hostname_refreshes": 3,
+            "device_type_verifications": 4,
+            "variable_discoveries": 5,
+            "ise_password_changes": 6,
+            "find_device_searches": 7,
+        }
+        guessed = {
+            "compliance_audits": 11,
+            "compliance_remediations": 12,
+            "device_type_checks": 13,
+            "variable_discovery": 14,
+            "find_device": 15,
+        }
+        body = {
+            "schema": 1,
+            "session_id": "0123456789abcdef",
+            "session_start_at": "2026-10-21T08:00:00Z",
+            "last_flush_at": "2026-10-21T09:00:00Z",
+            "app_version": "0.9.41",
+            "tier": "free",
+            "os_family": "Linux",
+            "os_major": "6",
+            "arch": "x86_64",
+            "session_duration_s": 10,
+            "tasks": {**expected, **guessed, "not_a_real_counter": 9},
+            "connections_opened": 1,
+            "errors": 0,
+        }
+        accepted = self.client.post(
+            "/api/v1/app/telemetry",
+            json=body,
+            headers=self._headers(self.free["code"], self.install_a),
+        )
+        self.assertEqual(accepted.status_code, 202)
+        db = get_db()
+        row = db.execute("SELECT tasks_json FROM telemetry_sessions").fetchone()
+        db.close()
+        stored = json.loads(row["tasks_json"])
+        self.assertEqual(stored, expected)
+        for name in guessed:
+            self.assertNotIn(name, stored)
+
     def test_rate_limit_and_client_ip(self):
         for _ in range(10):
             res = self._activate(self.free["code"], self.install_a)
