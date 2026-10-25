@@ -149,7 +149,8 @@ V1_SCHEMA = (
         pro_key_id INTEGER,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
-        expires_at TEXT NOT NULL
+        expires_at TEXT NOT NULL,
+        claimed_at TEXT DEFAULT ''
     )
     """,
     """
@@ -3139,7 +3140,10 @@ def app_checkout():
         logger.exception("App checkout session was not created")
         db = api.get_db()
         db.execute(
-            "UPDATE purchase_intents SET status = 'expired', updated_at = ? WHERE id = ?",
+            """
+            UPDATE purchase_intents SET status = 'expired', updated_at = ?
+            WHERE id = ? AND status = 'pending'
+            """,
             (iso(utcnow()), intent_id),
         )
         db.commit()
@@ -3150,7 +3154,10 @@ def app_checkout():
     if not url:
         db = api.get_db()
         db.execute(
-            "UPDATE purchase_intents SET status = 'expired', updated_at = ? WHERE id = ?",
+            """
+            UPDATE purchase_intents SET status = 'expired', updated_at = ?
+            WHERE id = ? AND status = 'pending'
+            """,
             (iso(utcnow()), intent_id),
         )
         db.commit()
@@ -3188,7 +3195,11 @@ def _intent_for_caller(record, install_id, intent_id):
 
 
 def purchase_status():
-    """Poll a Free-to-Pro purchase. The Professional key is returned once."""
+    """Poll a Free-to-Pro purchase. The same install can read the key again.
+
+    Pending intents expire after expires_at. A paid or claimed intent stays
+    payable to its own licence and install, and the reply is always status paid.
+    """
     ctx, err = _guard("purchase-status", needs_device=False)
     if err:
         return err
@@ -3205,26 +3216,25 @@ def purchase_status():
     if not row:
         return error(404, "not_found", "That purchase was not found.")
     plan = row["plan"]
-    if row["status"] == "claimed":
-        return jsonify({"status": "claimed", "plan": plan})
-    if row["status"] == "expired":
-        return jsonify({"status": "expired", "plan": plan})
-    expires = parse_iso(row["expires_at"])
-    if not expires or expires < utcnow():
-        if row["status"] != "expired":
+    if row["status"] == "pending":
+        expires = parse_iso(row["expires_at"])
+        if not expires or expires < utcnow():
             api = _api()
             db = api.get_db()
             db.execute(
                 """
                 UPDATE purchase_intents SET status = 'expired', updated_at = ?
-                WHERE id = ? AND status != 'claimed'
+                WHERE id = ? AND status = 'pending'
                 """,
                 (iso(utcnow()), intent_id),
             )
             db.commit()
             db.close()
+            return jsonify({"status": "expired", "plan": plan})
+        return jsonify({"status": "pending", "plan": plan})
+    if row["status"] == "expired":
         return jsonify({"status": "expired", "plan": plan})
-    if row["status"] != "paid" or not row["pro_key_id"]:
+    if row["status"] not in ("paid", "claimed") or not row["pro_key_id"]:
         return jsonify({"status": "pending", "plan": plan})
     blocked = _block_test_pro_key(row["pro_key_id"])
     if blocked:
@@ -3241,13 +3251,13 @@ def purchase_status():
             not current
             or int(current["free_license_id"]) != int(record["id"])
             or current["install_id"] != ctx["install_id"]
-            or current["status"] != "paid"
-            or not current["pro_key_id"]
         ):
             db.commit()
-            status_name = current["status"] if current else "pending"
-            if status_name == "claimed":
-                return jsonify({"status": "claimed", "plan": plan})
+            return error(404, "not_found", "That purchase was not found.")
+        if current["status"] not in ("paid", "claimed") or not current["pro_key_id"]:
+            db.commit()
+            if current["status"] == "expired":
+                return jsonify({"status": "expired", "plan": plan})
             return jsonify({"status": "pending", "plan": plan})
         key_row = db.execute(
             "SELECT reveal_blob FROM pro_keys WHERE id = ?",
@@ -3257,17 +3267,17 @@ def purchase_status():
             db.commit()
             return jsonify({"status": "pending", "plan": plan})
         plain = decrypt_secret(key_row["reveal_blob"])
-        claimed = db.execute(
-            """
-            UPDATE purchase_intents SET status = 'claimed', updated_at = ?
-            WHERE id = ? AND status = 'paid'
-              AND free_license_id = ? AND install_id = ?
-            """,
-            (iso(utcnow()), intent_id, record["id"], ctx["install_id"]),
-        )
-        if claimed.rowcount != 1:
-            db.commit()
-            return jsonify({"status": "claimed", "plan": plan})
+        if current["status"] == "paid":
+            now = iso(utcnow())
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET status = 'claimed', claimed_at = ?, updated_at = ?
+                WHERE id = ? AND status = 'paid'
+                  AND free_license_id = ? AND install_id = ?
+                """,
+                (now, now, intent_id, record["id"], ctx["install_id"]),
+            )
         db.commit()
     except Exception:
         db.rollback()

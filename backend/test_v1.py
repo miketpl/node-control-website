@@ -1611,6 +1611,17 @@ class V1Tests(unittest.TestCase):
         self.assertIn('id="proAppReturn"', html_page)
         self.assertIn("params.get('from') === 'app'", html_page)
         self.assertIn("go back to Node Control", html_page)
+        app_at = html_page.index("params.get('from') === 'app'")
+        app_return = html_page.index("return;", app_at)
+        app_branch = html_page[app_at:app_return]
+        self.assertNotIn("licence_key", app_branch)
+        self.assertNotIn("/api/pro/session", app_branch)
+        self.assertNotIn("proDownloads", app_branch)
+        self.assertNotIn("proKey", app_branch)
+        website = html_page[app_return:]
+        self.assertIn("/api/pro/session", website)
+        self.assertIn("data.licence_key", website)
+        self.assertIn("proDownloads", website)
 
     def test_app_checkout_rejects_bad_callers_and_a_down_stripe(self):
         self._stripe_ready()
@@ -1737,18 +1748,32 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(paid["plan"], "monthly")
         self.assertTrue(paid["licence_key"].startswith("NCP-"))
         second = self._post_purchase_status(intent_id)
+        third = self._post_purchase_status(intent_id)
         self.assertEqual(second.status_code, 200)
-        self.assertEqual(second.get_json(), {"status": "claimed", "plan": "monthly"})
-        self.assertNotIn(paid["licence_key"], second.get_data(as_text=True))
+        self.assertEqual(third.status_code, 200)
+        self.assertEqual(second.get_json()["status"], "paid")
+        self.assertEqual(third.get_json()["status"], "paid")
+        self.assertEqual(second.get_json()["licence_key"], paid["licence_key"])
+        self.assertEqual(third.get_json()["licence_key"], paid["licence_key"])
+        later = self._post_purchase_status(intent_id, install=self.install_b)
+        self.assertEqual(later.status_code, 404)
+        self.assertNotIn(paid["licence_key"], later.get_data(as_text=True))
+        db = get_db()
+        stored = db.execute(
+            "SELECT status, claimed_at FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        db.close()
+        self.assertEqual(stored["status"], "claimed")
+        self.assertTrue(stored["claimed_at"])
 
-    def test_purchase_status_expires_without_returning_a_key(self):
+    def test_purchase_status_expires_only_pending_intents(self):
         plain = self._insert_pro(email="payer@example.com")
         db = get_db()
         key_id = db.execute(
             "SELECT id FROM pro_keys WHERE email = 'payer@example.com'"
         ).fetchone()["id"]
-        past = licence_v1.iso(licence_v1.utcnow() - timedelta(minutes=5))
-        future = licence_v1.iso(licence_v1.utcnow() + timedelta(hours=2))
+        past = licence_v1.iso(licence_v1.utcnow() - timedelta(hours=25))
         now = licence_v1.iso(licence_v1.utcnow())
         db.execute(
             """
@@ -1766,17 +1791,31 @@ class V1Tests(unittest.TestCase):
                 pro_key_id, created_at, updated_at, expires_at
             ) VALUES ('intent-open', ?, ?, 'annual', 'paid', '', NULL, ?, ?, ?)
             """,
-            (self.free["id"], self.install_a, now, now, future),
+            (self.free["id"], self.install_a, now, now, past),
+        )
+        db.execute(
+            """
+            INSERT INTO purchase_intents (
+                id, free_license_id, install_id, plan, status, stripe_session_id,
+                pro_key_id, created_at, updated_at, expires_at
+            ) VALUES ('intent-wait', ?, ?, 'monthly', 'pending', '', NULL, ?, ?, ?)
+            """,
+            (self.free["id"], self.install_a, now, now, past),
         )
         db.commit()
         db.close()
 
-        expired = self._post_purchase_status("intent-past")
-        self.assertEqual(expired.status_code, 200)
-        self.assertEqual(expired.get_json(), {"status": "expired", "plan": "monthly"})
-        self.assertNotIn(plain, expired.get_data(as_text=True))
+        kept = self._post_purchase_status("intent-past")
+        self.assertEqual(kept.status_code, 200)
+        self.assertEqual(kept.get_json()["status"], "paid")
+        self.assertEqual(kept.get_json()["licence_key"], plain)
+        again = self._post_purchase_status("intent-past")
+        self.assertEqual(again.get_json()["licence_key"], plain)
         waiting = self._post_purchase_status("intent-open")
         self.assertEqual(waiting.get_json(), {"status": "pending", "plan": "annual"})
+        expired = self._post_purchase_status("intent-wait")
+        self.assertEqual(expired.get_json(), {"status": "expired", "plan": "monthly"})
+        self.assertNotIn(plain, expired.get_data(as_text=True))
         db = get_db()
         past_row = db.execute(
             "SELECT status FROM purchase_intents WHERE id = 'intent-past'"
@@ -1784,9 +1823,76 @@ class V1Tests(unittest.TestCase):
         open_row = db.execute(
             "SELECT status FROM purchase_intents WHERE id = 'intent-open'"
         ).fetchone()
+        wait_row = db.execute(
+            "SELECT status FROM purchase_intents WHERE id = 'intent-wait'"
+        ).fetchone()
         db.close()
-        self.assertEqual(past_row["status"], "expired")
+        self.assertEqual(past_row["status"], "claimed")
         self.assertEqual(open_row["status"], "paid")
+        self.assertEqual(wait_row["status"], "expired")
+
+    def test_webhook_pays_an_intent_that_already_expired(self):
+        self._stripe_ready()
+        past = licence_v1.iso(licence_v1.utcnow() - timedelta(hours=25))
+        now = licence_v1.iso(licence_v1.utcnow())
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO purchase_intents (
+                id, free_license_id, install_id, plan, status, stripe_session_id,
+                pro_key_id, created_at, updated_at, expires_at
+            ) VALUES ('intent-late', ?, ?, 'monthly', 'expired', '', NULL, ?, ?, ?)
+            """,
+            (self.free["id"], self.install_a, now, now, past),
+        )
+        db.commit()
+        db.close()
+        event = {
+            "id": "evt_late",
+            "type": "checkout.session.completed",
+            "data": {"object": {
+                "id": "cs_late",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_1",
+                "customer_email": "free@example.com",
+                "customer_details": {"email": "free@example.com", "name": "Person"},
+                "subscription": "sub_late",
+                "client_reference_id": "intent-late",
+                "metadata": {"plan": "monthly", "intent_id": "intent-late", "source": "app"},
+            }},
+        }
+        sub = {
+            "id": "sub_late",
+            "status": "active",
+            "customer": "cus_1",
+            "current_period_end": 1800000000,
+            "cancel_at_period_end": False,
+            "metadata": {"plan": "monthly"},
+        }
+        with patch.object(api.stripe.Webhook, "construct_event", return_value=event), \
+             patch.object(api.stripe.Subscription, "retrieve", return_value=sub):
+            hook = self.client.post(
+                "/api/stripe/webhook",
+                data=json.dumps(event),
+                headers={"Stripe-Signature": "good", "Content-Type": "application/json"},
+            )
+        self.assertEqual(hook.status_code, 200)
+        db = get_db()
+        intent = db.execute(
+            "SELECT status, pro_key_id FROM purchase_intents WHERE id = 'intent-late'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(intent["status"], "paid")
+        self.assertTrue(intent["pro_key_id"])
+        first = self._post_purchase_status("intent-late")
+        second = self._post_purchase_status("intent-late")
+        self.assertEqual(first.get_json()["status"], "paid")
+        self.assertTrue(first.get_json()["licence_key"].startswith("NCP-"))
+        self.assertEqual(second.get_json()["licence_key"], first.get_json()["licence_key"])
+        other = self._post_purchase_status("intent-late", install=self.install_b)
+        self.assertEqual(other.status_code, 404)
+        self.assertNotIn(first.get_json()["licence_key"], other.get_data(as_text=True))
 
     def test_app_upgrade_rate_limits_and_refuses_a_test_key_when_the_flag_is_off(self):
         self._stripe_ready()
@@ -1883,6 +1989,10 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(refused.status_code, 403)
         self.assertEqual(refused.get_json()["error"]["code"], "test_key")
         self.assertNotIn(plain, refused.get_data(as_text=True))
+        again = self._post_purchase_status("intent-test", headers=status_headers)
+        self.assertEqual(again.status_code, 403)
+        self.assertEqual(again.get_json()["error"]["code"], "test_key")
+        self.assertNotIn(plain, again.get_data(as_text=True))
         db = get_db()
         self.assertEqual(
             db.execute("SELECT status FROM purchase_intents WHERE id = 'intent-test'").fetchone()["status"],

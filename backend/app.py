@@ -290,6 +290,26 @@ def _add_free_license_column(db):
             raise
 
 
+def _add_claimed_at_column(db):
+    """Add purchase_intents.claimed_at on databases created before repeatable claim.
+
+    A missing table is left alone. A duplicate column means the other worker won.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(purchase_intents)")}
+    if "claimed_at" in have:
+        return
+    try:
+        db.execute("ALTER TABLE purchase_intents ADD COLUMN claimed_at TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
 def _apply_schema(db, statement):
     """Run one CREATE TABLE or CREATE INDEX. IF NOT EXISTS, and ignore a race."""
     try:
@@ -346,6 +366,7 @@ def migrate_db():
             for statement in ALERT_SCHEMA:
                 _apply_schema(db, statement)
             _add_free_license_column(db)
+            _add_claimed_at_column(db)
             db.commit()
         except Exception:
             db.rollback()
@@ -1520,12 +1541,13 @@ def _link_purchase_intent(session, subscription_id):
             raise RuntimeError("Professional key was not stored for this checkout")
         now = licence_v1.iso(licence_v1.utcnow())
         session_id = session.get("id") or intent["stripe_session_id"] or ""
-        if intent["status"] == "pending":
+        if intent["status"] in ("pending", "expired"):
+            # A late webhook still pays an intent whose 24-hour window already closed.
             db.execute(
                 """
                 UPDATE purchase_intents
                 SET status = 'paid', stripe_session_id = ?, pro_key_id = ?, updated_at = ?
-                WHERE id = ? AND status = 'pending'
+                WHERE id = ? AND status IN ('pending', 'expired')
                 """,
                 (session_id, int(key["id"]), now, intent_id),
             )

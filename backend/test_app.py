@@ -735,6 +735,7 @@ class LicenceApiTests(unittest.TestCase):
             intents = db.execute(
                 "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
             ).fetchone()
+            intent_cols = {row["name"] for row in db.execute("PRAGMA table_info(purchase_intents)")}
         finally:
             db.close()
             os.unlink(path.name)
@@ -755,6 +756,7 @@ class LicenceApiTests(unittest.TestCase):
         self.assertIsNotNone(events)
         self.assertIn("free_license_id", key_cols)
         self.assertIsNotNone(intents)
+        self.assertIn("claimed_at", intent_cols)
 
     def test_migrate_adds_free_license_id_to_an_existing_pro_keys_table(self):
         path = tempfile.NamedTemporaryFile(prefix="nc-migrate-pro-", suffix=".db", delete=False)
@@ -801,6 +803,24 @@ class LicenceApiTests(unittest.TestCase):
             """INSERT INTO pro_keys (key_hash, key_last4, email, source, status, created_at)
                VALUES ('hash', '1234', 'kept@example.com', 'manual', 'active', '2026-01-03T00:00:00')"""
         )
+        raw.execute("""
+            CREATE TABLE purchase_intents (
+                id TEXT PRIMARY KEY,
+                free_license_id INTEGER NOT NULL,
+                install_id TEXT NOT NULL,
+                plan TEXT NOT NULL,
+                status TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                expires_at TEXT NOT NULL
+            )
+        """)
+        raw.execute(
+            """INSERT INTO purchase_intents (
+                   id, free_license_id, install_id, plan, status, created_at, updated_at, expires_at
+               ) VALUES ('old-intent', 1, 'install-old', 'monthly', 'pending',
+                         '2026-01-03T00:00:00', '2026-01-03T00:00:00', '2026-01-04T00:00:00')"""
+        )
         raw.commit()
         raw.close()
 
@@ -819,6 +839,10 @@ class LicenceApiTests(unittest.TestCase):
             intents = db.execute(
                 "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
             ).fetchone()
+            intent_cols = {item["name"] for item in db.execute("PRAGMA table_info(purchase_intents)")}
+            old_intent = db.execute(
+                "SELECT status, claimed_at FROM purchase_intents WHERE id = 'old-intent'"
+            ).fetchone()
         finally:
             db.close()
             os.unlink(path.name)
@@ -829,6 +853,9 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(row["email"], "kept@example.com")
         self.assertIsNone(row["free_license_id"])
         self.assertIsNotNone(intents)
+        self.assertIn("claimed_at", intent_cols)
+        self.assertEqual(old_intent["status"], "pending")
+        self.assertIn(old_intent["claimed_at"], ("", None))
 
         empty = sqlite3.connect(":memory:")
         try:
