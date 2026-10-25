@@ -6,7 +6,10 @@ import json
 import os
 import tempfile
 import unittest
+from io import StringIO
 from unittest.mock import patch
+
+import admin_cli
 
 os.environ["DB_PATH"] = tempfile.mktemp(suffix=".db")
 os.environ["ADMIN_TOKEN"] = "test-admin-token"
@@ -104,6 +107,7 @@ class ProBillingTests(unittest.TestCase):
         app.app.config["KEY_ENCRYPTION_KEY"] = "11" * 32
         app.app.config["LEGACY_ALLOWLIST_SYNC"] = ""
         app.app.config["FREE_DOWNLOADS_PAUSED"] = "false"
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
         db = app.get_db()
         db.execute("DELETE FROM pro_subscriptions")
         db.execute("DELETE FROM stripe_events")
@@ -140,8 +144,11 @@ class ProBillingTests(unittest.TestCase):
         }
         return self.subs[subscription_id]
 
-    def _post_event(self, event_id, event_type, obj, sig="good"):
-        payload = json.dumps({"id": event_id, "type": event_type, "data": {"object": obj}})
+    def _post_event(self, event_id, event_type, obj, sig="good", livemode=None):
+        payload = {"id": event_id, "type": event_type, "data": {"object": obj}}
+        if livemode is not None:
+            payload["livemode"] = livemode
+        payload = json.dumps(payload)
         return self.client.post(
             "/api/stripe/webhook",
             data=payload,
@@ -499,6 +506,241 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn(">Cancel or update the card</", html_body)
         self.assertNotIn('href="' + portal + '"', html_body)
         self.assertNotIn("&b=", html_body)
+
+    def test_test_mode_events_grant_nothing_until_the_flag_is_on(self):
+        ignored = self._post_event(
+            "evt_test_off",
+            "checkout.session.completed",
+            {
+                "id": "cs_test_mode",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_test",
+                "customer_email": "payer@example.com",
+                "customer_details": {"email": "payer@example.com", "name": "Ada"},
+                "subscription": "sub_test_mode",
+                "metadata": {"plan": "monthly"},
+            },
+            livemode=False,
+        )
+        self.assertEqual(ignored.status_code, 200)
+        self.assertTrue(ignored.get_json().get("ignored"))
+        self.assertEqual(self.welcomes, [])
+        db = app.get_db()
+        self.assertEqual(db.execute("SELECT COUNT(*) AS c FROM pro_keys").fetchone()["c"], 0)
+        self.assertEqual(db.execute("SELECT COUNT(*) AS c FROM pro_subscriptions").fetchone()["c"], 0)
+        stored = db.execute(
+            "SELECT event_type FROM stripe_events WHERE event_id = 'evt_test_off'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(stored["event_type"], "ignored:checkout.session.completed")
+
+        invoice = self._post_event(
+            "evt_test_invoice",
+            "invoice.paid",
+            {"subscription": "sub_test_mode", "customer_email": "payer@example.com", "livemode": False},
+            livemode=False,
+        )
+        self.assertEqual(invoice.status_code, 200)
+        self.assertTrue(invoice.get_json().get("ignored"))
+        self.assertEqual(self.welcomes, [])
+
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        self._sub("sub_test_on")
+        granted = self._post_event(
+            "evt_test_on",
+            "checkout.session.completed",
+            {
+                "id": "cs_test_on",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_test",
+                "customer_email": "payer@example.com",
+                "customer_details": {"email": "payer@example.com", "name": "Ada"},
+                "subscription": "sub_test_on",
+                "metadata": {"plan": "monthly"},
+            },
+            livemode=False,
+        )
+        self.assertEqual(granted.status_code, 200)
+        self.assertEqual(len(self.welcomes), 1)
+        db = app.get_db()
+        key = db.execute(
+            "SELECT id, is_test, status FROM pro_keys WHERE subscription_id = 'sub_test_on'"
+        ).fetchone()
+        sub = db.execute(
+            "SELECT is_test FROM pro_subscriptions WHERE stripe_subscription_id = 'sub_test_on'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(key["is_test"], 1)
+        self.assertEqual(key["status"], "active")
+        self.assertEqual(sub["is_test"], 1)
+        plain = licence_v1.plaintext_for_subscription("sub_test_on")
+        self.assertTrue(plain.startswith("NCP-"))
+        install = "11111111-1111-4111-8111-111111111111"
+        headers = {
+            "Authorization": "Bearer " + plain,
+            "X-NC-Install-Id": install,
+            "User-Agent": "NodeControl/0.9.41 (pro; mac; arm64)",
+            "Content-Type": "application/json",
+        }
+        body = {"tier": "pro", "app_version": "0.9.41", "platform": "mac", "arch": "arm64"}
+        opened = self.client.post("/api/v1/app/activate", json=body, headers=headers)
+        self.assertEqual(opened.status_code, 200)
+
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+        for path in (
+            "/api/v1/app/activate",
+            "/api/v1/app/licence/check",
+            "/api/v1/app/update-check",
+            "/api/v1/app/download",
+        ):
+            refused = self.client.post(path, json=body, headers=headers)
+            self.assertEqual(refused.status_code, 403, path)
+            self.assertEqual(refused.get_json()["error"]["code"], "test_key", path)
+            self.assertNotIn(plain, refused.get_data(as_text=True))
+
+        with patch.object(app.stripe.checkout.Session, "retrieve", return_value={
+            "id": "cs_test_on",
+            "status": "complete",
+            "payment_status": "paid",
+            "subscription": "sub_test_on",
+        }):
+            session = self.client.get("/api/pro/session?session_id=cs_test_on")
+        self.assertEqual(session.status_code, 403)
+        self.assertEqual(session.get_json()["error"]["code"], "test_key")
+        self.assertNotIn(plain, session.get_data(as_text=True))
+        token = app._make_download_token("payer@example.com", "sub_test_on", "mac")
+        download = self.client.get("/api/pro/download?token=" + token)
+        self.assertEqual(download.status_code, 403)
+        self.assertEqual(download.get_json()["error"]["code"], "test_key")
+
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        with patch.object(app.stripe.checkout.Session, "retrieve", return_value={
+            "id": "cs_test_on",
+            "status": "complete",
+            "payment_status": "paid",
+            "subscription": "sub_test_on",
+        }):
+            allowed = self.client.get("/api/pro/session?session_id=cs_test_on")
+        self.assertEqual(allowed.status_code, 200)
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+
+    def test_live_events_stay_live_while_the_test_flag_is_off(self):
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+        res = self._checkout("evt_live_mode", "sub_live_mode", "payer@example.com", session_id="cs_live")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(res.get_json().get("ignored"))
+        db = app.get_db()
+        key = db.execute(
+            "SELECT is_test FROM pro_keys WHERE subscription_id = 'sub_live_mode'"
+        ).fetchone()
+        sub = db.execute(
+            "SELECT is_test FROM pro_subscriptions WHERE stripe_subscription_id = 'sub_live_mode'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(key["is_test"], 0)
+        self.assertEqual(sub["is_test"], 0)
+        plain = licence_v1.plaintext_for_subscription("sub_live_mode")
+        headers = {
+            "Authorization": "Bearer " + plain,
+            "X-NC-Install-Id": "22222222-2222-4222-8222-222222222222",
+            "User-Agent": "NodeControl/0.9.41 (pro; mac; arm64)",
+            "Content-Type": "application/json",
+        }
+        opened = self.client.post(
+            "/api/v1/app/activate",
+            json={"tier": "pro", "app_version": "0.9.41", "platform": "mac", "arch": "arm64"},
+            headers=headers,
+        )
+        self.assertEqual(opened.status_code, 200)
+
+    def test_admin_lists_and_revokes_test_keys_without_emails(self):
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        self._sub("sub_admin_a")
+        self._post_event(
+            "evt_admin_a",
+            "checkout.session.completed",
+            {
+                "id": "cs_admin_a",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_test",
+                "customer_email": "payer@example.com",
+                "customer_details": {"email": "payer@example.com", "name": "Ada"},
+                "subscription": "sub_admin_a",
+                "metadata": {"plan": "monthly"},
+            },
+            livemode=False,
+        )
+        self._sub("sub_admin_b", plan="annual")
+        self._post_event(
+            "evt_admin_b",
+            "checkout.session.completed",
+            {
+                "id": "cs_admin_b",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_test",
+                "customer_email": "payer@example.com",
+                "customer_details": {"email": "payer@example.com", "name": "Ada"},
+                "subscription": "sub_admin_b",
+                "metadata": {"plan": "annual"},
+            },
+            livemode=False,
+        )
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+        admin = {"Authorization": "Bearer test-admin-token"}
+        listed = self.client.get("/api/admin/pro-keys/test", headers=admin)
+        self.assertEqual(listed.status_code, 200)
+        text = listed.get_data(as_text=True)
+        self.assertNotIn("payer@example.com", text)
+        self.assertNotIn("NCP-", text)
+        keys = listed.get_json()["keys"]
+        self.assertEqual(len(keys), 2)
+        for row in keys:
+            self.assertEqual(set(row), {"id", "created_at", "status"})
+            self.assertEqual(row["status"], "active")
+        keep = keys[0]["id"]
+        drop = keys[1]["id"]
+        revoked = self.client.post(
+            "/api/admin/pro-keys/test/revoke",
+            json={"keep": [keep]},
+            headers=admin,
+        )
+        self.assertEqual(revoked.status_code, 200)
+        self.assertEqual(revoked.get_json()["revoked"], [drop])
+        self.assertNotIn("payer@example.com", revoked.get_data(as_text=True))
+        db = app.get_db()
+        kept = db.execute("SELECT status FROM pro_keys WHERE id = ?", (keep,)).fetchone()
+        gone = db.execute("SELECT status FROM pro_keys WHERE id = ?", (drop,)).fetchone()
+        db.close()
+        self.assertEqual(kept["status"], "active")
+        self.assertEqual(gone["status"], "revoked")
+
+        leaked = {
+            "keys": [{
+                "id": keep,
+                "status": "active",
+                "created_at": "2026-01-01T00:00:00Z",
+                "email": "payer@example.com",
+            }],
+        }
+        with patch("admin_cli.api", return_value=(200, leaked)) as called:
+            stdout = StringIO()
+            with patch("sys.stdout", stdout):
+                admin_cli.main(["pro-key", "list-test"])
+        self.assertEqual(called.call_args[0][1], "/api/admin/pro-keys/test")
+        self.assertNotIn("payer@example.com", stdout.getvalue())
+        self.assertIn(str(keep), stdout.getvalue())
+        with patch("admin_cli.api", return_value=(200, {"revoked": [drop], "email": "payer@example.com"})) as called:
+            stdout = StringIO()
+            with patch("sys.stdout", stdout):
+                admin_cli.main(["pro-key", "revoke-test", "--keep", str(keep)])
+        self.assertEqual(called.call_args[0][1], "/api/admin/pro-keys/test/revoke")
+        self.assertEqual(called.call_args[0][2], {"keep": [keep]})
+        self.assertNotIn("payer@example.com", stdout.getvalue())
+        self.assertIn(f"revoked {drop}", stdout.getvalue())
 
     def test_allowlist_defaults_are_the_live_repo(self):
         source_path = os.path.join(os.path.dirname(__file__), "app.py")
