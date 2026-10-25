@@ -1894,6 +1894,119 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(other.status_code, 404)
         self.assertNotIn(first.get_json()["licence_key"], other.get_data(as_text=True))
 
+    def test_paid_purchase_includes_fresh_pro_download_links(self):
+        plain = self._insert_pro(email="payer@example.com")
+        previous_pat = app.config.get("RELEASES_READ_PAT")
+        previous_repo = app.config.get("PRO_RELEASES_REPO")
+        app.config["RELEASES_READ_PAT"] = "ghp_releases_read"
+        app.config["PRO_RELEASES_REPO"] = "miketpl/node-control-releases-pro"
+        try:
+            db = get_db()
+            key_id = db.execute(
+                "SELECT id FROM pro_keys WHERE email = 'payer@example.com'"
+            ).fetchone()["id"]
+            future = licence_v1.iso(licence_v1.utcnow() + timedelta(hours=2))
+            past = licence_v1.iso(licence_v1.utcnow() - timedelta(hours=25))
+            now = licence_v1.iso(licence_v1.utcnow())
+            db.execute("DELETE FROM release_cache")
+            db.execute(
+                """
+                INSERT INTO purchase_intents (
+                    id, free_license_id, install_id, plan, status, stripe_session_id,
+                    pro_key_id, created_at, updated_at, expires_at
+                ) VALUES ('intent-dl', ?, ?, 'monthly', 'paid', 'cs_dl', ?, ?, ?, ?)
+                """,
+                (self.free["id"], self.install_a, key_id, now, now, future),
+            )
+            db.execute(
+                """
+                INSERT INTO purchase_intents (
+                    id, free_license_id, install_id, plan, status, stripe_session_id,
+                    pro_key_id, created_at, updated_at, expires_at
+                ) VALUES ('intent-wait', ?, ?, 'monthly', 'pending', '', NULL, ?, ?, ?)
+                """,
+                (self.free["id"], self.install_a, now, now, future),
+            )
+            db.execute(
+                """
+                INSERT INTO purchase_intents (
+                    id, free_license_id, install_id, plan, status, stripe_session_id,
+                    pro_key_id, created_at, updated_at, expires_at
+                ) VALUES ('intent-old', ?, ?, 'monthly', 'expired', '', NULL, ?, ?, ?)
+                """,
+                (self.free["id"], self.install_a, now, now, past),
+            )
+            db.commit()
+            db.close()
+
+            self.github.urls.clear()
+            first = self._post_purchase_status("intent-dl")
+            body = first.get_json()
+            self.assertEqual(first.status_code, 200)
+            self.assertEqual(body["status"], "paid")
+            self.assertEqual(body["licence_key"], plain)
+            self.assertEqual(body["downloads"]["mac"]["expires_in"], 300)
+            self.assertEqual(body["downloads"]["win"]["expires_in"], 300)
+            self.assertEqual(body["downloads"]["mac"]["expires_in"], licence_v1.ASSET_URL_TTL)
+            self.assertIn("release-assets.githubusercontent.com/mac", body["downloads"]["mac"]["url"])
+            self.assertIn("release-assets.githubusercontent.com/win", body["downloads"]["win"]["url"])
+            self.assertNotIn("ghp_releases_read", body["downloads"]["mac"]["url"])
+            self.assertNotIn("ghp_releases_read", body["downloads"]["win"]["url"])
+            self.assertNotIn("downloads_error", body)
+            self.assertTrue(any("node-control-releases-pro" in url for url in self.github.urls))
+            signed = [url for url in self.github.urls if "/releases/assets/" in url]
+            self.assertGreaterEqual(len(signed), 2)
+
+            self.github.urls.clear()
+            second = self._post_purchase_status("intent-dl")
+            again = second.get_json()
+            self.assertEqual(again["licence_key"], plain)
+            self.assertEqual(again["downloads"]["mac"]["expires_in"], 300)
+            self.assertEqual(again["downloads"]["win"]["expires_in"], 300)
+            signed_again = [url for url in self.github.urls if "/releases/assets/" in url]
+            self.assertGreaterEqual(len(signed_again), 2)
+
+            self.github.fail = True
+            db = get_db()
+            db.execute("DELETE FROM release_cache")
+            db.commit()
+            db.close()
+            broken = self._post_purchase_status("intent-dl")
+            failed = broken.get_json()
+            self.assertEqual(failed["status"], "paid")
+            self.assertEqual(failed["licence_key"], plain)
+            self.assertIsNone(failed["downloads"])
+            self.assertEqual(failed["downloads_error"], "unavailable")
+
+            self.github.fail = False
+            waiting = self._post_purchase_status("intent-wait")
+            self.assertEqual(waiting.get_json(), {"status": "pending", "plan": "monthly"})
+            self.assertNotIn("downloads", waiting.get_json())
+            expired = self._post_purchase_status("intent-old")
+            self.assertEqual(expired.get_json(), {"status": "expired", "plan": "monthly"})
+            self.assertNotIn("downloads", expired.get_json())
+            missing = self._post_purchase_status("intent-dl", install=self.install_b)
+            self.assertEqual(missing.status_code, 404)
+            self.assertNotIn("downloads", missing.get_json())
+            self.assertNotIn("licence_key", missing.get_json())
+            self.assertNotIn(plain, missing.get_data(as_text=True))
+
+            db = get_db()
+            db.execute(
+                "UPDATE pro_subscriptions SET status = 'canceled' WHERE stripe_subscription_id = 'sub_test'"
+            )
+            db.commit()
+            db.close()
+            quiet = self._post_purchase_status("intent-dl")
+            self.assertEqual(quiet.get_json()["status"], "paid")
+            self.assertEqual(quiet.get_json()["licence_key"], plain)
+            self.assertIsNone(quiet.get_json()["downloads"])
+            self.assertEqual(quiet.get_json()["downloads_error"], "unavailable")
+        finally:
+            self.github.fail = False
+            app.config["RELEASES_READ_PAT"] = previous_pat
+            app.config["PRO_RELEASES_REPO"] = previous_repo
+
     def test_app_upgrade_rate_limits_and_refuses_a_test_key_when_the_flag_is_off(self):
         self._stripe_ready()
         headers = self._headers(self.free["code"], self.install_a)
@@ -1988,10 +2101,14 @@ class V1Tests(unittest.TestCase):
         refused = self._post_purchase_status("intent-test", headers=status_headers)
         self.assertEqual(refused.status_code, 403)
         self.assertEqual(refused.get_json()["error"]["code"], "test_key")
+        self.assertNotIn("downloads", refused.get_json())
+        self.assertNotIn("licence_key", refused.get_json())
         self.assertNotIn(plain, refused.get_data(as_text=True))
         again = self._post_purchase_status("intent-test", headers=status_headers)
         self.assertEqual(again.status_code, 403)
         self.assertEqual(again.get_json()["error"]["code"], "test_key")
+        self.assertNotIn("downloads", again.get_json())
+        self.assertNotIn("licence_key", again.get_json())
         self.assertNotIn(plain, again.get_data(as_text=True))
         db = get_db()
         self.assertEqual(

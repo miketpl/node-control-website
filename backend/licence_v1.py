@@ -3194,11 +3194,77 @@ def _intent_for_caller(record, install_id, intent_id):
     return row
 
 
+def _pro_download_allowed(key_id):
+    """Same subscription rule as a Professional app download.
+
+    A hand-added key has no Stripe subscription. A Stripe key needs an
+    active or trialing subscription before an installer link is minted.
+    """
+    api = _api()
+    db = api.get_db()
+    try:
+        key = db.execute(
+            "SELECT source, status, subscription_id FROM pro_keys WHERE id = ?",
+            (int(key_id),),
+        ).fetchone()
+        if not key or key["status"] != "active":
+            return False
+        if (key["source"] or "") == "manual":
+            return True
+        if not key["subscription_id"]:
+            return False
+        sub = db.execute(
+            "SELECT status FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+            (key["subscription_id"],),
+        ).fetchone()
+    finally:
+        db.close()
+    return bool(sub) and sub["status"] in ("active", "trialing")
+
+
+def _latest_pro_download_links(arch):
+    """Signed URLs for the latest Pro installers.
+
+    This is the same release lookup and _signed_asset_url path as
+    POST /api/v1/app/download. Each call mints new links.
+    """
+    repo = _repo_for("pro")
+    release = _load_release(repo, "latest")
+    links = {}
+    for platform in ("mac", "win"):
+        described = _describe_asset(repo, release, platform, arch or "")
+        if not described:
+            raise LookupError("no installer")
+        links[platform] = {
+            "url": _signed_asset_url(repo, described["asset"]),
+            "expires_in": ASSET_URL_TTL,
+        }
+    return links
+
+
+def _paid_with_downloads(plan, plain, key_id, arch):
+    """The key is returned even when the installer links cannot be minted."""
+    body = {"status": "paid", "plan": plan, "licence_key": plain}
+    if not _pro_download_allowed(key_id):
+        body["downloads"] = None
+        body["downloads_error"] = "unavailable"
+        return jsonify(body)
+    try:
+        body["downloads"] = _latest_pro_download_links(arch)
+    except Exception:
+        logger.exception("Pro download links were not minted")
+        body["downloads"] = None
+        body["downloads_error"] = "unavailable"
+    return jsonify(body)
+
+
 def purchase_status():
     """Poll a Free-to-Pro purchase. The same install can read the key again.
 
     Pending intents expire after expires_at. A paid or claimed intent stays
     payable to its own licence and install, and the reply is always status paid.
+    Each paid reply also carries fresh Pro installer links when the
+    subscription is active.
     """
     ctx, err = _guard("purchase-status", needs_device=False)
     if err:
@@ -3267,6 +3333,7 @@ def purchase_status():
             db.commit()
             return jsonify({"status": "pending", "plan": plan})
         plain = decrypt_secret(key_row["reveal_blob"])
+        key_id = int(current["pro_key_id"])
         if current["status"] == "paid":
             now = iso(utcnow())
             db.execute(
@@ -3285,7 +3352,7 @@ def purchase_status():
         return error(500, "internal", "The Professional key could not be read.")
     finally:
         db.close()
-    return jsonify({"status": "paid", "plan": plan, "licence_key": plain})
+    return _paid_with_downloads(plan, plain, key_id, ctx["ua"]["arch"])
 
 
 def register(flask_app):
