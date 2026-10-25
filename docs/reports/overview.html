@@ -151,7 +151,7 @@
                 </div>
                 <h1 id="reports-overview">Reports overview</h1>
 <p>A report collects from one or more devices and renders a result, usually a table.</p>
-<p>A read-only report cannot send a config-altering command by mistake. Every command it sends has to pass a safe list of commands first.</p>
+<p>A read-only report cannot send a config-altering command by mistake. Every command it sends has to match the report allowlist or it is refused. That check applies in Safe Mode and in Config Mode, on Free and on Pro.</p>
 <p>Open <strong>Reports</strong> in the left sidebar. It is its own page, not a task in the Engineer command bar.</p>
 <h2 id="report-types">Report types</h2>
 <table>

@@ -47,11 +47,11 @@ While Safe Mode is on:
 - a command that is not read-only is blocked in an SSH session
 - a [Meraki Configurator](../tasks/meraki-configurator.md) push is blocked
 
-Safe Mode also restricts what automated commands Node Control sends. When it is on, only commands in the read-only allowlist are sent. Config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.
+The safe list applies in Safe Mode and in Config Mode, on Free and on Pro. Every report command has to match the report allowlist or it is refused. Each read-only task checks its own allowlist. While Safe Mode is on, config-mode commands, port shut and no-shut, and custom commands that are not explicitly allowed are blocked.
 
 ## Why Safe Mode exists
 
-Read-only reports and tasks cannot send a config-altering command by mistake. Every command they send has to pass a safe list of commands first.
+Read-only reports and tasks cannot send a config-altering command by mistake. Every command they send has to pass that safe list first, in Safe Mode and in Config Mode, on Free and on Pro.
 
 Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:
 

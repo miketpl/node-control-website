@@ -187,15 +187,15 @@
                 <div class="features-grid">
                     <div class="feature-card">
                         <h3>Read-only stays read-only</h3>
-                        <p>Read-only reports and tasks can't run config-altering commands by mistake. Every command they send has to pass a safe list of commands first.</p>
+                        <p>Read-only reports and tasks can't run config-altering commands by mistake. The safe list applies in Safe Mode and in Config Mode, on Free and on Pro: a report command has to match the report allowlist or it is refused, and each read-only task checks its own allowlist.</p>
                     </div>
                     <div class="feature-card">
                         <h3>Safe Mode</h3>
-                        <p>The app has Safe Mode and Config Mode. In Safe Mode, even a command typed at the terminal prompt can't change the config. It is blocked.</p>
+                        <p>The app has Safe Mode and Config Mode. Safe Mode blocks tasks that change config, and it blocks config commands typed at the terminal prompt.</p>
                     </div>
                     <div class="feature-card">
-                        <h3>Config Push</h3>
-                        <p>Config Push blocks risky changes, such as a push to an uplink. You type a confirmation before a risky push goes out. Every push can be reverted.</p>
+                        <h3>Interface Config Push <span class="tier-badge">Pro</span></h3>
+                        <p>It never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. A revert restores the interface config saved before the push, only on Cisco IOS, IOS-XE, and NX-OS, and you type REVERT to arm it.</p>
                     </div>
                 </div>
             </div>

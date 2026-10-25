@@ -2,7 +2,7 @@
 
 A report collects from one or more devices and renders a result, usually a table.
 
-A read-only report cannot send a config-altering command by mistake. Every command it sends has to pass a safe list of commands first.
+A read-only report cannot send a config-altering command by mistake. Every command it sends has to match the report allowlist or it is refused. That check applies in Safe Mode and in Config Mode, on Free and on Pro.
 
 Open **Reports** in the left sidebar. It is its own page, not a task in the Engineer command bar.
 
