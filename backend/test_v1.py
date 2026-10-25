@@ -4,6 +4,7 @@ import hashlib
 import json
 import multiprocessing
 import os
+import secrets
 import tempfile
 import time
 import unittest
@@ -138,7 +139,7 @@ class V1Tests(unittest.TestCase):
             "email_codes", "registrations", "telemetry_sessions", "telemetry_monthly",
             "server_flags", "release_cache", "rate_limits", "stripe_events",
             "download_events", "update_check_daily",
-            "notices_sent", "notice_opt_outs",
+            "notices_sent", "notice_opt_outs", "purchase_intents",
         ):
             db.execute(f"DELETE FROM {table}")
         db.commit()
@@ -1548,6 +1549,354 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(looked.status_code, 200)
         self.assertEqual(looked.get_json()["min_supported_version"], "0.9.41")
         self.assertFalse(looked.get_json()["force_update"])
+
+    def _stripe_ready(self):
+        app.config["STRIPE_SECRET_KEY"] = "sk_test_x"
+        app.config["STRIPE_WEBHOOK_SECRET"] = "whsec_test"
+        app.config["STRIPE_PRICE_PRO_MONTHLY"] = "price_month"
+        app.config["STRIPE_PRICE_PRO_ANNUAL"] = "price_year"
+        app.config["SITE_URL"] = "https://nodecontrol.io"
+        app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+
+    def _post_app_checkout(self, plan="monthly", key=None, install=None, headers=None):
+        sent = headers or self._headers(key or self.free["code"], install or self.install_a)
+        return self.client.post("/api/v1/app/checkout", json={"plan": plan}, headers=sent)
+
+    def _post_purchase_status(self, intent_id, key=None, install=None, headers=None):
+        sent = headers or self._headers(key or self.free["code"], install or self.install_a)
+        return self.client.post(
+            "/api/v1/app/purchase/status",
+            json={"intent_id": intent_id},
+            headers=sent,
+        )
+
+    def test_app_checkout_starts_a_session_for_this_install(self):
+        self._stripe_ready()
+        captured = {}
+
+        def create(**kwargs):
+            captured.update(kwargs)
+            return {"url": "https://checkout.stripe.test/c/pay", "id": "cs_app_1"}
+
+        with patch.object(api.stripe.checkout.Session, "create", side_effect=create):
+            res = self._post_app_checkout(plan="annual")
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        self.assertEqual(body["url"], "https://checkout.stripe.test/c/pay")
+        self.assertEqual(len(body["intent_id"]), 32)
+        self.assertTrue(body["expires_at"].endswith("Z"))
+        self.assertEqual(captured["client_reference_id"], body["intent_id"])
+        self.assertEqual(captured["metadata"]["intent_id"], body["intent_id"])
+        self.assertEqual(captured["metadata"]["source"], "app")
+        self.assertEqual(captured["metadata"]["plan"], "annual")
+        self.assertEqual(captured["mode"], "subscription")
+        self.assertEqual(captured["line_items"], [{"price": "price_year", "quantity": 1}])
+        self.assertEqual(captured["customer_email"], "free@example.com")
+        self.assertIn("pro-success.html?session_id={CHECKOUT_SESSION_ID}&from=app", captured["success_url"])
+        self.assertTrue(captured["cancel_url"].endswith("/#pricing"))
+        db = get_db()
+        row = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (body["intent_id"],),
+        ).fetchone()
+        db.close()
+        self.assertEqual(row["status"], "pending")
+        self.assertEqual(row["free_license_id"], self.free["id"])
+        self.assertEqual(row["install_id"], self.install_a)
+        self.assertEqual(row["plan"], "annual")
+        self.assertEqual(row["stripe_session_id"], "cs_app_1")
+        page = os.path.join(os.path.dirname(__file__), "..", "pro-success.html")
+        with open(page, encoding="utf-8") as handle:
+            html_page = handle.read()
+        self.assertIn('id="proAppReturn"', html_page)
+        self.assertIn("params.get('from') === 'app'", html_page)
+        self.assertIn("go back to Node Control", html_page)
+
+    def test_app_checkout_rejects_bad_callers_and_a_down_stripe(self):
+        self._stripe_ready()
+        missing = self.client.post("/api/v1/app/checkout", json={"plan": "monthly"})
+        self.assertEqual(missing.status_code, 401)
+        self.assertEqual(missing.get_json()["error"]["code"], "missing_key")
+
+        bad_plan = self._post_app_checkout(plan="weekly")
+        self.assertEqual(bad_plan.status_code, 400)
+        self.assertEqual(bad_plan.get_json()["error"]["code"], "bad_request")
+
+        pro_key = self._insert_pro()
+        pro = self._post_app_checkout(key=pro_key, headers=self._headers(
+            pro_key, self.install_a, tier="pro",
+        ))
+        self.assertEqual(pro.status_code, 403)
+        self.assertEqual(pro.get_json()["error"]["code"], "tier_mismatch")
+
+        db = get_db()
+        before = db.execute("SELECT COUNT(*) AS c FROM purchase_intents").fetchone()["c"]
+        db.close()
+        self.assertEqual(before, 0)
+
+        with patch.object(api.stripe.checkout.Session, "create", side_effect=RuntimeError("down")):
+            failed = self._post_app_checkout()
+        self.assertEqual(failed.status_code, 502)
+        self.assertEqual(failed.get_json()["error"]["code"], "upstream")
+        db = get_db()
+        row = db.execute(
+            "SELECT status FROM purchase_intents WHERE install_id = ?",
+            (self.install_a,),
+        ).fetchone()
+        db.close()
+        self.assertEqual(row["status"], "expired")
+        seen = self._post_purchase_status("not-a-real-intent")
+        self.assertEqual(seen.status_code, 404)
+        db = get_db()
+        intent_id = db.execute(
+            "SELECT id FROM purchase_intents WHERE install_id = ?",
+            (self.install_a,),
+        ).fetchone()["id"]
+        db.close()
+        expired = self._post_purchase_status(intent_id)
+        self.assertEqual(expired.status_code, 200)
+        self.assertEqual(expired.get_json()["status"], "expired")
+        self.assertNotIn("licence_key", expired.get_json())
+
+    def test_webhook_links_the_upgrade_and_the_key_is_claimed_once(self):
+        self._stripe_ready()
+        captured = {}
+
+        def create(**kwargs):
+            captured.update(kwargs)
+            return {"url": "https://checkout.stripe.test/c/pay", "id": "cs_app_link"}
+
+        with patch.object(api.stripe.checkout.Session, "create", side_effect=create):
+            started = self._post_app_checkout()
+        self.assertEqual(started.status_code, 200)
+        intent_id = started.get_json()["intent_id"]
+        event = {
+            "id": "evt_app_link",
+            "type": "checkout.session.completed",
+            "data": {"object": {
+                "id": "cs_app_link",
+                "mode": "subscription",
+                "payment_status": "paid",
+                "customer": "cus_1",
+                "customer_email": "free@example.com",
+                "customer_details": {"email": "free@example.com", "name": "Person"},
+                "subscription": "sub_app_link",
+                "client_reference_id": intent_id,
+                "metadata": {"plan": "monthly", "intent_id": intent_id, "source": "app"},
+            }},
+        }
+        sub = {
+            "id": "sub_app_link",
+            "status": "active",
+            "customer": "cus_1",
+            "current_period_end": 1800000000,
+            "cancel_at_period_end": False,
+            "metadata": {"plan": "monthly"},
+        }
+        with patch.object(api.stripe.Webhook, "construct_event", return_value=event), \
+             patch.object(api.stripe.Subscription, "retrieve", return_value=sub):
+            hook = self.client.post(
+                "/api/stripe/webhook",
+                data=json.dumps(event),
+                headers={"Stripe-Signature": "good", "Content-Type": "application/json"},
+            )
+        self.assertEqual(hook.status_code, 200)
+        self.assertTrue(any(item["to"] == "free@example.com" for item in self.mail))
+        db = get_db()
+        intent = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        key = db.execute(
+            "SELECT * FROM pro_keys WHERE subscription_id = 'sub_app_link'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(intent["status"], "paid")
+        self.assertEqual(intent["pro_key_id"], key["id"])
+        self.assertEqual(key["free_license_id"], self.free["id"])
+
+        other = self._insert_free("NC-CD56-EF78", "other@example.com")
+        wrong_install = self._post_purchase_status(intent_id, install=self.install_b)
+        self.assertEqual(wrong_install.status_code, 404)
+        self.assertNotIn("licence_key", wrong_install.get_json())
+        wrong_licence = self._post_purchase_status(intent_id, key=other["code"])
+        self.assertEqual(wrong_licence.status_code, 404)
+        self.assertNotIn("NCP-", wrong_licence.get_data(as_text=True))
+        db = get_db()
+        still = db.execute(
+            "SELECT status FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        db.close()
+        self.assertEqual(still["status"], "paid")
+
+        first = self._post_purchase_status(intent_id)
+        self.assertEqual(first.status_code, 200)
+        paid = first.get_json()
+        self.assertEqual(paid["status"], "paid")
+        self.assertEqual(paid["plan"], "monthly")
+        self.assertTrue(paid["licence_key"].startswith("NCP-"))
+        second = self._post_purchase_status(intent_id)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(second.get_json(), {"status": "claimed", "plan": "monthly"})
+        self.assertNotIn(paid["licence_key"], second.get_data(as_text=True))
+
+    def test_purchase_status_expires_without_returning_a_key(self):
+        plain = self._insert_pro(email="payer@example.com")
+        db = get_db()
+        key_id = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'payer@example.com'"
+        ).fetchone()["id"]
+        past = licence_v1.iso(licence_v1.utcnow() - timedelta(minutes=5))
+        future = licence_v1.iso(licence_v1.utcnow() + timedelta(hours=2))
+        now = licence_v1.iso(licence_v1.utcnow())
+        db.execute(
+            """
+            INSERT INTO purchase_intents (
+                id, free_license_id, install_id, plan, status, stripe_session_id,
+                pro_key_id, created_at, updated_at, expires_at
+            ) VALUES ('intent-past', ?, ?, 'monthly', 'paid', 'cs_past', ?, ?, ?, ?)
+            """,
+            (self.free["id"], self.install_a, key_id, now, now, past),
+        )
+        db.execute(
+            """
+            INSERT INTO purchase_intents (
+                id, free_license_id, install_id, plan, status, stripe_session_id,
+                pro_key_id, created_at, updated_at, expires_at
+            ) VALUES ('intent-open', ?, ?, 'annual', 'paid', '', NULL, ?, ?, ?)
+            """,
+            (self.free["id"], self.install_a, now, now, future),
+        )
+        db.commit()
+        db.close()
+
+        expired = self._post_purchase_status("intent-past")
+        self.assertEqual(expired.status_code, 200)
+        self.assertEqual(expired.get_json(), {"status": "expired", "plan": "monthly"})
+        self.assertNotIn(plain, expired.get_data(as_text=True))
+        waiting = self._post_purchase_status("intent-open")
+        self.assertEqual(waiting.get_json(), {"status": "pending", "plan": "annual"})
+        db = get_db()
+        past_row = db.execute(
+            "SELECT status FROM purchase_intents WHERE id = 'intent-past'"
+        ).fetchone()
+        open_row = db.execute(
+            "SELECT status FROM purchase_intents WHERE id = 'intent-open'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(past_row["status"], "expired")
+        self.assertEqual(open_row["status"], "paid")
+
+    def test_app_upgrade_rate_limits_and_refuses_a_test_key_when_the_flag_is_off(self):
+        self._stripe_ready()
+        headers = self._headers(self.free["code"], self.install_a)
+        headers["CF-Connecting-IP"] = "203.0.113.80"
+
+        def create(**kwargs):
+            return {"url": "https://checkout.stripe.test/c/pay", "id": "cs_burst"}
+
+        with patch.object(api.stripe.checkout.Session, "create", side_effect=create):
+            for _ in range(10):
+                ok = self.client.post(
+                    "/api/v1/app/checkout", json={"plan": "monthly"}, headers=headers,
+                )
+                self.assertEqual(ok.status_code, 200)
+            blocked = self.client.post(
+                "/api/v1/app/checkout", json={"plan": "monthly"}, headers=headers,
+            )
+        self.assertEqual(blocked.status_code, 429)
+        self.assertEqual(blocked.get_json()["error"]["code"], "rate_limited")
+        self.assertIn("Retry-After", blocked.headers)
+        db = get_db()
+        count = db.execute(
+            "SELECT COUNT(*) AS c FROM purchase_intents WHERE install_id = ?",
+            (self.install_a,),
+        ).fetchone()["c"]
+        db.close()
+        self.assertEqual(count, 10)
+
+        other = self._headers(self.free["code"], self.install_b)
+        other["CF-Connecting-IP"] = "203.0.113.81"
+        with patch.object(api.stripe.checkout.Session, "create", side_effect=create):
+            still = self.client.post(
+                "/api/v1/app/checkout", json={"plan": "monthly"}, headers=other,
+            )
+        self.assertEqual(still.status_code, 200)
+
+        status_headers = self._headers(self.free["code"], self.install_a)
+        status_headers["CF-Connecting-IP"] = "203.0.113.82"
+        bucket = licence_v1._limit_bucket("purchase-status", "install", 3600, self.install_a)
+        now = int(time.time())
+        window = now - (now % 3600)
+        db = get_db()
+        db.execute(
+            "INSERT INTO rate_limits (bucket, window_start, count) VALUES (?, ?, 600)",
+            (bucket, window),
+        )
+        db.commit()
+        db.close()
+        limited = self.client.post(
+            "/api/v1/app/purchase/status",
+            json={"intent_id": "intent-limited"},
+            headers=status_headers,
+        )
+        self.assertEqual(limited.status_code, 429)
+        self.assertEqual(limited.get_json()["error"]["code"], "rate_limited")
+        self.assertIn("Retry-After", limited.headers)
+
+        db = get_db()
+        db.execute("DELETE FROM rate_limits")
+        have = {row[1] for row in db.execute("PRAGMA table_info(pro_keys)")}
+        if "is_test" not in have:
+            db.execute("ALTER TABLE pro_keys ADD COLUMN is_test INTEGER NOT NULL DEFAULT 0")
+        plain = licence_v1.generate_pro_key()
+        now_iso = licence_v1.iso(licence_v1.utcnow())
+        future = licence_v1.iso(licence_v1.utcnow() + timedelta(hours=2))
+        cursor = db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, reveal_blob, email, subscription_id, source, status,
+                plan, created_at, reveal_until, is_test
+            ) VALUES (?, ?, ?, 'payer@example.com', 'sub_test_mode', 'stripe', 'active',
+                      'monthly', ?, ?, 1)
+            """,
+            (
+                licence_v1.hash_key(plain), plain[-4:], licence_v1.encrypt_secret(plain),
+                now_iso, now_iso,
+            ),
+        )
+        key_id = cursor.lastrowid
+        db.execute(
+            """
+            INSERT INTO purchase_intents (
+                id, free_license_id, install_id, plan, status, stripe_session_id,
+                pro_key_id, created_at, updated_at, expires_at
+            ) VALUES ('intent-test', ?, ?, 'monthly', 'paid', 'cs_test_mode', ?, ?, ?, ?)
+            """,
+            (self.free["id"], self.install_a, key_id, now_iso, now_iso, future),
+        )
+        db.commit()
+        db.close()
+        app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+        refused = self._post_purchase_status("intent-test", headers=status_headers)
+        self.assertEqual(refused.status_code, 403)
+        self.assertEqual(refused.get_json()["error"]["code"], "test_key")
+        self.assertNotIn(plain, refused.get_data(as_text=True))
+        db = get_db()
+        self.assertEqual(
+            db.execute("SELECT status FROM purchase_intents WHERE id = 'intent-test'").fetchone()["status"],
+            "paid",
+        )
+        db.close()
+        app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        try:
+            allowed = self._post_purchase_status("intent-test", headers=status_headers)
+        finally:
+            app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+        self.assertEqual(allowed.status_code, 200)
+        self.assertEqual(allowed.get_json()["licence_key"], plain)
+        self.assertEqual(allowed.get_json()["status"], "paid")
 
 
 if __name__ == "__main__":

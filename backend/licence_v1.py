@@ -113,6 +113,10 @@ LIMITS = {
     "free-download": (("licence", 10, 3600), ("ip", 30, 3600)),
     # Same numbers as a Free installer link. A separate name so the counters do not mix.
     "pro-download": (("licence", 10, 3600), ("ip", 30, 3600)),
+    # One click starts checkout. Polling the result is a separate counter.
+    "app-checkout": (("install", 10, 3600), ("ip", 20, 3600)),
+    # The app polls about every 5 seconds for up to 30 minutes (about 360 calls).
+    "purchase-status": (("install", 600, 3600), ("ip", 1200, 3600)),
 }
 
 V1_SCHEMA = (
@@ -129,10 +133,29 @@ V1_SCHEMA = (
         plan TEXT DEFAULT '',
         created_at TEXT NOT NULL,
         revoked_at TEXT DEFAULT '',
-        reveal_until TEXT DEFAULT ''
+        reveal_until TEXT DEFAULT '',
+        free_license_id INTEGER
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_pro_keys_email ON pro_keys(email)",
+    """
+    CREATE TABLE IF NOT EXISTS purchase_intents (
+        id TEXT PRIMARY KEY,
+        free_license_id INTEGER NOT NULL,
+        install_id TEXT NOT NULL,
+        plan TEXT NOT NULL,
+        status TEXT NOT NULL,
+        stripe_session_id TEXT DEFAULT '',
+        pro_key_id INTEGER,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE INDEX IF NOT EXISTS idx_purchase_intents_licence
+    ON purchase_intents(free_license_id, install_id)
+    """,
     """
     CREATE TABLE IF NOT EXISTS devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -3048,6 +3071,213 @@ def admin_stats_v1():
     })
 
 
+def _block_test_pro_key(key_id):
+    """Refuse a test-mode Professional key when that guard is installed and the flag is off.
+
+    The column and the helper arrive with the test-mode change. Until then a
+    missing column means there is nothing to refuse.
+    """
+    blocker = globals().get("refuse_test_key_id")
+    if blocker:
+        return blocker(key_id)
+    if not key_id:
+        return None
+    allowed = _config_bool("STRIPE_ALLOW_TEST_EVENTS", False)
+    if allowed:
+        return None
+    api = _api()
+    db = api.get_db()
+    try:
+        try:
+            row = db.execute(
+                "SELECT is_test FROM pro_keys WHERE id = ?",
+                (int(key_id),),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return None
+    finally:
+        db.close()
+    try:
+        flagged = int(row["is_test"] or 0) == 1 if row else False
+    except (KeyError, IndexError, TypeError, ValueError):
+        flagged = False
+    if not flagged:
+        return None
+    return error(403, "test_key", "This Professional key was issued in Stripe test mode.")
+
+
+def app_checkout():
+    """Start Stripe Checkout for a Free licence, tied to this install."""
+    ctx, err = _guard("app-checkout", needs_device=False)
+    if err:
+        return err
+    record = ctx["record"]
+    if record["kind"] != "free":
+        return error(403, "tier_mismatch", "Upgrade starts from a Free licence.")
+    plan = ctx["body"].get("plan")
+    if plan not in ("monthly", "annual"):
+        return error(400, "bad_request", "plan must be monthly or annual.")
+    now = utcnow()
+    intent_id = secrets.token_hex(16)
+    expires = now + timedelta(hours=24)
+    api = _api()
+    db = api.get_db()
+    db.execute(
+        """
+        INSERT INTO purchase_intents (
+            id, free_license_id, install_id, plan, status, stripe_session_id,
+            pro_key_id, created_at, updated_at, expires_at
+        ) VALUES (?, ?, ?, ?, 'pending', '', NULL, ?, ?, ?)
+        """,
+        (intent_id, record["id"], ctx["install_id"], plan, iso(now), iso(now), iso(expires)),
+    )
+    db.commit()
+    db.close()
+    try:
+        session = api.create_app_checkout_session(record.get("email") or "", plan, intent_id)
+    except Exception:
+        logger.exception("App checkout session was not created")
+        db = api.get_db()
+        db.execute(
+            "UPDATE purchase_intents SET status = 'expired', updated_at = ? WHERE id = ?",
+            (iso(utcnow()), intent_id),
+        )
+        db.commit()
+        db.close()
+        return error(502, "upstream", "Checkout could not be started.")
+    url = (session or {}).get("url") or ""
+    session_id = (session or {}).get("id") or ""
+    if not url:
+        db = api.get_db()
+        db.execute(
+            "UPDATE purchase_intents SET status = 'expired', updated_at = ? WHERE id = ?",
+            (iso(utcnow()), intent_id),
+        )
+        db.commit()
+        db.close()
+        return error(502, "upstream", "Checkout could not be started.")
+    db = api.get_db()
+    db.execute(
+        "UPDATE purchase_intents SET stripe_session_id = ?, updated_at = ? WHERE id = ?",
+        (session_id, iso(utcnow()), intent_id),
+    )
+    db.commit()
+    db.close()
+    return jsonify({
+        "url": url,
+        "intent_id": intent_id,
+        "expires_at": iso(expires),
+    })
+
+
+def _intent_for_caller(record, install_id, intent_id):
+    api = _api()
+    db = api.get_db()
+    try:
+        row = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+    finally:
+        db.close()
+    if not row:
+        return None
+    if int(row["free_license_id"]) != int(record["id"]) or row["install_id"] != install_id:
+        return None
+    return row
+
+
+def purchase_status():
+    """Poll a Free-to-Pro purchase. The Professional key is returned once."""
+    ctx, err = _guard("purchase-status", needs_device=False)
+    if err:
+        return err
+    record = ctx["record"]
+    if record["kind"] != "free":
+        return error(403, "tier_mismatch", "This purchase belongs to a Free licence.")
+    try:
+        intent_id = clean_text(ctx["body"].get("intent_id"), 64)
+    except ValueError:
+        return error(400, "bad_request", "intent_id is required.")
+    if not intent_id:
+        return error(400, "bad_request", "intent_id is required.")
+    row = _intent_for_caller(record, ctx["install_id"], intent_id)
+    if not row:
+        return error(404, "not_found", "That purchase was not found.")
+    plan = row["plan"]
+    if row["status"] == "claimed":
+        return jsonify({"status": "claimed", "plan": plan})
+    if row["status"] == "expired":
+        return jsonify({"status": "expired", "plan": plan})
+    expires = parse_iso(row["expires_at"])
+    if not expires or expires < utcnow():
+        if row["status"] != "expired":
+            api = _api()
+            db = api.get_db()
+            db.execute(
+                """
+                UPDATE purchase_intents SET status = 'expired', updated_at = ?
+                WHERE id = ? AND status != 'claimed'
+                """,
+                (iso(utcnow()), intent_id),
+            )
+            db.commit()
+            db.close()
+        return jsonify({"status": "expired", "plan": plan})
+    if row["status"] != "paid" or not row["pro_key_id"]:
+        return jsonify({"status": "pending", "plan": plan})
+    blocked = _block_test_pro_key(row["pro_key_id"])
+    if blocked:
+        return blocked
+    api = _api()
+    db = api.get_db()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        current = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        if (
+            not current
+            or int(current["free_license_id"]) != int(record["id"])
+            or current["install_id"] != ctx["install_id"]
+            or current["status"] != "paid"
+            or not current["pro_key_id"]
+        ):
+            db.commit()
+            status_name = current["status"] if current else "pending"
+            if status_name == "claimed":
+                return jsonify({"status": "claimed", "plan": plan})
+            return jsonify({"status": "pending", "plan": plan})
+        key_row = db.execute(
+            "SELECT reveal_blob FROM pro_keys WHERE id = ?",
+            (current["pro_key_id"],),
+        ).fetchone()
+        if not key_row or not key_row["reveal_blob"]:
+            db.commit()
+            return jsonify({"status": "pending", "plan": plan})
+        plain = decrypt_secret(key_row["reveal_blob"])
+        claimed = db.execute(
+            """
+            UPDATE purchase_intents SET status = 'claimed', updated_at = ?
+            WHERE id = ? AND status = 'paid'
+              AND free_license_id = ? AND install_id = ?
+            """,
+            (iso(utcnow()), intent_id, record["id"], ctx["install_id"]),
+        )
+        if claimed.rowcount != 1:
+            db.commit()
+            return jsonify({"status": "claimed", "plan": plan})
+        db.commit()
+    except Exception:
+        db.rollback()
+        logger.exception("Purchase status could not reveal a key")
+        return error(500, "internal", "The Professional key could not be read.")
+    finally:
+        db.close()
+    return jsonify({"status": "paid", "plan": plan, "licence_key": plain})
+
+
 def register(flask_app):
     """Attach /api/v1 routes. Called once from app.py after the tables exist."""
     api = _api()
@@ -3082,6 +3312,10 @@ def register(flask_app):
     )
     flask_app.add_url_rule(API_PREFIX + "/app/update-check", "v1_update_check", update_check, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/download", "v1_download", app_download, methods=["POST"])
+    flask_app.add_url_rule(API_PREFIX + "/app/checkout", "v1_app_checkout", app_checkout, methods=["POST"])
+    flask_app.add_url_rule(
+        API_PREFIX + "/app/purchase/status", "v1_purchase_status", purchase_status, methods=["POST"]
+    )
     flask_app.add_url_rule(API_PREFIX + "/app/register", "v1_register", register_install, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/telemetry", "v1_telemetry", telemetry_post, methods=["POST"])
     flask_app.add_url_rule(

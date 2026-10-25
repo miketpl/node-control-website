@@ -33,6 +33,7 @@
         <div class="container">
             <h1>Professional</h1>
             <p id="proStatus">Checking the payment…</p>
+            <p id="proAppReturn" hidden>You can close this page and go back to Node Control. The app picks up the Professional key.</p>
             <p id="proEmail" hidden></p>
             <p id="proKey" hidden></p>
             <div id="proDownloads" hidden>
@@ -69,6 +70,12 @@
         (function () {
             var params = new URLSearchParams(window.location.search);
             var sessionId = params.get('session_id') || '';
+            if (params.get('from') === 'app') {
+                var appNote = document.getElementById('proAppReturn');
+                if (appNote) {
+                    appNote.hidden = false;
+                }
+            }
             var api = params.get('localapi') === '1'
                 ? 'http://localhost:5001'
                 : 'https://api.nodecontrol.io';
