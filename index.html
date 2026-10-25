@@ -18,7 +18,7 @@
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="css/style.css?v=20261025safety">
 </head>
 <body>
 
@@ -180,6 +180,24 @@
                     <p>Bring your own AI provider, with your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend). Reports, task summaries, the firewall analyser, and an architect review of the estate. The anonymiser runs first.</p>
                 </div>
 
+            </div>
+
+            <div class="safety-block">
+                <h2 class="section-title">Built to be safe on production networks</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Read-only stays read-only</h3>
+                        <p>Read-only reports and tasks can't run config-altering commands by mistake. Every command they send has to pass a safe list of commands first.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Safe Mode</h3>
+                        <p>The app has Safe Mode and Config Mode. In Safe Mode, even a command typed at the terminal prompt can't change the config. It is blocked.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Config Push</h3>
+                        <p>Config Push blocks risky changes, such as a push to an uplink. You type a confirmation before a risky push goes out. Every push can be reverted.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

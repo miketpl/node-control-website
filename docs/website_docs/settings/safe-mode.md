@@ -51,6 +51,8 @@ Safe Mode also restricts what automated commands Node Control sends. When it is 
 
 ## Why Safe Mode exists
 
+Read-only reports and tasks cannot send a config-altering command by mistake. Every command they send has to pass a safe list of commands first.
+
 Maps, reports, and discovery only send show commands. The write actions are separate, and each one asks you to confirm first:
 
 - [Find Device](../tasks/find-device.md#port-actions-shut-no-shut) port shut and re-enable

@@ -689,6 +689,13 @@ a:hover {
     gap: 24px;
 }
 
+.safety-block {
+    margin-top: 72px;
+}
+.safety-block .section-title {
+    margin-bottom: 40px;
+}
+
 .feature-card {
     background: var(--bg-card);
     border: 1px solid var(--border);

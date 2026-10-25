@@ -2,6 +2,8 @@
 
 A report collects from one or more devices and renders a result, usually a table.
 
+A read-only report cannot send a config-altering command by mistake. Every command it sends has to pass a safe list of commands first.
+
 Open **Reports** in the left sidebar. It is its own page, not a task in the Engineer command bar.
 
 ## Report types
