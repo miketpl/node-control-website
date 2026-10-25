@@ -8,7 +8,7 @@ import tempfile
 import time
 import unittest
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 os.environ["DB_PATH"] = tempfile.mktemp(suffix=".db")
@@ -1255,7 +1255,7 @@ class V1Tests(unittest.TestCase):
             set(body),
             {
                 "window", "licences", "pro_keys", "device_moves", "devices",
-                "registrations", "telemetry", "downloads", "update_checks",
+                "registrations", "telemetry", "usage", "downloads", "update_checks",
                 "flags", "db_bytes", "generated_at",
             },
         )
@@ -1325,6 +1325,125 @@ class V1Tests(unittest.TestCase):
             headers={"Authorization": "Bearer test-admin-token"},
         )
         self.assertEqual(bad.status_code, 400)
+
+    def test_admin_stats_usage_is_counts_only(self):
+        headers = {"Authorization": "Bearer test-admin-token"}
+        locked = self.client.get("/api/admin/stats/v1")
+        self.assertEqual(locked.status_code, 401)
+        wrong = self.client.get(
+            "/api/admin/stats/v1",
+            headers={"Authorization": "Bearer no-such-token"},
+        )
+        self.assertEqual(wrong.status_code, 401)
+
+        empty = self.client.get("/api/admin/stats/v1", headers=headers)
+        self.assertEqual(empty.status_code, 200)
+        usage = empty.get_json()["usage"]
+        self.assertEqual(usage["active_installs"]["1"], {"free": 0, "pro": 0, "ai": 0})
+        self.assertEqual(usage["active_installs"]["7"], {"free": 0, "pro": 0, "ai": 0})
+        self.assertEqual(usage["active_installs"]["30"], {"free": 0, "pro": 0, "ai": 0})
+        self.assertEqual(len(usage["sessions_per_day"]), 30)
+        self.assertEqual(sum(day["sessions"] for day in usage["sessions_per_day"]), 0)
+        self.assertEqual(usage["tasks"], {})
+        self.assertEqual(usage["session_length"], {"median_s": 0, "p90_s": 0, "total_hours": 0})
+        self.assertEqual(usage["connections"], 0)
+        self.assertEqual(usage["errors"], 0)
+        self.assertEqual(usage["installs_by_app_version"], {})
+        self.assertEqual(usage["installs_by_os"], {})
+        self.assertEqual(usage["installs_by_os_version"], {})
+        self.assertEqual(usage["installs_by_chip"], {})
+        self.assertNotIn("opt_out", empty.get_data(as_text=True))
+
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+
+        def stamp(days_ago):
+            return (now - timedelta(days=days_ago)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        def day(days_ago):
+            return (now - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+        rows = (
+            ("inst-1", "s111111111111111", "free", "1.2.3", "Linux", "6", "x86_64", 0, 10, 1, 1,
+             json.dumps({"l2_topologies": 3, "health_checks": 0})),
+            ("inst-1", "s222222222222222", "free", "1.2.3", "Linux", "6", "x86_64", 10, 20, 2, 0,
+             json.dumps({"l2_topologies": 1})),
+            ("inst-2", "s333333333333333", "pro", "1.2.3", "Linux", "6", "arm64", 0, 30, 4, 2,
+             json.dumps({"config_backups": 2, "skipped": "nope"})),
+            ("inst-3", "s444444444444444", "ai", "2.0.0", "macOS", "15", "arm64", 20, 40, 0, 0,
+             "not-json"),
+            ("inst-4", "s555555555555555", "free", "9.9.9", "Linux", "5", "x86_64", 40, 100, 8, 3,
+             json.dumps({"find_device": 4})),
+        )
+        db = get_db()
+        for install, session, tier, version, os_family, os_major, arch, days_ago, duration, connections, errors, tasks in rows:
+            moment = stamp(days_ago)
+            db.execute(
+                """
+                INSERT INTO telemetry_sessions (
+                    licence_ref, licence_kind, install_id, session_id, tier, app_version,
+                    os_family, os_major, arch, session_start_date, duration_s,
+                    connections_opened, errors, tasks_json, first_received_at, last_received_at
+                ) VALUES (0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    tier, install, session, tier, version, os_family, os_major, arch,
+                    day(days_ago), duration, connections, errors, tasks, moment, moment,
+                ),
+            )
+        db.execute(
+            """
+            INSERT INTO telemetry_monthly (
+                month, tier, app_version, os_family, counter_name, total, session_count, install_count
+            ) VALUES
+                ('2026-01', 'free', '1.2.3', 'Linux', 'l2_topologies', 10, 4, 2),
+                ('2026-01', 'free', '1.2.3', 'Linux', 'duration_s', 1600, 4, 2),
+                ('2026-01', 'free', '1.2.3', 'Linux', 'connections_opened', 5, 4, 2),
+                ('2026-01', 'free', '1.2.3', 'Linux', 'errors', 6, 4, 2)
+            """
+        )
+        db.commit()
+        db.close()
+
+        app.config["ADMIN_READ_TOKEN"] = "test-read-token"
+        try:
+            res = self.client.get(
+                "/api/admin/stats/v1",
+                headers={"Authorization": "Bearer test-read-token"},
+            )
+        finally:
+            app.config["ADMIN_READ_TOKEN"] = ""
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        usage = body["usage"]
+        self.assertEqual(usage["active_installs"]["1"], {"free": 1, "pro": 1, "ai": 0})
+        self.assertEqual(usage["active_installs"]["7"], {"free": 1, "pro": 1, "ai": 0})
+        self.assertEqual(usage["active_installs"]["30"], {"free": 1, "pro": 1, "ai": 1})
+        by_day = {item["day"]: item["sessions"] for item in usage["sessions_per_day"]}
+        self.assertEqual(len(by_day), 30)
+        self.assertEqual(by_day[day(0)], 2)
+        self.assertEqual(by_day[day(10)], 1)
+        self.assertEqual(by_day[day(20)], 1)
+        self.assertNotIn(day(40), by_day)
+        self.assertEqual(usage["tasks"]["l2_topologies"], {"uses": 14, "sessions": 6, "installs": 3})
+        self.assertEqual(usage["tasks"]["config_backups"], {"uses": 2, "sessions": 1, "installs": 1})
+        self.assertEqual(usage["tasks"]["find_device"], {"uses": 4, "sessions": 1, "installs": 1})
+        self.assertNotIn("health_checks", usage["tasks"])
+        self.assertNotIn("skipped", usage["tasks"])
+        self.assertEqual(usage["session_length"]["median_s"], 30)
+        self.assertEqual(usage["session_length"]["p90_s"], 100)
+        self.assertEqual(usage["session_length"]["total_hours"], 0.5)
+        self.assertEqual(usage["connections"], 20)
+        self.assertEqual(usage["errors"], 12)
+        self.assertEqual(usage["installs_by_app_version"], {"1.2.3": 2, "2.0.0": 1, "9.9.9": 1})
+        self.assertEqual(usage["installs_by_os"], {"Linux": 3, "macOS": 1})
+        self.assertEqual(usage["installs_by_os_version"], {"5": 1, "6": 2, "15": 1})
+        self.assertEqual(usage["installs_by_chip"], {"arm64": 2, "x86_64": 2})
+        text = res.get_data(as_text=True)
+        for secret in ("inst-1", "inst-2", "inst-3", "inst-4", "s111111111111111"):
+            self.assertNotIn(secret, text)
+        self.assertNotIn("opt_out", text)
+        self.assertIn("telemetry", body)
+        self.assertIn("licences", body)
 
     def test_minimum_version_is_unset_or_capped_to_the_release(self):
         app.config["MIN_SUPPORTED_VERSION_FREE"] = ""
