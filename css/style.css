@@ -2071,6 +2071,16 @@ select.form-input {
     border-color: var(--cyan);
 }
 
+/* Ten quotes: keep the dot row inside a 320px screen. */
+@media (max-width: 360px) {
+    .testimonial-carousel.is-ready .testimonial-controls {
+        gap: 8px;
+    }
+    .testimonial-dots {
+        gap: 5px;
+    }
+}
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .features-grid,
