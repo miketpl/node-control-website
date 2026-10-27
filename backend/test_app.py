@@ -1,5 +1,6 @@
 """Local tests for the licence API. SMTP and GitHub are mocked."""
 
+import argparse
 import base64
 import json
 import multiprocessing
@@ -10,6 +11,8 @@ import sys
 import tempfile
 import threading
 import unittest
+from datetime import datetime, timezone
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -94,9 +97,11 @@ class LicenceApiTests(unittest.TestCase):
         db = get_db()
         db.execute("DELETE FROM licenses")
         db.execute("DELETE FROM download_events")
+        db.execute("DELETE FROM funnel_daily")
         db.commit()
         db.close()
         api.reset_download_event_limits()
+        api.reset_funnel_limits()
 
     def tearDown(self):
         self.urlopen_patch.stop()
@@ -578,6 +583,175 @@ class LicenceApiTests(unittest.TestCase):
         count = db.execute("SELECT COUNT(*) AS c FROM download_events").fetchone()["c"]
         db.close()
         self.assertEqual(count, 2)
+
+    def test_funnel_event_counts_a_utc_day_and_nothing_else(self):
+        plain = self.client.post(
+            "/api/funnel-event",
+            data=b"free_section_view",
+            content_type="text/plain",
+            headers={"Origin": "https://nodecontrol.io", "CF-Connecting-IP": "203.0.113.10"},
+        )
+        self.assertEqual(plain.status_code, 204)
+        self.assertEqual(
+            plain.headers.get("Access-Control-Allow-Origin"),
+            "https://nodecontrol.io",
+        )
+        beacon = self.client.post(
+            "/api/download-event",
+            data=b"{}",
+            content_type="text/plain",
+            headers={"Origin": "https://nodecontrol.io"},
+        )
+        self.assertEqual(
+            plain.headers.get("Access-Control-Allow-Origin"),
+            beacon.headers.get("Access-Control-Allow-Origin"),
+        )
+        as_json = self.client.post(
+            "/api/funnel-event",
+            json={"event": "free_form_start"},
+            headers={"CF-Connecting-IP": "203.0.113.10"},
+        )
+        self.assertEqual(as_json.status_code, 204)
+        wrapped = self.client.post(
+            "/api/funnel-event",
+            data=json.dumps({"event": "free_form_submit"}),
+            content_type="text/plain",
+            headers={"CF-Connecting-IP": "203.0.113.10"},
+        )
+        self.assertEqual(wrapped.status_code, 204)
+        ignored = self.client.post(
+            "/api/funnel-event",
+            data=b"not_an_event",
+            content_type="text/plain",
+            headers={"CF-Connecting-IP": "203.0.113.10"},
+        )
+        self.assertEqual(ignored.status_code, 204)
+        huge = self.client.post(
+            "/api/funnel-event",
+            data=b"x" * (api.FUNNEL_BODY_LIMIT + 1),
+            content_type="text/plain",
+            headers={"CF-Connecting-IP": "203.0.113.10"},
+        )
+        self.assertEqual(huge.status_code, 204)
+
+        db = get_db()
+        cols = [row["name"] for row in db.execute("PRAGMA table_info(funnel_daily)")]
+        rows = db.execute(
+            "SELECT day, event, count FROM funnel_daily ORDER BY event"
+        ).fetchall()
+        db.close()
+        self.assertEqual(cols, ["day", "event", "count"])
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        self.assertEqual(
+            [(row["day"], row["event"], row["count"]) for row in rows],
+            [
+                (today, "free_form_start", 1),
+                (today, "free_form_submit", 1),
+                (today, "free_section_view", 1),
+            ],
+        )
+
+    def test_funnel_event_rate_limit_is_memory_only(self):
+        self.assertEqual(api.FUNNEL_IP_LIMIT, 30)
+        original = api.FUNNEL_IP_LIMIT
+        api.FUNNEL_IP_LIMIT = 2
+        try:
+            headers = {"CF-Connecting-IP": "203.0.113.40"}
+            for _ in range(2):
+                res = self.client.post(
+                    "/api/funnel-event", data=b"free_section_view",
+                    content_type="text/plain", headers=headers,
+                )
+                self.assertEqual(res.status_code, 204)
+            blocked = self.client.post(
+                "/api/funnel-event", data=b"free_section_view",
+                content_type="text/plain", headers=headers,
+            )
+            self.assertEqual(blocked.status_code, 204)
+            other = self.client.post(
+                "/api/funnel-event", data=b"free_form_start",
+                content_type="text/plain",
+                headers={"CF-Connecting-IP": "203.0.113.41"},
+            )
+            self.assertEqual(other.status_code, 204)
+        finally:
+            api.FUNNEL_IP_LIMIT = original
+        db = get_db()
+        rows = {
+            row["event"]: row["count"]
+            for row in db.execute("SELECT event, count FROM funnel_daily")
+        }
+        rate_rows = db.execute(
+            "SELECT COUNT(*) AS c FROM rate_limits WHERE bucket LIKE '%funnel%'"
+        ).fetchone()["c"]
+        db.close()
+        self.assertEqual(rows.get("free_section_view"), 2)
+        self.assertEqual(rows.get("free_form_start"), 1)
+        self.assertEqual(rate_rows, 0)
+        self.assertNotIn("203.0.113.40", json.dumps(rows))
+
+    def test_funnel_command_is_read_only_and_prints_uk_days(self):
+        from datetime import timedelta
+        from zoneinfo import ZoneInfo
+        import admin_cli
+        uk_today = datetime.now(ZoneInfo("Europe/London")).date()
+        yesterday = (uk_today - timedelta(days=1)).isoformat()
+        today = uk_today.isoformat()
+        db = get_db()
+        db.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, ?)",
+            (today, "free_section_view", 10),
+        )
+        db.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, ?)",
+            (today, "free_form_start", 4),
+        )
+        db.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, ?)",
+            (today, "free_form_submit", 1),
+        )
+        db.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, ?)",
+            (yesterday, "free_section_view", 2),
+        )
+        db.commit()
+        db.close()
+
+        previous = os.environ.get("DB_PATH")
+        os.environ["DB_PATH"] = app.config["DB_PATH"]
+        try:
+            with patch("sys.stdout", new_callable=StringIO) as out:
+                admin_cli.cmd_funnel(argparse.Namespace(days=2))
+            text = out.getvalue()
+            with self.assertRaises(sqlite3.OperationalError):
+                raw = admin_cli.open_funnel_db()
+                try:
+                    raw.execute(
+                        "INSERT INTO funnel_daily (day, event, count) VALUES ('2000-01-01', 'free_section_view', 1)"
+                    )
+                finally:
+                    raw.close()
+        finally:
+            if previous is None:
+                os.environ.pop("DB_PATH", None)
+            else:
+                os.environ["DB_PATH"] = previous
+
+        lines = text.strip().splitlines()
+        self.assertEqual(
+            lines[0],
+            "day\tfree_section_view\tfree_form_start\tfree_form_submit\t"
+            "form_start/section_view\tsubmit/form_start",
+        )
+        self.assertTrue(lines[1].startswith(yesterday + "\t2\t0\t0\t0.0%\t-"))
+        self.assertTrue(lines[2].startswith(today + "\t10\t4\t1\t40.0%\t25.0%"))
+        db = get_db()
+        still = db.execute(
+            "SELECT count FROM funnel_daily WHERE day = ? AND event = ?",
+            (today, "free_section_view"),
+        ).fetchone()["count"]
+        db.close()
+        self.assertEqual(still, 10)
 
     def test_migration_keeps_an_existing_row_on_the_old_schema(self):
         old = tempfile.NamedTemporaryFile(prefix="nc-old-lic-", suffix=".db", delete=False)

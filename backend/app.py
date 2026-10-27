@@ -26,7 +26,7 @@ import threading
 import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
@@ -208,6 +208,13 @@ def init_db():
         );
         CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at);
 
+        CREATE TABLE IF NOT EXISTS funnel_daily (
+            day TEXT NOT NULL,
+            event TEXT NOT NULL,
+            count INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (day, event)
+        );
+
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
         CREATE INDEX IF NOT EXISTS idx_licenses_email ON licenses(email);
         CREATE INDEX IF NOT EXISTS idx_licenses_status ON licenses(status);
@@ -312,6 +319,14 @@ def migrate_db():
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at)",
             )
+            _apply_schema(db, """
+                CREATE TABLE IF NOT EXISTS funnel_daily (
+                    day TEXT NOT NULL,
+                    event TEXT NOT NULL,
+                    count INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY (day, event)
+                )
+            """)
             _apply_schema(
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)",
@@ -351,6 +366,15 @@ DOWNLOAD_EVENT_LICENCE_CAP = 24
 DOWNLOAD_EVENT_BODY_LIMIT = 1024
 _download_event_lock = threading.Lock()
 _download_event_hits = {}
+
+# Funnel counts are a public POST. The address cap is in memory, per worker,
+# and is never written to the database. The same fixed window as consume_rate.
+FUNNEL_EVENTS = ("free_section_view", "free_form_start", "free_form_submit")
+FUNNEL_IP_LIMIT = 30
+FUNNEL_IP_WINDOW = 60
+FUNNEL_BODY_LIMIT = 1024
+_funnel_lock = threading.Lock()
+_funnel_hits = {}
 
 
 def _clean_host(value):
@@ -430,6 +454,42 @@ def reset_download_event_limits():
         db.close()
     except Exception:
         logger.exception("Could not reset download-event rate limits")
+
+
+def _funnel_ip_allowed(ip):
+    """Fixed window in this process. Over the limit is False. Nothing is stored."""
+    now = int(time.time())
+    window = int(FUNNEL_IP_WINDOW)
+    window_start = now - (now % window)
+    key = ((ip or ""), window_start)
+    with _funnel_lock:
+        stale = [item for item in _funnel_hits if item[1] != window_start]
+        for item in stale:
+            del _funnel_hits[item]
+        count = _funnel_hits.get(key, 0) + 1
+        _funnel_hits[key] = count
+    return count <= int(FUNNEL_IP_LIMIT)
+
+
+def reset_funnel_limits():
+    with _funnel_lock:
+        _funnel_hits.clear()
+
+
+def _funnel_event_name():
+    """Accept a bare event name, or JSON {event}. Anything else is ignored."""
+    raw = request.get_data(cache=True) or b""
+    if len(raw) > FUNNEL_BODY_LIMIT:
+        return None
+    text = raw.decode("utf-8", errors="replace").strip()
+    if text in FUNNEL_EVENTS:
+        return text
+    data = request.get_json(force=True, silent=True)
+    if isinstance(data, dict):
+        event = str(data.get("event") or "").strip()
+        if event in FUNNEL_EVENTS:
+            return event
+    return None
 
 
 def _utc_day(value, default):
@@ -2173,6 +2233,32 @@ def download_event():
             )
             db.commit()
     db.close()
+    return ("", 204)
+
+
+@app.route("/api/funnel-event", methods=["POST"])
+def funnel_event():
+    """Add one to today's UTC count for a Free-section event.
+
+    The site sends this with navigator.sendBeacon as text/plain. The body is
+    either the event name or JSON {"event": "..."}. Only the day, the event
+    name, and the count are stored. The response is always 204.
+    """
+    event = _funnel_event_name()
+    if event and _funnel_ip_allowed(_client_ip()):
+        day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        db = get_db()
+        try:
+            db.execute(
+                """
+                INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, 1)
+                ON CONFLICT(day, event) DO UPDATE SET count = count + 1
+                """,
+                (day, event),
+            )
+            db.commit()
+        finally:
+            db.close()
     return ("", 204)
 
 
