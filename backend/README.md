@@ -41,7 +41,10 @@ python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded
 python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22 --dry-run
 python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22,25 --dry-run
 python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_all --exclude-licence-id 22,25 --confirm
+python3 admin_cli.py funnel --days 14
 ```
+
+`funnel --days N` opens the licence database read-only and prints one row for each of the last N days in Europe/London, including today. It does not need `ADMIN_TOKEN`. The columns are `free_section_view`, `free_form_start`, `free_form_submit`, then `form_start/section_view` and `submit/form_start`. A zero denominator is `-`. The stored day is the UTC date. The table lists the UK date of the same name. `POST /api/funnel-event` is what fills it: a text/plain body that is either the event name or JSON `{"event": "..."}`. The only stored fields are that UTC day, the event, and a count. No IP address, user agent, cookie, id, or referrer is stored. Each address is limited to 30 events a minute in memory on that worker, and a request over the limit is still a 204 with no increment.
 
 List, revoke, flags, and Pro key commands call the API. `maintenance --local` opens the database and does not issue a key or call GitHub. When `LEGACY_ALLOWLIST_SYNC=true`, revoke removes the code from `licenses.json` first and only then marks the row revoked. If GitHub cannot be updated, the row is left as it was. When the flag is false, revoke only updates the database.
 

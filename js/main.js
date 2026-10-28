@@ -271,6 +271,50 @@
         } catch (err) { /* never block the download */ }
     }
 
+    // Anonymous Free-section counts. sendBeacon with text/plain, same as a
+    // download event. Failure is silent. View and form start fire once per
+    // page load. Submit fires on each submit.
+    function trackFunnel(event) {
+        try {
+            if (!navigator.sendBeacon) return;
+            var body = JSON.stringify({ event: event });
+            navigator.sendBeacon(API_BASE + '/api/funnel-event',
+                new Blob([body], { type: 'text/plain' }));
+        } catch (err) { /* never block the page */ }
+    }
+
+    function watchFreeFunnel() {
+        var seenView = false;
+        var seenStart = false;
+        var section = document.getElementById('free-edition');
+        if (section && typeof IntersectionObserver === 'function') {
+            try {
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (seenView || entry.intersectionRatio < 0.5) return;
+                        seenView = true;
+                        trackFunnel('free_section_view');
+                        observer.disconnect();
+                    });
+                }, { threshold: [0.5] });
+                observer.observe(section);
+            } catch (err) { /* leave the page alone */ }
+        }
+        var form = document.getElementById('freeRequestForm');
+        if (!form) return;
+        function markStart() {
+            if (seenStart) return;
+            seenStart = true;
+            trackFunnel('free_form_start');
+            form.removeEventListener('focusin', markStart);
+            form.removeEventListener('input', markStart);
+        }
+        form.addEventListener('focusin', markStart);
+        form.addEventListener('input', markStart);
+    }
+
+    watchFreeFunnel();
+
     // Helper: show result message in a container
     function showResult(container, message, type) {
         container.className = 'redeem-result visible ' + type;
@@ -302,6 +346,7 @@
     if (freeForm) {
         freeForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+            trackFunnel('free_form_submit');
 
             const btn = document.getElementById('reqSubmitBtn');
             const name = document.getElementById('reqName').value.trim();
