@@ -45,7 +45,7 @@
 
     <main class="legal-page">
         <div class="container">
-            <p>Last updated 21 October 2026.</p>
+            <p>Last updated 27 October 2026.</p>
             <h1>Privacy</h1>
             <p>This notice describes personal data used by the Node Control website, the Free Edition download, the Professional subscription, and the desktop app when it talks to the licence server at api.nodecontrol.io. Node Control is a product of The Promised Lan Limited.</p>
             <p>Device configs, topology, and credentials stay in the app on your computer. They are not sent to the licence server. The licence server does receive the categories on this page.</p>
@@ -86,7 +86,7 @@
                 <li>Company, if you enter one</li>
             </ul>
             <p>These are stored in the licence database on servers the company operates. The 6-digit verification code is stored with that request until you enter it, or until it expires. The default expiry is 72 hours. After you verify, that field is replaced with the time you verified. The rest of the row stays, including the free licence code.</p>
-            <p>The form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign), the host name of the site that referred you, and the path of the page you are on. These are read when you submit. They are stored on the same licence row. They are not stored in a cookie or in the browser.</p>
+            <p>The form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign), the host name of the site that referred you, and the path of the page you landed on. If the page you submit from has none of those tags, the values kept in the browser's session storage for this visit are sent instead. They are stored on the same licence row. They are not stored in a cookie.</p>
             <p>When the site starts an installer download, or you click a download link, it records the platform and whether the download was started automatically or from a click. That record is stored against the licence, with the time. It does not include an IP address. If that call fails, the download still starts.</p>
 
             <h2>IP addresses</h2>
@@ -132,7 +132,7 @@
                 <!-- SMTP host comes from the server environment. The code names no live provider. The unset default is not the host in use. -->
                 <li>Email is sent by our email delivery provider, over SMTP.</li>
             </ul>
-            <p>This site does not load an analytics script, an advertising pixel, or a similar tracker. The typeface is served from this site.</p>
+            <p>This site uses Cloudflare Web Analytics. It is cookieless and does not track people across sites. Campaign tags are kept in the browser's session storage only for the visit, to credit a sign-up. The typeface is served from this site.</p>
             <p>There is no separate cookie page. Cookies are described below.</p>
 
             <h2>International transfers</h2>
@@ -150,7 +150,7 @@
             </ul>
 
             <h2>Cookies and local storage</h2>
-            <p>The scripts on this website do not set a cookie, and they do not use local storage or session storage. The Free form reads the page address at the moment you submit.</p>
+            <p>The scripts on this website do not set a cookie, and they do not use local storage. Campaign tags are kept in session storage only for the visit, to credit a sign-up. The Free form sends those stored values when the page address has none.</p>
             <p>Professional checkout happens on Stripe's website. Stripe's own cookies apply there.</p>
 
             <h2>Children</h2>
@@ -192,6 +192,6 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261021status"></script>
+    <script src="js/main.js?v=20261027attr"></script>
 </body>
 </html>
