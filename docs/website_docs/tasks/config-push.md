@@ -114,7 +114,7 @@ Revert is refused whenever the app-wide Safe Mode is on.
 
 Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.
 
-Full support is Cisco IOS, IOS-XE, and NX-OS only. On any other vendor the task can send a template, and nothing else: no activity targeting, and no reliable revert.
+Full support is Cisco IOS, IOS-XE, and NX-OS. Juniper Junos revert restores the snapshot taken before the push. If that snapshot could not be taken, the revert is marked as manual. Palo Alto's revert is on [Config from File](config-from-file.md), not on this task: after a skipped, refused, or errored commit, only the changes made by the login Node Control used are reverted, and that revert is checked against the firewall's change list. Nothing is reverted in Safe Mode. Every other non-Cisco vendor gets a template only, with no activity targeting and no reliable revert.
 
 The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
 

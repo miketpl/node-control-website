@@ -421,7 +421,7 @@
 </li>
 <li>Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
 </li>
-<li>Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; other vendors get a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
+<li>Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; Juniper Junos revert restores the pre-push snapshot, and is marked manual if there is no snapshot; Palo Alto&#x27;s revert is on Config from File: after a skipped, refused, or errored commit, only that login&#x27;s changes are reverted and checked against the change list, and nothing is reverted in Safe Mode; every other non-Cisco vendor gets a template only, with no activity targeting, no reliable revert, and no Default interface), the File Transfer task, Packet Capture, Config from File, and config compliance
 </li>
 <li><a href="../settings/scripts.html">Custom scripts</a> under Settings → Scripts
 </li>

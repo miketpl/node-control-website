@@ -72,7 +72,7 @@ For `show system info`:
 Node Control uses PAN-OS CLI mode (NOT the web GUI, NOT the XML API):
 
 - Commands run via SSH
-- Read-only — no `commit` operations
+- **Config from File** sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails
 - Disables paging on connect with `set cli pager off`
 
 For users who prefer the XML API (which has wider parsing support upstream), we may add a hybrid mode in a future release — let us know if this matters.
@@ -88,7 +88,7 @@ Active/passive PA pairs are common. Node Control:
 ## Limitations
 
 - **Panorama**: not supported as a "device" type. Manage individual firewalls instead.
-- **GlobalProtect**: not specifically exposed
+- **GlobalProtect**: Firewall Health saves GlobalProtect user counts to the local network memory, used by Network Chat, Ask Network AI, and Architect Review
 - **App-ID / User-ID**: not surfaced in reports
 - **Policy review**: no built-in policy inspector
 

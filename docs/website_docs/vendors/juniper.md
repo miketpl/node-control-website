@@ -65,4 +65,4 @@ Discovery saves the host name without the `user@` prefix. Find Device skips Juno
 ## Next steps
 
 - [Topology L3](../tasks/topology-l3.md) — for OSPF/BGP detail
-- [Find Device](../tasks/find-device.md) — works with Junos VRF probes
+- [Find Device](../tasks/find-device.md) — Junos is skipped with a clear reason until its output format is confirmed

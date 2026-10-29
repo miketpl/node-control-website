@@ -260,7 +260,7 @@
 <ul>
 <li>Commands run via SSH
 </li>
-<li>Read-only — no <code>commit</code> operations
+<li><strong>Config from File</strong> sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails
 </li>
 <li>Disables paging on connect with <code>set cli pager off</code>
 </li>
@@ -280,7 +280,7 @@
 <ul>
 <li><strong>Panorama</strong>: not supported as a &quot;device&quot; type. Manage individual firewalls instead.
 </li>
-<li><strong>GlobalProtect</strong>: not specifically exposed
+<li><strong>GlobalProtect</strong>: Firewall Health saves GlobalProtect user counts to the local network memory, used by Network Chat, Ask Network AI, and Architect Review
 </li>
 <li><strong>App-ID / User-ID</strong>: not surfaced in reports
 </li>

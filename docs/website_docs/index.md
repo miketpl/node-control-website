@@ -39,7 +39,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Serial console](tasks/serial-console.md) — on the Engineer tab. Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — on the Engineer tab. Free and Pro; visible in Safe Mode
 - [Monitor](tasks/monitor.md) — Pro and AI; not on Free
-- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. Safe Mode removes it
+- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. Juniper Junos revert restores the pre-push snapshot, or is marked manual if there is no snapshot. Palo Alto revert is on Config from File: after a skipped, refused, or errored commit, only that login's changes are reverted and checked against the change list, and nothing is reverted in Safe Mode. Every other non-Cisco vendor gets a template only, with no reliable revert. Safe Mode removes Config Push
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
 - [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
