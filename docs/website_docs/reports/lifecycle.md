@@ -73,7 +73,7 @@ On Cisco NX-OS, Asset Lifecycle reads the Nexus model (for example N9K-C93180YC-
 
 Asset Lifecycle reports model and serial for HP ProCurve / Aruba OS-Switch, Juniper Junos, Dell OS10, Extreme EXOS, and FortiGate.
 
-Findings are saved to the local network memory: the model, serial, and software version. The end-of-life status is not saved. Network Chat and Architect Review can use what was saved.
+Findings are saved to the local network memory: the model, serial, and software version. The end-of-life status is not saved. On Pro and the AI edition, Ask Network AI and Architect Review on the Monitor tab can use what was saved.
 
 ## Next steps
 

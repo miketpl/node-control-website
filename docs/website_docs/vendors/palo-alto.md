@@ -88,7 +88,7 @@ Active/passive PA pairs are common. Node Control:
 ## Limitations
 
 - **Panorama**: not supported as a "device" type. Manage individual firewalls instead.
-- **GlobalProtect**: Firewall Health saves GlobalProtect user counts to the local network memory, used by Network Chat, Ask Network AI, and Architect Review
+- **GlobalProtect**: Firewall Health & Logs saves GlobalProtect user counts to the local network memory, used by Ask Network AI and Architect Review on the Monitor tab (Pro and the AI edition)
 - **App-ID / User-ID**: not surfaced in reports
 - **Policy review**: no built-in policy inspector
 
@@ -96,7 +96,7 @@ For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud
 
 Discovery saves the host name without the `user@` prefix, and without the HA state (`(active)`, `(passive)`, and the other states), so a firewall keeps one name across a failover.
 
-**Config from File** sends `commit` after the lines. If a line gets an error, the commit is not sent and the device fails. After a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted, checked against the firewall's change list. Other admins' pending changes are left alone. Output that just says `commit failed` counts as refused. Nothing is reverted in Safe Mode. The login name is masked on Node Control's own revert and change-list commands, and on the change list's owner and other-admins lines.
+**Config from File** sends `commit` after the lines. If a line gets an error, the commit is not sent and the device fails. After a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted, checked against the firewall's change list. If the revert can't be confirmed, the row says REVERT FAILED, and Node Control's uncommitted changes may still be on the firewall, so check its change list. If the login name can't be used safely, nothing is reverted. Other admins' pending changes are left alone. Output that just says `commit failed` counts as refused. Nothing is reverted in Safe Mode. The login name is masked on Node Control's own revert and change-list commands, and on the change list's owner and other-admins lines.
 
 ## Next steps
 

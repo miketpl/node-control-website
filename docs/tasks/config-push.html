@@ -298,8 +298,8 @@
 <p>Juniper Junos loads the lines in <code>configure private</code> and runs <code>commit check</code> and <code>commit and-quit</code>, rolling back on any error. Each interface is snapshotted before the push, and revert restores that snapshot the same way. If the snapshot could not be taken, the revert is marked as manual.</p>
 <p>Revert is refused whenever the app-wide Safe Mode is on.</p>
 <h2 id="vendors-and-edition">Vendors and edition</h2>
-<p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.</p>
-<p>Full support is Cisco IOS, IOS-XE, and NX-OS. Juniper Junos revert restores the snapshot taken before the push. If that snapshot could not be taken, the revert is marked as manual. Palo Alto&#x27;s revert is on <a href="config-from-file.html">Config from File</a>, not on this task: after a skipped, refused, or errored commit, only the changes made by the login Node Control used are reverted, and that revert is checked against the firewall&#x27;s change list. Nothing is reverted in Safe Mode. Every other non-Cisco vendor gets a template only, with no activity targeting and no reliable revert.</p>
+<p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.</p>
+<p>Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no activity targeting and no reliable revert. (On Palo Alto, Config from File discards its own uncommitted changes when its commit is skipped or refused. See <a href="config-from-file.html">Config from File</a>.)</p>
 <p>The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Safe Mode removes Config Push.</p>
