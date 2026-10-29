@@ -126,6 +126,8 @@ You can copy it elsewhere or attach to support tickets — it's a self-contained
 | Stand-alone "ghost" nodes with no edges | Switch in library but its neighbours aren't | Add the neighbours to the library, re-run |
 | HP ProCurve switch appears as cisco_ios | Detection error | Right-click in library → Change Device Type → `hp_procurve_cli`, Lock Device Type, re-run |
 
+On Cisco NX-OS, MAC-table entries are read on their real port. The age column is not taken as the port, and `vPC Peer-Link` is not cut short. IOS, IOS-XE, and Arista read as before.
+
 ## Next steps
 
 - [Layer 3 topology](topology-l3.md) — adds routing info, OSPF/BGP peers

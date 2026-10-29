@@ -101,6 +101,12 @@ Multi-column ranking (filtering by multiple criteria) is via the filter dialog: 
 | Reports show old data | Output cache (10 min) | Tick **Skip cache** in the run config |
 | Some devices missing entirely | Failed SSH auth or unreachable | Check the run log for per-device errors |
 
+On Cisco NX-OS, the host name comes from `Device name:` and is not `Kernel`. Inventory reads the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version.
+
+On Cisco IOS / IOS-XE, Inventory reads the model from the `cisco <model>` line of `show version` when there is no Model Number line, the same way Asset Lifecycle does.
+
+On HP ProCurve / Aruba OS-Switch, firmware with a two-column `show system`: the uptime is only the Up Time value, and the serial number in the right-hand column is read.
+
 ## Next steps
 
 - [Other reports](overview.md)

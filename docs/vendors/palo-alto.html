@@ -260,7 +260,7 @@
 <ul>
 <li>Commands run via SSH
 </li>
-<li>Read-only — no <code>commit</code> operations
+<li><strong>Config from File</strong> sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails
 </li>
 <li>Disables paging on connect with <code>set cli pager off</code>
 </li>
@@ -280,7 +280,7 @@
 <ul>
 <li><strong>Panorama</strong>: not supported as a &quot;device&quot; type. Manage individual firewalls instead.
 </li>
-<li><strong>GlobalProtect</strong>: not specifically exposed
+<li><strong>GlobalProtect</strong>: Firewall Health &amp; Logs saves GlobalProtect user counts to the local network memory, used by Ask Network AI and Architect Review on the Monitor tab (Pro and the AI edition)
 </li>
 <li><strong>App-ID / User-ID</strong>: not surfaced in reports
 </li>
@@ -288,6 +288,8 @@
 </li>
 </ul>
 <p>For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud Manager, Panorama itself, third-party policy auditors) are better.</p>
+<p>Discovery saves the host name without the <code>user@</code> prefix, and without the HA state (<code>(active)</code>, <code>(passive)</code>, and the other states), so a firewall keeps one name across a failover.</p>
+<p><strong>Config from File</strong> sends <code>commit</code> after the lines. If a line gets an error, the commit is not sent and the device fails. After a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted, checked against the firewall&#x27;s change list. If the revert can&#x27;t be confirmed, the row says REVERT FAILED, and Node Control&#x27;s uncommitted changes may still be on the firewall, so check its change list. If the login name can&#x27;t be used safely, nothing is reverted. Other admins&#x27; pending changes are left alone. Output that just says <code>commit failed</code> counts as refused. Nothing is reverted in Safe Mode. The login name is masked on Node Control&#x27;s own revert and change-list commands, and on the change list&#x27;s owner and other-admins lines.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../tasks/topology-l3.html">L3 topology</a> — for full LR + multi-VR coverage

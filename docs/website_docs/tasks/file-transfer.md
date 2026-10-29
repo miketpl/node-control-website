@@ -27,7 +27,7 @@ The section is collapsed, and its title is **Remote client - send / fetch to an 
 
 ## The File Transfer task
 
-The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko.
+The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko. A vendor without a file-transfer driver is skipped before any command is sent. The row reads `SKIP, "File Transfer not supported on <type>"`.
 
 The dialog is **File Transfer**:
 

@@ -164,7 +164,7 @@
 <li>Port Utilisation</li>
 <li>Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family</li>
 <li>VLAN Port Finder</li>
-<li>Find Device</li>
+<li>Find Device, traced with EOS MAC-table, LLDP, and LAG commands</li>
 <li>Inventory reads the model, the serials, and the EOS version from EOS output</li>
 <li>On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed</li>
 <li>On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from <code>show version</code>. Site Subnets has its L3 command</li>
@@ -209,6 +209,7 @@
 </tr>
 </tbody>
 </table>
+<p>A device reached on another driver and identified as Arista EOS is reconnected on the EOS driver. If that reconnect fails, the connection stops. IOS, IOS-XE, and Arista MAC-table reads on the L2 map, in Find Device, and in the Bandwidth report are unchanged.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../tasks/topology-l3.html">L3 topology</a></li>

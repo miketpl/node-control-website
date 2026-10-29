@@ -14,9 +14,15 @@
 2. If no devices are ticked or selected, the warning **No target devices selected** appears and the run stops.
 3. **Select Credentials**.
 4. The push runs with the state **CONFIG PUSH**.
-   - PAN-OS gets each line, then `commit`
+   - PAN-OS gets each line, then `commit`, unless a line gets an error. Then the commit is not sent and the device fails
    - Everything else gets enable plus a config set, falling back to `configure terminal` line by line, then `end`
-5. A row shows OK **config applied**, WARN with the device's error text (the lines were sent, and the device complained), or FAIL. The summary is `Config push complete: X OK, Y failed out of Z`.
+5. The closing summary reads `N OK, W with warnings, F failed out of T`. A device with warnings is not counted as OK.
+
+A reply that means a line was refused is not read as **config applied**. That covers Aruba AOS-CX `Invalid input: ...` and `% Command incomplete`, ProCurve incomplete and ambiguous input, FortiGate `command parse error` and `Command fail`, and Cisco IOS `Command authorization failed.` when AAA command authorization refuses a command. A line that only contains those words is not treated as a refusal. A refused config line does not stop the rest of that device's push.
+
+When a device will not enter configuration mode (for example a read-only account, or NX-OS answering `Permission denied` to `configure terminal`), that device's push stops at once. Nothing is sent outside configuration mode. The row fails with `could not enter configuration mode (check account privileges)`, and the lines not sent are listed as skipped.
+
+On Palo Alto, after a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted. The revert is checked against the firewall's change list. If the revert can't be confirmed, the row says REVERT FAILED, and Node Control's uncommitted changes may still be on the firewall, so check its change list. If the login name can't be used safely, nothing is reverted. Other admins' pending changes are left alone. A commit output that just says `commit failed` counts as refused. Nothing is reverted in Safe Mode. The login name is masked where it appears in Node Control's own revert and change-list commands, and on the change list's owner and other-admins lines. The rest of the firewall's output is kept as written.
 
 There are no output files. There is no save option. Use [Save Config](config-backup.md) for that.
 

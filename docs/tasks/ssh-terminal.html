@@ -221,6 +221,8 @@
 <p>To disable session logging: Settings → Terminal → uncheck <strong>Log session output</strong>.</p>
 <h2 id="when-a-session-times-out">When a session times out</h2>
 <p>There is no Auto-reconnect checkbox. When a session times out, a red banner reads <strong>Session timed out -</strong> and the reason, with a <strong>Reconnect</strong> button. Reconnect uses the same tab and the current credential profile.</p>
+<h2 id="send-config-file-and-paste">Send Config File and Paste</h2>
+<p><strong>Send Config File</strong> and <strong>Paste</strong> (<strong>Send to Devices</strong>) report a refused line as an error. That covers Aruba AOS-CX and ProCurve <code>Invalid input</code>, incomplete and ambiguous input, FortiGate <code>command parse error</code> and <code>Command fail</code>, Cisco IOS <code>Command authorization failed.</code>, and Juniper Junos load and commit errors. A line that only contains those words is not treated as a refusal.</p>
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
 <p>Safe Mode is session-wide. In Safe Mode, <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, and a command that is not read-only is blocked in the SSH session. The <strong>Terminal</strong> button on the log header stays visible. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <h2 id="session-sharing">Session sharing</h2>

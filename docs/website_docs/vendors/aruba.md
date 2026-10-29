@@ -31,6 +31,14 @@ Wireless products (IAP, ArubaOS-controlled APs, Mobility Controllers) are partia
 
 For Aruba wireless management, Aruba Central or AirWave is the vendor tool. In Node Control, wireless coverage is Meraki and basic Aruba IAP. See [Meraki](meraki.md).
 
+A device reached on another driver and identified as Aruba OS-Switch is reconnected on its own driver. If that reconnect fails, the connection stops. HP ProCurve connects as before.
+
+On **Config Push**, ProCurve / Aruba OS-Switch trunk members are blocked like Cisco port-channel members, and Trk aggregates like port-channels. The typed **UPLINK** override still lets them through. The row says `LAG/trunk members`. Trunk membership is read from the running configuration once per device. If that read fails, is not recognised, or has a trunk port range that cannot be expanded, the device is blocked unless the typed **TRUNKS** override (or **UPLINK**) is ticked.
+
+Find Device traces HP ProCurve / Aruba OS-Switch with its own MAC-table, LLDP, and LAG commands. **Config from File** treats ProCurve incomplete and ambiguous input as a refused line, not as config applied.
+
+A two-column `show system` uses only the Up Time value for uptime, and reads the serial number in the right-hand column. Asset Lifecycle reports the model and serial.
+
 ## Next steps
 
 - [Aruba AOS-CX](aruba-aos-cx.md)

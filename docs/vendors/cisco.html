@@ -245,6 +245,9 @@
 </li>
 </ul>
 <p>NX-OS route tables are read correctly, including long via lines.</p>
+<p>MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and <code>vPC Peer-Link</code> is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.</p>
+<p>Inventory and Asset Lifecycle take the host name from <code>Device name:</code>. It is not <code>Kernel</code>. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the <code>Processor Board ID</code> serial.</p>
+<p>If NX-OS answers <code>Permission denied</code> to <code>configure terminal</code>, that device&#x27;s Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with <code>could not enter configuration mode (check account privileges)</code>, and the lines not sent are listed as skipped.</p>
 <h2 id="asa">ASA</h2>
 <p>Cisco ASA firewalls are supported with these caveats:</p>
 <ul>
