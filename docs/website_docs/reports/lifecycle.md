@@ -69,6 +69,12 @@ The **Update** tab is the AI edition. It is not on Pro, and it is not on Free. T
 
 **Vuln Plan** is a button on that Update tab, next to **Check PSIRT**. It works from the tab's PSIRT results. Pro does not have the button.
 
+On Cisco NX-OS, Asset Lifecycle reads the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version, and it reads the `Processor Board ID` serial. The host name comes from `Device name:` and is not `Kernel`.
+
+Asset Lifecycle reports model and serial for HP ProCurve / Aruba OS-Switch, Juniper Junos, Dell OS10, Extreme EXOS, and FortiGate.
+
+Findings are saved to the local network memory: the model, serial, and software version. The end-of-life status is not saved. Network Chat and Architect Review can use what was saved.
+
 ## Next steps
 
 - [Security Audit](security-audit.md)

@@ -125,6 +125,8 @@ There is no built-in scheduler, and there is no Tools menu.
 | `fping not found` warning | `fping` binary not in PATH | Install or symlink it; otherwise scan continues with Python ping |
 | Many "Connection timed out" | Devices unreachable, firewall blocking, or ARP cache stale | Check `ping` works from a separate terminal first |
 
+A FortiGate found by Library Updater is a firewall, not an access switch. Its host name is saved without the trailing prompt character or the `(vdom)`.
+
 ## Next steps
 
 - [Organising devices by site](sites.md)

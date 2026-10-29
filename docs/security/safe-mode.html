@@ -151,6 +151,7 @@
                 </div>
                 <h1 id="safe-mode-security-view">Safe Mode (security view)</h1>
 <p>See <a href="../settings/safe-mode.html">Safe Mode</a> for how the mode is chosen and what it blocks. This page covers Safe Mode from a security and compliance perspective.</p>
+<p>Config-changing tasks check Safe Mode again inside the task, before credentials are asked for or a connection is opened. Anything refused is marked <strong>Blocked: Safe Mode is on</strong>. Read-only tasks, reports, and downloads run as before.</p>
 <h2 id="what-safe-mode-protects-against">What Safe Mode protects against</h2>
 <table>
 <thead>

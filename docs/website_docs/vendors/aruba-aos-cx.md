@@ -30,7 +30,11 @@ The same login is required for Save Config.
 
 ## Find Device
 
-The wired search reads the AOS-CX MAC address table and the LLDP table.
+The wired search reads the AOS-CX MAC address table and the LLDP table, with AOS-CX LAG commands. A LAG member is blocked on **Config Push** like a Cisco port-channel member. The typed **UPLINK** override still lets it through. The row says `LAG/trunk members`.
+
+A device reached on another driver and identified as Aruba AOS-CX is reconnected on the AOS-CX driver. If that reconnect fails, the connection stops.
+
+**Config from File** treats `Invalid input: ...` and `% Command incomplete` as a refused line, not as config applied. A line that only contains those words is not treated as a refusal.
 
 On Free, Find Device is one switch at a time. On Pro and the AI edition it walks the site.
 

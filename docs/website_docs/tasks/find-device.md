@@ -11,6 +11,10 @@ The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and
 
 On AOS-CX the wired search reads the MAC address table and the LLDP table.
 
+Aruba AOS-CX, HP ProCurve / Aruba OS-Switch, and Arista EOS are traced with their own MAC-table, LLDP, and LAG commands. Juniper Junos, Dell, and Extreme are skipped with a clear reason until their output formats are confirmed.
+
+On Cisco NX-OS, MAC-table entries are read on their real port. The age column is not taken as the port, and `vPC Peer-Link` is not cut short. IOS, IOS-XE, and Arista read as before. The Free tier uses the same NX-OS read on the one switch it walks.
+
 ## Open the task
 
 - Engineer command bar → **Task** → **Find Device** → **Run**

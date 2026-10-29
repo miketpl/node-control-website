@@ -94,6 +94,10 @@ Active/passive PA pairs are common. Node Control:
 
 For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud Manager, Panorama itself, third-party policy auditors) are better.
 
+Discovery saves the host name without the `user@` prefix, and without the HA state (`(active)`, `(passive)`, and the other states), so a firewall keeps one name across a failover.
+
+**Config from File** sends `commit` after the lines. If a line gets an error, the commit is not sent and the device fails. After a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted, checked against the firewall's change list. Other admins' pending changes are left alone. Output that just says `commit failed` counts as refused. Nothing is reverted in Safe Mode. The login name is masked on Node Control's own revert and change-list commands, and on the change list's owner and other-admins lines.
+
 ## Next steps
 
 - [L3 topology](../tasks/topology-l3.md) — for full LR + multi-VR coverage

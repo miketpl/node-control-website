@@ -256,6 +256,7 @@
 <p>What was sold as "ProCurve" is now branded "Aruba OS-Switch" (no relation to Aruba CX, which is a different OS). Node Control treats them as the same vendor — the same driver, parsers, and command catalogs work for both.</p>
 <p>If you see a switch labeled "Aruba 2530" or "Aruba 2930" in your library, that's an OS-Switch — same detection path as ProCurve.</p>
 <p>For the genuinely-different Aruba CX (CX 6000-series, CX 8000-series, etc.) see the <a href="aruba.html">Aruba CX page</a>.</p>
+<p>ProCurve connects as before when it is found on another driver. Trunk members are blocked on <strong>Config Push</strong> like port-channel members, unless <strong>UPLINK</strong> or <strong>TRUNKS</strong> is set. Find Device uses ProCurve MAC-table, LLDP, and LAG commands. A two-column <code>show system</code> uses only the Up Time value, and reads the serial in the right-hand column.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="aruba.html">Aruba (CX, OS-Switch)</a> — for the modern Aruba CX OS</li>

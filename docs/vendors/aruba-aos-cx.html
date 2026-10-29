@@ -165,7 +165,9 @@
 <p>An operators-level login cannot read the config. The task tells you an admin or manager user is needed. It does not save an empty file.</p>
 <p>The same login is required for Save Config.</p>
 <h2 id="find-device">Find Device</h2>
-<p>The wired search reads the AOS-CX MAC address table and the LLDP table.</p>
+<p>The wired search reads the AOS-CX MAC address table and the LLDP table, with AOS-CX LAG commands. A LAG member is blocked on <strong>Config Push</strong> like a Cisco port-channel member. The typed <strong>UPLINK</strong> override still lets it through. The row says <code>LAG/trunk members</code>.</p>
+<p>A device reached on another driver and identified as Aruba AOS-CX is reconnected on the AOS-CX driver. If that reconnect fails, the connection stops.</p>
+<p><strong>Config from File</strong> treats <code>Invalid input: ...</code> and <code>% Command incomplete</code> as a refused line, not as config applied. A line that only contains those words is not treated as a refusal.</p>
 <p>On Free, Find Device is one switch at a time. On Pro and the AI edition it walks the site.</p>
 <h2 id="inventory">Inventory</h2>
 <p>On Free, Pro, and the AI edition. Inventory reads the model, serial, version, and uptime.</p>

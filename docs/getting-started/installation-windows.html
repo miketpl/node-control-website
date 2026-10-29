@@ -228,6 +228,8 @@
 </ol>
 <p><strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>
 <p>0.9.40 and earlier cannot self-update. Install the current build by hand from <a href="https://nodecontrol.io">nodecontrol.io</a>. Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.</p>
+<p>The in-app update starts the installer elevated from the app. If it does not start (UAC cancelled or blocked), the dialog stays open with the reason, <strong>Install</strong>, and an <strong>Open folder</strong> button for the downloaded installer. The installer waits for Node Control to close and will not touch a locked install.</p>
+<p>No console window flashes when pinging: the IPAM sweep, Ping Scan, the ping proxy, and the ICMP poller.</p>
 <p>See <a href="updating.html">Updating Node Control</a>.</p>
 <h2 id="crash-logs">Crash logs</h2>
 <p>If Node Control crashes, a log file is written to:</p>

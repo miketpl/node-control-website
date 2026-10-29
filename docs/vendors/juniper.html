@@ -231,6 +231,9 @@
 <li><strong>Junos PyEZ</strong>: Node Control uses SSH directly; PyEZ-based integration isn&#x27;t planned
 </li>
 </ul>
+<p>A device reached on another driver and identified as Juniper Junos is reconnected on the Junos driver. If that reconnect fails, the connection stops.</p>
+<p><strong>Config Push</strong> loads the lines in <code>configure private</code> and runs <code>commit check</code> and <code>commit and-quit</code>, rolling back on any error. Each interface is snapshotted before the push. Revert restores that snapshot. If the snapshot could not be taken, the revert is marked as manual. An <code>aeN</code> LAG member is blocked like a Cisco port-channel member, with the same <strong>UPLINK</strong> override.</p>
+<p>Discovery saves the host name without the <code>user@</code> prefix. Find Device skips Junos with a clear reason until the output format is confirmed. Asset Lifecycle reports the model and serial.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../tasks/topology-l3.html">Topology L3</a> — for OSPF/BGP detail

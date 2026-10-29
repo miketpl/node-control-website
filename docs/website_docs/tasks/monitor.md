@@ -130,6 +130,8 @@ On every poll, alerted devices are reviewed. The narrative appears in the alert 
 
 **AI Chat** and the **AI Dashboard** stay on the AI edition. See [AI features overview](../settings/ai-features.md).
 
+Firewall Health, Change Summary, and Asset Lifecycle save findings to the local network memory, so **Ask Network AI** and **Architect Review** can use them. From Firewall Health that is the model, serial, software version, CPU, memory, and GlobalProtect user counts, critical system logs, and a degraded HA pair. From Change Summary, how many config changes were made and by whom. From Asset Lifecycle, the model, serial, and software version, not the end-of-life status.
+
 ## Next steps
 
 - [Reports](../reports/overview.md) — for point-in-time snapshots

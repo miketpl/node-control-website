@@ -40,6 +40,8 @@ Safe Mode hides these from the dropdown:
 
 When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip **Upgrade to Pro to unlock this feature**.
 
+Config-changing tasks check Safe Mode again inside the task, before credentials are asked for or a connection is opened. That covers Config from File, Save Config, Config Push and its revert, Bulk Port Config, NTP Config, port actions, Packet Capture, Meraki pushes, and scripts, plus config sent from SSH sessions and file uploads. They refuse even if a screen misses its own check. Anything refused is marked **Blocked: Safe Mode is on**. Read-only tasks, reports, and downloads run as before.
+
 While Safe Mode is on:
 
 - **HTTPS** is hidden

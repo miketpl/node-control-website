@@ -8,7 +8,7 @@ Settings is organised by section. Pick the one you need.
 
 ## API Platforms
 
-**Settings → API Platforms** holds **Catalyst Center** and **Cisco ISE (Identity Services Engine)**. The Catalyst Center fields are on the [Lifecycle](../reports/lifecycle.md) page. Cisco ISE remains in that settings group. Change ISE Password is not a task in 0.9.42. There is no verify-SSL control. Certificate verification is off for all API clients.
+**Settings → API Platforms** holds **Catalyst Center** and **Cisco ISE (Identity Services Engine)**. The Catalyst Center fields are on the [Lifecycle](../reports/lifecycle.md) page. Cisco ISE remains in that settings group. Change ISE Password is not a task in Node Control. There is no verify-SSL control. Certificate verification is off for all API clients.
 
 ## Settings tabs
 
@@ -85,7 +85,7 @@ A future release may add named settings profiles to skip the manual copy — let
 | Topology maps look right | **Topology** → Endpoint filter patterns |
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |
 | Don't want SSH session logging | **Terminal** → uncheck Log session output |
-| Check for an update now | **Help → Check for Updates...**. 0.9.42 checks once at launch, right after the licence check, and there is no timer after that. See [Updating](../getting-started/updating.md) |
+| Check for an update now | **Help → Check for Updates...**. Node Control checks once at launch, right after the licence check, and there is no timer after that. See [Updating](../getting-started/updating.md) |
 | Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out |
 
 ## Settings audit log

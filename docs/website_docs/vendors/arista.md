@@ -16,7 +16,7 @@ Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9
 - Port Utilisation
 - Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family
 - VLAN Port Finder
-- Find Device
+- Find Device, traced with EOS MAC-table, LLDP, and LAG commands
 - Inventory reads the model, the serials, and the EOS version from EOS output
 - On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed
 - On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. Site Subnets has its L3 command
@@ -48,6 +48,8 @@ Arista CloudVision is the vendor's centralised management. Node Control doesn't 
 | `show interfaces` output paginated | Arista's `terminal length 0` is `terminal length 0` (matches Cisco) | Should auto-disable; if not, raise a ticket |
 | MLAG peer detected as separate device | Yes — that's correct (MLAG members ARE separate boxes) | No fix needed, just be aware |
 | Detection picks `cisco_ios` | Arista's CLI is Cisco-compatible enough to fool initial driver | Banner sniff usually catches; if not, manually set + lock |
+
+A device reached on another driver and identified as Arista EOS is reconnected on the EOS driver. If that reconnect fails, the connection stops. IOS, IOS-XE, and Arista MAC-table reads on the L2 map, in Find Device, and in the Bandwidth report are unchanged.
 
 ## Next steps
 
