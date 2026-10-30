@@ -129,7 +129,8 @@ V1_SCHEMA = (
         plan TEXT DEFAULT '',
         created_at TEXT NOT NULL,
         revoked_at TEXT DEFAULT '',
-        reveal_until TEXT DEFAULT ''
+        reveal_until TEXT DEFAULT '',
+        is_test INTEGER NOT NULL DEFAULT 0
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_pro_keys_email ON pro_keys(email)",
@@ -944,6 +945,8 @@ def _lookup_key(raw_key):
                 return None, "invalid"
             if row["status"] == "revoked":
                 return None, "revoked"
+            if _row_is_test(row) and not test_events_allowed():
+                return None, "test_key"
             sub_status = "active"
             period_end = None
             cancel = False
@@ -956,6 +959,8 @@ def _lookup_key(raw_key):
                         (row["subscription_id"],),
                     ).fetchone()
                 sub_status = sub["status"] if sub else ""
+                if sub and _row_is_test(sub) and not test_events_allowed():
+                    return None, "test_key"
                 if sub_status not in ("active", "trialing"):
                     return None, "subscription_inactive"
                 period_end = (sub["current_period_end"] or None) if sub else None
@@ -1164,11 +1169,71 @@ def _touch_seen(record, install_id):
     db.close()
 
 
+def test_events_allowed():
+    """True only while Mike has opened the Stripe test-mode window."""
+    return _config_bool("STRIPE_ALLOW_TEST_EVENTS", False)
+
+
+def _row_is_test(row):
+    if row is None:
+        return False
+    try:
+        return int(row["is_test"] or 0) == 1
+    except (KeyError, IndexError, TypeError, ValueError):
+        return False
+
+
+def _test_key_error():
+    return error(403, "test_key", "This Professional key was issued in Stripe test mode.")
+
+
+def refuse_test_subscription(subscription_id):
+    """403 when this subscription or its key is a test record and the flag is off."""
+    if test_events_allowed() or not subscription_id:
+        return None
+    api = _api()
+    db = api.get_db()
+    try:
+        key = db.execute(
+            "SELECT is_test FROM pro_keys WHERE subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+        sub = db.execute(
+            "SELECT is_test FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+    finally:
+        db.close()
+    if _row_is_test(key) or _row_is_test(sub):
+        return _test_key_error()
+    return None
+
+
+def refuse_test_key_id(key_id):
+    """403 when this Professional key is a test record and the flag is off."""
+    if test_events_allowed() or not key_id:
+        return None
+    api = _api()
+    db = api.get_db()
+    try:
+        row = db.execute(
+            "SELECT is_test FROM pro_keys WHERE id = ?",
+            (int(key_id),),
+        ).fetchone()
+    finally:
+        db.close()
+    if _row_is_test(row):
+        return _test_key_error()
+    return None
+
+
 def _auth_failure(reason):
     if reason == "revoked":
         return error(403, "revoked", "This licence has been revoked.")
     if reason == "subscription_inactive":
         return error(403, "subscription_inactive", "Your Professional subscription is not active.")
+    if reason == "test_key":
+        return _test_key_error()
     return error(401, "invalid_key", "That licence key was not recognised.")
 
 
@@ -2215,18 +2280,22 @@ def status():
     return response
 
 
-def ensure_stripe_pro_key(subscription_id, email, plan):
+def ensure_stripe_pro_key(subscription_id, email, plan, is_test=False):
     """Create the NCP- key once per Stripe subscription. The same key is kept."""
     api = _api()
     email = (email or "").strip().lower()
     db = api.get_db()
     existing = db.execute(
-        "SELECT id FROM pro_keys WHERE subscription_id = ?",
+        "SELECT id, is_test FROM pro_keys WHERE subscription_id = ?",
         (subscription_id,),
     ).fetchone()
-    db.close()
     if existing:
+        if is_test and not _row_is_test(existing):
+            db.execute("UPDATE pro_keys SET is_test = 1 WHERE id = ?", (existing["id"],))
+            db.commit()
+        db.close()
         return existing["id"]
+    db.close()
     plain = generate_pro_key()
     now = utcnow()
     blob = encrypt_secret(plain)
@@ -2244,8 +2313,8 @@ def ensure_stripe_pro_key(subscription_id, email, plan):
             """
             INSERT INTO pro_keys (
                 key_hash, key_last4, reveal_blob, email, subscription_id, source,
-                status, plan, created_at, reveal_until
-            ) VALUES (?, ?, ?, ?, ?, 'stripe', 'active', ?, ?, ?)
+                status, plan, created_at, reveal_until, is_test
+            ) VALUES (?, ?, ?, ?, ?, 'stripe', 'active', ?, ?, ?, ?)
             """,
             (
                 hash_key(plain),
@@ -2256,6 +2325,7 @@ def ensure_stripe_pro_key(subscription_id, email, plan):
                 plan or "",
                 iso(now),
                 iso(now + timedelta(seconds=REVEAL_TTL)),
+                1 if is_test else 0,
             ),
         )
         db.commit()
@@ -2428,6 +2498,43 @@ def send_manual_pro_links(key_id):
     return {"id": int(row["id"]), "sent": 1 if emailed else 0, "revealed": bool(plain)}
 
 
+def list_test_pro_keys():
+    """Id, created time, and status. No email, key, or subscription id."""
+    api = _api()
+    db = api.get_db()
+    try:
+        rows = db.execute(
+            """
+            SELECT id, created_at, status FROM pro_keys
+            WHERE is_test = 1
+            ORDER BY id
+            """
+        ).fetchall()
+    finally:
+        db.close()
+    return [
+        {"id": int(row["id"]), "created_at": row["created_at"], "status": row["status"]}
+        for row in rows
+    ]
+
+
+def revoke_test_pro_keys(keep_ids):
+    """Revoke every test key except the ids in keep_ids. Returns the revoked ids."""
+    keep = set()
+    for item in keep_ids or []:
+        try:
+            keep.add(int(item))
+        except (TypeError, ValueError):
+            continue
+    revoked = []
+    for row in list_test_pro_keys():
+        if row["status"] == "revoked" or row["id"] in keep:
+            continue
+        if revoke_pro_key(row["id"]):
+            revoked.append(row["id"])
+    return revoked
+
+
 def revoke_pro_key(key_id):
     api = _api()
     db = api.get_db()
@@ -2585,6 +2692,21 @@ def _admin_pro_keys_post():
         logger.exception("Manual Professional key was not issued")
         return jsonify({"error": "The key was not issued"}), 500
     return jsonify(issued), 201
+
+
+def _admin_pro_keys_test_get():
+    return jsonify({"keys": list_test_pro_keys()})
+
+
+def _admin_pro_keys_test_revoke():
+    data = request.get_json(silent=True) or {}
+    keep = data.get("keep") if isinstance(data, dict) else []
+    if keep is None:
+        keep = []
+    if not isinstance(keep, list):
+        return jsonify({"error": "keep must be a list of ids"}), 400
+    revoked = revoke_test_pro_keys(keep)
+    return jsonify({"revoked": revoked, "kept": [int(item) for item in keep if str(item).isdigit()]})
 
 
 def _admin_pro_key_revoke(key_id):
@@ -3126,6 +3248,18 @@ def register(flask_app):
         "/api/admin/pro-keys",
         "admin_pro_keys_issue",
         api.require_admin(_admin_pro_keys_post),
+        methods=["POST"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/pro-keys/test",
+        "admin_pro_keys_test_get",
+        api.require_admin(_admin_pro_keys_test_get),
+        methods=["GET"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/pro-keys/test/revoke",
+        "admin_pro_keys_test_revoke",
+        api.require_admin(_admin_pro_keys_test_revoke),
         methods=["POST"],
     )
     flask_app.add_url_rule(
