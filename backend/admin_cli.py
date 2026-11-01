@@ -368,7 +368,29 @@ def cmd_funnel(args):
         if not present:
             print("funnel_daily is not in this database.", file=sys.stderr)
             sys.exit(1)
-        if getattr(args, "trial", False):
+        trial_only = getattr(args, "trial", False)
+        by_campaign = getattr(args, "by_campaign", False)
+        if by_campaign and trial_only:
+            rows = db.execute(
+                """
+                SELECT day, utm_source, utm_campaign, event, count
+                FROM funnel_daily
+                WHERE day >= ? AND day <= ? AND event LIKE 'trial_%'
+                ORDER BY day, utm_source, utm_campaign, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        elif by_campaign:
+            rows = db.execute(
+                """
+                SELECT day, utm_source, utm_campaign, event, count
+                FROM funnel_daily
+                WHERE day >= ? AND day <= ?
+                ORDER BY day, utm_source, utm_campaign, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        elif trial_only:
             rows = db.execute(
                 """
                 SELECT day, event, count FROM funnel_daily
@@ -384,12 +406,27 @@ def cmd_funnel(args):
             ).fetchall()
     finally:
         db.close()
-    if getattr(args, "trial", False):
-        print("day\tevent\tcount")
+    if by_campaign:
+        print("day\tutm_source\tutm_campaign\tevent\tcount")
         for row in rows:
-            print(f"{row['day']}\t{row['event']}\t{int(row['count'])}")
+            print(
+                f"{row['day']}\t{row['utm_source']}\t{row['utm_campaign']}\t"
+                f"{row['event']}\t{int(row['count'])}"
+            )
         return
-    counts = {(row["day"], row["event"]): int(row["count"]) for row in rows}
+    if trial_only:
+        totals = {}
+        for row in rows:
+            key = (row["day"], row["event"])
+            totals[key] = totals.get(key, 0) + int(row["count"])
+        print("day\tevent\tcount")
+        for day, event in sorted(totals):
+            print(f"{day}\t{event}\t{totals[(day, event)]}")
+        return
+    counts = {}
+    for row in rows:
+        key = (row["day"], row["event"])
+        counts[key] = counts.get(key, 0) + int(row["count"])
     print(
         "day\tfree_section_view\tfree_form_start\tfree_form_submit\t"
         "form_start/section_view\tsubmit/form_start"
@@ -527,6 +564,11 @@ def main(argv=None):
         "--trial",
         action="store_true",
         help="Trial events only, one count per UK day",
+    )
+    funnel_cmd.add_argument(
+        "--by-campaign",
+        action="store_true",
+        help="One row per UK day, source, campaign and event",
     )
     funnel_cmd.set_defaults(func=cmd_funnel)
 
