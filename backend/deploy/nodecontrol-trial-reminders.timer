@@ -1,0 +1,12 @@
+# Enable only after the matching service has a real User.
+# Not installed by this repo.
+[Unit]
+Description=Daily Node Control trial reminder emails
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

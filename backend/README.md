@@ -66,6 +66,38 @@ A click or an auto beacon is the same download as the installer redirect that fo
 
 `GET /api/v1/status` and update-check report no minimum when `MIN_SUPPORTED_VERSION_FREE` or `MIN_SUPPORTED_VERSION_PRO` is empty and no flag is set. If the configured minimum is higher than the latest published release for that tier, the response uses the published version and the process logs a warning.
 
+## Rotate the lease signing key
+
+The app checks a signed lease. The server signs that lease with `LEASE_SIGNING_KEY`. `LEASE_SIGNING_KID` is the name of that key. A second pair, `LEASE_SIGNING_KEY_NEXT` and `LEASE_SIGNING_KID_NEXT`, is the key you are moving to. The private key stays in the env file. These commands print the key id and, for a new key, the public key. They do not print the private key. Do not copy the private key into chat, a ticket, or the app.
+
+Do this from `backend/`, on the Spark, against the live env file `~/node-control-website/.env`.
+
+1. Make the next key.
+
+   ```bash
+   python3 admin_cli.py lease-keygen --env-file ~/node-control-website/.env --next
+   ```
+
+   Write down `key_id` and `public_key` from the output. Leave the private key where the command wrote it.
+
+2. Ship an app build that pins both public keys: the one already in use, and the new `public_key`. Wait until that build is the one customers run. Until then the server still signs with the current key, and it will accept either key.
+
+3. Move the next key into the current slot.
+
+   ```bash
+   python3 admin_cli.py lease-rotate --env-file ~/node-control-website/.env
+   ```
+
+   This copies the next key and its id onto `LEASE_SIGNING_KEY` and `LEASE_SIGNING_KID`, blanks the two NEXT lines, and saves the file at mode 600. The output is the key id and the file path. To do the same by hand, open the env file, put the NEXT key value into `LEASE_SIGNING_KEY` and the NEXT id into `LEASE_SIGNING_KID`, blank `LEASE_SIGNING_KEY_NEXT` and `LEASE_SIGNING_KID_NEXT`, save, and run `chmod 600` on the file. Do not print the file.
+
+4. Restart the API so it loads the swapped key.
+
+   ```bash
+   sudo systemctl restart nodecontrol-api
+   ```
+
+5. Retire the old key. After customers are on a build that no longer needs the old public key, ship an app build that pins only the new public key. The old private key is already out of the env file. Do not put it back.
+
 ## Deploy
 
 The live service is on the Spark. `app.py` loads `~/node-control-website/.env` (the repo root, beside `backend/`). It does not read `/opt/nodecontrol-api/.env`. `api.nodecontrol.io` reaches the box through a Cloudflare tunnel, so gunicorn sees the peer as localhost. Trust `CF-Connecting-IP` only in that case. Do not add an origin firewall of Cloudflare IP ranges.

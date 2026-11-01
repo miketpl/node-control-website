@@ -161,8 +161,8 @@ def cmd_flags_get(_args):
 
 
 def cmd_flags_set(args):
-    if args.key in ("free_downloads_paused", "maintenance"):
-        value = args.value.strip().lower() in ("1", "true", "yes", "on")
+    if args.key in ("free_downloads_paused", "maintenance", "free_trial_enabled"):
+        value = args.value.strip().lower() in ("1", "true", "on")
     else:
         value = args.value
     _print_json(*api("PUT", "/api/admin/flags", {args.key: value}))
@@ -368,13 +368,34 @@ def cmd_funnel(args):
         if not present:
             print("funnel_daily is not in this database.", file=sys.stderr)
             sys.exit(1)
-        if getattr(args, "by_campaign", False):
+        trial_only = getattr(args, "trial", False)
+        by_campaign = getattr(args, "by_campaign", False)
+        if by_campaign and trial_only:
+            rows = db.execute(
+                """
+                SELECT day, utm_source, utm_campaign, event, count
+                FROM funnel_daily
+                WHERE day >= ? AND day <= ? AND event LIKE 'trial_%'
+                ORDER BY day, utm_source, utm_campaign, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        elif by_campaign:
             rows = db.execute(
                 """
                 SELECT day, utm_source, utm_campaign, event, count
                 FROM funnel_daily
                 WHERE day >= ? AND day <= ?
                 ORDER BY day, utm_source, utm_campaign, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        elif trial_only:
+            rows = db.execute(
+                """
+                SELECT day, event, count FROM funnel_daily
+                WHERE day >= ? AND day <= ? AND event LIKE 'trial_%'
+                ORDER BY day, event
                 """,
                 (window[0], window[-1]),
             ).fetchall()
@@ -385,13 +406,22 @@ def cmd_funnel(args):
             ).fetchall()
     finally:
         db.close()
-    if getattr(args, "by_campaign", False):
+    if by_campaign:
         print("day\tutm_source\tutm_campaign\tevent\tcount")
         for row in rows:
             print(
                 f"{row['day']}\t{row['utm_source']}\t{row['utm_campaign']}\t"
                 f"{row['event']}\t{int(row['count'])}"
             )
+        return
+    if trial_only:
+        totals = {}
+        for row in rows:
+            key = (row["day"], row["event"])
+            totals[key] = totals.get(key, 0) + int(row["count"])
+        print("day\tevent\tcount")
+        for day, event in sorted(totals):
+            print(f"{day}\t{event}\t{totals[(day, event)]}")
         return
     counts = {}
     for row in rows:
@@ -409,6 +439,57 @@ def cmd_funnel(args):
             f"{day}\t{view}\t{start}\t{submit}\t"
             f"{_funnel_ratio(start, view)}\t{_funnel_ratio(submit, start)}"
         )
+
+
+def cmd_lease_keygen(args):
+    """Write a lease seed into the env file. Prints the public key and key id only."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    code = trial.keygen(args.env_file, next_key=args.next, overwrite=args.overwrite)
+    if code:
+        sys.exit(code)
+
+
+def cmd_lease_rotate(args):
+    """Move the next lease key into the current slot. Does not print the seed."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    code = trial.rotate(args.env_file)
+    if code:
+        sys.exit(code)
+
+
+def cmd_trial_reset(args):
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    has_id = args.id is not None
+    has_email = bool(args.email)
+    if has_id == has_email:
+        print("Pass --id or --email, not both.", file=sys.stderr)
+        sys.exit(2)
+    if has_email:
+        code = trial.reset_by_email(args.email, bool(args.confirm))
+    else:
+        code = trial.reset_trial(args.id, bool(args.confirm))
+    if code:
+        sys.exit(code)
+
+
+def cmd_trial_reminders(args):
+    if args.dry_run and args.confirm:
+        print("Pass either --dry-run or --confirm.", file=sys.stderr)
+        sys.exit(2)
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    trial.run_reminders(bool(args.confirm) and not args.dry_run)
 
 
 def cmd_stats(args):
@@ -453,8 +534,59 @@ def main(argv=None):
     revoke_cmd.add_argument("--email", help="exact email address")
     revoke_cmd.set_defaults(func=cmd_revoke)
 
+    lease_keygen = sub.add_parser(
+        "lease-keygen",
+        help="Write a lease signing seed into the env file and print the public key",
+    )
+    lease_keygen.add_argument(
+        "--env-file",
+        default=None,
+        help="Env file to update. Default is the server .env next to this backend",
+    )
+    lease_keygen.add_argument(
+        "--next",
+        action="store_true",
+        help="Write LEASE_SIGNING_KEY_NEXT and LEASE_SIGNING_KID_NEXT",
+    )
+    lease_keygen.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace a signing seed that is already set",
+    )
+    lease_keygen.set_defaults(func=cmd_lease_keygen)
+
+    lease_rotate = sub.add_parser(
+        "lease-rotate",
+        help="Move the next lease signing key into the current slot",
+    )
+    lease_rotate.add_argument(
+        "--env-file",
+        default=None,
+        help="Env file to update. Default is the server .env next to this backend",
+    )
+    lease_rotate.set_defaults(func=cmd_lease_rotate)
+
+    trial_reset = sub.add_parser("trial-reset", help="Delete one trial row. Dry run unless --confirm")
+    trial_reset.add_argument("--id", type=int)
+    trial_reset.add_argument("--email", help="Find the trial by email. The address is not printed")
+    trial_reset.add_argument("--confirm", action="store_true")
+    trial_reset.set_defaults(func=cmd_trial_reset)
+
+    trial_reminders = sub.add_parser(
+        "trial-reminders",
+        help="Send day-11 and day-14 trial reminders. Dry run unless --confirm",
+    )
+    trial_reminders.add_argument("--dry-run", action="store_true")
+    trial_reminders.add_argument("--confirm", action="store_true")
+    trial_reminders.set_defaults(func=cmd_trial_reminders)
+
     funnel_cmd = sub.add_parser("funnel", help="Free-section daily counts. Read-only")
     funnel_cmd.add_argument("--days", type=int, required=True, help="UK days to print, including today")
+    funnel_cmd.add_argument(
+        "--trial",
+        action="store_true",
+        help="Trial events only, one count per UK day",
+    )
     funnel_cmd.add_argument(
         "--by-campaign",
         action="store_true",
