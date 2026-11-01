@@ -126,7 +126,6 @@
       <a href="credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="safe-mode.html" class="docs-nav-link active">Safe Mode &amp; Allowlist</a>
-      <a href="audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -171,11 +170,11 @@
 </tr>
 <tr>
 <td>Tool misuse by junior engineers</td>
-<td>Default-ON setting means new users start in safe state</td>
+<td>You choose Safe Mode or Config Mode at each launch. There is no default</td>
 </tr>
 <tr>
-<td>Audit gap (&quot;did anyone disable ports last week?&quot;)</td>
-<td>All Safe Mode bypasses and blocked commands logged</td>
+<td>A plain-text audit log</td>
+<td>There is no audit log. Safe Mode changes are not written to one</td>
 </tr>
 </tbody>
 </table>
@@ -185,40 +184,16 @@
 </li>
 <li><strong>Read-only data exfiltration</strong> — <code>show running-config</code> is allowed under Safe Mode; if a config has secrets in it, they&#x27;re visible
 </li>
-<li><strong>Privileged credentials being used elsewhere</strong> — Node Control reads from your keychain; if those creds are also used by other tools, those tools aren&#x27;t constrained
+<li><strong>Privileged credentials being used elsewhere</strong> — passwords are encrypted on your machine, and the key that unlocks them is held in the macOS Keychain or Windows Credential Manager. Other tools that use the same device account are not constrained
 </li>
 <li><strong>Network-level threats</strong> (MITM, etc.) — SSH host key checking is the relevant control there
 </li>
 </ul>
 <h2 id="default-state">Default state</h2>
 <p>Safe Mode is session-wide. It is not a per-tab setting.</p>
-<p>The <strong>Select Mode</strong> dialog at startup uses the default in <strong>Settings → General → Startup Mode</strong>. Mid-session, the <strong>Edit</strong> menu or the mode badge switches it. In Safe Mode, <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, the <a href="../tasks/local-terminal.html">local network terminal</a> on the log header stays visible, the task list is trimmed, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../tasks/serial-console.html">Serial console</a>.</p>
+<p>Every time it opens, you choose Safe Mode or Config Mode. There is no default. Cancelling that choice quits the app. <strong>Remember my choice</strong> is off until you tick it. With nothing saved, Startup Mode asks every time. In Safe Mode only read-only commands are sent, the write tasks leave the list, SSH terminal mode is off. The local network terminal on the log header stays available. A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. There is no list in Settings where you add your own never-run commands.</p>
 <h2 id="compliance-use-cases">Compliance use cases</h2>
-<p>For organisations that need to demonstrate &quot;we have technical controls preventing accidental change&quot;:</p>
-<ul>
-<li>The mode is logged when it changes
-</li>
-<li>Custom blocklist patterns provide explicit &quot;we always block X command&quot; evidence
-</li>
-</ul>
-<p>The audit log can be shared with auditors as evidence — see <a href="audit-log.html">Audit log</a> for format and contents.</p>
-<h2 id="bypass-logging">Bypass logging</h2>
-<p>When a user disables Safe Mode:</p>
-<pre><code>2026-05-25T14:32:01Z [SAFE_MODE_OVERRIDE_OFF] user=admin
-2026-05-25T14:32:15Z [PORT_ACTION_SHUT] device=10.1.1.5 port=Gi1/0/3 confirmed=yes
-2026-05-25T14:32:18Z [SAFE_MODE_OVERRIDE_ON] user=admin
-</code></pre>
-<p>A best-practice flow: turn off → do the one action → turn back on immediately. The audit trail then clearly shows scope-limited intent rather than &quot;Safe Mode was off all afternoon, who knows what happened&quot;.</p>
-<h2 id="customising-for-sensitive-environments">Customising for sensitive environments</h2>
-<p>For high-compliance environments:</p>
-<ul>
-<li>Set <strong>Startup Mode</strong> to Safe Mode
-</li>
-<li>Add specific commands to the <strong>blocklist</strong> that should NEVER run (e.g., <code>reload</code>, <code>format</code>)
-</li>
-<li>Periodically review the audit log for unexpected toggles
-</li>
-</ul>
+<p>For organisations that need a control against accidental change, choose Safe Mode at startup. You can set Startup Mode to Always Safe Mode. There is no audit log of that choice.</p>
 <p>For deployment to multiple machines, copy <code>settings.json</code>. See <a href="../settings/overview.html#sharing-a-settings-file">Sharing a settings file</a>.</p>
 <p>The Engineer dropdown in Safe Mode, and the tasks it hides, are listed on <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <h2 id="integration-with-ssh-credential-separation">Integration with SSH credential separation</h2>
@@ -237,8 +212,6 @@
 <h2 id="related">Related</h2>
 <ul>
 <li><a href="../settings/safe-mode.html">Safe Mode</a> — Select Mode, Startup Mode, and what the session blocks
-</li>
-<li><a href="audit-log.html">Audit log</a> — what gets logged
 </li>
 <li><a href="credential-storage.html">Credential storage</a> — for the credential side of the security model
 </li>

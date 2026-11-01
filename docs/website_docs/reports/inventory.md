@@ -2,7 +2,7 @@
 
 Available on **Free**, **Pro**, **AI**.
 
-The Inventory report walks each device in scope and collects hardware/software information — model, serial number, OS version, uptime, etc. The standard "what do we have?" report.
+The Inventory report walks each device in scope and collects hostname, IP, device type, model, OS version and serial. It is an HTML report you can filter and export to CSV. There is no uptime column and no Excel export.
 
 ## Open the report
 
@@ -12,39 +12,19 @@ The Inventory report walks each device in scope and collects hardware/software i
 
 For each device, Inventory runs the vendor-equivalent of `show version` plus a few targeted commands, and extracts:
 
-| Field | Source command |
-|---|---|
-| Hostname | `show version` / `show hostname` |
-| Vendor | (from detected device type) |
-| Model | `show version` / `show inventory` |
-| Serial number | `show inventory` / `show chassis hardware` |
-| OS version | `show version` |
-| Uptime | `show version` |
-| Last config save | `show running-config | include ^!` or vendor equivalent |
-| MAC address (mgmt) | `show interfaces <mgmt>` |
-| IP address | (from library) |
-| Site code | (from library) |
-| License state | Cisco/Aruba/PA — `show license` |
+The columns are hostname, IP, device type, model, OS version and serial. Stack members get their own rows.
 
 ## Result table
 
-Sortable, filterable. Columns are configurable via the column header menu (right-click a column → show/hide).
-
-Default visible columns: Hostname, IP, Site, Vendor, Model, OS Version, Serial, Uptime.
-
-Hidden by default but available: Last config save, Mgmt MAC, License state, Notes.
+The report is a self-contained HTML page. A text filter and device-type buttons are in that page. Filtering by a model such as 9300, or by an IOS version, works there. There is no show/hide column menu.
 
 ## Export
 
-- **CSV** — for spreadsheet import
-- **XLSX** — Excel-native with formatting preserved
-- **HTML** — self-contained file with the report's styles
-
-The HTML export includes a header with run timestamp, scope, and total device count — useful for compliance reporting.
+The HTML report has **Export Inventory (CSV)** and **Export Inventory (JSON)**. There is no Excel export.
 
 ## Free
 
-Inventory is the report that runs on Free. It covers the whole library, up to 25 devices. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).
+Inventory is the report that runs on Free, on the devices you tick. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).
 
 ## Vendor-specific quirks
 
@@ -55,7 +35,7 @@ Different vendors expose different inventory data:
 | Cisco IOS / IOS-XE | Full inventory via `show inventory` |
 | Cisco NX-OS | `show inventory` plus per-line-card detail |
 | HP ProCurve | `show system` for chassis, `show flash` for OS version |
-| Aruba AOS-CX | Model, serial, version, and uptime |
+| Aruba AOS-CX | Model, serial, and version |
 | Juniper Junos | `show version`, `show chassis hardware` for stack/cluster detail |
 | Arista EOS | Model, serials, and the EOS version, from EOS output |
 | Dell OS6/OS10 | `show system`, `show version` |
@@ -71,25 +51,18 @@ For modular chassis (e.g., 9500 supervisor + linecards), the report shows each l
 
 ## Cluster / HA pair handling
 
-Active/standby firewall pairs (Palo Alto, ASA, Checkpoint, Fortigate) appear as two rows. The HA status column shows which is active, which is standby — useful during failover validation.
+Active/standby firewall pairs appear as two rows.
 
 ## Filtering
 
-The filter bar above the result table accepts substring matches across all columns. Useful filters:
-
-- `9300` — find all Catalyst 9300s
-- `15.x` — find devices on IOS 15.x trains
-- `2018-` — find devices reporting an uptime starting from 2018
-- `LON` — find devices in the LON site (if Site column is shown)
-
-Multi-column ranking (filtering by multiple criteria) is via the filter dialog: click the funnel icon next to each column header.
+You can filter the HTML report with a text box and device-type buttons. Filtering by 9300, or by an IOS version, works there. There is no uptime column.
 
 ## Use cases
 
 | Question | How |
 |---|---|
-| "What's our total switch count?" | Inventory → All Devices → sort by Vendor → count Cisco/HP/Aruba rows |
-| "Which devices are EoL?" | Inventory → All → filter by Model → cross-reference against vendor EoL announcements |
+| "What's our total switch count?" | Inventory → filter by device type |
+| "Which devices are EoL?" | Filter the HTML report by model |
 | "Are all our serials matching the asset register?" | Export CSV → diff against your asset register |
 | "Who's still running 12.x train Cisco IOS?" | Inventory → filter OS Version column for "12." |
 
@@ -105,7 +78,7 @@ On Cisco NX-OS, the host name comes from `Device name:` and is not `Kernel`. Inv
 
 On Cisco IOS / IOS-XE, Inventory reads the model from the `cisco <model>` line of `show version` when there is no Model Number line, the same way Asset Lifecycle does.
 
-On HP ProCurve / Aruba OS-Switch, firmware with a two-column `show system`: the uptime is only the Up Time value, and the serial number in the right-hand column is read.
+On HP ProCurve / Aruba OS-Switch firmware with a two-column `show system`, the serial number in the right-hand column is read.
 
 ## Next steps
 

@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -151,7 +150,7 @@
                 </div>
                 <h1 id="inventory-report">Inventory report</h1>
 <p>Available on <strong>Free</strong>, <strong>Pro</strong>, <strong>AI</strong>.</p>
-<p>The Inventory report walks each device in scope and collects hardware/software information — model, serial number, OS version, uptime, etc. The standard &quot;what do we have?&quot; report.</p>
+<p>The Inventory report walks each device in scope and collects hostname, IP, device type, model, OS version and serial. It is an HTML report you can filter and export to CSV. There is no uptime column and no Excel export.</p>
 <h2 id="open-the-report">Open the report</h2>
 <ul>
 <li><strong>Reports</strong> in the left sidebar → <strong>Inventory</strong> → set Scope → <strong>Run</strong>
@@ -172,8 +171,8 @@
 <td><code>show version</code> / <code>show hostname</code></td>
 </tr>
 <tr>
-<td>Vendor</td>
-<td>(from detected device type)</td>
+<td>Device type</td>
+<td>(detected device type)</td>
 </tr>
 <tr>
 <td>Model</td>
@@ -188,18 +187,6 @@
 <td><code>show version</code></td>
 </tr>
 <tr>
-<td>Uptime</td>
-<td><code>show version</code></td>
-</tr>
-<tr>
-<td>Last config save</td>
-<td><code>show running-config | include ^!</code> or vendor equivalent</td>
-</tr>
-<tr>
-<td>MAC address (mgmt)</td>
-<td><code>show interfaces &lt;mgmt&gt;</code></td>
-</tr>
-<tr>
 <td>IP address</td>
 <td>(from library)</td>
 </tr>
@@ -207,28 +194,22 @@
 <td>Site code</td>
 <td>(from library)</td>
 </tr>
-<tr>
-<td>License state</td>
-<td>Cisco/Aruba/PA — <code>show license</code></td>
-</tr>
 </tbody>
 </table>
 <h2 id="result-table">Result table</h2>
-<p>Sortable, filterable. Columns are configurable via the column header menu (right-click a column → show/hide).</p>
-<p>Default visible columns: Hostname, IP, Site, Vendor, Model, OS Version, Serial, Uptime.</p>
-<p>Hidden by default but available: Last config save, Mgmt MAC, License state, Notes.</p>
+<p>The columns are hostname, IP, device type, model, OS version and serial. There is no show/hide column menu and no uptime column.</p>
 <h2 id="export">Export</h2>
 <ul>
 <li><strong>CSV</strong> — for spreadsheet import
 </li>
-<li><strong>XLSX</strong> — Excel-native with formatting preserved
+<li>There is no Excel export. The HTML report exports CSV and JSON
 </li>
 <li><strong>HTML</strong> — self-contained file with the report&#x27;s styles
 </li>
 </ul>
 <p>The HTML export includes a header with run timestamp, scope, and total device count — useful for compliance reporting.</p>
 <h2 id="free">Free</h2>
-<p>Inventory is the report that runs on Free. It covers the whole library, up to 25 devices. Every other report is on Pro and the AI edition. See <a href="overview.html">Reports overview</a>.</p>
+<p>Inventory is the report that runs on Free, on the devices you tick. Every other report is on Pro and the AI edition. See <a href="overview.html">Reports overview</a>.</p>
 <h2 id="vendor-specific-quirks">Vendor-specific quirks</h2>
 <p>Different vendors expose different inventory data:</p>
 <table>
@@ -253,7 +234,7 @@
 </tr>
 <tr>
 <td>Aruba AOS-CX</td>
-<td>Model, serial, version, and uptime</td>
+<td>Model, serial, and version</td>
 </tr>
 <tr>
 <td>Juniper Junos</td>
@@ -285,15 +266,13 @@
 <p>For stacks (Cisco 3850 stack, Aruba CX VSF, Juniper VC) and chassis (Cisco 9500, Arista 7300, Juniper MX), each member appears as a separate row tagged with the master&#x27;s hostname plus member number.</p>
 <p>For modular chassis (e.g., 9500 supervisor + linecards), the report shows each line card model and serial.</p>
 <h2 id="cluster-ha-pair-handling">Cluster / HA pair handling</h2>
-<p>Active/standby firewall pairs (Palo Alto, ASA, Checkpoint, Fortigate) appear as two rows. The HA status column shows which is active, which is standby — useful during failover validation.</p>
+<p>Active/standby firewall pairs appear as two rows. The HA status column shows which is active, which is standby — useful during failover validation.</p>
 <h2 id="filtering">Filtering</h2>
 <p>The filter bar above the result table accepts substring matches across all columns. Useful filters:</p>
 <ul>
 <li><code>9300</code> — find all Catalyst 9300s
 </li>
 <li><code>15.x</code> — find devices on IOS 15.x trains
-</li>
-<li><code>2018-</code> — find devices reporting an uptime starting from 2018
 </li>
 <li><code>LON</code> — find devices in the LON site (if Site column is shown)
 </li>
@@ -355,7 +334,7 @@
 </table>
 <p>On Cisco NX-OS, the host name comes from <code>Device name:</code> and is not <code>Kernel</code>. Inventory reads the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version.</p>
 <p>On Cisco IOS / IOS-XE, Inventory reads the model from the <code>cisco &lt;model&gt;</code> line of <code>show version</code> when there is no Model Number line, the same way Asset Lifecycle does.</p>
-<p>On HP ProCurve / Aruba OS-Switch, firmware with a two-column <code>show system</code>: the uptime is only the Up Time value, and the serial number in the right-hand column is read.</p>
+<p>On HP ProCurve / Aruba OS-Switch, firmware with a two-column <code>show system</code>: the serial number in the right-hand column is read.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="overview.html">Other reports</a>

@@ -35,14 +35,9 @@ If neither works, it's a network issue — not a Node Control issue.
 - Open Node Control → Engineer tab → right-click device → **Test Connection**
 - The result message tells you specifically what failed (auth, network, parsing)
 
-### Check the audit log
+### There is no audit log
 
-```bash
-~/Library/Application Support/netOps/audit.log
-%APPDATA%\netOps\audit.log
-```
-
-Look for `SESSION_FAILED` events with details on why the connection failed.
+Node Control does not write `audit.log`. A failed connection is reported by **Test Connection** and by the task run. You can record SSH sessions to a plain-text log from Settings. That recording is off until you turn it on.
 
 ### Check the crash log
 
@@ -74,7 +69,7 @@ If something's behaving oddly:
 3. **Restart with debug logging** — Settings → Advanced → enable Debug logging, restart, reproduce the issue, attach the resulting log to support ticket
 4. **Reset settings** (last resort) — rename `settings.json` to `settings.json.bak` and launch fresh
 
-A reset preserves your library and credentials. To also reset those, delete `netOps.db` (you'll lose your library) and the OS keychain entries (you'll lose stored passwords).
+A reset preserves your library and credentials. To also reset those, delete `netOps.db` (the library and the encrypted passwords) and the master key in the OS credential store.
 
 ## Getting support
 
@@ -84,7 +79,7 @@ When opening a support ticket, include:
 - OS and version (macOS 14 / Windows 11 / Ubuntu 24.04)
 - Device vendor / model / OS version involved
 - What you did, what happened, what you expected
-- Relevant log file (crash log, audit log, task run log)
+- Relevant log file (crash log, task run log)
 - Screenshot if a UI issue
 
 Email: [support@nodecontrol.io](mailto:support@nodecontrol.io)

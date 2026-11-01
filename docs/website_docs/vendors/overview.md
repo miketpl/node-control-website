@@ -6,9 +6,8 @@ Node Control connects to network devices over SSH using vendor-specific drivers 
 
 | Vendor / OS | Driver name | Status |
 |---|---|---|
-| [Cisco IOS / IOS-XE / IOS-XR](cisco.md) | `cisco_ios`, `cisco_xe`, `cisco_xr` | ✓ First-class |
+| [Cisco IOS / IOS-XE](cisco.md) | `cisco_ios`, `cisco_xe` | ✓ First-class |
 | [Cisco NX-OS](cisco.md#nx-os) | `cisco_nxos` | ✓ First-class |
-| [Cisco ASA](cisco.md#asa) | `cisco_asa` | ✓ |
 | [Cisco Meraki](meraki.md) | (Dashboard API, not SSH) | ✓ |
 | [Palo Alto PAN-OS](palo-alto.md) | `paloalto_panos` | ✓ First-class |
 | [HP ProCurve](hp-procurve.md) | `hp_procurve_cli` (aliased to `aruba_osswitch`) | ✓ First-class |
@@ -35,7 +34,7 @@ For each supported vendor:
 | `show version` parsing for type detection | Library Updater |
 | Interface enumeration | L2 topology, Port Utilisation, Bandwidth |
 | MAC address table parsing | L2 topology, Find Device |
-| CDP/LLDP neighbour parsing | L2 topology, Discovery |
+| LLDP neighbour parsing, and CDP on Cisco | L2 topology, Discovery |
 | VLAN list / port-VLAN mapping | VLAN Port Finder |
 | Routing table parsing | L3 topology |
 | OSPF / BGP / EIGRP neighbour parsing | L3 topology |
@@ -80,7 +79,6 @@ Where the same conceptual command differs across vendors, Node Control abstracts
 |---|---|
 | Cisco IOS | `show mac address-table` |
 | Cisco NX-OS | `show mac address-table` |
-| Cisco IOS-XR | `show mac address-table` |
 | HP ProCurve | `show mac-address` (older) / `show mac` (newer) |
 | Aruba CX | `show mac-address-table` |
 | Juniper | `show ethernet-switching table` |
@@ -93,7 +91,7 @@ You don't have to know any of this — Node Control routes the right command bas
 
 For quirks, gotchas, and feature gaps:
 
-- [Cisco IOS / IOS-XE / NX-OS / ASA](cisco.md)
+- [Cisco IOS / IOS-XE / NX-OS](cisco.md) — IOS-XR is not supported
 - [Palo Alto PAN-OS](palo-alto.md)
 - [HP ProCurve](hp-procurve.md)
 - [Aruba AOS-CX](aruba-aos-cx.md)

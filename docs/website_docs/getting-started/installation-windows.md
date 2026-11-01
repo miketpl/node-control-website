@@ -55,9 +55,9 @@ Typically expands to `C:\Users\<you>\AppData\Roaming\netOps\`. Contains:
 
 - `netOps.db` — device library, settings, credential references
 - `settings.json` — UI state
-- Credential **secrets** live in **Windows Credential Manager**, not in this folder
+- The master key is held in **Windows Credential Manager**. Passwords are encrypted on your machine with that key, not stored as a separate credential for every profile
 
-**Uninstalling**: use **Settings → Apps → Node Control Free** (or Pro) → **Uninstall**. Your data in `%APPDATA%\netOps\` is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from **Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials**.
+**Uninstalling**: use **Settings → Apps → Node Control Free** (or Pro) → **Uninstall**. Your data in `%APPDATA%\netOps\` is preserved unless you delete it manually. The master key, not each password, can be cleared from **Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials**.
 
 ## Updating
 

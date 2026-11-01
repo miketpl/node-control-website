@@ -4,8 +4,8 @@
     <script>document.documentElement.classList.add("docs-js")</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl Docs</title>
-    <meta name="description" content="Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl documentation">
+    <title>Cisco — IOS, IOS-XE, NX-OS — NodeControl Docs</title>
+    <meta name="description" content="Cisco — IOS, IOS-XE, NX-OS — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -147,10 +146,10 @@
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, NX-OS
                 </div>
-                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA</h1>
-<p>Node Control&#x27;s most comprehensive vendor coverage. All Cisco platforms are first-class supported.</p>
+                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, NX-OS</h1>
+<p>IOS, IOS-XE and NX-OS are supported. IOS-XR is not.</p>
 <h2 id="driver-mapping">Driver mapping</h2>
 <table>
 <thead>
@@ -175,14 +174,6 @@
 <tr>
 <td>Nexus 5k / 7k / 9k</td>
 <td><code>cisco_nxos</code></td>
-</tr>
-<tr>
-<td>IOS-XR (ASR9k, NCS)</td>
-<td><code>cisco_xr</code></td>
-</tr>
-<tr>
-<td>ASA firewalls</td>
-<td><code>cisco_asa</code></td>
 </tr>
 <tr>
 <td>Cisco Meraki</td>
@@ -229,10 +220,6 @@
 </li>
 <li>&quot;Cisco Nexus Operating System&quot; → cisco_nxos
 </li>
-<li>&quot;Cisco IOS XR&quot; → cisco_xr
-</li>
-<li>&quot;Cisco Adaptive Security Appliance&quot; → cisco_asa
-</li>
 </ul>
 <h2 id="nx-os">NX-OS</h2>
 <p>NX-OS has subtle CLI differences from IOS-XE:</p>
@@ -248,28 +235,6 @@
 <p>MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and <code>vPC Peer-Link</code> is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.</p>
 <p>Inventory and Asset Lifecycle take the host name from <code>Device name:</code>. It is not <code>Kernel</code>. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the <code>Processor Board ID</code> serial.</p>
 <p>If NX-OS answers <code>Permission denied</code> to <code>configure terminal</code>, that device&#x27;s Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with <code>could not enter configuration mode (check account privileges)</code>, and the lines not sent are listed as skipped.</p>
-<h2 id="asa">ASA</h2>
-<p>Cisco ASA firewalls are supported with these caveats:</p>
-<ul>
-<li><code>show interface</code> works but counters differ from IOS
-</li>
-<li>VPN / IPSec inspection via <code>show crypto ipsec sa</code>
-</li>
-<li>No L3 routing protocol parsing beyond BGP (ASA&#x27;s OSPF is rarely used at scale)
-</li>
-<li>Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-</li>
-</ul>
-<h2 id="ios-xr">IOS-XR</h2>
-<p>For service-provider-grade ASR9k / NCS gear:</p>
-<ul>
-<li>Most &quot;show&quot; commands match IOS conventions
-</li>
-<li>Configuration commit model is different but Node Control is read-only in tasks (won&#x27;t see this difference)
-</li>
-<li>BGP at SP scale — full peer enumeration
-</li>
-</ul>
 <h2 id="stack-and-vss">Stack and VSS</h2>
 <p>Cisco stacks (3850 stack, 9300 stack) and VSS pairs (4500/6500/6800):</p>
 <ul>

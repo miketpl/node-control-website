@@ -63,7 +63,7 @@ On AOS-CX, a port with no description does not take the next line as its descrip
 
 ## Export
 
-Same CSV / XLSX / HTML options as other reports.
+Export is CSV and JSON. There is no Excel export.
 
 ## Performance
 

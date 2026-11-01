@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -275,7 +274,7 @@
 <p>The detection system is designed to be:</p>
 <ul>
 <li><strong>Conservative</strong>: when in doubt, leaves the existing type alone rather than guessing</li>
-<li><strong>Reversible</strong>: every detection decision is logged in the audit log; you can see what happened and when</li>
+<li><strong>Reversible</strong>: detection decisions are not written to an audit log. A type you set and lock by hand is kept</li>
 <li><strong>Override-respectful</strong>: manual + locked types are never overwritten</li>
 </ul>
 <p>This makes detection issues recoverable — they don't cascade silently.</p>

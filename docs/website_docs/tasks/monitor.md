@@ -93,7 +93,7 @@ Same as the rest of Node Control:
 
 Vendor-specific gaps are documented in [Vendors](../vendors/overview.md).
 
-On AOS-CX, Health Monitor reads model, serial, version, uptime, CPU, and memory. On Arista EOS, Health Monitor reads memory from `show version`.
+On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from `show version`.
 
 ## Stopping / removing
 

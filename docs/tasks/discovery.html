@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -229,7 +228,7 @@
 <h2 id="click-start">Click Start</h2>
 <p>Discovery runs in phases:</p>
 <h3 id="phase-1-seed-login">Phase 1 — Seed login</h3>
-<p>SSH to the seed switch, run <code>show cdp neighbours detail</code> and <code>show lldp neighbours detail</code>, list its directly-connected peers.</p>
+<p>SSH to the seed switch, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.</p>
 <h3 id="phase-2-ping-sweep-optional">Phase 2 — Ping sweep (optional)</h3>
 <p>If you set a subnet, ping-sweep that range. Hosts that respond appear on the map as &quot;grey nodes&quot; (alive but not yet walked).</p>
 <h3 id="phase-3-bfs-walk">Phase 3 — BFS walk</h3>
@@ -264,7 +263,7 @@
 </li>
 </ul>
 <h2 id="right-click-a-node-for-port-connections">Right-click a node for Port Connections</h2>
-<p>Same Port Connections dialog as L2 topology — shows the per-port MAC + CDP/LLDP table for the selected switch.</p>
+<p>Port Connections is opened from the Discover tab's right-click menu. It is a Pro dialog. It is not the L2 map.</p>
 <p>Useful workflow: discover a site, spot a switch you don&#x27;t recognise, right-click it, see what&#x27;s plugged into each port → answer &quot;what device is on this port?&quot; type questions immediately.</p>
 <h2 id="what-gets-added-to-your-library">What gets added to your library</h2>
 <p>Discovery <strong>does NOT auto-add devices to your library</strong> — discovery is read-only. To add discovered devices:</p>

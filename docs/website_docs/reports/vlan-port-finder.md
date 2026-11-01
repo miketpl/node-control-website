@@ -69,7 +69,7 @@ If a vendor doesn't support the report (e.g., a basic L2 switch with limited CLI
 
 ## Saving / exporting
 
-CSV / XLSX / HTML — same as other reports.
+Output is an Excel workbook (.xlsx, on by default) and/or an HTML report. The HTML report has an Export CSV link above each table. Config Push reads the .xlsx.
 
 ## Use with Port Utilisation
 

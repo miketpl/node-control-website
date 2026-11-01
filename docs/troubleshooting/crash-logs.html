@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -235,7 +234,7 @@ Stack (most recent call first):
 </ul>
 <p>It does NOT contain:</p>
 <ul>
-<li>Passwords or credentials (those are in the OS keychain, not in Python memory normally)
+<li>Passwords or credentials (those are in the encrypted local database, unlocked by the master key, not normally in the crash log)
 </li>
 <li>Network device configurations
 </li>

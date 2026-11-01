@@ -125,7 +125,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -150,7 +149,7 @@
                 </div>
                 <h1 id="layer-2-topology-map">Layer 2 topology map</h1>
 <p><strong>L2 Topology Builder</strong> runs on <strong>Free</strong>, <strong>Pro</strong>, and the <strong>AI</strong> edition. On Free it is one of the five tasks that are not greyed out. Safe Mode leaves it in the list.</p>
-<p>The map walks the switches in scope, reads each MAC address table and the CDP/LLDP neighbours, and renders an HTML map of switch-to-switch connectivity. Free holds 25 devices, so that is the largest map Free will draw.</p>
+<p>The map walks the switches in scope, reads each MAC address table and the LLDP neighbours, and CDP on Cisco, and renders an HTML map of switch-to-switch connectivity. The Free Edition is free for up to 25 devices, so that is the largest map Free will draw.</p>
 <p>On Arista EOS the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers, for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table.</p>
 <h2 id="open-the-task">Open the task</h2>
 <ul>
@@ -177,7 +176,7 @@
 </tr>
 <tr>
 <td><strong>Parallelism</strong></td>
-<td>How many switches to SSH-walk concurrently. Default 8.</td>
+<td>How many switches to SSH-walk concurrently. Six at a time by default.</td>
 </tr>
 </tbody>
 </table>
@@ -191,7 +190,7 @@
 </li>
 <li><code>show mac-address-table</code> (or <code>show mac address</code>) — what&#x27;s on each port
 </li>
-<li><code>show cdp neighbours detail</code> and <code>show lldp neighbours detail</code> — directly-connected peers
+<li>CDP neighbours on Cisco, and LLDP neighbours
 </li>
 </ul>
 </li>
@@ -235,34 +234,21 @@
 <ul>
 <li><strong>Hover</strong> a node — shows interface details
 </li>
-<li><strong>Click</strong> a node — opens the <a href="#right-click-port-connections">Port Connections</a> dialog
+<li><strong>Right-click</strong> a node — its MAC table, grouped by VLAN with the port for each MAC. Port Connections is the Pro Discover tab, not this map
 </li>
 <li><strong>Drag</strong> a node — repositions it; the force-directed layout adjusts
 </li>
-<li><strong>Right-click</strong> a node — context menu with options (Port Connections, Show Device Type)
+<li>Right-click also shows VLANs, spanning tree and trunk ports
 </li>
 </ul>
-<h2 id="right-click-port-connections">Right-click → Port Connections</h2>
-<p>Reveals the MAC-by-port table for the selected switch:</p>
-<ul>
-<li><strong>Port</strong> column — interface name (e.g., <code>GigabitEthernet1/0/3</code>)
-</li>
-<li><strong>MAC</strong> column — every MAC seen on that port
-</li>
-<li><strong>OUI Vendor</strong> column — the manufacturer of each MAC, decoded from the OUI prefix
-</li>
-<li><strong>VLAN</strong> column — VLAN that MAC was learned on
-</li>
-<li><strong>CDP/LLDP neighbour</strong> column — if the port has a known direct-connected peer
-</li>
-</ul>
-<p>Useful for &quot;what&#x27;s on port 24 of LON-ACCESS-03?&quot; type questions without going back to SSH.</p>
-<h2 id="map-per-site">Map per site</h2>
-<p>If your scope is <strong>All devices</strong>, you&#x27;ll get one map per site (separate HTML tabs in your browser). Distinct sites are <em>not</em> shown on a single map — keeps each one readable.</p>
+<h2 id="right-click-port-connections">Right-click → MAC table</h2>
+<p>Right-click a switch for its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports. The MAC flyout does not show an OUI vendor or a neighbour. Port Connections is the Pro Discover tab.</p>
+<h2 id="map-per-site">Map per run</h2>
+<p>The task draws one HTML map per run, named after the site.</p>
 <h2 id="caching">Caching</h2>
 <p>Topology runs cache device output for ~10 minutes. Re-running a topology within that window reuses cached MAC tables and neighbour data rather than re-walking. Force a fresh walk by ticking <strong>Skip cache</strong> in the run dialog.</p>
 <h2 id="endpoint-filtering">Endpoint filtering</h2>
-<p>By default, &quot;endpoint&quot; MACs (phones, APs, PCs, IoT) are filtered out so the map only shows switch infrastructure. Endpoints are detected by:</p>
+<p>Endpoints are left off so you see the switches. You can tick APs and IP phones back in as small dots. Host-only endpoints such as PCs stay off. Endpoints that are filtered are detected by:</p>
 <ul>
 <li>OUI patterns for known endpoint vendors (Polycom, Cisco IP Phones, Apple AirPort, Aruba IAP, etc.)
 </li>
@@ -275,7 +261,7 @@
 <h2 id="vendor-support">Vendor support</h2>
 <p>L2 topology works on every vendor Node Control supports:</p>
 <ul>
-<li>Cisco IOS, IOS-XE, NX-OS, IOS-XR
+<li>Cisco IOS, IOS-XE, NX-OS
 </li>
 <li>HP ProCurve (with the recent classifier fixes — see <a href="../vendors/hp-procurve.html">HP ProCurve notes</a>)
 </li>

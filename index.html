@@ -55,9 +55,9 @@
         <div class="hero-content">
             <img src="images/hero-banner.png?v=20260314d" alt="NodeControl Logo" class="hero-banner">
             <h1 class="hero-headline">Built by Network Engineers<br>for Network Engineers.</h1>
-            <p class="hero-subtitle">Automate discovery, topology mapping, compliance, and changes across the network, from one desktop app. Config Backup runs when you start it. No agent on the devices. No cloud. Everything stays on the laptop.</p>
+            <p class="hero-subtitle">Automate discovery, topology mapping, compliance, and changes across the network, from one desktop app. Config Backup runs when you start it. It connects to your devices straight from your laptop, with no agent on them, and your configs, inventory and maps are saved on your machine. The app only talks to our server to check its licence and look for updates, plus anonymous usage counts you can switch off.</p>
             <p class="hero-ai-line">Bring your own AI provider. Professional uses your own API key. There is no AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend) are supported.</p>
-            <p class="hero-free-line">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
+            <p class="hero-free-line">The Free Edition is free for up to 25 devices.</p>
             <div class="hero-buttons">
                 <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
                 <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
@@ -117,7 +117,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
                     </div>
                     <h3>Network Discovery <span class="tier-badge">Pro</span></h3>
-                    <p>Give it a seed IP. CDP, LLDP, and SNMP walk the neighbours and build an inventory.</p>
+                    <p>Give it a seed IP. It walks CDP (on Cisco) and LLDP neighbours over SSH and builds the map.</p>
                 </div>
 
                 <div class="feature-card">
@@ -199,7 +199,7 @@
                     </div>
                     <div class="feature-card">
                         <h3>Config Push <span class="tier-badge">Pro</span></h3>
-                        <p>Config Push never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. A revert restores the interface config saved before the push, only on Cisco IOS, IOS-XE, and NX-OS, and you type REVERT to arm it.</p>
+                        <p>Config Push never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. You type REVERT to arm a Cisco revert.</p>
                     </div>
                 </div>
             </div>
@@ -442,7 +442,7 @@
             <!-- Free Edition -->
             <div class="download-tier" id="free-edition">
                 <div class="download-tier-header">
-                    <h3 class="download-tier-title"><span class="cyan">Free Edition:</span> up to 25 devices, no time limit</h3>
+                    <h3 class="download-tier-title"><span class="cyan">The Free Edition is free for up to 25 devices</span></h3>
                     <ul class="pricing-features download-tier-features">
                         <li>L2 Topology Builder</li>
                         <li>Config Backup and Save Config</li>
@@ -576,7 +576,7 @@
     <section class="section" id="pricing">
         <div class="container">
             <h2 class="section-title">Pricing</h2>
-            <p class="section-subtitle">Simple pricing. No per-device fees. No cloud lock-in.</p>
+            <p class="section-subtitle">Simple pricing. No per-device fees.</p>
             <p class="section-subtitle">UK VAT (20%) is added at checkout where applicable. Business customers can add a VAT number.</p>
 
             <!-- Core Platform tiers -->
@@ -590,7 +590,7 @@
                         <p>For individual engineers</p>
                     </div>
                     <ul class="pricing-features">
-                        <li>Up to 25 devices, no time limit</li>
+                        <li>The Free Edition is free for up to 25 devices</li>
                         <li>L2 Topology Builder</li>
                         <li>Config Backup and Save Config</li>
                         <li>Find Device: one switch at a time, MAC or IP to the switch port</li>
@@ -652,7 +652,7 @@
 
             <div class="compare-wrap">
                 <h3 class="compare-title">Free Edition and Professional</h3>
-                <p class="compare-note">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
+                <p class="compare-note">The Free Edition is free for up to 25 devices.</p>
                 <div class="compare-scroll">
                     <table class="compare-table">
                         <thead>
@@ -670,7 +670,7 @@
                             </tr>
                             <tr>
                                 <th>Devices</th>
-                                <td>Up to 25, no time limit</td>
+                                <td>The Free Edition is free for up to 25 devices</td>
                                 <td>Unlimited</td>
                             </tr>
                             <tr>
@@ -690,8 +690,8 @@
                             </tr>
                             <tr>
                                 <th>Find Device</th>
-                                <td>One switch at a time</td>
-                                <td>Site and cores, plus Meraki wireless</td>
+                                <td>One switch at a time, including Meraki wireless clients</td>
+                                <td>Site and cores, including Meraki wireless clients</td>
                             </tr>
                             <tr>
                                 <th>Inventory report</th>

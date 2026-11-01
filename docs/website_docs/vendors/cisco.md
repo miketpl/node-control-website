@@ -1,6 +1,6 @@
-# Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+# Cisco — IOS, IOS-XE, NX-OS
 
-Node Control's most comprehensive vendor coverage. All Cisco platforms are first-class supported.
+IOS, IOS-XE and NX-OS are supported. IOS-XR is not.
 
 ## Driver mapping
 
@@ -10,8 +10,6 @@ Node Control's most comprehensive vendor coverage. All Cisco platforms are first
 | Catalyst 9k (9200, 9300, 9500) | `cisco_xe` (IOS-XE) |
 | ISR / ASR / CSR | `cisco_xe` or `cisco_ios` |
 | Nexus 5k / 7k / 9k | `cisco_nxos` |
-| IOS-XR (ASR9k, NCS) | `cisco_xr` |
-| ASA firewalls | `cisco_asa` |
 | Cisco Meraki | (Dashboard API, not SSH) — see [Meraki page](meraki.md) |
 
 ## What works
@@ -39,8 +37,6 @@ For type detection, Node Control looks for in `show version`:
 - "Cisco IOS Software" → cisco_ios
 - "Cisco IOS XE Software" → cisco_xe
 - "Cisco Nexus Operating System" → cisco_nxos
-- "Cisco IOS XR" → cisco_xr
-- "Cisco Adaptive Security Appliance" → cisco_asa
 
 ## NX-OS
 
@@ -57,23 +53,6 @@ MAC-table entries are read on their real port on the L2 map, in Find Device, and
 Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the `Processor Board ID` serial.
 
 If NX-OS answers `Permission denied` to `configure terminal`, that device's Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with `could not enter configuration mode (check account privileges)`, and the lines not sent are listed as skipped.
-
-## ASA
-
-Cisco ASA firewalls are supported with these caveats:
-
-- `show interface` works but counters differ from IOS
-- VPN / IPSec inspection via `show crypto ipsec sa`
-- No L3 routing protocol parsing beyond BGP (ASA's OSPF is rarely used at scale)
-- Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-
-## IOS-XR
-
-For service-provider-grade ASR9k / NCS gear:
-
-- Most "show" commands match IOS conventions
-- Configuration commit model is different but Node Control is read-only in tasks (won't see this difference)
-- BGP at SP scale — full peer enumeration
 
 ## Stack and VSS
 

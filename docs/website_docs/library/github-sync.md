@@ -89,7 +89,7 @@ The library JSON includes:
 
 It does **not** include:
 
-- Credentials (passwords stay in the local OS keychain)
+- Credentials (passwords stay in the encrypted local database; the master key stays in the OS credential store)
 - App settings (UI state, paths, recent files)
 - The `last_license_check` timestamps
 

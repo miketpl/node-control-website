@@ -2,7 +2,7 @@
 
 Node Control runs on your laptop and talks to switches, routers, and firewalls over SSH and vendor APIs. These pages are the how-to: install it, add devices, and draw an L2 map.
 
-Free is 25 devices, with no time limit. It is not a trial.
+The Free Edition is free for up to 25 devices.
 
 ## New to Node Control?
 
@@ -39,7 +39,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Serial console](tasks/serial-console.md) — on the Engineer tab. Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — on the Engineer tab. Free and Pro; visible in Safe Mode
 - [Monitor](tasks/monitor.md) — Pro and AI; not on Free
-- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. On Palo Alto, [Config from File](tasks/config-from-file.md) discards its own uncommitted changes when its commit is skipped or refused. Safe Mode removes Config Push
+- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Safe Mode removes Config Push
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
 - [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
@@ -88,7 +88,6 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [How credentials are stored](security/credential-storage.md)
 - [What leaves your laptop](security/data-and-privacy.md)
 - [Safe Mode and the command allowlist](security/safe-mode.md)
-- [Audit log](security/audit-log.md)
 
 ## Troubleshooting
 
@@ -100,7 +99,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 ## Tiers
 
-- [Free, Pro, and AI](tiers/overview.md) — Free is 25 devices, no time limit
+- [Free, Pro, and AI](tiers/overview.md) — The Free Edition is free for up to 25 devices
 - [Upgrading from Free to Pro](tiers/upgrading.md)
 
 ## Getting help

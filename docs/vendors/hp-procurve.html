@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -158,7 +157,7 @@
 <h2 id="what-works">What works</h2>
 <ul>
 <li>Detection (with the 0.9.x classifier improvements)</li>
-<li>L2 topology with full CDP / LLDP + MAC table</li>
+<li>L2 topology with LLDP and the MAC table. CDP is Cisco only</li>
 <li>L3 topology (OSPF + BGP if configured and licensed)</li>
 <li>Port Utilisation</li>
 <li>Bandwidth (dedicated ProCurve parser branch)</li>
@@ -201,10 +200,6 @@
 <tr>
 <td>LLDP neighbours</td>
 <td><code>show lldp info remote-device</code>, <code>show lldp neighbours-info</code></td>
-</tr>
-<tr>
-<td>CDP neighbours</td>
-<td><code>show cdp neighbors</code> (capital N), <code>show cdp neighbours</code></td>
 </tr>
 </tbody>
 </table>

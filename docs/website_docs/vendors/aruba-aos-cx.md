@@ -40,7 +40,7 @@ On Free, Find Device is one switch at a time. On Pro and the AI edition it walks
 
 ## Inventory
 
-On Free, Pro, and the AI edition. Inventory reads the model, serial, version, and uptime.
+On Free, Pro, and the AI edition. Inventory reads the model, serial, and version.
 
 ## L3 topology
 
@@ -78,7 +78,7 @@ An all-AOS-CX site reports interfaces, rates, utilisation, and key links. LAG ra
 
 On Pro and the AI edition.
 
-Asset Lifecycle and Health Monitor read model, serial, version, uptime, CPU, and memory.
+Asset Lifecycle reads model, serial, version and uptime. Health Monitor reads CPU and memory.
 
 ## Site Subnets
 
