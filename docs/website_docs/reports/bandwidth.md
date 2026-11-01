@@ -78,7 +78,7 @@ The per-VRF pass runs on the Cisco family and on EOS. Bandwidth and Path Bandwid
 
 ## Export
 
-CSV / XLSX / HTML, same as other reports.
+Export is CSV and JSON. There is no Excel export.
 
 ## Troubleshooting
 

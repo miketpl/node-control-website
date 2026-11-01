@@ -275,7 +275,7 @@
 <p>The detection system is designed to be:</p>
 <ul>
 <li><strong>Conservative</strong>: when in doubt, leaves the existing type alone rather than guessing</li>
-<li><strong>Reversible</strong>: every detection decision is logged in the audit log; you can see what happened and when</li>
+<li><strong>Reversible</strong>: detection decisions are not written to an audit log. A type you set and lock by hand is kept</li>
 <li><strong>Override-respectful</strong>: manual + locked types are never overwritten</li>
 </ul>
 <p>This makes detection issues recoverable — they don't cascade silently.</p>

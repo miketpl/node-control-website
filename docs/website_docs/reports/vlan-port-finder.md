@@ -69,7 +69,7 @@ If a vendor doesn't support the report (e.g., a basic L2 switch with limited CLI
 
 ## Saving / exporting
 
-CSV / XLSX / HTML — same as other reports.
+Export is CSV and JSON. There is no Excel export.
 
 ## Use with Port Utilisation
 

@@ -158,9 +158,9 @@
 <h2 id="what-works">What works</h2>
 <p>Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9.42 the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers.</p>
 <ul>
-<li>L2 topology uses those EOS parsers for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table</li>
+<li>L2 topology uses those EOS parsers for LLDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table. CDP is Cisco only</li>
 <li>The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report</li>
-<li>Find Device&#x27;s per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP</li>
+<li>Find Device&#x27;s per-port probe on Arista answers from LLDP. CDP is Cisco only</li>
 <li>Port Utilisation</li>
 <li>Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family</li>
 <li>VLAN Port Finder</li>

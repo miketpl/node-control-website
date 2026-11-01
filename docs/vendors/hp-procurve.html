@@ -158,7 +158,7 @@
 <h2 id="what-works">What works</h2>
 <ul>
 <li>Detection (with the 0.9.x classifier improvements)</li>
-<li>L2 topology with full CDP / LLDP + MAC table</li>
+<li>L2 topology with LLDP and the MAC table. CDP is Cisco only</li>
 <li>L3 topology (OSPF + BGP if configured and licensed)</li>
 <li>Port Utilisation</li>
 <li>Bandwidth (dedicated ProCurve parser branch)</li>
@@ -201,10 +201,6 @@
 <tr>
 <td>LLDP neighbours</td>
 <td><code>show lldp info remote-device</code>, <code>show lldp neighbours-info</code></td>
-</tr>
-<tr>
-<td>CDP neighbours</td>
-<td><code>show cdp neighbors</code> (capital N), <code>show cdp neighbours</code></td>
 </tr>
 </tbody>
 </table>

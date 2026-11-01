@@ -1,6 +1,6 @@
-# Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+# Cisco — IOS, IOS-XE, NX-OS, ASA
 
-Node Control's most comprehensive vendor coverage. All Cisco platforms are first-class supported.
+Node Control's most comprehensive vendor coverage. IOS, IOS-XE, NX-OS, and ASA are supported. IOS-XR is not.
 
 ## Driver mapping
 
@@ -10,7 +10,6 @@ Node Control's most comprehensive vendor coverage. All Cisco platforms are first
 | Catalyst 9k (9200, 9300, 9500) | `cisco_xe` (IOS-XE) |
 | ISR / ASR / CSR | `cisco_xe` or `cisco_ios` |
 | Nexus 5k / 7k / 9k | `cisco_nxos` |
-| IOS-XR (ASR9k, NCS) | `cisco_xr` |
 | ASA firewalls | `cisco_asa` |
 | Cisco Meraki | (Dashboard API, not SSH) — see [Meraki page](meraki.md) |
 
@@ -39,7 +38,6 @@ For type detection, Node Control looks for in `show version`:
 - "Cisco IOS Software" → cisco_ios
 - "Cisco IOS XE Software" → cisco_xe
 - "Cisco Nexus Operating System" → cisco_nxos
-- "Cisco IOS XR" → cisco_xr
 - "Cisco Adaptive Security Appliance" → cisco_asa
 
 ## NX-OS
@@ -66,14 +64,6 @@ Cisco ASA firewalls are supported with these caveats:
 - VPN / IPSec inspection via `show crypto ipsec sa`
 - No L3 routing protocol parsing beyond BGP (ASA's OSPF is rarely used at scale)
 - Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-
-## IOS-XR
-
-For service-provider-grade ASR9k / NCS gear:
-
-- Most "show" commands match IOS conventions
-- Configuration commit model is different but Node Control is read-only in tasks (won't see this difference)
-- BGP at SP scale — full peer enumeration
 
 ## Stack and VSS
 

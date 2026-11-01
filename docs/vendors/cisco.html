@@ -4,8 +4,8 @@
     <script>document.documentElement.classList.add("docs-js")</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl Docs</title>
-    <meta name="description" content="Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl documentation">
+    <title>Cisco — IOS, IOS-XE, NX-OS, ASA — NodeControl Docs</title>
+    <meta name="description" content="Cisco — IOS, IOS-XE, NX-OS, ASA — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
     <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
@@ -147,10 +147,10 @@
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, NX-OS, ASA
                 </div>
-                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA</h1>
-<p>Node Control&#x27;s most comprehensive vendor coverage. All Cisco platforms are first-class supported.</p>
+                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, NX-OS, ASA</h1>
+<p>Node Control&#x27;s most comprehensive vendor coverage. IOS, IOS-XE, NX-OS, and ASA are supported. IOS-XR is not.</p>
 <h2 id="driver-mapping">Driver mapping</h2>
 <table>
 <thead>
@@ -175,10 +175,6 @@
 <tr>
 <td>Nexus 5k / 7k / 9k</td>
 <td><code>cisco_nxos</code></td>
-</tr>
-<tr>
-<td>IOS-XR (ASR9k, NCS)</td>
-<td><code>cisco_xr</code></td>
 </tr>
 <tr>
 <td>ASA firewalls</td>
@@ -229,8 +225,6 @@
 </li>
 <li>&quot;Cisco Nexus Operating System&quot; → cisco_nxos
 </li>
-<li>&quot;Cisco IOS XR&quot; → cisco_xr
-</li>
 <li>&quot;Cisco Adaptive Security Appliance&quot; → cisco_asa
 </li>
 </ul>
@@ -258,16 +252,6 @@
 <li>No L3 routing protocol parsing beyond BGP (ASA&#x27;s OSPF is rarely used at scale)
 </li>
 <li>Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-</li>
-</ul>
-<h2 id="ios-xr">IOS-XR</h2>
-<p>For service-provider-grade ASR9k / NCS gear:</p>
-<ul>
-<li>Most &quot;show&quot; commands match IOS conventions
-</li>
-<li>Configuration commit model is different but Node Control is read-only in tasks (won&#x27;t see this difference)
-</li>
-<li>BGP at SP scale — full peer enumeration
 </li>
 </ul>
 <h2 id="stack-and-vss">Stack and VSS</h2>

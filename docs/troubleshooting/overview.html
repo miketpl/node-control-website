@@ -201,11 +201,8 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 <li>The result message tells you specifically what failed (auth, network, parsing)
 </li>
 </ul>
-<h3 id="check-the-audit-log">Check the audit log</h3>
-<pre><code>~/Library/Application Support/netOps/audit.log
-%APPDATA%\netOps\audit.log
-</code></pre>
-<p>Look for <code>SESSION_FAILED</code> events with details on why the connection failed.</p>
+<h3 id="check-the-audit-log">There is no audit log</h3>
+<p>Node Control does not write <code>audit.log</code>. A failed connection is reported by <strong>Test Connection</strong> and by the task run. You can record SSH sessions to a plain-text log from Settings. That recording is off until you turn it on.</p>
 <h3 id="check-the-crash-log">Check the crash log</h3>
 <p>If the app is crashing:</p>
 <pre><code>~/NodeControl_crash.log
@@ -255,7 +252,7 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 <li><strong>Reset settings</strong> (last resort) — rename <code>settings.json</code> to <code>settings.json.bak</code> and launch fresh
 </li>
 </ol>
-<p>A reset preserves your library and credentials. To also reset those, delete <code>netOps.db</code> (you&#x27;ll lose your library) and the OS keychain entries (you&#x27;ll lose stored passwords).</p>
+<p>A reset preserves your library and credentials. To also reset those, delete <code>netOps.db</code> (the library and the encrypted passwords) and the master key in the OS credential store.</p>
 <h2 id="getting-support">Getting support</h2>
 <p>When opening a support ticket, include:</p>
 <ul>
@@ -267,7 +264,7 @@ ssh &lt;username&gt;@&lt;device-ip&gt;     # without Node Control, baseline test
 </li>
 <li>What you did, what happened, what you expected
 </li>
-<li>Relevant log file (crash log, audit log, task run log)
+<li>Relevant log file (crash log, task run log)
 </li>
 <li>Screenshot if a UI issue
 </li>

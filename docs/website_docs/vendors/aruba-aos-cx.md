@@ -40,7 +40,7 @@ On Free, Find Device is one switch at a time. On Pro and the AI edition it walks
 
 ## Inventory
 
-On Free, Pro, and the AI edition. Inventory reads the model, serial, version, and uptime.
+On Free, Pro, and the AI edition. Inventory reads the model, serial, and version.
 
 ## L3 topology
 

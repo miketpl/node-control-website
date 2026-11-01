@@ -212,10 +212,10 @@
 </li>
 <li><code>settings.json</code> — UI state
 </li>
-<li>Credential <strong>secrets</strong> live in <strong>Windows Credential Manager</strong>, not in this folder
+<li>The master key is held in <strong>Windows Credential Manager</strong>. Passwords are encrypted on your machine with that key, not stored as a separate credential for every profile
 </li>
 </ul>
-<p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. Credentials in Credential Manager can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
+<p><strong>Uninstalling</strong>: use <strong>Settings → Apps → Node Control Free</strong> (or Pro) → <strong>Uninstall</strong>. Your data in <code>%APPDATA%\netOps\</code> is preserved unless you delete it manually. The master key, not each password, can be cleared from <strong>Control Panel → User Accounts → Credential Manager → Windows Credentials → Generic Credentials</strong>.</p>
 <h2 id="updating">Updating</h2>
 <p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. Before <strong>Install &amp; Restart</strong>, the app checks the checksum and the Authenticode publisher, <strong>The Promised Lan Limited</strong>. Downloads resume.</p>
 <ol>
