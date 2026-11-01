@@ -73,7 +73,7 @@ Node Control uses PAN-OS CLI mode (NOT the web GUI, NOT the XML API):
 
 - Commands run via SSH
 - **Config from File** sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails. The file's own commit and revert lines are removed, so other admins' pending changes are never committed by a plain `commit`. A file with only commit or revert lines is refused, and nothing is sent. A commit that does not finish is reported as **commit outcome unknown**
-- In an SSH session, the **Commit after push** box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. If the login name cannot be used safely, nothing is sent. This is not [Config Push](../tasks/config-push.md). Config Push still has no reliable revert on Palo Alto
+- In an SSH session, the **Commit after push** box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. On Pro, if the login name cannot be used safely, nothing is sent. This is not [Config Push](../tasks/config-push.md). Config Push still has no reliable revert on Palo Alto
 - Disables paging on connect with `set cli pager off`
 
 For users who prefer the XML API (which has wider parsing support upstream), we may add a hybrid mode in a future release — let us know if this matters.

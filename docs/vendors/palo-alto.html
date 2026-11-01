@@ -264,7 +264,7 @@
 </li>
 <li><strong>Config from File</strong> sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails. The file's own commit and revert lines are removed, so other admins' pending changes are never committed by a plain <code>commit</code>. A file with only commit or revert lines is refused, and nothing is sent. A commit that does not finish is reported as <strong>commit outcome unknown</strong>
 </li>
-<li>In an SSH session, the <strong>Commit after push</strong> box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. If the login name cannot be used safely, nothing is sent. This is not <a href="../tasks/config-push.html">Config Push</a>. Config Push still has no reliable revert on Palo Alto
+<li>In an SSH session, the <strong>Commit after push</strong> box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. On Pro, if the login name cannot be used safely, nothing is sent. This is not <a href="../tasks/config-push.html">Config Push</a>. Config Push still has no reliable revert on Palo Alto
 </li>
 <li>Disables paging on connect with <code>set cli pager off</code>
 </li>

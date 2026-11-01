@@ -107,7 +107,7 @@ Same as the rest of Node Control:
 
 Vendor-specific gaps are documented in [Vendors](../vendors/overview.md).
 
-On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from `show version`. CPU is reported as well, on recent EOS versions where the old command was refused, in the Health Monitor report and in Monitor.
+On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from `show version`. CPU is now reported too, in the Health Monitor report and in Monitor. On recent EOS versions the old CPU command was refused.
 
 Device names and other text read from devices are shown as plain text on the Health Monitor and Firewall Health report pages. A device name containing page code cannot change or run anything in the page.
 

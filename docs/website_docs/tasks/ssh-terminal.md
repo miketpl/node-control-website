@@ -89,9 +89,9 @@ There is no Auto-reconnect checkbox. When a session times out, a red banner read
 
 On FortiGate, after a stop inside a config block, the pending edit is discarded and is not saved. The session goes back to the normal prompt. If that cannot be confirmed, the session is disconnected and asks you to reconnect. An **Unknown action** reply also stops the push.
 
-On Juniper Junos, a refused line is reported straight away with the device's own error, for example `syntax error.`, instead of waiting about two minutes for a timeout. The row shows the device's full reason lines.
+On Juniper Junos, a refused line is reported straight away with the device's own error, for example `syntax error.`, instead of waiting about two minutes for a timeout. On Pro, the row shows the device's full reason lines.
 
-On Palo Alto, the **Commit after push** box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. If the login name cannot be used safely, nothing is sent.
+On Palo Alto, the **Commit after push** box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. On Pro, if the login name cannot be used safely, nothing is sent.
 
 ## Safe Mode and the terminal
 

@@ -1,6 +1,6 @@
 # Access Review
 
-> On **Pro** and the **AI** edition. Free does not run this report. Cisco ASA has no general support. Its only appearance in Node Control is a preview in this report.
+> On **Pro** and the **AI** edition. Free does not run this report. Cisco ASA has no general support. In this report it is a preview only.
 
 The Access Review report is on the Reports tab. It lists the admin accounts on your firewalls. Each account shows its role, where it signs in from (local or a remote server), and notes such as two-factor or SSH key login.
 

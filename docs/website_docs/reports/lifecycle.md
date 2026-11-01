@@ -14,7 +14,7 @@ If Catalyst Center is unreachable (VPN down, DNS failure), the log says so in on
 
 Devices Catalyst Center does not manage, Nexus in particular, get dates from Cisco's public End-of-Sale and End-of-Life notices. Those notices ship with the app. This release covers the Nexus 2000, 3000, 5000, 7000, and 9000 families. A row answered that way has a **Source** column that links the notice.
 
-When the Cisco EoX service is not available, which needs partner access, end-of-support dates come from the Cisco end-of-life notices bundled with the app. Rows filled this way say so and show when the data was compiled. The bundled notices cover Catalyst 2960 to 9000 switches and ISR 800 to 4000 routers as well as Nexus.
+When the Cisco EoX service is not available (it needs partner access), end-of-support dates come from the Cisco end-of-life notices bundled with the app. Rows filled this way say so and show when the data was compiled. The bundled notices cover Catalyst 2960 to 9000 switches and ISR 800 to 4000 routers as well as Nexus.
 
 The report uses the scope you set on the Reports page, not only the devices Catalyst Center happens to know. Library devices outside Catalyst are listed. If the model is not already known, the report identifies the device over SSH with `show inventory`. What it learns is cached, so a later run of this report does not ask again.
 
