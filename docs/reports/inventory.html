@@ -353,6 +353,9 @@
 </tr>
 </tbody>
 </table>
+<p>On Cisco NX-OS, the host name comes from <code>Device name:</code> and is not <code>Kernel</code>. Inventory reads the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version.</p>
+<p>On Cisco IOS / IOS-XE, Inventory reads the model from the <code>cisco &lt;model&gt;</code> line of <code>show version</code> when there is no Model Number line, the same way Asset Lifecycle does.</p>
+<p>On HP ProCurve / Aruba OS-Switch, firmware with a two-column <code>show system</code>: the uptime is only the Up Time value, and the serial number in the right-hand column is read.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="overview.html">Other reports</a>

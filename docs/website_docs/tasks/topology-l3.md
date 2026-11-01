@@ -92,6 +92,8 @@ Same as L2 — the HTML is written to your app support directory with a timestam
 | OSPF area shown as `unknown` | Vendor's neighbour output doesn't include area | Hover edge to see the partial data; check the source device manually |
 | L3 switches misclassified as core | Classifier got it wrong | The 0.9.x improvements should catch most cases. Open a support ticket with the device's `show ip route` output if it still misclassifies |
 
+A FortiGate is a firewall on the L3 map, not an access switch.
+
 ## Next steps
 
 - [Layer 2 topology](topology-l2.md)

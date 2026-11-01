@@ -184,30 +184,79 @@
     }
 
     // ── Attribution for the Free form ───────────────────────────
-    // Read at submit time from this page's own URL. Nothing is stored in the
-    // browser: no cookie, no localStorage. Only the referring host name is
-    // kept, never the full referring URL.
+    // First touch in this tab. If the URL has a campaign tag, keep it, the
+    // external referrer host, and the landing path in sessionStorage. A later
+    // page does not overwrite that. Sign-up sends the stored values when the
+    // current URL has none. Storage failures are ignored so the form still
+    // submits. Only the referring host name is kept, never the full URL.
+    var ATTR_KEY = 'nc_attr';
+
     function clip(value, max) {
         return String(value || '').slice(0, max);
     }
 
-    function attributionPayload() {
-        const params = new URLSearchParams(window.location.search);
-        let referrer = '';
+    function externalReferrerHost() {
         try {
-            const ref = document.referrer ? new URL(document.referrer) : null;
-            if (ref && ref.hostname !== window.location.hostname) {
-                referrer = ref.hostname;
+            var ref = document.referrer ? new URL(document.referrer) : null;
+            if (ref && ref.hostname && ref.hostname !== window.location.hostname) {
+                return ref.hostname;
             }
         } catch (err) { /* malformed referrer: leave it empty */ }
-        return {
+        return '';
+    }
+
+    function rememberAttribution() {
+        try {
+            if (sessionStorage.getItem(ATTR_KEY)) return;
+            var params = new URLSearchParams(window.location.search);
+            var source = params.get('utm_source') || '';
+            var medium = params.get('utm_medium') || '';
+            var campaign = params.get('utm_campaign') || '';
+            if (!source && !medium && !campaign) return;
+            sessionStorage.setItem(ATTR_KEY, JSON.stringify({
+                utm_source: source,
+                utm_medium: medium,
+                utm_campaign: campaign,
+                referrer: externalReferrerHost(),
+                landing_page: window.location.pathname,
+            }));
+        } catch (err) { /* storage blocked: sign-up still works */ }
+    }
+
+    function storedAttribution() {
+        try {
+            var raw = sessionStorage.getItem(ATTR_KEY);
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            return {
+                utm_source: clip(parsed.utm_source, 64),
+                utm_medium: clip(parsed.utm_medium, 64),
+                utm_campaign: clip(parsed.utm_campaign, 128),
+                referrer: clip(parsed.referrer, 128),
+                landing_page: clip(parsed.landing_page, 256),
+            };
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function attributionPayload() {
+        var params = new URLSearchParams(window.location.search);
+        var current = {
             utm_source: clip(params.get('utm_source'), 64),
             utm_medium: clip(params.get('utm_medium'), 64),
             utm_campaign: clip(params.get('utm_campaign'), 128),
-            referrer: clip(referrer, 128),
+            referrer: clip(externalReferrerHost(), 128),
             landing_page: clip(window.location.pathname, 256),
         };
+        if (current.utm_source || current.utm_medium || current.utm_campaign) {
+            return current;
+        }
+        return storedAttribution() || current;
     }
+
+    rememberAttribution();
 
     // Tell the API an installer download was started or a link was clicked.
     // sendBeacon with text/plain needs no CORS preflight and survives the
@@ -221,6 +270,50 @@
             }
         } catch (err) { /* never block the download */ }
     }
+
+    // Anonymous Free-section counts. sendBeacon with text/plain, same as a
+    // download event. Failure is silent. View and form start fire once per
+    // page load. Submit fires on each submit.
+    function trackFunnel(event) {
+        try {
+            if (!navigator.sendBeacon) return;
+            var body = JSON.stringify({ event: event });
+            navigator.sendBeacon(API_BASE + '/api/funnel-event',
+                new Blob([body], { type: 'text/plain' }));
+        } catch (err) { /* never block the page */ }
+    }
+
+    function watchFreeFunnel() {
+        var seenView = false;
+        var seenStart = false;
+        var section = document.getElementById('free-edition');
+        if (section && typeof IntersectionObserver === 'function') {
+            try {
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (seenView || entry.intersectionRatio < 0.5) return;
+                        seenView = true;
+                        trackFunnel('free_section_view');
+                        observer.disconnect();
+                    });
+                }, { threshold: [0.5] });
+                observer.observe(section);
+            } catch (err) { /* leave the page alone */ }
+        }
+        var form = document.getElementById('freeRequestForm');
+        if (!form) return;
+        function markStart() {
+            if (seenStart) return;
+            seenStart = true;
+            trackFunnel('free_form_start');
+            form.removeEventListener('focusin', markStart);
+            form.removeEventListener('input', markStart);
+        }
+        form.addEventListener('focusin', markStart);
+        form.addEventListener('input', markStart);
+    }
+
+    watchFreeFunnel();
 
     // Helper: show result message in a container
     function showResult(container, message, type) {
@@ -253,6 +346,7 @@
     if (freeForm) {
         freeForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+            trackFunnel('free_form_submit');
 
             const btn = document.getElementById('reqSubmitBtn');
             const name = document.getElementById('reqName').value.trim();

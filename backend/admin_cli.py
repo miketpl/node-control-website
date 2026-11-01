@@ -29,14 +29,19 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22 --dry-run
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22,25 --dry-run
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_all --exclude-licence-id 22,25 --confirm
+    python3 admin_cli.py funnel --days 14
 """
 
 import argparse
 import json
 import os
+import sqlite3
 import sys
 import urllib.error
 import urllib.request
+from datetime import datetime, timedelta
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 PLACEHOLDER = "change-me-in-production"
 
@@ -271,6 +276,77 @@ def cmd_notify(args):
         print(f"{key} {value}")
 
 
+LONDON = ZoneInfo("Europe/London")
+
+
+def _load_env():
+    """Pick up DB_PATH from the repo .env. Does not open the database."""
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+
+def open_funnel_db():
+    """Read-only connection. A missing file is an error. Writes are refused."""
+    _load_env()
+    path = os.path.abspath(os.environ.get("DB_PATH", "licenses.db"))
+    if not os.path.isfile(path):
+        print(f"No licence database at {path}", file=sys.stderr)
+        sys.exit(1)
+    uri = Path(path).resolve().as_uri() + "?mode=ro"
+    db = sqlite3.connect(uri, uri=True)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def _funnel_ratio(numerator, denominator):
+    if not denominator:
+        return "-"
+    return f"{(100.0 * numerator / denominator):.1f}%"
+
+
+def cmd_funnel(args):
+    """Print Free-section counts for the last N UK days. Does not write."""
+    days = args.days
+    if days < 1:
+        print("--days must be a positive integer.", file=sys.stderr)
+        sys.exit(2)
+    today = datetime.now(LONDON).date()
+    window = [
+        (today - timedelta(days=offset)).isoformat()
+        for offset in range(days - 1, -1, -1)
+    ]
+    db = open_funnel_db()
+    try:
+        present = db.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'funnel_daily'"
+        ).fetchone()
+        if not present:
+            print("funnel_daily is not in this database.", file=sys.stderr)
+            sys.exit(1)
+        rows = db.execute(
+            "SELECT day, event, count FROM funnel_daily WHERE day >= ? AND day <= ?",
+            (window[0], window[-1]),
+        ).fetchall()
+    finally:
+        db.close()
+    counts = {(row["day"], row["event"]): int(row["count"]) for row in rows}
+    print(
+        "day\tfree_section_view\tfree_form_start\tfree_form_submit\t"
+        "form_start/section_view\tsubmit/form_start"
+    )
+    for day in window:
+        view = counts.get((day, "free_section_view"), 0)
+        start = counts.get((day, "free_form_start"), 0)
+        submit = counts.get((day, "free_form_submit"), 0)
+        print(
+            f"{day}\t{view}\t{start}\t{submit}\t"
+            f"{_funnel_ratio(start, view)}\t{_funnel_ratio(submit, start)}"
+        )
+
+
 def cmd_stats(args):
     query = []
     if args.since:
@@ -312,6 +388,10 @@ def main(argv=None):
     revoke_cmd.add_argument("--code", help="NC-XXXX-XXXX")
     revoke_cmd.add_argument("--email", help="exact email address")
     revoke_cmd.set_defaults(func=cmd_revoke)
+
+    funnel_cmd = sub.add_parser("funnel", help="Free-section daily counts. Read-only")
+    funnel_cmd.add_argument("--days", type=int, required=True, help="UK days to print, including today")
+    funnel_cmd.set_defaults(func=cmd_funnel)
 
     stats_cmd = sub.add_parser("stats", help="Registrations by source, and download events")
     stats_cmd.add_argument("--since", help="UTC date, inclusive, e.g. 2026-10-12")

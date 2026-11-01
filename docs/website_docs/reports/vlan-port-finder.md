@@ -89,6 +89,8 @@ A future release may combine these into a single "VLAN bandwidth" report — let
 | Trunk ports not appearing | "Include trunks" toggle is OFF | Toggle ON and re-run |
 | Voice VLANs counted twice | "Include voice VLANs" interacts with vendor-specific behaviour | Try toggling and compare |
 
+The Status and Result cells update during a run. On Cisco NX-OS, ports get their status and description, and MAC addresses appear on their real port. A failed device shows the first line of the error in its cell. The full text stays in the log.
+
 ## Next steps
 
 - [Port Utilisation](port-utilisation.md)

@@ -271,11 +271,16 @@
 <p>A hard blacklist blocks Loopback, Vlan SVIs, Management, Tunnel, NVE, Port-channel, Null, and BDI.</p>
 <p>Uplink detection skips a port with more than 2 VLANs. Trunk mode has a checkbox override for that skip.</p>
 <p>Port-channel members are detected live and block that switch. The only override is a trunk-mode option armed by typing <code>UPLINK</code>. It never unblocks SVIs, loopbacks, management, or tunnels.</p>
+<p>A Juniper Junos interface that is a LAG (<code>aeN</code>) member is blocked like a Cisco port-channel member, with the same <strong>UPLINK</strong> override. Aruba AOS-CX LAG members and ProCurve / Aruba OS-Switch trunk members are blocked the same way, and lag and Trk aggregates like port-channels. The typed <strong>UPLINK</strong> override still lets them through. Their rows say <code>LAG/trunk members</code>.</p>
+<p>On ProCurve / Aruba OS-Switch, trunk membership is read from the running configuration once per device. If that read fails, is not recognised, or has a trunk port range that cannot be expanded, the device is blocked unless the typed <strong>TRUNKS</strong> override (or <strong>UPLINK</strong>) is ticked.</p>
 <h2 id="preview-and-run">Preview and run</h2>
 <p>The preview is on by default. There is no separate dry run. The preview is the dry run.</p>
 <p>It shows the switches and interfaces, with ticks, editable config per switch, last-active times, and exclusions by reason. A final Yes/No then shows the counts.</p>
 <p>How many switches run at once follows the <strong>Conns</strong> spinner on the main Engineer page. That spinner is 1 to 50, and the default is 6. Config Push caps it at 4, so the run is <code>min(4, Conns)</code> switches at once, on separate SSH sessions. Settings <strong>Default Thread Count</strong> does not drive it.</p>
 <p>A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.</p>
+<p>Back from the preview, and the stops for a source file that cannot be read, a file with no ports, <strong>No ports matched</strong>, and No to the uptime warning, return to the filled-in first screen instead of ending the run. The typed <strong>UPLINK</strong> override is cleared each time that screen comes back and has to be typed again. A typed <strong>TRUNKS</strong> override is kept.</p>
+<p>The top summary line, each device&#x27;s tab title, its Include box, and its Interfaces cell recount as you tick or untick ports and devices, and match the pre-push confirmation.</p>
+<p>A device that is blocked (nothing pushed) is counted as blocked in the summary (<code>N blocked</code>), not as succeeded. The run is not reported as a success while anything was blocked.</p>
 <p>Saving is opt-in and off by default. It uses the vendor save command.</p>
 <h2 id="revert">Revert</h2>
 <p>The running config of each target interface is snapshotted before the push. The last 20 pushes are kept.</p>
@@ -290,9 +295,11 @@
 </li>
 </ul>
 <p>Revert warns about drift. It does not detect drift.</p>
+<p>Juniper Junos loads the lines in <code>configure private</code> and runs <code>commit check</code> and <code>commit and-quit</code>, rolling back on any error. Each interface is snapshotted before the push, and revert restores that snapshot the same way. If the snapshot could not be taken, the revert is marked as manual.</p>
+<p>Revert is refused whenever the app-wide Safe Mode is on.</p>
 <h2 id="vendors-and-edition">Vendors and edition</h2>
-<p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.</p>
-<p>Full support is Cisco IOS, IOS-XE, and NX-OS only. On any other vendor the task can send a template, and nothing else: no activity targeting, and no reliable revert.</p>
+<p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.</p>
+<p>Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no activity targeting and no reliable revert. (On Palo Alto, Config from File discards its own uncommitted changes when its commit is skipped or refused. See <a href="config-from-file.html">Config from File</a>.)</p>
 <p>The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Safe Mode removes Config Push.</p>
