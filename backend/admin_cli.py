@@ -326,13 +326,35 @@ def cmd_funnel(args):
         if not present:
             print("funnel_daily is not in this database.", file=sys.stderr)
             sys.exit(1)
-        rows = db.execute(
-            "SELECT day, event, count FROM funnel_daily WHERE day >= ? AND day <= ?",
-            (window[0], window[-1]),
-        ).fetchall()
+        if getattr(args, "by_campaign", False):
+            rows = db.execute(
+                """
+                SELECT day, utm_source, utm_campaign, event, count
+                FROM funnel_daily
+                WHERE day >= ? AND day <= ?
+                ORDER BY day, utm_source, utm_campaign, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        else:
+            rows = db.execute(
+                "SELECT day, event, count FROM funnel_daily WHERE day >= ? AND day <= ?",
+                (window[0], window[-1]),
+            ).fetchall()
     finally:
         db.close()
-    counts = {(row["day"], row["event"]): int(row["count"]) for row in rows}
+    if getattr(args, "by_campaign", False):
+        print("day\tutm_source\tutm_campaign\tevent\tcount")
+        for row in rows:
+            print(
+                f"{row['day']}\t{row['utm_source']}\t{row['utm_campaign']}\t"
+                f"{row['event']}\t{int(row['count'])}"
+            )
+        return
+    counts = {}
+    for row in rows:
+        key = (row["day"], row["event"])
+        counts[key] = counts.get(key, 0) + int(row["count"])
     print(
         "day\tfree_section_view\tfree_form_start\tfree_form_submit\t"
         "form_start/section_view\tsubmit/form_start"
@@ -391,6 +413,11 @@ def main(argv=None):
 
     funnel_cmd = sub.add_parser("funnel", help="Free-section daily counts. Read-only")
     funnel_cmd.add_argument("--days", type=int, required=True, help="UK days to print, including today")
+    funnel_cmd.add_argument(
+        "--by-campaign",
+        action="store_true",
+        help="One row per UK day, source, campaign and event",
+    )
     funnel_cmd.set_defaults(func=cmd_funnel)
 
     stats_cmd = sub.add_parser("stats", help="Registrations by source, and download events")
