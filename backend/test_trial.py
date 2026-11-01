@@ -192,12 +192,35 @@ class TrialTests(unittest.TestCase):
         self.assertEqual(db.execute("SELECT COUNT(*) AS c FROM free_trials").fetchone()["c"], 1)
         db.close()
 
+    def _assert_machine_used_hides_dates(self, payload, first_dates):
+        plain = payload["trial"]
+        self.assertEqual(plain["reason"], "machine_used")
+        self.assertIsNone(plain["started_at"])
+        self.assertIsNone(plain["expires_at"])
+        self.assertIsNone(plain["grace_until"])
+        self.assertEqual(plain["days_left"], 0)
+        self.assertNotEqual(plain["started_at"], first_dates["started_at"])
+        self.assertNotEqual(plain["expires_at"], first_dates["expires_at"])
+        signed = self._open_lease(payload["lease"])
+        self.assertEqual(signed["trial_state"], "ineligible")
+        self.assertEqual(signed["reason"], "machine_used")
+        self.assertIsNone(signed["trial"]["started_at"])
+        self.assertIsNone(signed["trial"]["expires_at"])
+        self.assertIsNone(signed["trial"]["grace_until"])
+        self.assertEqual(signed["trial"]["days_left"], 0)
+        self.assertNotEqual(signed["trial"]["started_at"], first_dates["started_at"])
+        self.assertNotEqual(signed["trial"]["expires_at"], first_dates["expires_at"])
+
     def test_one_trial_per_email_and_per_machine(self):
         first = self._insert("NC-TRAL-0001", "one@example.com")
-        self._activate(first)
+        started = self._activate(first)
+        first_dates = started.get_json()["licence"]["trial"]
+        self.assertIsNotNone(first_dates["started_at"])
         other = self._insert("NC-TRAL-0002", "two@example.com")
         used = self._activate(other)
-        self.assertEqual(used.get_json()["licence"]["trial"]["reason"], "machine_used")
+        self._assert_machine_used_hides_dates(used.get_json()["licence"], first_dates)
+        checked = self._check(other, self.machine)
+        self._assert_machine_used_hides_dates(checked.get_json(), first_dates)
         same = self._insert("NC-TRAL-0003", "one@example.com")
         install = str(uuid.uuid4())
         refused = self._activate(same, machine="cd" * 32, install=install)

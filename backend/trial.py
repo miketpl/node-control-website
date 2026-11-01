@@ -218,10 +218,11 @@ def _state_for(record, presented, version, now):
             "eligible": False,
         }
     if by_machine:
+        # Another licence already used this computer. Do not copy that row's dates.
         return {
             "trial_state": "ineligible",
             "reason": "machine_used",
-            "row": by_machine,
+            "row": None,
             "active": False,
             "eligible": False,
         }
