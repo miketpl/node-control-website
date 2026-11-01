@@ -1,6 +1,6 @@
 # Updating Node Control
 
-The current release is 0.9.42. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.
+The current release is 0.9.44. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.
 
 ## Updating from 0.9.41
 
@@ -8,7 +8,7 @@ From 0.9.41 the app checks once at launch, right after the licence check. There 
 
 ## Help > Check for Updates...
 
-0.9.42 checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
+Node Control checks once at launch, right after the licence check. There is no timer after that. **Help → Check for Updates...** checks again.
 
 If the server says it is busy or paused, the app backs off for 24 hours by default.
 
@@ -19,7 +19,7 @@ The start-up check stays silent if it fails. When it finds an update, it asks **
 - **Could not check for updates.** The line underneath is the server's message, `Update check failed (<status> <code>)`, or the network error.
 - **Downloads are paused.** On Free the text is `Downloads for Node Control Free are paused at the moment. Get the latest installer from nodecontrol.io, or try again later.`
 - **Download failed.**
-- **You're running the latest version (v0.9.42).**
+- **You're running the latest version (v0.9.44).**
 - **Update available!**
 
 ## What is checked before installing

@@ -81,6 +81,10 @@ To disable session logging: Settings → Terminal → uncheck **Log session outp
 
 There is no Auto-reconnect checkbox. When a session times out, a red banner reads **Session timed out -** and the reason, with a **Reconnect** button. Reconnect uses the same tab and the current credential profile.
 
+## Send Config File and Paste
+
+**Send Config File** and **Paste** (**Send to Devices**) report a refused line as an error. That covers Aruba AOS-CX and ProCurve `Invalid input`, incomplete and ambiguous input, FortiGate `command parse error` and `Command fail`, Cisco IOS `Command authorization failed.`, and Juniper Junos load and commit errors. A line that only contains those words is not treated as a refusal.
+
 ## Safe Mode and the terminal
 
 Safe Mode is session-wide. In Safe Mode, **HTTPS** is hidden, **Console** is hidden, and a command that is not read-only is blocked in the SSH session. The **Terminal** button on the log header stays visible. See [Safe Mode](../settings/safe-mode.md).

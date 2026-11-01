@@ -34,6 +34,8 @@ Each scan is saved. Every row shows the change since the previous scan. Double-c
 - A host seen by several routers is counted once
 - Free addresses are addresses nothing was seen on. They are not proof the address is unallocated. A powered-off host still owns its address
 
+No console window flashes during an IPAM sweep.
+
 ## Next steps
 
 - [Reports overview](../reports/overview.md)

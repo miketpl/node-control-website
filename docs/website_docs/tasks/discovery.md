@@ -112,6 +112,12 @@ Same as L2/L3 topology — HTML file in your app support directory. Reload it an
 | Map overlapping labels | Too many nodes in one tier | Discovery has force-direction tuning to spread same-tier nodes — usually self-corrects after a few seconds of layout |
 | Walk seems hung | One slow switch holding up parallel workers | Bounded read timeout (45s) per command prevents hangs — wait or restart |
 
+## Host names
+
+Juniper Junos and Palo Alto host names are saved without the `user@` prefix. Palo Alto host names do not carry the HA state (`(active)`, `(passive)`, and the other states), so a firewall keeps one name across a failover. FortiGate host names are saved without the trailing prompt character or the `(vdom)`.
+
+A FortiGate is a firewall in Discovery, on the L3 and WAN maps, and in Library Updater, instead of an access switch.
+
 ## Next steps
 
 - [L2 topology](topology-l2.md) — for known libraries

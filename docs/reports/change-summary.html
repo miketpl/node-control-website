@@ -167,6 +167,8 @@
 <p>Some devices have no configuration archive, so they cannot record which commands ran. The report names those devices and prints the configuration they need. The Action column is not left blank with no explanation.</p>
 <h2 id="export">Export</h2>
 <p>The HTML report has an <strong>Export CSV</strong> button above each table. Email works the same way as the other reports: background send, and the log says why if the mail is skipped.</p>
+<p>Change Summary skips a vendor it cannot serve before any command is sent. The row reads <code>SKIP, &quot;Change Summary not supported on &lt;type&gt;&quot;</code>. It does not send Cisco archive commands to ProCurve, Dell, Extreme, or FortiGate.</p>
+<p>Findings are saved to the local network memory: how many config changes were made, and by whom. On Pro and the AI edition, Ask Network AI and Architect Review on the Monitor tab can use what was saved.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="overview.html">Reports overview</a>

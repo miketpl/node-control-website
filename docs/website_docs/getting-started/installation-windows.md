@@ -71,6 +71,10 @@ From 0.9.41 the app checks once at launch, right after the licence check. There 
 
 0.9.40 and earlier cannot self-update. Install the current build by hand from [nodecontrol.io](https://nodecontrol.io). Anything below 0.9.41 is refused. Your library, settings, and credentials carry over.
 
+The in-app update starts the installer elevated from the app. If it does not start (UAC cancelled or blocked), the dialog stays open with the reason, **Install**, and an **Open folder** button for the downloaded installer. The installer waits for Node Control to close and will not touch a locked install.
+
+No console window flashes when pinging: the IPAM sweep, Ping Scan, the ping proxy, and the ICMP poller.
+
 See [Updating Node Control](updating.md).
 
 ## Crash logs

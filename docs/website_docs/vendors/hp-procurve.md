@@ -78,6 +78,8 @@ If you see a switch labeled "Aruba 2530" or "Aruba 2930" in your library, that's
 
 For the genuinely-different Aruba CX (CX 6000-series, CX 8000-series, etc.) see the [Aruba CX page](aruba.md).
 
+ProCurve connects as before when it is found on another driver. Trunk members are blocked on **Config Push** like port-channel members, unless **UPLINK** or **TRUNKS** is set. Find Device uses ProCurve MAC-table, LLDP, and LAG commands. A two-column `show system` uses only the Up Time value, and reads the serial in the right-hand column.
+
 ## Next steps
 
 - [Aruba (CX, OS-Switch)](aruba.md) — for the modern Aruba CX OS

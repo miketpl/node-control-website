@@ -2,6 +2,8 @@
 
 See [Safe Mode](../settings/safe-mode.md) for how the mode is chosen and what it blocks. This page covers Safe Mode from a security and compliance perspective.
 
+Config-changing tasks check Safe Mode again inside the task, before credentials are asked for or a connection is opened. Anything refused is marked **Blocked: Safe Mode is on**. Read-only tasks, reports, and downloads run as before.
+
 ## What Safe Mode protects against
 
 | Threat | How Safe Mode helps |
