@@ -20,6 +20,8 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py flags set free_downloads_paused false
     python3 admin_cli.py pro-key issue --email person@example.com
     python3 admin_cli.py pro-key revoke --id 12
+    python3 admin_cli.py pro-key list-test
+    python3 admin_cli.py pro-key revoke-test --keep 12
     python3 admin_cli.py pro-key send-links --id 12
     python3 admin_cli.py reset-device --licence NC-ABCD-2345
     python3 admin_cli.py pro-resync --subscription sub_123
@@ -172,6 +174,46 @@ def cmd_pro_issue(args):
 
 def cmd_pro_revoke(args):
     _print_json(*api("POST", f"/api/admin/pro-keys/{int(args.id)}/revoke"))
+
+
+def cmd_pro_list_test(_args):
+    """Print id, status, and created time. Never an email or a key."""
+    status, payload = api("GET", "/api/admin/pro-keys/test")
+    if status != 200 or not isinstance(payload, dict):
+        print("Test keys could not be listed.", file=sys.stderr)
+        sys.exit(1)
+    rows = payload.get("keys")
+    if not isinstance(rows, list):
+        print("API response was not a list.", file=sys.stderr)
+        sys.exit(1)
+    if not rows:
+        print("No test keys.")
+        return
+    for row in rows:
+        if not isinstance(row, dict):
+            print("API response was not a list.", file=sys.stderr)
+            sys.exit(1)
+        print(f"{row.get('id')}\t{row.get('status')}\t{row.get('created_at')}")
+    print(f"{len(rows)} test key(s)")
+
+
+def cmd_pro_revoke_test(args):
+    """Revoke test keys. Prints ids only."""
+    keep = [int(item) for item in (args.keep or [])]
+    status, payload = api("POST", "/api/admin/pro-keys/test/revoke", {"keep": keep})
+    if status != 200 or not isinstance(payload, dict):
+        print("Test keys were not revoked.", file=sys.stderr)
+        sys.exit(1)
+    revoked = payload.get("revoked")
+    if not isinstance(revoked, list) or any(type(item) is not int for item in revoked):
+        print("API response was not ids.", file=sys.stderr)
+        sys.exit(1)
+    if not revoked:
+        print("No test keys revoked.")
+        return
+    for key_id in revoked:
+        print(f"revoked {key_id}")
+    print(f"{len(revoked)} test key(s) revoked")
 
 
 def cmd_pro_send_links(args):
@@ -415,6 +457,17 @@ def main(argv=None):
     pro_revoke = pro_sub.add_parser("revoke", help="Revoke one Professional key by id")
     pro_revoke.add_argument("--id", required=True, type=int)
     pro_revoke.set_defaults(func=cmd_pro_revoke)
+    list_test = pro_sub.add_parser("list-test", help="List Stripe test-mode keys. No emails")
+    list_test.set_defaults(func=cmd_pro_list_test)
+    revoke_test = pro_sub.add_parser("revoke-test", help="Revoke Stripe test-mode keys")
+    revoke_test.add_argument(
+        "--keep",
+        action="append",
+        default=[],
+        type=int,
+        help="Leave this test key id active. Repeat for more than one",
+    )
+    revoke_test.set_defaults(func=cmd_pro_revoke_test)
     send_links = pro_sub.add_parser("send-links", help="Email the first-install links again")
     send_links.add_argument("--id", required=True, type=int)
     send_links.set_defaults(func=cmd_pro_send_links)
