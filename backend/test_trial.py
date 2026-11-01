@@ -8,7 +8,7 @@ import stat
 import tempfile
 import unittest
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
@@ -56,9 +56,10 @@ class TrialTests(unittest.TestCase):
         keys = _load_fixture()
         self.public = keys["public_key_b64"]
         os.environ["LEASE_SIGNING_KEY"] = keys["private_seed_b64"]
-        os.environ["LEASE_SIGNING_KEY_ID"] = keys["key_id"]
-        os.environ["LEASE_SIGNING_KEY_ID_NEXT"] = "test-only-k2"
+        os.environ["LEASE_SIGNING_KID"] = keys["key_id"]
+        os.environ["LEASE_SIGNING_KID_NEXT"] = "test-only-k2"
         os.environ["MACHINE_HASH_KEY"] = "test-only-machine-hash-key"
+        app.config["TESTING"] = True
         db = get_db()
         for table in ("licenses", "devices", "device_moves", "free_trials", "funnel_daily",
                       "notices_sent", "notice_opt_outs", "pro_keys", "server_flags",
@@ -76,10 +77,11 @@ class TrialTests(unittest.TestCase):
         self.mail_patch.stop()
         licence_v1.clear_flag("free_trial_enabled")
         for name in (
-            "LEASE_SIGNING_KEY", "LEASE_SIGNING_KEY_ID", "LEASE_SIGNING_KEY_ID_NEXT",
-            "MACHINE_HASH_KEY",
+            "LEASE_SIGNING_KEY", "LEASE_SIGNING_KID", "LEASE_SIGNING_KID_NEXT",
+            "LEASE_SIGNING_KEY_NEXT", "MACHINE_HASH_KEY", "FREE_TRIAL_ENABLED",
         ):
             os.environ.pop(name, None)
+        app.config["TESTING"] = False
 
     def _send(self, *args, **kwargs):
         self.mail.append(args)
@@ -453,7 +455,7 @@ class TrialTests(unittest.TestCase):
     def test_keygen_next_writes_the_next_variables(self):
         folder = tempfile.mkdtemp(prefix="nc-lease-")
         path = os.path.join(folder, ".env")
-        original = "LEASE_SIGNING_KEY=current-seed\nLEASE_SIGNING_KEY_ID=kcurrent\n"
+        original = "LEASE_SIGNING_KEY=current-seed\nLEASE_SIGNING_KID=kcurrent\n"
         with open(path, "w", encoding="utf-8") as handle:
             handle.write(original)
         code, out, err, logged = self._keygen(path, next_key=True)
@@ -462,10 +464,11 @@ class TrialTests(unittest.TestCase):
         text = Path(path).read_text(encoding="utf-8")
         self.assertTrue(text.startswith(original))
         self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY"), "current-seed")
-        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY_ID"), "kcurrent")
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KID"), "kcurrent")
         seed = base64.b64decode(self._read_env_value(path, "LEASE_SIGNING_KEY_NEXT"))
         self.assertEqual(len(seed), 32)
-        self.assertTrue(self._read_env_value(path, "LEASE_SIGNING_KEY_ID_NEXT").startswith("k"))
+        self.assertTrue(self._read_env_value(path, "LEASE_SIGNING_KID_NEXT").startswith("k"))
+        self.assertIsNone(self._read_env_value(path, "LEASE_SIGNING_KEY_ID_NEXT"))
         self._assert_secret_hidden(out + err + logged, seed)
 
     def test_keygen_seed_signs_a_lease_the_printed_key_verifies(self):
@@ -482,9 +485,9 @@ class TrialTests(unittest.TestCase):
             if "=" in line:
                 name, value = line.split("=", 1)
                 fields[name] = value
-        self.assertEqual(loaded["LEASE_SIGNING_KEY_ID"], fields["key_id"])
+        self.assertEqual(loaded["LEASE_SIGNING_KID"], fields["key_id"])
         os.environ["LEASE_SIGNING_KEY"] = loaded["LEASE_SIGNING_KEY"]
-        os.environ["LEASE_SIGNING_KEY_ID"] = loaded["LEASE_SIGNING_KEY_ID"]
+        os.environ["LEASE_SIGNING_KID"] = loaded["LEASE_SIGNING_KID"]
         lease_format, token = trial._sign({"v": 1, "hello": "lease"})
         self.assertEqual(lease_format, "ed25519-v1")
         body_b64, sig_b64 = token.split(".")
@@ -494,6 +497,263 @@ class TrialTests(unittest.TestCase):
         )
         derived = Ed25519PrivateKey.from_private_bytes(seed).public_key().public_bytes_raw()
         self.assertEqual(base64.urlsafe_b64encode(derived).decode("ascii").rstrip("="), fields["public_key"])
+
+    def _check(self, code, machine):
+        headers = self._headers(code, machine=machine) if machine is not None else self._headers(code)
+        return self.client.post(
+            "/api/v1/app/licence/check",
+            json={"tier": "free", "app_version": "0.9.46", "platform": "mac", "arch": "arm64"},
+            headers=headers,
+        )
+
+    def test_real_machine_rejects_unavailable_and_a_missing_header(self):
+        code = self._insert("NC-MACH-0001", "machine@example.com")
+        started = self._activate(code)
+        self.assertTrue(started.get_json()["licence"]["trial"]["active"])
+        for machine in ("unavailable", None, "not-a-hash"):
+            checked = self._check(code, machine)
+            self.assertEqual(checked.status_code, 200)
+            body = checked.get_json()
+            self.assertEqual(body["trial"]["reason"], "email_used")
+            self.assertFalse(body["trial"]["active"])
+            self.assertNotIn("devices_unlimited", body["entitlements"])
+            self.assertIsNone(body["lease"])
+
+    def test_empty_stored_hash_binds_the_first_real_machine(self):
+        code = self._insert("NC-BIND-0001", "bind@example.com")
+        started = self._activate(code, machine="unavailable")
+        self.assertTrue(started.get_json()["licence"]["trial"]["active"])
+        checked = self._check(code, self.machine)
+        self.assertTrue(checked.get_json()["trial"]["active"])
+        self.assertIsNone(checked.get_json()["trial"]["reason"])
+        self.assertIn("devices_unlimited", checked.get_json()["entitlements"])
+        db = get_db()
+        stored = db.execute("SELECT machine_hash FROM free_trials").fetchone()["machine_hash"]
+        db.close()
+        self.assertEqual(stored, trial.machine_hmac(self.machine))
+        self.assertNotEqual(stored, "")
+
+    def test_insert_clash_returns_409_or_the_same_trial(self):
+        code = self._insert("NC-CLSH-0001", "clash@example.com")
+        self._activate(code)
+        real = trial._state_for
+        calls = {"n": 0}
+
+        def available_once(*args, **kwargs):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return {
+                    "trial_state": "available",
+                    "reason": None,
+                    "row": None,
+                    "active": False,
+                    "eligible": True,
+                }
+            return real(*args, **kwargs)
+
+        with patch.object(trial, "_state_for", side_effect=available_once):
+            same = self.client.post(
+                "/api/v1/app/trial/start",
+                json={"tier": "free", "app_version": "0.9.46", "platform": "mac", "arch": "arm64"},
+                headers=self._headers(code, machine=self.machine),
+            )
+        self.assertEqual(same.status_code, 200)
+        self.assertTrue(same.get_json()["licence"]["trial"]["active"])
+        other = self._insert("NC-CLSH-0002", "clash@example.com")
+        install = str(uuid.uuid4())
+        self._activate(other, machine="cd" * 32, install=install)
+        calls["n"] = 0
+        with patch.object(trial, "_state_for", side_effect=available_once):
+            clash = self.client.post(
+                "/api/v1/app/trial/start",
+                json={"tier": "free", "app_version": "0.9.46", "platform": "mac", "arch": "arm64"},
+                headers=self._headers(other, install=install, machine="cd" * 32),
+            )
+        self.assertEqual(clash.status_code, 409)
+        self.assertEqual(clash.get_json()["error"]["code"], "trial_used")
+        self.assertEqual(clash.get_json()["error"]["details"]["reason"], "email_used")
+
+    def test_missing_machine_hash_key_disables_the_trial_and_the_ref(self):
+        os.environ.pop("MACHINE_HASH_KEY", None)
+        self.assertIsNone(trial.licence_ref("free", 1))
+        code = self._insert("NC-NOKY-0001", "nokey@example.com")
+        res = self._activate(code)
+        self.assertEqual(res.get_json()["licence"]["trial"]["reason"], "disabled")
+        self.assertIsNone(res.get_json()["licence"]["lease"])
+        started = self.client.post(
+            "/api/v1/app/trial/start",
+            json={"tier": "free", "app_version": "0.9.46", "platform": "mac", "arch": "arm64"},
+            headers=self._headers(code, machine=self.machine),
+        )
+        self.assertEqual(started.status_code, 409)
+        self.assertEqual(started.get_json()["error"]["details"]["reason"], "disabled")
+
+    def test_test_only_kid_is_refused_unless_testing_and_next_key_verifies(self):
+        app.config["TESTING"] = False
+        self.assertIsNone(trial._load_signing_key("LEASE_SIGNING_KEY", "LEASE_SIGNING_KID"))
+        self.assertNotIn("test-only-k1", trial.current_and_next_kids())
+        self.assertIsNone(trial._sign({"v": 1})[1])
+        os.environ["LEASE_SIGNING_KID"] = "klive"
+        signed_format, token = trial._sign({"v": 1, "live": True})
+        self.assertEqual(signed_format, "ed25519-v1")
+        self.assertTrue(trial.verify_lease(token))
+        nxt = Ed25519PrivateKey.generate()
+        seed = nxt.private_bytes(
+            trial.serialization.Encoding.Raw,
+            trial.serialization.PrivateFormat.Raw,
+            trial.serialization.NoEncryption(),
+        )
+        os.environ["LEASE_SIGNING_KEY_NEXT"] = base64.b64encode(seed).decode("ascii")
+        os.environ["LEASE_SIGNING_KID_NEXT"] = "knext"
+        body = json.dumps({"v": 1, "next": True}, sort_keys=True, separators=(",", ":")).encode()
+        sig = nxt.sign(body)
+
+        def pack(raw):
+            return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+        self.assertTrue(trial.verify_lease(pack(body) + "." + pack(sig)))
+        self.assertIn("knext", trial.current_and_next_kids())
+        self.assertNotIn("test-only", "".join(trial.current_and_next_kids()))
+
+    def test_reminders_cover_the_window_and_skip_revoked_or_pro(self):
+        code = self._insert("NC-REM1-0001", "remind@example.com")
+        self._activate(code)
+        db = get_db()
+        trial_id = db.execute("SELECT id FROM free_trials").fetchone()["id"]
+        ref = db.execute("SELECT licence_ref FROM free_trials").fetchone()["licence_ref"]
+
+        def shift(days_ago):
+            started = licence_v1.utcnow() - timedelta(days=days_ago)
+            expires = started + timedelta(days=14)
+            db.execute(
+                "UPDATE free_trials SET started_at = ?, expires_at = ? WHERE id = ?",
+                (licence_v1.iso(started), licence_v1.iso(expires), trial_id),
+            )
+            db.execute("DELETE FROM notices_sent")
+            db.commit()
+
+        shift(11)
+        with patch("sys.stdout", StringIO()):
+            trial.run_reminders(True)
+        self.assertEqual(self.mail[-1][1], "Your Node Control Pro trial ends in a few days")
+        shift(14)
+        with patch("sys.stdout", StringIO()):
+            trial.run_reminders(True)
+        self.assertEqual(self.mail[-1][1], "Your Node Control Pro trial ends today")
+        shift(40)
+        before = len(self.mail)
+        out = StringIO()
+        with patch("sys.stdout", out):
+            trial.run_reminders(False)
+        self.assertIn("matched 0", out.getvalue())
+        self.assertEqual(len(self.mail), before)
+        shift(10)
+        db.execute("UPDATE licenses SET status = 'revoked' WHERE id = ?", (ref,))
+        db.commit()
+        out = StringIO()
+        with patch("sys.stdout", out):
+            trial.run_reminders(False)
+        self.assertIn("matched 0", out.getvalue())
+        db.execute("UPDATE licenses SET status = 'active' WHERE id = ?", (ref,))
+        now = licence_v1.iso(licence_v1.utcnow())
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, email, source, status, plan, created_at, is_test, free_license_id
+            ) VALUES ('hash', 'HASH', 'remind@example.com', 'manual', 'active', 'monthly', ?, 0, ?)
+            """,
+            (now, ref),
+        )
+        db.commit()
+        db.close()
+        out = StringIO()
+        with patch("sys.stdout", out):
+            trial.run_reminders(False)
+        self.assertIn("matched 0", out.getvalue())
+        self.assertNotIn("remind@example.com", out.getvalue())
+
+    def test_trial_flag_is_the_database_switch_and_parses_on_off(self):
+        os.environ["FREE_TRIAL_ENABLED"] = "true"
+        licence_v1.clear_flag("free_trial_enabled")
+        licence_v1.clear_flag_cache()
+        self.assertFalse(licence_v1.get_flags()["free_trial_enabled"])
+        example = (Path(__file__).resolve().parent / ".env.example").read_text(encoding="utf-8")
+        self.assertNotIn("FREE_TRIAL_ENABLED", example)
+        self.assertNotIn("LEASE_SIGNING_KEY_ID", example)
+        self.assertIn("LEASE_SIGNING_KID=", example)
+        previous = app.config.get("ADMIN_TOKEN")
+        app.config["ADMIN_TOKEN"] = "test-admin-token"
+        headers = {"Authorization": "Bearer test-admin-token"}
+        try:
+            listed = self.client.get("/api/admin/flags", headers=headers)
+            self.assertFalse(listed.get_json()["free_trial_enabled"])
+            for value, expected in (("on", True), ("off", False), (0, False), ("1", True), ("false", False)):
+                updated = self.client.put(
+                    "/api/admin/flags",
+                    json={"free_trial_enabled": value},
+                    headers=headers,
+                )
+                self.assertEqual(updated.status_code, 200)
+                self.assertEqual(updated.get_json()["free_trial_enabled"], expected)
+            bad = self.client.put(
+                "/api/admin/flags",
+                json={"free_trial_enabled": "maybe"},
+                headers=headers,
+            )
+            self.assertEqual(bad.status_code, 400)
+        finally:
+            app.config["ADMIN_TOKEN"] = previous
+            licence_v1.clear_flag("free_trial_enabled")
+
+    def test_funnel_trial_counts_and_reset_by_email_hide_the_address(self):
+        import admin_cli
+        import argparse
+        from zoneinfo import ZoneInfo
+        email = "reset@example.com"
+        code = self._insert("NC-RSET-0001", email)
+        self._activate(code)
+        db = get_db()
+        trial_id = db.execute("SELECT id FROM free_trials").fetchone()["id"]
+        uk = datetime.now(ZoneInfo("Europe/London")).date().isoformat()
+        db.execute(
+            """
+            INSERT INTO funnel_daily (day, event, count) VALUES (?, 'trial_ended', 3)
+            ON CONFLICT(day, event) DO UPDATE SET count = 3
+            """,
+            (uk,),
+        )
+        db.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES (?, 'free_section_view', 9)",
+            (uk,),
+        )
+        db.commit()
+        db.close()
+        previous = os.environ.get("DB_PATH")
+        os.environ["DB_PATH"] = app.config["DB_PATH"]
+        try:
+            with patch("sys.stdout", new_callable=StringIO) as out:
+                admin_cli.cmd_funnel(argparse.Namespace(days=1, trial=True))
+        finally:
+            if previous is None:
+                os.environ.pop("DB_PATH", None)
+            else:
+                os.environ["DB_PATH"] = previous
+        lines = out.getvalue().strip().splitlines()
+        self.assertEqual(lines[0], "day\tevent\tcount")
+        self.assertIn(f"{uk}\ttrial_ended\t3", lines)
+        self.assertNotIn("free_section_view", out.getvalue())
+        stdout, stderr = StringIO(), StringIO()
+        with patch("sys.stdout", stdout), patch("sys.stderr", stderr):
+            self.assertEqual(trial.reset_by_email(email, False), 0)
+        self.assertIn(f"would delete trial {trial_id}", stdout.getvalue())
+        self.assertNotIn(email, stdout.getvalue() + stderr.getvalue())
+        self.assertIsNotNone(get_db().execute("SELECT id FROM free_trials").fetchone())
+        stdout, stderr = StringIO(), StringIO()
+        with patch("sys.stdout", stdout), patch("sys.stderr", stderr):
+            admin_cli.main(["trial-reset", "--email", email, "--confirm"])
+        self.assertIn(f"deleted trial {trial_id}", stdout.getvalue())
+        self.assertNotIn(email, stdout.getvalue() + stderr.getvalue())
+        self.assertIsNone(get_db().execute("SELECT id FROM free_trials").fetchone())
 
 
 if __name__ == "__main__":

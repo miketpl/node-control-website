@@ -399,7 +399,7 @@ def _flag_defaults():
         "min_supported_version_pro": (
             api.app.config.get("MIN_SUPPORTED_VERSION_PRO") or ""
         ).strip(),
-        "free_trial_enabled": "true" if _config_bool("FREE_TRIAL_ENABLED", False) else "false",
+        "free_trial_enabled": "false",
     }
 
 
@@ -2703,12 +2703,30 @@ def run_maintenance():
     return {"telemetry_rolled": len(rows), "telemetry_deleted": deleted}
 
 
+_BOOL_FLAGS = ("free_downloads_paused", "maintenance", "free_trial_enabled")
+
+
+def _parse_admin_bool(value):
+    """True for true/1/on, false for false/0/off. Anything else is rejected."""
+    if isinstance(value, bool):
+        return value
+    if value in (0, 1):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in ("1", "true", "on"):
+        return True
+    if text in ("0", "false", "off"):
+        return False
+    return None
+
+
 def _admin_flags_get():
     flags = get_flags()
     return jsonify({
         "free_downloads_paused": flags["free_downloads_paused"],
         "free_paused_message": flags["message"],
         "maintenance": flags["maintenance"],
+        "free_trial_enabled": flags["free_trial_enabled"],
         "min_supported_version_free": flags["min_supported_version"]["free"],
         "min_supported_version_pro": flags["min_supported_version"]["pro"],
     })
@@ -2721,8 +2739,11 @@ def _admin_flags_put():
     for key, value in data.items():
         if key not in FLAG_KEYS:
             return jsonify({"error": "Unknown flag"}), 400
-        if key in ("free_downloads_paused", "maintenance"):
-            set_flag(key, "true" if value in (True, "true", "1", 1) else "false")
+        if key in _BOOL_FLAGS:
+            parsed = _parse_admin_bool(value)
+            if parsed is None:
+                return jsonify({"error": "Flag must be true or false"}), 400
+            set_flag(key, "true" if parsed else "false")
         else:
             set_flag(key, str(value).strip())
     return _admin_flags_get()

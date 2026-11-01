@@ -12,6 +12,7 @@ import json
 import os
 import re
 import secrets
+import sqlite3
 import sys
 import tempfile
 from datetime import timedelta
@@ -77,7 +78,10 @@ def machine_hmac(presented):
 
 
 def licence_ref(kind, ref):
-    key = _secret() or b"unset"
+    """Opaque 16-hex ref. No machine-hash key means no ref, not a stand-in."""
+    key = _secret()
+    if not key:
+        return None
     digest = hmac.new(key, f"ref:{kind}:{int(ref)}".encode(), hashlib.sha256).hexdigest()
     return digest[:16]
 
@@ -153,7 +157,7 @@ def _state_for(record, presented, version, now):
             "active": False,
             "eligible": False,
         }
-    if not trial_enabled():
+    if not trial_enabled() or not _secret():
         return {
             "trial_state": "ineligible",
             "reason": "disabled",
@@ -162,26 +166,42 @@ def _state_for(record, presented, version, now):
             "eligible": False,
         }
     digest = email_hash(record.get("email") or "")
-    machine = "" if presented in (None, "unavailable") else machine_hmac(presented)
+    presented_hmac = machine_hmac(presented) if presented and HASH_RE.match(presented) else ""
     db = _db()
     try:
         by_email = _row_for_email(db, digest)
-        by_machine = _row_for_machine(db, machine) if machine else None
+        by_machine = _row_for_machine(db, presented_hmac) if presented_hmac else None
     finally:
         db.close()
     if by_email:
         expires = v1.parse_iso(by_email["expires_at"])
-        active = bool(expires and expires > now)
-        same_machine = (not machine) or by_email["machine_hash"] == machine
-        if not same_machine:
+        still = bool(expires and expires > now)
+        stored = by_email["machine_hash"] or ""
+        if not stored and presented_hmac:
+            bound = _bind_empty_machine(by_email["id"], presented_hmac)
+            if bound == "bound":
+                stored = presented_hmac
+            else:
+                return {
+                    "trial_state": "ineligible",
+                    "reason": "machine_used",
+                    "row": by_email,
+                    "active": False,
+                    "eligible": False,
+                }
+        matched = bool(stored) and stored == presented_hmac
+        if not stored and presented in (None, "unavailable"):
+            matched = True
+        if not matched:
             return {
                 "trial_state": "ineligible",
                 "reason": "email_used",
                 "row": by_email,
                 "active": False,
                 "eligible": False,
+                "no_trial_lease": True,
             }
-        if active:
+        if still:
             return {
                 "trial_state": "active",
                 "reason": None,
@@ -213,7 +233,36 @@ def _state_for(record, presented, version, now):
     }
 
 
+def _bind_empty_machine(trial_id, presented_hmac):
+    """Attach the first real computer to an email-only trial. 'clash' if that computer is taken."""
+    db = _db()
+    try:
+        try:
+            cursor = db.execute(
+                """
+                UPDATE free_trials SET machine_hash = ?
+                WHERE id = ? AND machine_hash = ''
+                """,
+                (presented_hmac, int(trial_id)),
+            )
+            db.commit()
+        except sqlite3.IntegrityError:
+            db.rollback()
+            return "clash"
+        fresh = db.execute(
+            "SELECT machine_hash FROM free_trials WHERE id = ?", (int(trial_id),)
+        ).fetchone()
+    finally:
+        db.close()
+    if fresh and (fresh["machine_hash"] or "") == presented_hmac and cursor.rowcount:
+        return "bound"
+    if fresh and (fresh["machine_hash"] or "") == presented_hmac:
+        return "bound"
+    return "clash"
+
+
 def _insert_trial(record, install_id, presented, how):
+    """Insert one trial. A unique-index clash returns None and does not count a start."""
     v1 = _v1()
     now = v1.utcnow()
     started = v1.iso(now)
@@ -221,26 +270,30 @@ def _insert_trial(record, install_id, presented, how):
     machine = "" if presented == "unavailable" else machine_hmac(presented)
     db = _db()
     try:
-        db.execute(
-            """
-            INSERT INTO free_trials (
-                email_hash, machine_hash, licence_kind, licence_ref, install_id,
-                started_at, expires_at, started_how, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                email_hash(record.get("email") or ""),
-                machine,
-                record["kind"],
-                int(record["id"]),
-                install_id,
-                started,
-                expires,
-                how,
-                started,
-            ),
-        )
-        db.commit()
+        try:
+            db.execute(
+                """
+                INSERT INTO free_trials (
+                    email_hash, machine_hash, licence_kind, licence_ref, install_id,
+                    started_at, expires_at, started_how, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    email_hash(record.get("email") or ""),
+                    machine,
+                    record["kind"],
+                    int(record["id"]),
+                    install_id,
+                    started,
+                    expires,
+                    how,
+                    started,
+                ),
+            )
+            db.commit()
+        except sqlite3.IntegrityError:
+            db.rollback()
+            return None
     finally:
         db.close()
     _count("trial_started_auto" if how == "auto" else "trial_started_button")
@@ -286,16 +339,55 @@ def _plain_trial(view, now):
     }
 
 
-def _sign(payload):
-    seed_b64 = (os.environ.get("LEASE_SIGNING_KEY") or "").strip()
-    kid = (os.environ.get("LEASE_SIGNING_KEY_ID") or "").strip()
-    if not seed_b64 or not kid:
-        return None, None
+def _testing():
+    try:
+        return bool(_v1()._api().app.config.get("TESTING"))
+    except Exception:
+        return False
+
+
+def _kid_ok(kid):
+    """A test-only kid is loaded only while the process is under test."""
+    if not kid:
+        return False
+    if kid.startswith("test-only") and not _testing():
+        return False
+    return True
+
+
+def _load_signing_key(seed_name, kid_name):
+    """Return (kid, private key) or None. Does not log the seed."""
+    seed_b64 = (os.environ.get(seed_name) or "").strip()
+    kid = (os.environ.get(kid_name) or "").strip()
+    if not seed_b64 or not _kid_ok(kid):
+        return None
     try:
         seed = base64.b64decode(seed_b64)
         key = Ed25519PrivateKey.from_private_bytes(seed)
     except Exception:
+        return None
+    return kid, key
+
+
+def signing_keys():
+    """Current key first, then the next key, for rotation and verification."""
+    loaded = []
+    for seed_name, kid_name in (
+        ("LEASE_SIGNING_KEY", "LEASE_SIGNING_KID"),
+        ("LEASE_SIGNING_KEY_NEXT", "LEASE_SIGNING_KID_NEXT"),
+    ):
+        item = _load_signing_key(seed_name, kid_name)
+        if item:
+            loaded.append(item)
+    return loaded
+
+
+def _sign(payload):
+    """Sign with the current key only. A refused kid leaves the lease unsigned."""
+    current = _load_signing_key("LEASE_SIGNING_KEY", "LEASE_SIGNING_KID")
+    if not current:
         return None, None
+    _kid, key = current
     body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     sig = key.sign(body)
 
@@ -305,13 +397,36 @@ def _sign(payload):
     return LEASE_FORMAT, pack(body) + "." + pack(sig)
 
 
+def verify_lease(token):
+    """True when the current or next key verifies the lease bytes."""
+    if not token or token.count(".") != 1:
+        return False
+    body_b64, sig_b64 = token.split(".", 1)
+
+    def unpack(segment):
+        return base64.urlsafe_b64decode(segment + "=" * (-len(segment) % 4))
+
+    try:
+        body = unpack(body_b64)
+        sig = unpack(sig_b64)
+    except Exception:
+        return False
+    for _kid, key in signing_keys():
+        try:
+            key.public_key().verify(sig, body)
+            return True
+        except Exception:
+            continue
+    return False
+
+
 def current_and_next_kids():
+    """Kids the app should accept. A test-only kid is omitted outside tests."""
     kids = []
-    if (os.environ.get("LEASE_SIGNING_KEY_ID") or "").strip():
-        kids.append(os.environ["LEASE_SIGNING_KEY_ID"].strip())
-    nxt = (os.environ.get("LEASE_SIGNING_KEY_ID_NEXT") or "").strip()
-    if nxt:
-        kids.append(nxt)
+    for name in ("LEASE_SIGNING_KID", "LEASE_SIGNING_KID_NEXT"):
+        kid = (os.environ.get(name) or "").strip()
+        if _kid_ok(kid):
+            kids.append(kid)
     return kids
 
 
@@ -353,7 +468,12 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
     else:
         payload["entitlements"] = []
         payload["preview_only"] = list(PREVIEW_ONLY)
-    if view.get("no_lease"):
+    if view.get("no_lease") or view.get("no_trial_lease"):
+        payload["lease"] = None
+        payload["lease_format"] = None
+        return payload
+    ref = licence_ref(record["kind"], record["id"])
+    if ref is None:
         payload["lease"] = None
         payload["lease_format"] = None
         return payload
@@ -369,10 +489,11 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
     minimum = payload.get("update", {}).get("min_supported_version") or ""
     signed = {
         "v": 1,
-        "kid": (os.environ.get("LEASE_SIGNING_KEY_ID") or "").strip(),
+        "kid": (os.environ.get("LEASE_SIGNING_KID") or "").strip(),
+        "kids": current_and_next_kids(),
         "install_id": install_id,
         "machine_hash_echo": presented or "",
-        "licence_ref": licence_ref(record["kind"], record["id"]),
+        "licence_ref": ref,
         "edition": payload["edition"],
         "server_time": payload["server_time"],
         "trial": payload["trial"],
@@ -444,13 +565,47 @@ def start_request():
             409, "trial_used", "This trial has already been used.",
             details={"reason": "email_used"},
         )
-    _insert_trial(record, ctx["install_id"], presented, "button")
+    inserted = _insert_trial(record, ctx["install_id"], presented, "button")
+    if inserted is None:
+        view = _state_for(record, presented, ctx["version"], now)
+        if view["trial_state"] == "active":
+            body = v1.licence_payload(record, ctx["install_id"], ctx["version"])
+            return __import__("flask").jsonify({
+                "active": True,
+                "tier": record["tier"],
+                "licence": body,
+            })
+        reason = view["reason"] if view["reason"] in ("email_used", "machine_used") else "email_used"
+        _count("trial_refused_" + reason)
+        return v1.error(
+            409, "trial_used", "This trial has already been used.",
+            details={"reason": reason},
+        )
     body = v1.licence_payload(record, ctx["install_id"], ctx["version"])
     return __import__("flask").jsonify({
         "active": True,
         "tier": record["tier"],
         "licence": body,
     })
+
+
+def reset_by_email(email, confirm):
+    """Find a trial by the keyed email hash. Prints the id only, never the address."""
+    digest = email_hash(email or "")
+    if not digest:
+        print("MACHINE_HASH_KEY is not set", file=sys.stderr)
+        return 1
+    db = _db()
+    try:
+        row = db.execute(
+            "SELECT id FROM free_trials WHERE email_hash = ?", (digest,)
+        ).fetchone()
+    finally:
+        db.close()
+    if not row:
+        print("no matching trial")
+        return 1
+    return reset_trial(row["id"], confirm)
 
 
 def reset_trial(trial_id, confirm):
@@ -496,22 +651,44 @@ def run_reminders(confirm):
     try:
         rows = db.execute(
             """
-            SELECT t.*, l.email FROM free_trials t
+            SELECT t.*, l.email, l.status AS licence_status, l.tier AS licence_tier
+            FROM free_trials t
             JOIN licenses l ON l.id = t.licence_ref
             WHERE t.licence_kind = 'free'
             """
         ).fetchall()
+        upgraded = {
+            int(item["free_license_id"])
+            for item in db.execute(
+                """
+                SELECT free_license_id FROM pro_keys
+                WHERE status = 'active' AND free_license_id IS NOT NULL
+                """
+            ).fetchall()
+            if item["free_license_id"]
+        }
     finally:
         db.close()
     due = []
+    now = v1.utcnow()
     for row in rows:
+        if (row["licence_status"] or "") == "revoked":
+            continue
+        if (row["licence_tier"] or "") == "pro":
+            continue
+        if int(row["licence_ref"]) in upgraded:
+            continue
         started = v1.parse_iso(row["started_at"])
-        if not started:
+        expires = v1.parse_iso(row["expires_at"])
+        if not started or not expires:
+            continue
+        grace_end = expires + timedelta(days=v1.GRACE_DAYS)
+        if now > grace_end:
             continue
         day = (today - started.date()).days + 1
-        if day == 11:
+        if 11 <= day <= 13:
             due.append((row, "trial-day11"))
-        elif day == 14:
+        elif day >= 14:
             due.append((row, "trial-day14"))
     matched = len(due)
     already = opted = sent = failed = 0
@@ -625,7 +802,7 @@ def keygen(env_file=None, next_key=False, overwrite=False):
     """
     path = os.path.abspath(env_file or default_env_file())
     key_name = "LEASE_SIGNING_KEY_NEXT" if next_key else "LEASE_SIGNING_KEY"
-    id_name = "LEASE_SIGNING_KEY_ID_NEXT" if next_key else "LEASE_SIGNING_KEY_ID"
+    id_name = "LEASE_SIGNING_KID_NEXT" if next_key else "LEASE_SIGNING_KID"
     if os.path.exists(path):
         try:
             with open(path, "rb") as handle:

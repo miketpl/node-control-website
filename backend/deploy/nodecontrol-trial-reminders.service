@@ -1,6 +1,9 @@
 # Daily trial reminder mail. Not installed by this repo.
-# Replace REPLACE_WITH_SPARK_ACCOUNT before enabling. This unit does not
-# issue keys and does not start a trial.
+# Edit the User and the three absolute paths below before enabling.
+# Replace REPLACE_WITH_SPARK_ACCOUNT with the account that runs the API.
+# Replace /REPLACE_WITH_REPO with the checkout on the Spark, for example
+# /home/REPLACE_WITH_SPARK_ACCOUNT/node-control-website.
+# This unit does not issue keys and does not start a trial.
 [Unit]
 Description=Node Control trial reminder emails
 After=network.target
@@ -8,6 +11,6 @@ After=network.target
 [Service]
 Type=oneshot
 User=REPLACE_WITH_SPARK_ACCOUNT
-WorkingDirectory=%h/node-control-website/backend
-EnvironmentFile=%h/node-control-website/.env
-ExecStart=%h/node-control-website/backend/venv/bin/python admin_cli.py trial-reminders --confirm
+WorkingDirectory=/REPLACE_WITH_REPO/backend
+EnvironmentFile=/REPLACE_WITH_REPO/.env
+ExecStart=/REPLACE_WITH_REPO/backend/venv/bin/python admin_cli.py trial-reminders --confirm

@@ -161,8 +161,8 @@ def cmd_flags_get(_args):
 
 
 def cmd_flags_set(args):
-    if args.key in ("free_downloads_paused", "maintenance"):
-        value = args.value.strip().lower() in ("1", "true", "yes", "on")
+    if args.key in ("free_downloads_paused", "maintenance", "free_trial_enabled"):
+        value = args.value.strip().lower() in ("1", "true", "on")
     else:
         value = args.value
     _print_json(*api("PUT", "/api/admin/flags", {args.key: value}))
@@ -368,12 +368,27 @@ def cmd_funnel(args):
         if not present:
             print("funnel_daily is not in this database.", file=sys.stderr)
             sys.exit(1)
-        rows = db.execute(
-            "SELECT day, event, count FROM funnel_daily WHERE day >= ? AND day <= ?",
-            (window[0], window[-1]),
-        ).fetchall()
+        if getattr(args, "trial", False):
+            rows = db.execute(
+                """
+                SELECT day, event, count FROM funnel_daily
+                WHERE day >= ? AND day <= ? AND event LIKE 'trial_%'
+                ORDER BY day, event
+                """,
+                (window[0], window[-1]),
+            ).fetchall()
+        else:
+            rows = db.execute(
+                "SELECT day, event, count FROM funnel_daily WHERE day >= ? AND day <= ?",
+                (window[0], window[-1]),
+            ).fetchall()
     finally:
         db.close()
+    if getattr(args, "trial", False):
+        print("day\tevent\tcount")
+        for row in rows:
+            print(f"{row['day']}\t{row['event']}\t{int(row['count'])}")
+        return
     counts = {(row["day"], row["event"]): int(row["count"]) for row in rows}
     print(
         "day\tfree_section_view\tfree_form_start\tfree_form_submit\t"
@@ -405,7 +420,15 @@ def cmd_trial_reset(args):
     if here not in sys.path:
         sys.path.insert(0, here)
     import trial
-    code = trial.reset_trial(args.id, bool(args.confirm))
+    has_id = args.id is not None
+    has_email = bool(args.email)
+    if has_id == has_email:
+        print("Pass --id or --email, not both.", file=sys.stderr)
+        sys.exit(2)
+    if has_email:
+        code = trial.reset_by_email(args.email, bool(args.confirm))
+    else:
+        code = trial.reset_trial(args.id, bool(args.confirm))
     if code:
         sys.exit(code)
 
@@ -475,7 +498,7 @@ def main(argv=None):
     lease_keygen.add_argument(
         "--next",
         action="store_true",
-        help="Write LEASE_SIGNING_KEY_NEXT and LEASE_SIGNING_KEY_ID_NEXT",
+        help="Write LEASE_SIGNING_KEY_NEXT and LEASE_SIGNING_KID_NEXT",
     )
     lease_keygen.add_argument(
         "--overwrite",
@@ -485,7 +508,8 @@ def main(argv=None):
     lease_keygen.set_defaults(func=cmd_lease_keygen)
 
     trial_reset = sub.add_parser("trial-reset", help="Delete one trial row. Dry run unless --confirm")
-    trial_reset.add_argument("--id", required=True, type=int)
+    trial_reset.add_argument("--id", type=int)
+    trial_reset.add_argument("--email", help="Find the trial by email. The address is not printed")
     trial_reset.add_argument("--confirm", action="store_true")
     trial_reset.set_defaults(func=cmd_trial_reset)
 
@@ -499,6 +523,11 @@ def main(argv=None):
 
     funnel_cmd = sub.add_parser("funnel", help="Free-section daily counts. Read-only")
     funnel_cmd.add_argument("--days", type=int, required=True, help="UK days to print, including today")
+    funnel_cmd.add_argument(
+        "--trial",
+        action="store_true",
+        help="Trial events only, one count per UK day",
+    )
     funnel_cmd.set_defaults(func=cmd_funnel)
 
     stats_cmd = sub.add_parser("stats", help="Registrations by source, and download events")
