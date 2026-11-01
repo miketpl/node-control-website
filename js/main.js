@@ -274,10 +274,31 @@
     // Anonymous Free-section counts. sendBeacon with text/plain, same as a
     // download event. Failure is silent. View and form start fire once per
     // page load. Submit fires on each submit.
+    function funnelCampaign() {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var source = params.get('utm_source') || '';
+            var campaign = params.get('utm_campaign') || '';
+            if (!source && !campaign) {
+                var stored = storedAttribution();
+                source = stored ? (stored.utm_source || '') : '';
+                campaign = stored ? (stored.utm_campaign || '') : '';
+            }
+            return { utm_source: source, utm_campaign: campaign };
+        } catch (err) {
+            return { utm_source: '', utm_campaign: '' };
+        }
+    }
+
     function trackFunnel(event) {
         try {
             if (!navigator.sendBeacon) return;
-            var body = JSON.stringify({ event: event });
+            var tags = funnelCampaign();
+            var body = JSON.stringify({
+                event: event,
+                utm_source: tags.utm_source,
+                utm_campaign: tags.utm_campaign,
+            });
             navigator.sendBeacon(API_BASE + '/api/funnel-event',
                 new Blob([body], { type: 'text/plain' }));
         } catch (err) { /* never block the page */ }
