@@ -389,6 +389,36 @@ def cmd_funnel(args):
         )
 
 
+def cmd_lease_keygen(_args):
+    """Print a public key and key id. Does not write a file."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    trial.keygen()
+
+
+def cmd_trial_reset(args):
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    code = trial.reset_trial(args.id, bool(args.confirm))
+    if code:
+        sys.exit(code)
+
+
+def cmd_trial_reminders(args):
+    if args.dry_run and args.confirm:
+        print("Pass either --dry-run or --confirm.", file=sys.stderr)
+        sys.exit(2)
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    trial.run_reminders(bool(args.confirm) and not args.dry_run)
+
+
 def cmd_stats(args):
     query = []
     if args.since:
@@ -430,6 +460,25 @@ def main(argv=None):
     revoke_cmd.add_argument("--code", help="NC-XXXX-XXXX")
     revoke_cmd.add_argument("--email", help="exact email address")
     revoke_cmd.set_defaults(func=cmd_revoke)
+
+    lease_keygen = sub.add_parser(
+        "lease-keygen",
+        help="Print a new lease public key and key id. Writes nothing",
+    )
+    lease_keygen.set_defaults(func=cmd_lease_keygen)
+
+    trial_reset = sub.add_parser("trial-reset", help="Delete one trial row. Dry run unless --confirm")
+    trial_reset.add_argument("--id", required=True, type=int)
+    trial_reset.add_argument("--confirm", action="store_true")
+    trial_reset.set_defaults(func=cmd_trial_reset)
+
+    trial_reminders = sub.add_parser(
+        "trial-reminders",
+        help="Send day-11 and day-14 trial reminders. Dry run unless --confirm",
+    )
+    trial_reminders.add_argument("--dry-run", action="store_true")
+    trial_reminders.add_argument("--confirm", action="store_true")
+    trial_reminders.set_defaults(func=cmd_trial_reminders)
 
     funnel_cmd = sub.add_parser("funnel", help="Free-section daily counts. Read-only")
     funnel_cmd.add_argument("--days", type=int, required=True, help="UK days to print, including today")

@@ -87,6 +87,7 @@ FLAG_KEYS = (
     "maintenance",
     "min_supported_version_free",
     "min_supported_version_pro",
+    "free_trial_enabled",
 )
 PAUSED_MESSAGE = (
     "Node Control Free downloads are temporarily paused while we ship an update "
@@ -117,6 +118,7 @@ LIMITS = {
     "app-checkout": (("install", 10, 3600), ("ip", 20, 3600)),
     # The app polls about every 5 seconds for up to 30 minutes (about 360 calls).
     "purchase-status": (("install", 600, 3600), ("ip", 1200, 3600)),
+    "trial-start": (("key", 10, 3600), ("ip", 30, 3600)),
 }
 
 V1_SCHEMA = (
@@ -294,6 +296,26 @@ V1_SCHEMA = (
         UNIQUE(day, tier, platform, app_version)
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS free_trials (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email_hash TEXT NOT NULL,
+        machine_hash TEXT NOT NULL DEFAULT '',
+        licence_kind TEXT NOT NULL,
+        licence_ref INTEGER NOT NULL,
+        install_id TEXT NOT NULL,
+        started_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        started_how TEXT NOT NULL DEFAULT '',
+        ended_reported INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_free_trials_email ON free_trials(email_hash)",
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_free_trials_machine
+    ON free_trials(machine_hash) WHERE machine_hash != ''
+    """,
 )
 
 _flag_cache = {"at": 0.0, "values": None}
@@ -377,6 +399,7 @@ def _flag_defaults():
         "min_supported_version_pro": (
             api.app.config.get("MIN_SUPPORTED_VERSION_PRO") or ""
         ).strip(),
+        "free_trial_enabled": "true" if _config_bool("FREE_TRIAL_ENABLED", False) else "false",
     }
 
 
@@ -406,6 +429,7 @@ def get_flags():
             "free": merged["min_supported_version_free"],
             "pro": merged["min_supported_version_pro"],
         },
+        "free_trial_enabled": merged.get("free_trial_enabled", "false").lower() == "true",
     }
     _flag_cache["at"] = now
     _flag_cache["values"] = values
@@ -1002,6 +1026,7 @@ def _lookup_key(raw_key):
                 "cancel_at_period_end": cancel,
                 "subscription_status": sub_status,
                 "source": row["source"],
+                "is_test": _row_is_test(row),
             }, ""
         return None, "invalid"
     finally:
@@ -1091,7 +1116,7 @@ def _previous_install(kind, ref):
     return device["install_id"] if device else ""
 
 
-def licence_payload(record, install_id, app_version):
+def licence_payload(record, install_id, app_version, auto_start=False):
     now = utcnow()
     minimum = effective_minimum(record["tier"])
     current = parse_version(app_version or "")
@@ -1100,7 +1125,7 @@ def licence_payload(record, install_id, app_version):
     if device is None:
         device = _latest_device(record["kind"], record["id"])
     remaining, _next = _moves(record["kind"], record["id"])
-    return {
+    payload = {
         "status": "active",
         "tier": record["tier"],
         "plan": record["plan"] if record["tier"] == "pro" else None,
@@ -1123,6 +1148,8 @@ def licence_payload(record, install_id, app_version):
         "lease": None,
         "lease_format": None,
     }
+    import trial
+    return trial.apply_to_payload(payload, record, install_id, app_version, auto_start)
 
 
 def _bind_device(record, install_id, platform, arch, count_move, previous_install):
@@ -1450,6 +1477,7 @@ def activate():
             },
         )
     previous_install = _previous_install(record["kind"], record["id"])
+    first_activation = not previous_install
     count_move = bool(previous_install and previous_install != ctx["install_id"])
     if count_move:
         remaining, next_at = _moves(record["kind"], record["id"])
@@ -1471,8 +1499,15 @@ def activate():
     return jsonify({
         "active": True,
         "tier": record["tier"],
-        "licence": licence_payload(record, ctx["install_id"], ctx["version"]),
+        "licence": licence_payload(
+            record, ctx["install_id"], ctx["version"], auto_start=first_activation
+        ),
     })
+
+
+def trial_start():
+    import trial
+    return trial.start_request()
 
 
 def licence_check():
@@ -3482,6 +3517,9 @@ def register(flask_app):
     flask_app.add_url_rule(API_PREFIX + "/app/update-check", "v1_update_check", update_check, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/download", "v1_download", app_download, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/checkout", "v1_app_checkout", app_checkout, methods=["POST"])
+    flask_app.add_url_rule(
+        API_PREFIX + "/app/trial/start", "v1_trial_start", trial_start, methods=["POST"]
+    )
     flask_app.add_url_rule(
         API_PREFIX + "/app/purchase/status", "v1_purchase_status", purchase_status, methods=["POST"]
     )
