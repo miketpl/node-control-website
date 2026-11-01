@@ -59,7 +59,7 @@ When you manually set a device type, the **Device type locked** flag is set in t
 |---|---|
 | Cisco IOS / IOS-XE | `cisco_ios` |
 | Cisco NX-OS | `cisco_nxos` |
-| Cisco ASA | `cisco_asa` |
+| Cisco ASA | `cisco_xe` (there is no separate ASA driver; Node Control recognises the ASA from `show version`) |
 | HP ProCurve | `hp_procurve_cli` (alias of `aruba_osswitch`) |
 | Aruba AOS-CX | `aruba_os` |
 | Palo Alto PAN-OS | `paloalto_panos` |

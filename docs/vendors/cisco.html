@@ -152,7 +152,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, NX-OS
                 </div>
                 <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, NX-OS</h1>
-<p>IOS, IOS-XE and NX-OS are supported. IOS-XR is not.</p>
+<p>IOS, IOS-XE and NX-OS are supported. Cisco ASA has partial support (see <a href="#cisco-asa">Cisco ASA</a>). IOS-XR is not.</p>
 <h2 id="driver-mapping">Driver mapping</h2>
 <table>
 <thead>
@@ -177,6 +177,10 @@
 <tr>
 <td>Nexus 5k / 7k / 9k</td>
 <td><code>cisco_nxos</code></td>
+</tr>
+<tr>
+<td>ASA / ASAv firewalls</td>
+<td><code>cisco_xe</code> (partial support, see <a href="#cisco-asa">Cisco ASA</a>)</td>
 </tr>
 <tr>
 <td>Cisco Meraki</td>
@@ -238,6 +242,9 @@
 <p>MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and <code>vPC Peer-Link</code> is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.</p>
 <p>Inventory and Asset Lifecycle take the host name from <code>Device name:</code>. It is not <code>Kernel</code>. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the model from the chassis line of <code>show inventory</code> (for example N9K-C9372PX), so Nexus switches match their end-of-life dates, and it reads the <code>Processor Board ID</code> serial.</p>
 <p>If NX-OS answers <code>Permission denied</code> to <code>configure terminal</code>, that device&#x27;s Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with <code>could not enter configuration mode (check account privileges)</code>, and the lines not sent are listed as skipped.</p>
+<h2 id="cisco-asa">Cisco ASA</h2>
+<p>Cisco ASA, including ASAv, has partial support. Node Control logs in on its Cisco driver, recognises the ASA, files it under Firewalls, turns the ASA pager off for the session, shows its software version and model in Inventory, and backs up its running config. The SSH terminal works. Access Review (Pro) reads ASA admin accounts as a preview. On L3 and Discover maps it appears as a firewall without links. Config Push, compliance remediation, L2 and WAN links, Security Audit (PSIRT), Firewall Health, Monitor and upgrades are not supported on ASA. Tested on ASAv 9.24 in the lab. Physical ASAs, failover pairs and multiple-context mode are not yet lab-tested.</p>
+<p>Leave the device type on <code>cisco_xe</code>, or let Node Control detect it. Put the ASA in the Firewalls tab (or let it be detected once) so the pager is turned off at login.</p>
 <h2 id="stack-and-vss">Stack and VSS</h2>
 <p>Cisco stacks (3850 stack, 9300 stack) and VSS pairs (4500/6500/6800):</p>
 <ul>

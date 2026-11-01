@@ -56,7 +56,7 @@ The Free Edition is free for up to 25 devices.
 - [Inventory](reports/inventory.md) — the report that runs on Free
 - [Meraki Usage Summary](reports/meraki-usage-summary.md)
 - [Security Audit](reports/security-audit.md)
-- [Access Review](reports/access-review.md) — Pro and AI. Admin accounts on Palo Alto and FortiGate. Cisco ASA is a preview only, and has no general support
+- [Access Review](reports/access-review.md) — Pro and AI. Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview
 - [Lifecycle and EoX](reports/lifecycle.md)
 - [Change Summary](reports/change-summary.md)
 

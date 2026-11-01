@@ -65,7 +65,7 @@ Devices are organised into tabs based on their role:
 |---|---|
 | **Switches** | Access switches, distribution switches, core switches |
 | **Routers** | WAN edge routers, branch routers, ISR / ASR / CSR |
-| **Firewalls** | Palo Alto, Cisco ASA, Fortigate, Checkpoint |
+| **Firewalls** | Palo Alto, Fortigate, Cisco ASA |
 | **SD-WAN** | Velocloud, Viptela, Silver Peak edges |
 | **Wireless** | Access points (Meraki MR, Cisco APs, Aruba IAP) and controllers |
 | **Other** | Anything that doesn't fit above |
