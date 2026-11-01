@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError
 
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, g, request, jsonify, redirect
 from flask_cors import CORS
 import stripe
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -83,6 +83,8 @@ app.config.update(
     STRIPE_WEBHOOK_SECRET=os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
     STRIPE_PRICE_PRO_MONTHLY=os.environ.get("STRIPE_PRICE_PRO_MONTHLY", ""),
     STRIPE_PRICE_PRO_ANNUAL=os.environ.get("STRIPE_PRICE_PRO_ANNUAL", ""),
+    # Off unless Mike is in a Stripe test-mode window. Test events grant nothing while this is off.
+    STRIPE_ALLOW_TEST_EVENTS=os.environ.get("STRIPE_ALLOW_TEST_EVENTS", ""),
     # Optional. Empty falls back to GITHUB_PAT_WRITE. That token needs
     # contents:write on miketpl/node-control-registrations.
     GITHUB_PAT_REGISTRATIONS=os.environ.get("GITHUB_PAT_REGISTRATIONS", ""),
@@ -235,7 +237,8 @@ def init_db():
             added_to_allowlist INTEGER DEFAULT 0,
             welcomed_at TEXT DEFAULT '',
             created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL
+            updated_at TEXT NOT NULL,
+            is_test INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE INDEX IF NOT EXISTS idx_pro_sub_email ON pro_subscriptions(email);
@@ -274,6 +277,26 @@ def _add_license_column(db, column):
         raise ValueError("unknown licence column")
     try:
         db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_column(db, table, column, declaration):
+    """Add one column. A duplicate name means the other worker won."""
+    if table not in ("pro_keys", "pro_subscriptions") or column != "is_test":
+        raise ValueError("unknown column")
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table,),
+    ).fetchone()
+    if not exists:
+        return
+    have = {row["name"] for row in db.execute(f"PRAGMA table_info({table})")}
+    if column in have:
+        return
+    try:
+        db.execute(f"ALTER TABLE {table} ADD COLUMN {declaration}")
     except sqlite3.OperationalError as exc:
         if not _schema_already_applied(exc):
             raise
@@ -403,6 +426,8 @@ def migrate_db():
             from alerts import SCHEMA as ALERT_SCHEMA
             for statement in ALERT_SCHEMA:
                 _apply_schema(db, statement)
+            _add_column(db, "pro_keys", "is_test", "is_test INTEGER NOT NULL DEFAULT 0")
+            _add_column(db, "pro_subscriptions", "is_test", "is_test INTEGER NOT NULL DEFAULT 0")
             db.commit()
         except Exception:
             db.rollback()
@@ -496,6 +521,38 @@ def _client_ip():
     """
     import licence_v1
     return licence_v1.client_ip()
+
+
+def _public_rate_wait(endpoint, parts):
+    """Shared SQLite limiter. parts are (scope, token, limit, window seconds).
+
+    Returns the Retry-After seconds when any part is over its limit, else None.
+    """
+    import licence_v1
+    retry = 0
+    blocked = False
+    for scope, token, limit, window in parts:
+        token = (token or "").strip()
+        if not token:
+            continue
+        bucket = licence_v1._limit_bucket(endpoint, scope, window, token)
+        ok, wait = licence_v1.consume_rate(bucket, limit, window)
+        if not ok:
+            blocked = True
+            retry = max(retry, wait)
+    if not blocked:
+        return None
+    return max(1, retry)
+
+
+def _too_many(retry_after, body=None):
+    response = jsonify(body if body is not None else {
+        "error": "Too many requests. Try again later.",
+    })
+    response.status_code = 429
+    response.headers["Retry-After"] = str(int(retry_after))
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 def _download_event_ip_allowed(ip):
@@ -969,6 +1026,20 @@ def _as_mapping(obj):
     return dict(obj)
 
 
+def _event_is_test(event, obj):
+    """True for a Stripe test-mode event. A missing livemode flag stays live."""
+    if isinstance(event, dict) and event.get("livemode") is True:
+        return False
+    if isinstance(event, dict) and event.get("livemode") is False:
+        return True
+    return isinstance(obj, dict) and obj.get("livemode") is False
+
+
+def _stripe_test_events_allowed():
+    import licence_v1
+    return licence_v1.test_events_allowed()
+
+
 def _stripe_id(value):
     if not value:
         return ""
@@ -1171,7 +1242,8 @@ def _upsert_pro_subscription(fields):
                 email = ?, name = ?, stripe_customer_id = ?,
                 stripe_checkout_session_id = ?, plan = ?, status = ?,
                 cancel_at_period_end = ?, current_period_end = ?,
-                added_to_allowlist = ?, welcomed_at = ?, updated_at = ?
+                added_to_allowlist = ?, welcomed_at = ?, updated_at = ?,
+                is_test = ?
                WHERE id = ?""",
             (
                 fields.get("email") or existing["email"],
@@ -1185,6 +1257,7 @@ def _upsert_pro_subscription(fields):
                 added,
                 welcomed,
                 now,
+                1 if fields.get("is_test") or existing["is_test"] else 0,
                 existing["id"],
             ),
         )
@@ -1194,8 +1267,8 @@ def _upsert_pro_subscription(fields):
                 email, name, stripe_customer_id, stripe_subscription_id,
                 stripe_checkout_session_id, plan, status, cancel_at_period_end,
                 current_period_end, added_to_allowlist, welcomed_at,
-                created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                created_at, updated_at, is_test
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 fields["email"],
                 fields.get("name") or "",
@@ -1210,6 +1283,7 @@ def _upsert_pro_subscription(fields):
                 fields.get("welcomed_at") or "",
                 now,
                 now,
+                1 if fields.get("is_test") else 0,
             ),
         )
     db.commit()
@@ -1478,11 +1552,14 @@ def _grant_pro_access(
         "cancel_at_period_end": cancel_at_period_end,
         "current_period_end": period_end or "",
         "added_to_allowlist": ours,
+        "is_test": 1 if getattr(g, "stripe_is_test", False) else 0,
     })
     if _legacy_allowlist_enabled() and ours:
         _add_email_to_allowlist(email)
     import licence_v1
-    licence_v1.ensure_stripe_pro_key(subscription_id, email, plan)
+    licence_v1.ensure_stripe_pro_key(
+        subscription_id, email, plan, is_test=bool(getattr(g, "stripe_is_test", False))
+    )
     row = _get_pro_row_by_subscription(subscription_id)
     if not row["welcomed_at"]:
         if not _send_pro_welcome(row):
@@ -1760,6 +1837,9 @@ def _pro_asset_redirect(platform):
 @app.route("/api/checkout", methods=["POST"])
 def pro_checkout():
     """Start a Professional subscription Checkout Session."""
+    wait = _public_rate_wait("public-checkout", [("ip", _client_ip(), 10, 3600)])
+    if wait:
+        return _too_many(wait)
     data = request.get_json(silent=True) or {}
     plan = (data.get("plan") or "").strip()
     if plan not in ("monthly", "annual"):
@@ -1820,8 +1900,12 @@ def stripe_webhook():
         return jsonify({"error": "Event has no id"}), 400
     if _event_processed(event_id):
         return jsonify({"received": True})
+    obj = (event.get("data") or {}).get("object") or {}
+    g.stripe_is_test = _event_is_test(event, obj)
+    if g.stripe_is_test and not _stripe_test_events_allowed():
+        _mark_event(event_id, "ignored:" + event_type)
+        return jsonify({"received": True, "ignored": True})
     try:
-        obj = (event.get("data") or {}).get("object") or {}
         if event_type == "checkout.session.completed":
             _handle_checkout_completed(obj)
         elif event_type == "invoice.paid":
@@ -1843,6 +1927,12 @@ def stripe_webhook():
 def pro_session():
     """Success page: confirm the Checkout Session is paid, then mint download tokens."""
     session_id = (request.args.get("session_id") or "").strip()
+    wait = _public_rate_wait("public-pro-session", [
+        ("ip", _client_ip(), 30, 3600),
+        ("session", session_id, 60, 3600),
+    ])
+    if wait:
+        return _too_many(wait)
     if not session_id:
         return jsonify({"error": "session_id is required"}), 400
     if not (app.config.get("STRIPE_SECRET_KEY") or "").strip():
@@ -1860,6 +1950,10 @@ def pro_session():
     row = _get_pro_row_by_subscription(subscription_id) if subscription_id else None
     if not row or row["status"] not in ACTIVE_SUB_STATUSES:
         return jsonify({"status": "processing"})
+    import licence_v1
+    blocked = licence_v1.refuse_test_subscription(subscription_id)
+    if blocked:
+        return blocked
     try:
         downloads = {
             "mac": _make_download_token(row["email"], row["stripe_subscription_id"], "mac"),
@@ -1870,7 +1964,6 @@ def pro_session():
         return jsonify({"error": "Downloads are not configured"}), 503
     licence_key = None
     try:
-        import licence_v1
         licence_key = licence_v1.reveal_pro_key_for_session(row["stripe_subscription_id"])
     except Exception:
         logger.exception("Could not reveal the Professional key on the success page")
@@ -1886,6 +1979,9 @@ def pro_session():
 @app.route("/api/pro/download", methods=["GET"])
 def pro_download():
     """Redeem a short-lived token for a redirect to the private Pro installer."""
+    wait = _public_rate_wait("public-pro-download", [("ip", _client_ip(), 20, 3600)])
+    if wait:
+        return _too_many(wait)
     data, err = _read_download_token(request.args.get("token", ""))
     if err == "expired":
         return jsonify({
@@ -1900,6 +1996,10 @@ def pro_download():
         or row["status"] not in ACTIVE_SUB_STATUSES
     ):
         return jsonify({"error": "This subscription is not active"}), 403
+    import licence_v1
+    blocked = licence_v1.refuse_test_subscription(data.get("sub"))
+    if blocked:
+        return blocked
     try:
         location = _pro_asset_redirect(data["platform"])
     except Exception:
@@ -1917,6 +2017,12 @@ def pro_portal():
     }
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
+    parts = [("ip", _client_ip(), 10, 3600)]
+    if email and "@" in email:
+        parts.append(("email", email, 3, 3600))
+    wait = _public_rate_wait("public-portal", parts)
+    if wait:
+        return _too_many(wait, generic)
     if not email or "@" not in email:
         return jsonify(generic)
     try:
