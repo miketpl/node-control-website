@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError
 
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, g, request, jsonify, redirect
 from flask_cors import CORS
 import stripe
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -83,6 +83,8 @@ app.config.update(
     STRIPE_WEBHOOK_SECRET=os.environ.get("STRIPE_WEBHOOK_SECRET", ""),
     STRIPE_PRICE_PRO_MONTHLY=os.environ.get("STRIPE_PRICE_PRO_MONTHLY", ""),
     STRIPE_PRICE_PRO_ANNUAL=os.environ.get("STRIPE_PRICE_PRO_ANNUAL", ""),
+    # Off unless Mike is in a Stripe test-mode window. Test events grant nothing while this is off.
+    STRIPE_ALLOW_TEST_EVENTS=os.environ.get("STRIPE_ALLOW_TEST_EVENTS", ""),
     # Optional. Empty falls back to GITHUB_PAT_WRITE. That token needs
     # contents:write on miketpl/node-control-registrations.
     GITHUB_PAT_REGISTRATIONS=os.environ.get("GITHUB_PAT_REGISTRATIONS", ""),
@@ -235,7 +237,8 @@ def init_db():
             added_to_allowlist INTEGER DEFAULT 0,
             welcomed_at TEXT DEFAULT '',
             created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL
+            updated_at TEXT NOT NULL,
+            is_test INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE INDEX IF NOT EXISTS idx_pro_sub_email ON pro_subscriptions(email);
@@ -274,6 +277,66 @@ def _add_license_column(db, column):
         raise ValueError("unknown licence column")
     try:
         db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_column(db, table, column, declaration):
+    """Add one column. A duplicate name means the other worker won."""
+    if table not in ("pro_keys", "pro_subscriptions") or column != "is_test":
+        raise ValueError("unknown column")
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table,),
+    ).fetchone()
+    if not exists:
+        return
+    have = {row["name"] for row in db.execute(f"PRAGMA table_info({table})")}
+    if column in have:
+        return
+    try:
+        db.execute(f"ALTER TABLE {table} ADD COLUMN {declaration}")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_free_license_column(db):
+    """Add pro_keys.free_license_id on databases created before the in-app upgrade.
+
+    A missing table is left alone. A duplicate column means the other worker won.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'pro_keys'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(pro_keys)")}
+    if "free_license_id" in have:
+        return
+    try:
+        db.execute("ALTER TABLE pro_keys ADD COLUMN free_license_id INTEGER")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_claimed_at_column(db):
+    """Add purchase_intents.claimed_at on databases created before repeatable claim.
+
+    A missing table is left alone. A duplicate column means the other worker won.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'purchase_intents'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(purchase_intents)")}
+    if "claimed_at" in have:
+        return
+    try:
+        db.execute("ALTER TABLE purchase_intents ADD COLUMN claimed_at TEXT DEFAULT ''")
     except sqlite3.OperationalError as exc:
         if not _schema_already_applied(exc):
             raise
@@ -403,6 +466,10 @@ def migrate_db():
             from alerts import SCHEMA as ALERT_SCHEMA
             for statement in ALERT_SCHEMA:
                 _apply_schema(db, statement)
+            _add_free_license_column(db)
+            _add_claimed_at_column(db)
+            _add_column(db, "pro_keys", "is_test", "is_test INTEGER NOT NULL DEFAULT 0")
+            _add_column(db, "pro_subscriptions", "is_test", "is_test INTEGER NOT NULL DEFAULT 0")
             db.commit()
         except Exception:
             db.rollback()
@@ -969,12 +1036,60 @@ def _as_mapping(obj):
     return dict(obj)
 
 
+def _event_is_test(event, obj):
+    """True for a Stripe test-mode event. A missing livemode flag stays live."""
+    if isinstance(event, dict) and event.get("livemode") is True:
+        return False
+    if isinstance(event, dict) and event.get("livemode") is False:
+        return True
+    return isinstance(obj, dict) and obj.get("livemode") is False
+
+
+def _stripe_test_events_allowed():
+    import licence_v1
+    return licence_v1.test_events_allowed()
+
+
 def _stripe_id(value):
     if not value:
         return ""
     if isinstance(value, str):
         return value
     return _as_mapping(value).get("id") or ""
+
+
+def _invoice_subscription_id(invoice):
+    """Subscription id from an invoice, including newer Stripe API shapes.
+
+    Older invoices put it on invoice.subscription. Newer ones nest it under
+    parent.subscription_details, or on a line item.
+    """
+    invoice = _as_mapping(invoice)
+    found = _stripe_id(invoice.get("subscription"))
+    if found:
+        return found
+    parent = _as_mapping(invoice.get("parent"))
+    details = _as_mapping(parent.get("subscription_details"))
+    found = _stripe_id(details.get("subscription"))
+    if found:
+        return found
+    lines = invoice.get("lines") or {}
+    if not isinstance(lines, dict):
+        lines = _as_mapping(lines)
+    data = lines.get("data") or []
+    if isinstance(data, dict):
+        data = [data]
+    for line in data:
+        line = _as_mapping(line)
+        line_parent = _as_mapping(line.get("parent"))
+        item = _as_mapping(line_parent.get("subscription_item_details"))
+        found = _stripe_id(item.get("subscription"))
+        if found:
+            return found
+        found = _stripe_id(line.get("subscription"))
+        if found:
+            return found
+    return ""
 
 
 def _registrations_pat():
@@ -1171,7 +1286,8 @@ def _upsert_pro_subscription(fields):
                 email = ?, name = ?, stripe_customer_id = ?,
                 stripe_checkout_session_id = ?, plan = ?, status = ?,
                 cancel_at_period_end = ?, current_period_end = ?,
-                added_to_allowlist = ?, welcomed_at = ?, updated_at = ?
+                added_to_allowlist = ?, welcomed_at = ?, updated_at = ?,
+                is_test = ?
                WHERE id = ?""",
             (
                 fields.get("email") or existing["email"],
@@ -1185,6 +1301,7 @@ def _upsert_pro_subscription(fields):
                 added,
                 welcomed,
                 now,
+                1 if fields.get("is_test") or existing["is_test"] else 0,
                 existing["id"],
             ),
         )
@@ -1194,8 +1311,8 @@ def _upsert_pro_subscription(fields):
                 email, name, stripe_customer_id, stripe_subscription_id,
                 stripe_checkout_session_id, plan, status, cancel_at_period_end,
                 current_period_end, added_to_allowlist, welcomed_at,
-                created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                created_at, updated_at, is_test
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 fields["email"],
                 fields.get("name") or "",
@@ -1210,6 +1327,7 @@ def _upsert_pro_subscription(fields):
                 fields.get("welcomed_at") or "",
                 now,
                 now,
+                1 if fields.get("is_test") else 0,
             ),
         )
     db.commit()
@@ -1478,11 +1596,14 @@ def _grant_pro_access(
         "cancel_at_period_end": cancel_at_period_end,
         "current_period_end": period_end or "",
         "added_to_allowlist": ours,
+        "is_test": 1 if getattr(g, "stripe_is_test", False) else 0,
     })
     if _legacy_allowlist_enabled() and ours:
         _add_email_to_allowlist(email)
     import licence_v1
-    licence_v1.ensure_stripe_pro_key(subscription_id, email, plan)
+    licence_v1.ensure_stripe_pro_key(
+        subscription_id, email, plan, is_test=bool(getattr(g, "stripe_is_test", False))
+    )
     row = _get_pro_row_by_subscription(subscription_id)
     if not row["welcomed_at"]:
         if not _send_pro_welcome(row):
@@ -1563,6 +1684,69 @@ def _handle_checkout_completed(session):
     # is not paid yet does not either.
     if session.get("payment_status") == "paid":
         _queue_pro_purchase_alert(subscription_id)
+    _link_purchase_intent(session, subscription_id)
+
+
+def _link_purchase_intent(session, subscription_id):
+    """Mark an in-app upgrade paid and remember which Free licence it came from.
+
+    Website checkouts have no intent id. Those return without changing anything.
+    A matching intent with no stored key is a failure, so Stripe retries.
+    """
+    session = _as_mapping(session)
+    metadata = session.get("metadata") or {}
+    if not isinstance(metadata, dict):
+        metadata = _as_mapping(metadata)
+    intent_id = str(session.get("client_reference_id") or metadata.get("intent_id") or "").strip()
+    if not intent_id:
+        return
+    import licence_v1
+    db = get_db()
+    try:
+        intent = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        if not intent:
+            return
+        key = db.execute(
+            "SELECT id FROM pro_keys WHERE subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+        if not key:
+            raise RuntimeError("Professional key was not stored for this checkout")
+        now = licence_v1.iso(licence_v1.utcnow())
+        session_id = session.get("id") or intent["stripe_session_id"] or ""
+        if intent["status"] in ("pending", "expired"):
+            # A late webhook still pays an intent whose 24-hour window already closed.
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET status = 'paid', stripe_session_id = ?, pro_key_id = ?, updated_at = ?
+                WHERE id = ? AND status IN ('pending', 'expired')
+                """,
+                (session_id, int(key["id"]), now, intent_id),
+            )
+        elif not intent["pro_key_id"]:
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET stripe_session_id = ?, pro_key_id = ?, updated_at = ?
+                WHERE id = ? AND pro_key_id IS NULL
+                """,
+                (session_id, int(key["id"]), now, intent_id),
+            )
+        db.execute(
+            """
+            UPDATE pro_keys
+            SET free_license_id = ?
+            WHERE id = ? AND (free_license_id IS NULL OR free_license_id = 0)
+            """,
+            (int(intent["free_license_id"]), int(key["id"])),
+        )
+        db.commit()
+    finally:
+        db.close()
 
 
 def _queue_pro_purchase_alert(subscription_id):
@@ -1586,7 +1770,7 @@ def _queue_pro_purchase_alert(subscription_id):
 
 def _handle_invoice_paid(invoice):
     invoice = _as_mapping(invoice)
-    subscription_id = _stripe_id(invoice.get("subscription"))
+    subscription_id = _invoice_subscription_id(invoice)
     if not subscription_id:
         return
     sub = _load_subscription(subscription_id)
@@ -1651,7 +1835,7 @@ def _handle_subscription_change(sub, deleted=False):
 
 def _handle_payment_failed(invoice):
     invoice = _as_mapping(invoice)
-    subscription_id = _stripe_id(invoice.get("subscription"))
+    subscription_id = _invoice_subscription_id(invoice)
     if not subscription_id:
         return
     sub = _load_subscription(subscription_id)
@@ -1757,6 +1941,35 @@ def _pro_asset_redirect(platform):
     return location
 
 
+def create_app_checkout_session(email, plan, intent_id):
+    """Stripe Checkout for an in-app Free-to-Pro upgrade. Raises if Stripe is down."""
+    price = (
+        app.config.get("STRIPE_PRICE_PRO_MONTHLY")
+        if plan == "monthly"
+        else app.config.get("STRIPE_PRICE_PRO_ANNUAL")
+    )
+    if not (app.config.get("STRIPE_SECRET_KEY") or "").strip() or not (price or "").strip():
+        raise RuntimeError("Stripe checkout is not configured")
+    site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
+    params = {
+        "mode": "subscription",
+        "line_items": [{"price": price, "quantity": 1}],
+        "success_url": site + "/pro-success.html?session_id={CHECKOUT_SESSION_ID}&from=app",
+        "cancel_url": site + "/#pricing",
+        "automatic_tax": {"enabled": True},
+        "billing_address_collection": "required",
+        "tax_id_collection": {"enabled": True},
+        "client_reference_id": intent_id,
+        "metadata": {"plan": plan, "intent_id": intent_id, "source": "app"},
+        "subscription_data": {"metadata": {"plan": plan}},
+    }
+    email = (email or "").strip().lower()
+    if email and "@" in email:
+        params["customer_email"] = email
+    stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+    return _as_mapping(stripe.checkout.Session.create(**params))
+
+
 @app.route("/api/checkout", methods=["POST"])
 def pro_checkout():
     """Start a Professional subscription Checkout Session."""
@@ -1820,8 +2033,12 @@ def stripe_webhook():
         return jsonify({"error": "Event has no id"}), 400
     if _event_processed(event_id):
         return jsonify({"received": True})
+    obj = (event.get("data") or {}).get("object") or {}
+    g.stripe_is_test = _event_is_test(event, obj)
+    if g.stripe_is_test and not _stripe_test_events_allowed():
+        _mark_event(event_id, "ignored:" + event_type)
+        return jsonify({"received": True, "ignored": True})
     try:
-        obj = (event.get("data") or {}).get("object") or {}
         if event_type == "checkout.session.completed":
             _handle_checkout_completed(obj)
         elif event_type == "invoice.paid":
@@ -1860,6 +2077,10 @@ def pro_session():
     row = _get_pro_row_by_subscription(subscription_id) if subscription_id else None
     if not row or row["status"] not in ACTIVE_SUB_STATUSES:
         return jsonify({"status": "processing"})
+    import licence_v1
+    blocked = licence_v1.refuse_test_subscription(subscription_id)
+    if blocked:
+        return blocked
     try:
         downloads = {
             "mac": _make_download_token(row["email"], row["stripe_subscription_id"], "mac"),
@@ -1870,7 +2091,6 @@ def pro_session():
         return jsonify({"error": "Downloads are not configured"}), 503
     licence_key = None
     try:
-        import licence_v1
         licence_key = licence_v1.reveal_pro_key_for_session(row["stripe_subscription_id"])
     except Exception:
         logger.exception("Could not reveal the Professional key on the success page")
@@ -1900,6 +2120,10 @@ def pro_download():
         or row["status"] not in ACTIVE_SUB_STATUSES
     ):
         return jsonify({"error": "This subscription is not active"}), 403
+    import licence_v1
+    blocked = licence_v1.refuse_test_subscription(data.get("sub"))
+    if blocked:
+        return blocked
     try:
         location = _pro_asset_redirect(data["platform"])
     except Exception:

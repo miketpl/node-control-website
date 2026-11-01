@@ -113,6 +113,10 @@ LIMITS = {
     "free-download": (("licence", 10, 3600), ("ip", 30, 3600)),
     # Same numbers as a Free installer link. A separate name so the counters do not mix.
     "pro-download": (("licence", 10, 3600), ("ip", 30, 3600)),
+    # One click starts checkout. Polling the result is a separate counter.
+    "app-checkout": (("install", 10, 3600), ("ip", 20, 3600)),
+    # The app polls about every 5 seconds for up to 30 minutes (about 360 calls).
+    "purchase-status": (("install", 600, 3600), ("ip", 1200, 3600)),
 }
 
 V1_SCHEMA = (
@@ -129,10 +133,31 @@ V1_SCHEMA = (
         plan TEXT DEFAULT '',
         created_at TEXT NOT NULL,
         revoked_at TEXT DEFAULT '',
-        reveal_until TEXT DEFAULT ''
+        reveal_until TEXT DEFAULT '',
+        free_license_id INTEGER,
+        is_test INTEGER NOT NULL DEFAULT 0
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_pro_keys_email ON pro_keys(email)",
+    """
+    CREATE TABLE IF NOT EXISTS purchase_intents (
+        id TEXT PRIMARY KEY,
+        free_license_id INTEGER NOT NULL,
+        install_id TEXT NOT NULL,
+        plan TEXT NOT NULL,
+        status TEXT NOT NULL,
+        stripe_session_id TEXT DEFAULT '',
+        pro_key_id INTEGER,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        claimed_at TEXT DEFAULT ''
+    )
+    """,
+    """
+    CREATE INDEX IF NOT EXISTS idx_purchase_intents_licence
+    ON purchase_intents(free_license_id, install_id)
+    """,
     """
     CREATE TABLE IF NOT EXISTS devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -944,6 +969,8 @@ def _lookup_key(raw_key):
                 return None, "invalid"
             if row["status"] == "revoked":
                 return None, "revoked"
+            if _row_is_test(row) and not test_events_allowed():
+                return None, "test_key"
             sub_status = "active"
             period_end = None
             cancel = False
@@ -956,6 +983,8 @@ def _lookup_key(raw_key):
                         (row["subscription_id"],),
                     ).fetchone()
                 sub_status = sub["status"] if sub else ""
+                if sub and _row_is_test(sub) and not test_events_allowed():
+                    return None, "test_key"
                 if sub_status not in ("active", "trialing"):
                     return None, "subscription_inactive"
                 period_end = (sub["current_period_end"] or None) if sub else None
@@ -1164,11 +1193,71 @@ def _touch_seen(record, install_id):
     db.close()
 
 
+def test_events_allowed():
+    """True only while Mike has opened the Stripe test-mode window."""
+    return _config_bool("STRIPE_ALLOW_TEST_EVENTS", False)
+
+
+def _row_is_test(row):
+    if row is None:
+        return False
+    try:
+        return int(row["is_test"] or 0) == 1
+    except (KeyError, IndexError, TypeError, ValueError):
+        return False
+
+
+def _test_key_error():
+    return error(403, "test_key", "This Professional key was issued in Stripe test mode.")
+
+
+def refuse_test_subscription(subscription_id):
+    """403 when this subscription or its key is a test record and the flag is off."""
+    if test_events_allowed() or not subscription_id:
+        return None
+    api = _api()
+    db = api.get_db()
+    try:
+        key = db.execute(
+            "SELECT is_test FROM pro_keys WHERE subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+        sub = db.execute(
+            "SELECT is_test FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+            (subscription_id,),
+        ).fetchone()
+    finally:
+        db.close()
+    if _row_is_test(key) or _row_is_test(sub):
+        return _test_key_error()
+    return None
+
+
+def refuse_test_key_id(key_id):
+    """403 when this Professional key is a test record and the flag is off."""
+    if test_events_allowed() or not key_id:
+        return None
+    api = _api()
+    db = api.get_db()
+    try:
+        row = db.execute(
+            "SELECT is_test FROM pro_keys WHERE id = ?",
+            (int(key_id),),
+        ).fetchone()
+    finally:
+        db.close()
+    if _row_is_test(row):
+        return _test_key_error()
+    return None
+
+
 def _auth_failure(reason):
     if reason == "revoked":
         return error(403, "revoked", "This licence has been revoked.")
     if reason == "subscription_inactive":
         return error(403, "subscription_inactive", "Your Professional subscription is not active.")
+    if reason == "test_key":
+        return _test_key_error()
     return error(401, "invalid_key", "That licence key was not recognised.")
 
 
@@ -2215,18 +2304,22 @@ def status():
     return response
 
 
-def ensure_stripe_pro_key(subscription_id, email, plan):
+def ensure_stripe_pro_key(subscription_id, email, plan, is_test=False):
     """Create the NCP- key once per Stripe subscription. The same key is kept."""
     api = _api()
     email = (email or "").strip().lower()
     db = api.get_db()
     existing = db.execute(
-        "SELECT id FROM pro_keys WHERE subscription_id = ?",
+        "SELECT id, is_test FROM pro_keys WHERE subscription_id = ?",
         (subscription_id,),
     ).fetchone()
-    db.close()
     if existing:
+        if is_test and not _row_is_test(existing):
+            db.execute("UPDATE pro_keys SET is_test = 1 WHERE id = ?", (existing["id"],))
+            db.commit()
+        db.close()
         return existing["id"]
+    db.close()
     plain = generate_pro_key()
     now = utcnow()
     blob = encrypt_secret(plain)
@@ -2244,8 +2337,8 @@ def ensure_stripe_pro_key(subscription_id, email, plan):
             """
             INSERT INTO pro_keys (
                 key_hash, key_last4, reveal_blob, email, subscription_id, source,
-                status, plan, created_at, reveal_until
-            ) VALUES (?, ?, ?, ?, ?, 'stripe', 'active', ?, ?, ?)
+                status, plan, created_at, reveal_until, is_test
+            ) VALUES (?, ?, ?, ?, ?, 'stripe', 'active', ?, ?, ?, ?)
             """,
             (
                 hash_key(plain),
@@ -2256,6 +2349,7 @@ def ensure_stripe_pro_key(subscription_id, email, plan):
                 plan or "",
                 iso(now),
                 iso(now + timedelta(seconds=REVEAL_TTL)),
+                1 if is_test else 0,
             ),
         )
         db.commit()
@@ -2428,6 +2522,43 @@ def send_manual_pro_links(key_id):
     return {"id": int(row["id"]), "sent": 1 if emailed else 0, "revealed": bool(plain)}
 
 
+def list_test_pro_keys():
+    """Id, created time, and status. No email, key, or subscription id."""
+    api = _api()
+    db = api.get_db()
+    try:
+        rows = db.execute(
+            """
+            SELECT id, created_at, status FROM pro_keys
+            WHERE is_test = 1
+            ORDER BY id
+            """
+        ).fetchall()
+    finally:
+        db.close()
+    return [
+        {"id": int(row["id"]), "created_at": row["created_at"], "status": row["status"]}
+        for row in rows
+    ]
+
+
+def revoke_test_pro_keys(keep_ids):
+    """Revoke every test key except the ids in keep_ids. Returns the revoked ids."""
+    keep = set()
+    for item in keep_ids or []:
+        try:
+            keep.add(int(item))
+        except (TypeError, ValueError):
+            continue
+    revoked = []
+    for row in list_test_pro_keys():
+        if row["status"] == "revoked" or row["id"] in keep:
+            continue
+        if revoke_pro_key(row["id"]):
+            revoked.append(row["id"])
+    return revoked
+
+
 def revoke_pro_key(key_id):
     api = _api()
     db = api.get_db()
@@ -2585,6 +2716,21 @@ def _admin_pro_keys_post():
         logger.exception("Manual Professional key was not issued")
         return jsonify({"error": "The key was not issued"}), 500
     return jsonify(issued), 201
+
+
+def _admin_pro_keys_test_get():
+    return jsonify({"keys": list_test_pro_keys()})
+
+
+def _admin_pro_keys_test_revoke():
+    data = request.get_json(silent=True) or {}
+    keep = data.get("keep") if isinstance(data, dict) else []
+    if keep is None:
+        keep = []
+    if not isinstance(keep, list):
+        return jsonify({"error": "keep must be a list of ids"}), 400
+    revoked = revoke_test_pro_keys(keep)
+    return jsonify({"revoked": revoked, "kept": [int(item) for item in keep if str(item).isdigit()]})
 
 
 def _admin_pro_key_revoke(key_id):
@@ -3048,6 +3194,259 @@ def admin_stats_v1():
     })
 
 
+def _block_test_pro_key(key_id):
+    """Refuse a test-mode Professional key. Uses the test-mode guard."""
+    return refuse_test_key_id(key_id)
+
+
+def app_checkout():
+    """Start Stripe Checkout for a Free licence, tied to this install."""
+    ctx, err = _guard("app-checkout", needs_device=False)
+    if err:
+        return err
+    record = ctx["record"]
+    if record["kind"] != "free":
+        return error(403, "tier_mismatch", "Upgrade starts from a Free licence.")
+    plan = ctx["body"].get("plan")
+    if plan not in ("monthly", "annual"):
+        return error(400, "bad_request", "plan must be monthly or annual.")
+    now = utcnow()
+    intent_id = secrets.token_hex(16)
+    expires = now + timedelta(hours=24)
+    api = _api()
+    db = api.get_db()
+    db.execute(
+        """
+        INSERT INTO purchase_intents (
+            id, free_license_id, install_id, plan, status, stripe_session_id,
+            pro_key_id, created_at, updated_at, expires_at
+        ) VALUES (?, ?, ?, ?, 'pending', '', NULL, ?, ?, ?)
+        """,
+        (intent_id, record["id"], ctx["install_id"], plan, iso(now), iso(now), iso(expires)),
+    )
+    db.commit()
+    db.close()
+    try:
+        session = api.create_app_checkout_session(record.get("email") or "", plan, intent_id)
+    except Exception:
+        logger.exception("App checkout session was not created")
+        db = api.get_db()
+        db.execute(
+            """
+            UPDATE purchase_intents SET status = 'expired', updated_at = ?
+            WHERE id = ? AND status = 'pending'
+            """,
+            (iso(utcnow()), intent_id),
+        )
+        db.commit()
+        db.close()
+        return error(502, "upstream", "Checkout could not be started.")
+    url = (session or {}).get("url") or ""
+    session_id = (session or {}).get("id") or ""
+    if not url:
+        db = api.get_db()
+        db.execute(
+            """
+            UPDATE purchase_intents SET status = 'expired', updated_at = ?
+            WHERE id = ? AND status = 'pending'
+            """,
+            (iso(utcnow()), intent_id),
+        )
+        db.commit()
+        db.close()
+        return error(502, "upstream", "Checkout could not be started.")
+    db = api.get_db()
+    db.execute(
+        "UPDATE purchase_intents SET stripe_session_id = ?, updated_at = ? WHERE id = ?",
+        (session_id, iso(utcnow()), intent_id),
+    )
+    db.commit()
+    db.close()
+    return jsonify({
+        "url": url,
+        "intent_id": intent_id,
+        "expires_at": iso(expires),
+    })
+
+
+def _intent_for_caller(record, install_id, intent_id):
+    api = _api()
+    db = api.get_db()
+    try:
+        row = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+    finally:
+        db.close()
+    if not row:
+        return None
+    if int(row["free_license_id"]) != int(record["id"]) or row["install_id"] != install_id:
+        return None
+    return row
+
+
+def _pro_download_allowed(key_id):
+    """Same subscription rule as a Professional app download.
+
+    A hand-added key has no Stripe subscription. A Stripe key needs an
+    active or trialing subscription before an installer link is minted.
+    """
+    api = _api()
+    db = api.get_db()
+    try:
+        key = db.execute(
+            "SELECT source, status, subscription_id FROM pro_keys WHERE id = ?",
+            (int(key_id),),
+        ).fetchone()
+        if not key or key["status"] != "active":
+            return False
+        if (key["source"] or "") == "manual":
+            return True
+        if not key["subscription_id"]:
+            return False
+        sub = db.execute(
+            "SELECT status FROM pro_subscriptions WHERE stripe_subscription_id = ?",
+            (key["subscription_id"],),
+        ).fetchone()
+    finally:
+        db.close()
+    return bool(sub) and sub["status"] in ("active", "trialing")
+
+
+def _latest_pro_download_links(arch):
+    """Signed URLs for the latest Pro installers.
+
+    This is the same release lookup and _signed_asset_url path as
+    POST /api/v1/app/download. Each call mints new links.
+    """
+    repo = _repo_for("pro")
+    release = _load_release(repo, "latest")
+    links = {}
+    for platform in ("mac", "win"):
+        described = _describe_asset(repo, release, platform, arch or "")
+        if not described:
+            raise LookupError("no installer")
+        links[platform] = {
+            "url": _signed_asset_url(repo, described["asset"]),
+            "expires_in": ASSET_URL_TTL,
+        }
+    return links
+
+
+def _paid_with_downloads(plan, plain, key_id, arch):
+    """The key is returned even when the installer links cannot be minted."""
+    body = {"status": "paid", "plan": plan, "licence_key": plain}
+    if not _pro_download_allowed(key_id):
+        body["downloads"] = None
+        body["downloads_error"] = "unavailable"
+        return jsonify(body)
+    try:
+        body["downloads"] = _latest_pro_download_links(arch)
+    except Exception:
+        logger.exception("Pro download links were not minted")
+        body["downloads"] = None
+        body["downloads_error"] = "unavailable"
+    return jsonify(body)
+
+
+def purchase_status():
+    """Poll a Free-to-Pro purchase. The same install can read the key again.
+
+    Pending intents expire after expires_at. A paid or claimed intent stays
+    payable to its own licence and install, and the reply is always status paid.
+    Each paid reply also carries fresh Pro installer links when the
+    subscription is active.
+    """
+    ctx, err = _guard("purchase-status", needs_device=False)
+    if err:
+        return err
+    record = ctx["record"]
+    if record["kind"] != "free":
+        return error(403, "tier_mismatch", "This purchase belongs to a Free licence.")
+    try:
+        intent_id = clean_text(ctx["body"].get("intent_id"), 64)
+    except ValueError:
+        return error(400, "bad_request", "intent_id is required.")
+    if not intent_id:
+        return error(400, "bad_request", "intent_id is required.")
+    row = _intent_for_caller(record, ctx["install_id"], intent_id)
+    if not row:
+        return error(404, "not_found", "That purchase was not found.")
+    plan = row["plan"]
+    if row["status"] == "pending":
+        expires = parse_iso(row["expires_at"])
+        if not expires or expires < utcnow():
+            api = _api()
+            db = api.get_db()
+            db.execute(
+                """
+                UPDATE purchase_intents SET status = 'expired', updated_at = ?
+                WHERE id = ? AND status = 'pending'
+                """,
+                (iso(utcnow()), intent_id),
+            )
+            db.commit()
+            db.close()
+            return jsonify({"status": "expired", "plan": plan})
+        return jsonify({"status": "pending", "plan": plan})
+    if row["status"] == "expired":
+        return jsonify({"status": "expired", "plan": plan})
+    if row["status"] not in ("paid", "claimed") or not row["pro_key_id"]:
+        return jsonify({"status": "pending", "plan": plan})
+    blocked = _block_test_pro_key(row["pro_key_id"])
+    if blocked:
+        return blocked
+    api = _api()
+    db = api.get_db()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        current = db.execute(
+            "SELECT * FROM purchase_intents WHERE id = ?",
+            (intent_id,),
+        ).fetchone()
+        if (
+            not current
+            or int(current["free_license_id"]) != int(record["id"])
+            or current["install_id"] != ctx["install_id"]
+        ):
+            db.commit()
+            return error(404, "not_found", "That purchase was not found.")
+        if current["status"] not in ("paid", "claimed") or not current["pro_key_id"]:
+            db.commit()
+            if current["status"] == "expired":
+                return jsonify({"status": "expired", "plan": plan})
+            return jsonify({"status": "pending", "plan": plan})
+        key_row = db.execute(
+            "SELECT reveal_blob FROM pro_keys WHERE id = ?",
+            (current["pro_key_id"],),
+        ).fetchone()
+        if not key_row or not key_row["reveal_blob"]:
+            db.commit()
+            return jsonify({"status": "pending", "plan": plan})
+        plain = decrypt_secret(key_row["reveal_blob"])
+        key_id = int(current["pro_key_id"])
+        if current["status"] == "paid":
+            now = iso(utcnow())
+            db.execute(
+                """
+                UPDATE purchase_intents
+                SET status = 'claimed', claimed_at = ?, updated_at = ?
+                WHERE id = ? AND status = 'paid'
+                  AND free_license_id = ? AND install_id = ?
+                """,
+                (now, now, intent_id, record["id"], ctx["install_id"]),
+            )
+        db.commit()
+    except Exception:
+        db.rollback()
+        logger.exception("Purchase status could not reveal a key")
+        return error(500, "internal", "The Professional key could not be read.")
+    finally:
+        db.close()
+    return _paid_with_downloads(plan, plain, key_id, ctx["ua"]["arch"])
+
+
 def register(flask_app):
     """Attach /api/v1 routes. Called once from app.py after the tables exist."""
     api = _api()
@@ -3082,6 +3481,10 @@ def register(flask_app):
     )
     flask_app.add_url_rule(API_PREFIX + "/app/update-check", "v1_update_check", update_check, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/download", "v1_download", app_download, methods=["POST"])
+    flask_app.add_url_rule(API_PREFIX + "/app/checkout", "v1_app_checkout", app_checkout, methods=["POST"])
+    flask_app.add_url_rule(
+        API_PREFIX + "/app/purchase/status", "v1_purchase_status", purchase_status, methods=["POST"]
+    )
     flask_app.add_url_rule(API_PREFIX + "/app/register", "v1_register", register_install, methods=["POST"])
     flask_app.add_url_rule(API_PREFIX + "/app/telemetry", "v1_telemetry", telemetry_post, methods=["POST"])
     flask_app.add_url_rule(
@@ -3126,6 +3529,18 @@ def register(flask_app):
         "/api/admin/pro-keys",
         "admin_pro_keys_issue",
         api.require_admin(_admin_pro_keys_post),
+        methods=["POST"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/pro-keys/test",
+        "admin_pro_keys_test_get",
+        api.require_admin(_admin_pro_keys_test_get),
+        methods=["GET"],
+    )
+    flask_app.add_url_rule(
+        "/api/admin/pro-keys/test/revoke",
+        "admin_pro_keys_test_revoke",
+        api.require_admin(_admin_pro_keys_test_revoke),
         methods=["POST"],
     )
     flask_app.add_url_rule(
