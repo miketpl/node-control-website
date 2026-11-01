@@ -8,6 +8,7 @@ Node Control connects to network devices over SSH using vendor-specific drivers 
 |---|---|---|
 | [Cisco IOS / IOS-XE](cisco.md) | `cisco_ios`, `cisco_xe` | ✓ First-class |
 | [Cisco NX-OS](cisco.md#nx-os) | `cisco_nxos` | ✓ First-class |
+| [Cisco ASA](cisco.md#cisco-asa) | `cisco_xe` | Partial |
 | [Cisco Meraki](meraki.md) | (Dashboard API, not SSH) | ✓ |
 | [Palo Alto PAN-OS](palo-alto.md) | `paloalto_panos` | ✓ First-class |
 | [HP ProCurve](hp-procurve.md) | `hp_procurve_cli` (aliased to `aruba_osswitch`) | ✓ First-class |

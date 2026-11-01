@@ -1,6 +1,6 @@
 # Cisco — IOS, IOS-XE, NX-OS
 
-IOS, IOS-XE and NX-OS are supported. IOS-XR is not.
+IOS, IOS-XE and NX-OS are supported. Cisco ASA has partial support (see [Cisco ASA](#cisco-asa)). IOS-XR is not.
 
 ## Driver mapping
 
@@ -10,6 +10,7 @@ IOS, IOS-XE and NX-OS are supported. IOS-XR is not.
 | Catalyst 9k (9200, 9300, 9500) | `cisco_xe` (IOS-XE) |
 | ISR / ASR / CSR | `cisco_xe` or `cisco_ios` |
 | Nexus 5k / 7k / 9k | `cisco_nxos` |
+| ASA / ASAv firewalls | `cisco_xe` (partial support, see [Cisco ASA](#cisco-asa)) |
 | Cisco Meraki | (Dashboard API, not SSH) — see [Meraki page](meraki.md) |
 
 ## What works
@@ -53,6 +54,12 @@ MAC-table entries are read on their real port on the L2 map, in Find Device, and
 Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the model from the chassis line of `show inventory` (for example N9K-C9372PX), so Nexus switches match their end-of-life dates, and it reads the `Processor Board ID` serial.
 
 If NX-OS answers `Permission denied` to `configure terminal`, that device's Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with `could not enter configuration mode (check account privileges)`, and the lines not sent are listed as skipped.
+
+## Cisco ASA
+
+Cisco ASA, including ASAv, has partial support. Node Control logs in on its Cisco driver, recognises the ASA, files it under Firewalls, turns the ASA pager off for the session, shows its software version and model in Inventory, and backs up its running config. The SSH terminal works. Access Review (Pro) reads ASA admin accounts as a preview. On L3 and Discover maps it appears as a firewall without links. Config Push, compliance remediation, L2 and WAN links, Security Audit (PSIRT), Firewall Health, Monitor and upgrades are not supported on ASA. Tested on ASAv 9.24 in the lab. Physical ASAs, failover pairs and multiple-context mode are not yet lab-tested.
+
+Leave the device type on `cisco_xe`, or let Node Control detect it. Put the ASA in the Firewalls tab (or let it be detected once) so the pager is turned off at login.
 
 ## Stack and VSS
 
