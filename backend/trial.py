@@ -12,6 +12,8 @@ import json
 import os
 import re
 import secrets
+import sys
+import tempfile
 from datetime import timedelta
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -550,14 +552,139 @@ def run_reminders(confirm):
     return 0
 
 
-def keygen():
-    """Print the public key and key id. The private key is not printed."""
-    key = Ed25519PrivateKey.generate()
-    public = key.public_key().public_bytes(
+_ENV_ASSIGN = re.compile(
+    r"^[ \t]*(?:export[ \t]+)?(?P<name>[A-Za-z_][A-Za-z0-9_]*)[ \t]*=[ \t]*(?P<value>.*)$"
+)
+
+
+def default_env_file():
+    """The server .env, one directory above backend/."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, ".env")
+
+
+def _line_ending(line):
+    if line.endswith("\r\n"):
+        return "\r\n"
+    if line.endswith("\n"):
+        return "\n"
+    if line.endswith("\r"):
+        return "\r"
+    return ""
+
+
+def _assignment(line):
+    """Return (name, value) for an assignment line. Comments are not assignments."""
+    ending = _line_ending(line)
+    body = line[:-len(ending)] if ending else line
+    if body.lstrip(" \t").startswith("#"):
+        return None
+    match = _ENV_ASSIGN.match(body)
+    if not match:
+        return None
+    return match.group("name"), match.group("value")
+
+
+def _value_set(value):
+    text = value.strip()
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "\"'":
+        text = text[1:-1]
+    return bool(text.strip())
+
+
+def _atomic_write(path, data):
+    """Write data via a temp file in the same directory, then rename. Mode 600."""
+    parent = os.path.dirname(path) or "."
+    fd, tmp_name = tempfile.mkstemp(dir=parent, prefix=".lease-key-", suffix=".tmp")
+    try:
+        view = memoryview(data)
+        while view:
+            written = os.write(fd, view)
+            view = view[written:]
+        os.fchmod(fd, 0o600)
+        os.close(fd)
+        fd = None
+        os.replace(tmp_name, path)
+        tmp_name = None
+        os.chmod(path, 0o600)
+    finally:
+        if fd is not None:
+            os.close(fd)
+        if tmp_name and os.path.exists(tmp_name):
+            try:
+                os.unlink(tmp_name)
+            except OSError:
+                pass
+
+
+def keygen(env_file=None, next_key=False, overwrite=False):
+    """Write a new lease seed into an env file. Print only the public key and id.
+
+    The private seed is standard base64 of 32 bytes, which is what the lease
+    signer decodes. It is not printed, logged, or put in an error message.
+    Returns 0 on success and 1 when the existing key is left untouched.
+    """
+    path = os.path.abspath(env_file or default_env_file())
+    key_name = "LEASE_SIGNING_KEY_NEXT" if next_key else "LEASE_SIGNING_KEY"
+    id_name = "LEASE_SIGNING_KEY_ID_NEXT" if next_key else "LEASE_SIGNING_KEY_ID"
+    if os.path.exists(path):
+        try:
+            with open(path, "rb") as handle:
+                raw = handle.read()
+        except OSError:
+            print("Could not read the env file.", file=sys.stderr)
+            return 1
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            print("The env file is not UTF-8.", file=sys.stderr)
+            return 1
+    else:
+        text = ""
+    lines = text.splitlines(keepends=True)
+    for line in lines:
+        parsed = _assignment(line)
+        if parsed and parsed[0] == key_name and _value_set(parsed[1]) and not overwrite:
+            print(
+                f"{key_name} is already set in {path}. Pass --overwrite to replace it.",
+                file=sys.stderr,
+            )
+            return 1
+    private = Ed25519PrivateKey.generate()
+    seed = private.private_bytes(
+        serialization.Encoding.Raw,
+        serialization.PrivateFormat.Raw,
+        serialization.NoEncryption(),
+    )
+    public = private.public_key().public_bytes(
         serialization.Encoding.Raw,
         serialization.PublicFormat.Raw,
     )
+    encoded = base64.b64encode(seed).decode("ascii")
     kid = "k" + secrets.token_hex(4)
-    text = base64.urlsafe_b64encode(public).decode("ascii").rstrip("=")
+    public_text = base64.urlsafe_b64encode(public).decode("ascii").rstrip("=")
+    wanted = {key_name: encoded, id_name: kid}
+    seen = set()
+    out = []
+    for line in lines:
+        parsed = _assignment(line)
+        if parsed and parsed[0] in wanted:
+            ending = _line_ending(line) or "\n"
+            out.append(f"{parsed[0]}={wanted[parsed[0]]}{ending}")
+            seen.add(parsed[0])
+        else:
+            out.append(line)
+    missing = [name for name in (key_name, id_name) if name not in seen]
+    if missing:
+        if out and not _line_ending(out[-1]):
+            out[-1] = out[-1] + "\n"
+        for name in missing:
+            out.append(f"{name}={wanted[name]}\n")
+    try:
+        _atomic_write(path, "".join(out).encode("utf-8"))
+    except OSError:
+        print("Could not write the env file.", file=sys.stderr)
+        return 1
     print(f"key_id={kid}")
-    print(f"public_key={text}")
+    print(f"public_key={public_text}")
+    print(f"env_file={path}")
+    return 0

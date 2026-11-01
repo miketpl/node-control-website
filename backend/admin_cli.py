@@ -389,13 +389,15 @@ def cmd_funnel(args):
         )
 
 
-def cmd_lease_keygen(_args):
-    """Print a public key and key id. Does not write a file."""
+def cmd_lease_keygen(args):
+    """Write a lease seed into the env file. Prints the public key and key id only."""
     here = os.path.dirname(os.path.abspath(__file__))
     if here not in sys.path:
         sys.path.insert(0, here)
     import trial
-    trial.keygen()
+    code = trial.keygen(args.env_file, next_key=args.next, overwrite=args.overwrite)
+    if code:
+        sys.exit(code)
 
 
 def cmd_trial_reset(args):
@@ -463,7 +465,22 @@ def main(argv=None):
 
     lease_keygen = sub.add_parser(
         "lease-keygen",
-        help="Print a new lease public key and key id. Writes nothing",
+        help="Write a lease signing seed into the env file and print the public key",
+    )
+    lease_keygen.add_argument(
+        "--env-file",
+        default=None,
+        help="Env file to update. Default is the server .env next to this backend",
+    )
+    lease_keygen.add_argument(
+        "--next",
+        action="store_true",
+        help="Write LEASE_SIGNING_KEY_NEXT and LEASE_SIGNING_KEY_ID_NEXT",
+    )
+    lease_keygen.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace a signing seed that is already set",
     )
     lease_keygen.set_defaults(func=cmd_lease_keygen)
 

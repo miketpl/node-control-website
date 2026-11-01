@@ -2,7 +2,10 @@
 
 import base64
 import json
+import logging
 import os
+import stat
+import tempfile
 import unittest
 import uuid
 from datetime import timedelta
@@ -10,7 +13,10 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
 
 import app as api
 import licence_v1
@@ -350,15 +356,144 @@ class TrialTests(unittest.TestCase):
         self.assertIsNone(db.execute("SELECT id FROM free_trials").fetchone())
         db.close()
 
-    def test_keygen_prints_only_the_public_key(self):
-        out = StringIO()
-        with patch("sys.stdout", out):
-            trial.keygen()
-        text = out.getvalue()
-        self.assertIn("key_id=", text)
-        self.assertIn("public_key=", text)
-        self.assertNotIn("PRIVATE", text)
-        self.assertNotIn("private_seed", text)
+    def _keygen(self, path, next_key=False, overwrite=False):
+        stdout, stderr, logged = StringIO(), StringIO(), StringIO()
+        handler = logging.StreamHandler(logged)
+        root = logging.getLogger()
+        previous = root.level
+        root.setLevel(logging.DEBUG)
+        root.addHandler(handler)
+        try:
+            with patch("sys.stdout", stdout), patch("sys.stderr", stderr):
+                code = trial.keygen(path, next_key=next_key, overwrite=overwrite)
+        finally:
+            root.removeHandler(handler)
+            root.setLevel(previous)
+        return code, stdout.getvalue(), stderr.getvalue(), logged.getvalue()
+
+    def _seed_forms(self, seed):
+        standard = base64.b64encode(seed).decode("ascii")
+        url = base64.urlsafe_b64encode(seed).decode("ascii")
+        return {standard, standard.rstrip("="), url, url.rstrip("="), seed.hex()}
+
+    def _assert_secret_hidden(self, captured, seed):
+        for form in self._seed_forms(seed):
+            self.assertNotIn(form, captured)
+
+    def _read_env_value(self, path, name):
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            parsed = trial._assignment(line)
+            if parsed and parsed[0] == name:
+                return parsed[1]
+        return None
+
+    def test_keygen_creates_mode_600_and_hides_the_private_key(self):
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        code, out, err, logged = self._keygen(path)
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o600)
+        seed = base64.b64decode(self._read_env_value(path, "LEASE_SIGNING_KEY"))
+        self.assertEqual(len(seed), 32)
+        captured = out + err + logged
+        self._assert_secret_hidden(captured, seed)
+        self.assertIn("key_id=", out)
+        self.assertIn("public_key=", out)
+        self.assertIn("env_file=" + os.path.abspath(path), out)
+        self.assertNotIn("PRIVATE", out.upper())
+
+    def test_keygen_keeps_other_lines_and_tightens_the_mode(self):
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        original = "SMTP_FROM_NAME=Node Control\n# LEASE_SIGNING_KEY=do-not-touch\nEMPTY=\n"
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        os.chmod(path, 0o644)
+        code, out, err, logged = self._keygen(path)
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        text = Path(path).read_text(encoding="utf-8")
+        self.assertTrue(text.startswith(original))
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o600)
+        seed = base64.b64decode(self._read_env_value(path, "LEASE_SIGNING_KEY"))
+        self._assert_secret_hidden(out + err + logged, seed)
+
+    def test_keygen_refuses_a_set_key_unless_overwrite(self):
+        import admin_cli
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        original = "SMTP_FROM_NAME=Node Control\nLEASE_SIGNING_KEY=already-set\n"
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        os.chmod(path, 0o644)
+        before = Path(path).read_bytes()
+        code, out, err, logged = self._keygen(path)
+        self.assertEqual(code, 1)
+        self.assertEqual(out, "")
+        self.assertIn("already set", err)
+        self.assertNotIn("already-set", err)
+        self.assertNotIn("already-set", logged)
+        self.assertEqual(Path(path).read_bytes(), before)
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o644)
+        with patch("sys.stdout", StringIO()), patch("sys.stderr", StringIO()):
+            with self.assertRaises(SystemExit) as caught:
+                admin_cli.main(["lease-keygen", "--env-file", path])
+        self.assertEqual(caught.exception.code, 1)
+        self.assertEqual(Path(path).read_bytes(), before)
+        code, out, err, logged = self._keygen(path, overwrite=True)
+        self.assertEqual(code, 0)
+        text = Path(path).read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("SMTP_FROM_NAME=Node Control\n"))
+        self.assertNotIn("already-set", text)
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o600)
+        seed = base64.b64decode(self._read_env_value(path, "LEASE_SIGNING_KEY"))
+        self._assert_secret_hidden(out + err + logged, seed)
+
+    def test_keygen_next_writes_the_next_variables(self):
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        original = "LEASE_SIGNING_KEY=current-seed\nLEASE_SIGNING_KEY_ID=kcurrent\n"
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        code, out, err, logged = self._keygen(path, next_key=True)
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        text = Path(path).read_text(encoding="utf-8")
+        self.assertTrue(text.startswith(original))
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY"), "current-seed")
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY_ID"), "kcurrent")
+        seed = base64.b64decode(self._read_env_value(path, "LEASE_SIGNING_KEY_NEXT"))
+        self.assertEqual(len(seed), 32)
+        self.assertTrue(self._read_env_value(path, "LEASE_SIGNING_KEY_ID_NEXT").startswith("k"))
+        self._assert_secret_hidden(out + err + logged, seed)
+
+    def test_keygen_seed_signs_a_lease_the_printed_key_verifies(self):
+        from dotenv import dotenv_values
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        code, out, err, logged = self._keygen(path)
+        self.assertEqual(code, 0)
+        loaded = dotenv_values(path)
+        seed = base64.b64decode(loaded["LEASE_SIGNING_KEY"])
+        self._assert_secret_hidden(out + err + logged, seed)
+        fields = {}
+        for line in out.splitlines():
+            if "=" in line:
+                name, value = line.split("=", 1)
+                fields[name] = value
+        self.assertEqual(loaded["LEASE_SIGNING_KEY_ID"], fields["key_id"])
+        os.environ["LEASE_SIGNING_KEY"] = loaded["LEASE_SIGNING_KEY"]
+        os.environ["LEASE_SIGNING_KEY_ID"] = loaded["LEASE_SIGNING_KEY_ID"]
+        lease_format, token = trial._sign({"v": 1, "hello": "lease"})
+        self.assertEqual(lease_format, "ed25519-v1")
+        body_b64, sig_b64 = token.split(".")
+        body = _decode(body_b64)
+        Ed25519PublicKey.from_public_bytes(_decode(fields["public_key"])).verify(
+            _decode(sig_b64), body
+        )
+        derived = Ed25519PrivateKey.from_private_bytes(seed).public_key().public_bytes_raw()
+        self.assertEqual(base64.urlsafe_b64encode(derived).decode("ascii").rstrip("="), fields["public_key"])
 
 
 if __name__ == "__main__":
