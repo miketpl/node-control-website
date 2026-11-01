@@ -533,14 +533,20 @@ class TrialTests(unittest.TestCase):
         code = self._insert("NC-MACH-0001", "machine@example.com")
         started = self._activate(code)
         self.assertTrue(started.get_json()["licence"]["trial"]["active"])
-        for machine in ("unavailable", None, "not-a-hash"):
+        for machine in ("unavailable", None, "not-a-hash", "cd" * 32):
             checked = self._check(code, machine)
             self.assertEqual(checked.status_code, 200)
             body = checked.get_json()
             self.assertEqual(body["trial"]["reason"], "email_used")
             self.assertFalse(body["trial"]["active"])
             self.assertNotIn("devices_unlimited", body["entitlements"])
-            self.assertIsNone(body["lease"])
+            signed = self._open_lease(body["lease"])
+            self.assertEqual(signed["trial_state"], "ineligible")
+            self.assertEqual(signed["reason"], "email_used")
+            self.assertNotIn("devices_unlimited", signed["entitlements"])
+            self.assertNotIn("engineer_tasks_all", signed["entitlements"])
+            self.assertNotIn("reports_all", signed["entitlements"])
+            self.assertNotIn("ai_byok", signed["entitlements"])
 
     def test_empty_stored_hash_binds_the_first_real_machine(self):
         code = self._insert("NC-BIND-0001", "bind@example.com")

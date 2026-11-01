@@ -200,7 +200,6 @@ def _state_for(record, presented, version, now):
                 "row": by_email,
                 "active": False,
                 "eligible": False,
-                "no_trial_lease": True,
             }
         if still:
             return {
@@ -470,7 +469,7 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
     else:
         payload["entitlements"] = []
         payload["preview_only"] = list(PREVIEW_ONLY)
-    if view.get("no_lease") or view.get("no_trial_lease"):
+    if view.get("no_lease"):
         payload["lease"] = None
         payload["lease_format"] = None
         return payload
