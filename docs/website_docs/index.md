@@ -29,16 +29,17 @@ The Free Edition is free for up to 25 devices.
 - [L3 Topology Builder](tasks/topology-l3.md) — Pro and AI
 - [Watcher of The WAN](tasks/topology-wan.md) — Pro and AI
 - [Config Backup and Save Config](tasks/config-backup.md) — on Free
-- [Config Compliance](tasks/config-compliance.md) — Pro and AI
+- [Config Compliance](tasks/config-compliance.md) — Pro and AI. After VLAN Port Finder, **Open port list** sends the ports you tick to the audit, which then checks only those interfaces
 - [Config from File](tasks/config-from-file.md) — Pro and AI; hidden in Safe Mode
 - [Discover Variables](tasks/discover-variables.md) — Pro and AI; inventory enrichment
 - [Discover](tasks/discovery.md) — sidebar page, Pro and AI; not on Free
+- [Lab Export](tasks/lab-export.md) — Pro and AI. A saved Discovery or L2 topology, plus an optional L3 topology and a Config Backup folder, becomes a Cisco CML 2.10 or EVE-NG Community 6.2 lab. Nothing connects to a device, so it is also available in Safe Mode
 - [Find Device](tasks/find-device.md) — on Free, one switch at a time
 - [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
 - [Serial console](tasks/serial-console.md) — on the Engineer tab. Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — on the Engineer tab. Free and Pro; visible in Safe Mode
-- [Monitor](tasks/monitor.md) — Pro and AI; not on Free
+- [Monitor](tasks/monitor.md) — Pro and AI; not on Free. Link status colours L2 cables for Cisco IOS, IOS-XE, and NX-OS ports
 - [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Safe Mode removes Config Push
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
@@ -55,6 +56,7 @@ The Free Edition is free for up to 25 devices.
 - [Inventory](reports/inventory.md) — the report that runs on Free
 - [Meraki Usage Summary](reports/meraki-usage-summary.md)
 - [Security Audit](reports/security-audit.md)
+- [Access Review](reports/access-review.md) — Pro and AI. Admin accounts on Palo Alto and FortiGate. Cisco ASA is a preview only, and has no general support
 - [Lifecycle and EoX](reports/lifecycle.md)
 - [Change Summary](reports/change-summary.md)
 

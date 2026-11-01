@@ -126,6 +126,8 @@ Safe Mode removes Config Push.
 
 [Config from File](config-from-file.md) is a separate task. It sends the lines in a file verbatim. There are no placeholders. Global-only config belongs there.
 
+On Juniper Junos, a failed commit shows the device's own error lines instead of a generic **Commit failed** header.
+
 ## What changed
 
 - 0.9.36: activity targeting, Admin shutdown, and Default interface.
@@ -133,6 +135,7 @@ Safe Mode removes Config Push.
 - 0.9.38: Exec mode.
 - 0.9.39: the task was renamed.
 - 0.9.40: the UPLINK override.
+- 0.9.45: a failed Junos commit shows the device's own error lines instead of a generic Commit failed header.
 
 ## Next steps
 

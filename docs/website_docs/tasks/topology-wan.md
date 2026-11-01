@@ -60,6 +60,8 @@ For "where does this packet go?" type questions, L3 + WAN together usually answe
 - Arista — BGP
 - FortiGate — treated as a firewall, not an access switch
 
+Device names and other text read from devices are shown as plain text on this map. A device name containing page code cannot change or run anything in the page.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |

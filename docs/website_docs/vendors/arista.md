@@ -19,7 +19,7 @@ Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9
 - Find Device, traced with EOS MAC-table, LLDP, and LAG commands
 - Inventory reads the model, the serials, and the EOS version from EOS output
 - On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed
-- On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. Site Subnets has its L3 command
+- On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. CPU is now reported too, in the Health Monitor report and in Monitor. On recent EOS versions the old CPU command was refused. Site Subnets has its L3 command
 - Monitor
 
 ## Detection

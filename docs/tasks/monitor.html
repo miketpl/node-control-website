@@ -68,9 +68,11 @@
       <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -238,6 +241,13 @@
 </li>
 </ul>
 <p>Graphs are zoomable and pannable. Click and drag to select a time range for closer inspection.</p>
+<h2 id="link-status-on-l2-maps">Link status on L2 maps</h2>
+<p><strong>Link status</strong> is a tick box, on by default. It colours the cables on L2 maps from the port status Monitor already polls: green for up, red dashed for down, grey when unknown. Hover a cable to see both ports. Link status covers Cisco IOS, IOS-XE, and NX-OS ports.</p>
+<p>After each poll round, the latest status is written into the map's own page. A map opened outside Node Control shows how the network looked at the last poll, with the time. It is marked stale after 24 hours.</p>
+<p>After an L2 or L3 topology run, the map page says <strong>Open in Monitor for live status</strong>.</p>
+<h2 id="refused-logins">Refused logins</h2>
+<p>Monitor stops trying a device after 2 refused logins, and it backs off from devices that do not answer. A <strong>Retry</strong> button on that device starts it again. Every poll goes through the same safe-command check as the rest of the app.</p>
+<p>A refused login shows grey with <strong>Login refused</strong>, not red as if the device were down. Alerts and hover tips use short reasons: <strong>login refused (1 of 2)</strong>, <strong>Stopped</strong>, <strong>Backing off</strong>, and <strong>Unreachable</strong>. They do not show the raw connection error.</p>
 <h2 id="vendor-coverage">Vendor coverage</h2>
 <p>Same as the rest of Node Control:</p>
 <table>
@@ -311,7 +321,9 @@
 </tbody>
 </table>
 <p>Vendor-specific gaps are documented in <a href="../vendors/overview.html">Vendors</a>.</p>
-<p>On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from <code>show version</code>.</p>
+<p>On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from <code>show version</code>. CPU is now reported too, in the Health Monitor report and in Monitor. On recent EOS versions the old CPU command was refused.</p>
+<p>Device names and other text read from devices are shown as plain text on the Health Monitor and Firewall Health report pages. A device name containing page code cannot change or run anything in the page.</p>
+
 <h2 id="stopping-removing">Stopping / removing</h2>
 <ul>
 <li><strong>Pause</strong> a tile to stop polling without removing it

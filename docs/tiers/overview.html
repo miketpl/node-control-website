@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -325,6 +328,18 @@
 <td style="text-align: center;">✓</td>
 </tr>
 <tr>
+<td><a href="../reports/access-review.html">Access Review</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><a href="../tasks/lab-export.html">Lab Export</a> to Cisco CML 2.10 or EVE-NG Community 6.2</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
 <td>Update tab and Vuln Plan</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">—</td>
@@ -418,9 +433,13 @@
 </li>
 <li>Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
 </li>
-<li>Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
+<li>Monitor, including live link status on L2 maps for Cisco IOS, IOS-XE, and NX-OS ports. Also IPAM, the Meraki Configurator, and the Firewall Analyser
 </li>
-<li>Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance
+<li><a href="../tasks/lab-export.html">Lab Export</a> to Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device, so it is also available in Safe Mode
+</li>
+<li><a href="../reports/access-review.html">Access Review</a>. Admin accounts on Palo Alto and FortiGate. Cisco ASA is a preview only, and has no general support
+</li>
+<li>Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance. After VLAN Port Finder, <strong>Open port list</strong> sends the ports you tick to the Config Compliance Audit, which then checks only those interfaces
 </li>
 <li><a href="../settings/scripts.html">Custom scripts</a> under Settings → Scripts
 </li>

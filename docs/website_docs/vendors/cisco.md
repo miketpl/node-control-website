@@ -25,7 +25,7 @@ Everything Node Control does works on Cisco:
 - Find Device (wired walk + ARP probe + port shut/no-shut)
 - Inventory (stack members, line cards, transceivers)
 - Verify Device Types
-- Monitor (CPU, memory, environmental, BGP/OSPF peers)
+- Monitor (CPU, memory, environmental, BGP/OSPF peers). On L2 maps, link status covers IOS, IOS-XE, and NX-OS ports
 - [Config Push](../tasks/config-push.md), [packet capture](../tasks/packet-capture.md), and [config compliance](../tasks/config-compliance.md) (remediation is IOS, IOS-XE, and NX-OS)
 - [Security Audit](../reports/security-audit.md) and [Lifecycle / EoX](../reports/lifecycle.md)
 - Feature-level AI summaries, on Pro and the AI edition, with your own provider. The AI dashboard is the AI edition only. See [AI provider](../settings/ai.md)
@@ -50,7 +50,7 @@ NX-OS route tables are read correctly, including long via lines.
 
 MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and `vPC Peer-Link` is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.
 
-Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the `Processor Board ID` serial.
+Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the model from the chassis line of `show inventory` (for example N9K-C9372PX), so Nexus switches match their end-of-life dates, and it reads the `Processor Board ID` serial.
 
 If NX-OS answers `Permission denied` to `configure terminal`, that device's Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with `could not enter configuration mode (check account privileges)`, and the lines not sent are listed as skipped.
 
