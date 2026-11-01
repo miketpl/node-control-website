@@ -213,8 +213,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS funnel_daily (
             day TEXT NOT NULL,
             event TEXT NOT NULL,
+            utm_source TEXT NOT NULL DEFAULT 'none',
+            utm_campaign TEXT NOT NULL DEFAULT 'none',
             count INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (day, event)
+            PRIMARY KEY (day, event, utm_source, utm_campaign)
         );
 
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
@@ -300,6 +302,64 @@ def _add_column(db, table, column, declaration):
             raise
 
 
+_FUNNEL_TAG_RE = re.compile(r"^[a-z0-9._-]{1,64}$")
+
+
+def normalise_funnel_tag(value):
+    """Campaign tag for an anonymous count.
+
+    Lower case, trimmed, at most 64 characters, and only letters, digits,
+    dot, dash and underscore. A missing value is 'none'. Anything else is
+    'other'. The stored row is still only a count.
+    """
+    if value is None:
+        return "none"
+    text = str(value).strip().lower()[:64]
+    if not text:
+        return "none"
+    if _FUNNEL_TAG_RE.match(text):
+        return text
+    return "other"
+
+
+def _migrate_funnel_daily(db):
+    """Give an older funnel_daily the campaign columns. Existing rows stay.
+
+    The old primary key was (day, event), so the table is rebuilt. Rows that
+    had no campaign are stored as source 'none' and campaign 'none'. Running
+    this again, once those columns exist, changes nothing.
+    """
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'funnel_daily'"
+    ).fetchone()
+    if not exists:
+        return
+    have = {row[1] for row in db.execute("PRAGMA table_info(funnel_daily)")}
+    if "utm_source" in have and "utm_campaign" in have:
+        return
+    db.execute("DROP TABLE IF EXISTS funnel_daily_campaign")
+    db.execute(
+        """
+        CREATE TABLE funnel_daily_campaign (
+            day TEXT NOT NULL,
+            event TEXT NOT NULL,
+            utm_source TEXT NOT NULL DEFAULT 'none',
+            utm_campaign TEXT NOT NULL DEFAULT 'none',
+            count INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (day, event, utm_source, utm_campaign)
+        )
+        """
+    )
+    db.execute(
+        """
+        INSERT INTO funnel_daily_campaign (day, event, utm_source, utm_campaign, count)
+        SELECT day, event, 'none', 'none', count FROM funnel_daily
+        """
+    )
+    db.execute("DROP TABLE funnel_daily")
+    db.execute("ALTER TABLE funnel_daily_campaign RENAME TO funnel_daily")
+
+
 def _apply_schema(db, statement):
     """Run one CREATE TABLE or CREATE INDEX. IF NOT EXISTS, and ignore a race."""
     try:
@@ -346,10 +406,13 @@ def migrate_db():
                 CREATE TABLE IF NOT EXISTS funnel_daily (
                     day TEXT NOT NULL,
                     event TEXT NOT NULL,
+                    utm_source TEXT NOT NULL DEFAULT 'none',
+                    utm_campaign TEXT NOT NULL DEFAULT 'none',
                     count INTEGER NOT NULL DEFAULT 0,
-                    PRIMARY KEY (day, event)
+                    PRIMARY KEY (day, event, utm_source, utm_campaign)
                 )
             """)
+            _migrate_funnel_daily(db)
             _apply_schema(
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_licenses_utm_source ON licenses(utm_source)",
@@ -534,18 +597,26 @@ def reset_funnel_limits():
 
 
 def _funnel_event_name():
-    """Accept a bare event name, or JSON {event}. Anything else is ignored."""
+    """Accept a bare event name, or JSON {event, utm_source, utm_campaign}.
+
+    A bare name has no campaign. Anything that is not one of the three
+    events is ignored. The tags are normalised and are never an address.
+    """
     raw = request.get_data(cache=True) or b""
     if len(raw) > FUNNEL_BODY_LIMIT:
         return None
     text = raw.decode("utf-8", errors="replace").strip()
     if text in FUNNEL_EVENTS:
-        return text
+        return text, "none", "none"
     data = request.get_json(force=True, silent=True)
     if isinstance(data, dict):
         event = str(data.get("event") or "").strip()
         if event in FUNNEL_EVENTS:
-            return event
+            return (
+                event,
+                normalise_funnel_tag(data.get("utm_source")),
+                normalise_funnel_tag(data.get("utm_campaign")),
+            )
     return None
 
 
@@ -2347,20 +2418,25 @@ def funnel_event():
     """Add one to today's UTC count for a Free-section event.
 
     The site sends this with navigator.sendBeacon as text/plain. The body is
-    either the event name or JSON {"event": "..."}. Only the day, the event
-    name, and the count are stored. The response is always 204.
+    the event name, or JSON with event and optional utm_source and
+    utm_campaign. The row is a count for that day, event and campaign. It
+    does not store an address, a user agent, or a visitor. The response is
+    always 204.
     """
-    event = _funnel_event_name()
-    if event and _funnel_ip_allowed(_client_ip()):
+    parsed = _funnel_event_name()
+    if parsed and _funnel_ip_allowed(_client_ip()):
+        event, source, campaign = parsed
         day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         db = get_db()
         try:
             db.execute(
                 """
-                INSERT INTO funnel_daily (day, event, count) VALUES (?, ?, 1)
-                ON CONFLICT(day, event) DO UPDATE SET count = count + 1
+                INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+                VALUES (?, ?, ?, ?, 1)
+                ON CONFLICT(day, event, utm_source, utm_campaign)
+                DO UPDATE SET count = count + 1
                 """,
-                (day, event),
+                (day, event, source, campaign),
             )
             db.commit()
         finally:
