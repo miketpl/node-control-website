@@ -184,6 +184,21 @@
                     <p>Bring your own AI provider, with your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend). Reports, task summaries, the firewall analyser, and an architect review of the estate. The anonymiser runs first.</p>
                 </div>
 
+                <div class="feature-card">
+                    <h3>Access Review <span class="tier-badge">Pro</span></h3>
+                    <p>A report of the admin accounts on Palo Alto and FortiGate firewalls: role, where the account signs in from, and notes such as two-factor or an SSH key. Cisco ASA is a preview only. ASA has no general support. Password hashes, keys, and tokens are not read into the report.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Lab Export <span class="tier-badge">Pro</span></h3>
+                    <p>Turn a saved Discovery or L2 topology, plus an optional L3 topology and a Config Backup folder, into a lab for Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Compliance by interface <span class="tier-badge">Pro</span></h3>
+                    <p>After VLAN Port Finder, tick the ports you care about. The Config Compliance Audit then checks only those interfaces. Cisco IOS, IOS-XE, NX-OS, Arista EOS, Aruba AOS-CX, and HP ProCurve / Aruba OS-Switch.</p>
+                </div>
+
             </div>
 
             <div class="safety-block">
@@ -622,6 +637,9 @@
                         <li>Bring your own AI provider. Your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend)</li>
                         <li>Anonymiser on by default. Enable AI analysis by default across all features is off on a fresh install. AI Summary checkboxes can be ticked per run</li>
                         <li>Architect review of the estate, and network-wide chat (Ask Network AI)</li>
+                        <li>Access Review of firewall admin accounts. Palo Alto and FortiGate. Cisco ASA is a preview only</li>
+                        <li>Lab Export to Cisco CML 2.10 or EVE-NG Community 6.2</li>
+                        <li>Config compliance on the interfaces you pick from VLAN Port Finder</li>
                         <li>Priority email support</li>
                     </ul>
                     <!--
@@ -726,7 +744,17 @@
                             <tr>
                                 <th>Compliance and config push</th>
                                 <td>No</td>
-                                <td>Yes</td>
+                                <td>Yes. After VLAN Port Finder, the audit can check only the interfaces you tick</td>
+                            </tr>
+                            <tr>
+                                <th>Access Review</th>
+                                <td>No</td>
+                                <td>Yes. Palo Alto and FortiGate. Cisco ASA is a preview only</td>
+                            </tr>
+                            <tr>
+                                <th>Lab Export</th>
+                                <td>No</td>
+                                <td>Cisco CML 2.10 or EVE-NG Community 6.2</td>
                             </tr>
                             <tr>
                                 <th>Monitor</th>

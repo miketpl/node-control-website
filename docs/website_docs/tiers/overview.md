@@ -35,6 +35,8 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
 | Security Audit (PSIRT), Lifecycle and EoX, and the other reports | — | ✓ | ✓ |
+| [Access Review](../reports/access-review.md) | — | ✓ | ✓ |
+| [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2 | — | ✓ | ✓ |
 | Update tab and Vuln Plan | — | — | ✓. Vuln Plan is a button on the Update tab |
 | **AI** | | | |
 | Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
@@ -85,8 +87,10 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
 - The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
 - Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
-- Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
-- Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance
+- Monitor, including live link status on L2 maps for Cisco IOS, IOS-XE, and NX-OS ports. Also IPAM, the Meraki Configurator, and the Firewall Analyser
+- [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device, so it is also available in Safe Mode
+- [Access Review](../reports/access-review.md). Admin accounts on Palo Alto and FortiGate. Cisco ASA is a preview only, and has no general support
+- Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance. After VLAN Port Finder, **Open port list** sends the ports you tick to the Config Compliance Audit, which then checks only those interfaces
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts
 - Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. **Anonymise identifiable data before sending to AI** is on by default. **Enable AI analysis by default across all features** is off on a fresh install, so the Findings review does not run until you turn it on. From 0.9.41, Monitor on Pro and the AI edition has **Ask AI**, **Ask Network AI**, and **Architect Review**. **AI review** (Assess row, ticked by default) and **AI advisory** show on Pro and the AI edition. Free has no Firewall Analyser tab. See [AI features overview](../settings/ai-features.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token

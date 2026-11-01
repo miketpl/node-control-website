@@ -22,6 +22,8 @@ The report is a self-contained HTML page. A text filter and device-type buttons 
 
 The HTML report has **Export Inventory (CSV)** and **Export Inventory (JSON)**. There is no Excel export.
 
+Device names and other text read from devices are shown as plain text on this report. A device name containing page code cannot change or run anything in the page.
+
 ## Free
 
 Inventory is the report that runs on Free, on the devices you tick. Every other report is on Pro and the AI edition. See [Reports overview](overview.md).

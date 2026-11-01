@@ -112,6 +112,8 @@ Same as L2/L3 topology — HTML file in your app support directory. Reload it an
 | Map overlapping labels | Too many nodes in one tier | Discovery has force-direction tuning to spread same-tier nodes — usually self-corrects after a few seconds of layout |
 | Walk seems hung | One slow switch holding up parallel workers | Bounded read timeout (45s) per command prevents hangs — wait or restart |
 
+Device names and other text read from devices are shown as plain text on the Discovery map. A device name containing page code cannot change or run anything in the page.
+
 ## Host names
 
 Juniper Junos and Palo Alto host names are saved without the `user@` prefix. Palo Alto host names do not carry the HA state (`(active)`, `(passive)`, and the other states), so a firewall keeps one name across a failover. FortiGate host names are saved without the trailing prompt character or the `(vdom)`.

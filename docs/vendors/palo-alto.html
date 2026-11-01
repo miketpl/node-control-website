@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -259,7 +262,9 @@
 <ul>
 <li>Commands run via SSH
 </li>
-<li><strong>Config from File</strong> sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails
+<li><strong>Config from File</strong> sends a commit only if no line errored. If a line errors, the commit is not sent and the device fails. The file's own commit and revert lines are removed, so other admins' pending changes are never committed by a plain <code>commit</code>. A file with only commit or revert lines is refused, and nothing is sent. A commit that does not finish is reported as <strong>commit outcome unknown</strong>
+</li>
+<li>In an SSH session, the <strong>Commit after push</strong> box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. If the login name cannot be used safely, nothing is sent. This is not <a href="../tasks/config-push.html">Config Push</a>. Config Push still has no reliable revert on Palo Alto
 </li>
 <li>Disables paging on connect with <code>set cli pager off</code>
 </li>

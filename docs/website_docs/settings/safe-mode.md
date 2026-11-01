@@ -22,6 +22,7 @@ In Safe Mode the Engineer dropdown is cut to:
 - **Discover Variables**
 - **Find Device** (read-only)
 - **Config Compliance Audit**
+- **Lab Export**
 
 **Find Device** runs read-only. **Config Compliance Audit** is in the list. Its remediation offer is suppressed in Safe Mode.
 
@@ -37,6 +38,8 @@ Safe Mode hides these from the dropdown:
 - **Packet Capture**
 
 **Config Compliance Remediate** stays out of Safe Mode. The audit task above does not offer remediation while Safe Mode is on.
+
+**Lab Export** does not connect to a device, so it is also available in Safe Mode. You still choose Safe Mode or Config Mode when the app opens. There is no default.
 
 When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip **Upgrade to Pro to unlock this feature**.
 

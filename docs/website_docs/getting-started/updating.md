@@ -1,6 +1,6 @@
 # Updating Node Control
 
-The current release is 0.9.45. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.
+The current release is 0.9.45. Install it over the existing copy. The library, settings, and credentials are kept. Licensing, activation, updates, and privacy work as in 0.9.44. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.
 
 ## Updating from 0.9.41
 

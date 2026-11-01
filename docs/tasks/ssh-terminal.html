@@ -68,9 +68,11 @@
       <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -222,6 +225,11 @@
 <p>There is no Auto-reconnect checkbox. When a session times out, a red banner reads <strong>Session timed out -</strong> and the reason, with a <strong>Reconnect</strong> button. Reconnect uses the same tab and the current credential profile.</p>
 <h2 id="send-config-file-and-paste">Send Config File and Paste</h2>
 <p><strong>Send Config File</strong> and <strong>Paste</strong> (<strong>Send to Devices</strong>) report a refused line as an error. That covers Aruba AOS-CX and ProCurve <code>Invalid input</code>, incomplete and ambiguous input, FortiGate <code>command parse error</code> and <code>Command fail</code>, Cisco IOS <code>Command authorization failed.</code>, and Juniper Junos load and commit errors. A line that only contains those words is not treated as a refusal.</p>
+<p><strong>Send</strong>, <strong>Send Config File</strong>, and <strong>Paste</strong> (<strong>Send to Devices</strong>) send one line at a time and stop at the first line the device refuses. The row shows the line, its position, and the device's error, and lists the lines not sent. Other devices carry on.</p>
+<p>On FortiGate, after a stop inside a config block, the pending edit is discarded and is not saved. The session goes back to the normal prompt. If that cannot be confirmed, the session is disconnected and asks you to reconnect. An <strong>Unknown action</strong> reply also stops the push.</p>
+<p>On Juniper Junos, a refused line is reported straight away with the device's own error, for example <code>syntax error.</code>, instead of waiting about two minutes for a timeout. The row shows the device's full reason lines.</p>
+<p>On Palo Alto, the <strong>Commit after push</strong> box works. Node Control commits only the changes made by its own login, and only when every line was accepted. After a refused line or a refused commit, those changes are reverted and the revert is checked. Commit and revert lines in the file are removed. Node Control decides when to commit. If the login name cannot be used safely, nothing is sent.</p>
+
 <h2 id="safe-mode-and-the-terminal">Safe Mode and the terminal</h2>
 <p>Safe Mode is session-wide. In Safe Mode, <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, and a command that is not read-only is blocked in the SSH session. The <strong>Terminal</strong> button on the log header stays visible. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <h2 id="session-sharing">Session sharing</h2>

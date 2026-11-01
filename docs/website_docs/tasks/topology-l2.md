@@ -94,6 +94,16 @@ L2 topology works on every vendor Node Control supports:
 
 Palo Alto and Meraki devices appear on L2 maps as endpoints of links (they're not switches themselves) — they're properly mapped in the [L3 topology](topology-l3.md) view instead.
 
+## Link status
+
+On Pro, Monitor can colour the cables on this map. **Link status** is on by default. Green is up, red dashed is down, and grey is unknown. Hover a cable to see both ports. That covers Cisco IOS, IOS-XE, and NX-OS ports. See [Monitor](monitor.md).
+
+After each Monitor poll, the latest status is written into the map's own page, with the time. A map opened outside Node Control shows how the network looked at the last poll. It is marked stale after 24 hours.
+
+On Pro, after an L2 topology run, the map page says **Open in Monitor for live status**.
+
+Device names and other text read from devices are shown as plain text on this map. A device name containing page code cannot change or run anything in the page. On Pro the same is true of the other topology maps and the Discovery map.
+
 ## Saving and sharing
 
 The HTML file is written to:

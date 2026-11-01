@@ -16,6 +16,7 @@ Open **Reports** in the left sidebar. It is its own page, not a task in the Engi
 | [VLAN Port Finder](vlan-port-finder.md) | — | ✓ | Which ports are on a VLAN, across the devices in scope |
 | [Meraki Usage Summary](meraki-usage-summary.md) | — | ✓ | Per-org and per-network Meraki usage |
 | [Security Audit](security-audit.md) | — | ✓ | Cisco advisories by severity, plus an optional baseline check |
+| [Access Review](access-review.md) | — | ✓ | Admin accounts on Palo Alto and FortiGate. Cisco ASA is a preview only, and has no general support |
 | [Lifecycle and EoX](lifecycle.md) | — | ✓ | End-of-sale and end-of-life dates, and a replacement plan |
 | [Change Summary](change-summary.md) | — | ✓ | Commands that were entered, and who entered them |
 | Site Subnets | — | ✓ | The subnet list [IPAM](../tasks/ipam.md) is filled from |
@@ -64,3 +65,4 @@ Parallelism is set under Settings → Reports → Workers.
 - [Security Audit](security-audit.md)
 - [Lifecycle and EoX](lifecycle.md)
 - [VLAN Port Finder](vlan-port-finder.md)
+- [Access Review](access-review.md)

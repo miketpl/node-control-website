@@ -77,6 +77,20 @@ For larger-scale monitoring, increase the interval to 1m or 5m, or split devices
 
 Graphs are zoomable and pannable. Click and drag to select a time range for closer inspection.
 
+## Link status on L2 maps
+
+**Link status** is a tick box, on by default. It colours the cables on L2 maps from the port status Monitor already polls: green for up, red dashed for down, grey when unknown. Hover a cable to see both ports. Link status covers Cisco IOS, IOS-XE, and NX-OS ports.
+
+After each poll round, the latest status is written into the map's own page. A map opened outside Node Control shows how the network looked at the last poll, with the time. It is marked stale after 24 hours.
+
+After an L2 or L3 topology run, the map page says **Open in Monitor for live status**.
+
+## Refused logins
+
+Monitor stops trying a device after 2 refused logins, and it backs off from devices that do not answer. A **Retry** button on that device starts it again. Every poll goes through the same safe-command check as the rest of the app.
+
+A refused login shows grey with **Login refused**, not red as if the device were down. Alerts and hover tips use short reasons: **login refused (1 of 2)**, **Stopped**, **Backing off**, and **Unreachable**. They do not show the raw connection error.
+
 ## Vendor coverage
 
 Same as the rest of Node Control:
@@ -93,7 +107,9 @@ Same as the rest of Node Control:
 
 Vendor-specific gaps are documented in [Vendors](../vendors/overview.md).
 
-On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from `show version`.
+On AOS-CX, Health Monitor reads CPU and memory. On Arista EOS, Health Monitor reads memory from `show version`. CPU is reported as well, on recent EOS versions where the old command was refused, in the Health Monitor report and in Monitor.
+
+Device names and other text read from devices are shown as plain text on the Health Monitor and Firewall Health report pages. A device name containing page code cannot change or run anything in the page.
 
 ## Stopping / removing
 

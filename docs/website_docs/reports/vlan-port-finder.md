@@ -67,6 +67,10 @@ On AOS-CX the report fills description, port status, Last Active, and the switch
 
 If a vendor doesn't support the report (e.g., a basic L2 switch with limited CLI), the result table simply omits those devices and notes them in the run log. The other devices in scope still report normally.
 
+## Open port list
+
+After a run, **Open port list** lets you tick the ports you care about and send them to the [Config Compliance Audit](../tasks/config-compliance.md#compliance-by-interface). The audit then checks only those interfaces, instead of whole devices.
+
 ## Saving / exporting
 
 Output is an Excel workbook (.xlsx, on by default) and/or an HTML report. The HTML report has an Export CSV link above each table. Config Push reads the .xlsx.

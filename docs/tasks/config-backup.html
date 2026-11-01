@@ -66,9 +66,11 @@
       <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link active">Config Backup and Save Config</a>
       <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
@@ -91,6 +93,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -186,6 +189,11 @@
 <p>One timestamp covers the whole run. A row shows <strong>Backed up</strong> or FAIL. The summary is <code>Complete - X saved, Y failed. Output: &lt;dir&gt;</code>.</p>
 <p><strong>Dry run</strong> logs the commands and the file it would write. <strong>Stop</strong> cancels the run.</p>
 <p>On AOS-CX, an operators-level login cannot read the config. Config Backup tells you an admin or manager user is needed. It does not save an empty file. Save Config needs the same login.</p>
+<h2 id="extreme-exos">Extreme EXOS</h2>
+<p>An EXOS switch reached on first contact through the Cisco driver is recognised from <code>show version</code> and reconnected on the EXOS driver. Commands no longer wait about 30 seconds each, and backups no longer time out.</p>
+<p>Config Backup reads the whole EXOS configuration and saves it only if it is complete. A read that stops early, is missing configuration sections that an earlier backup of the same switch had, or comes from an account without permission, is not saved. The row says why.</p>
+<p>The first backup of a switch is read twice and saved only if both reads match. If they differ, for example because the configuration changed in between, nothing is saved. Run the backup again. Later backups are read once and checked against the last good one.</p>
+<p>EXOS host names are saved without the prompt's changing number. On Free that is the L2 map and backups. On Pro it is Discovery, the topology maps, and backups. See <a href="../vendors/extreme.html">Extreme</a>.</p>
 <h2 id="save-config">Save Config</h2>
 <p><strong>Save Config</strong> writes the running configuration into the saved config on the devices that are ticked or highlighted in the library. Config Backup does not do that, and <a href="config-from-file.html">Config from File</a> does not either.</p>
 <ol>
