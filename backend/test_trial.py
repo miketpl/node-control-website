@@ -137,7 +137,8 @@ class TrialTests(unittest.TestCase):
         self.assertEqual(signed["min_supported_version"], "0.9.41")
         self.assertEqual(signed["machine_hash_echo"], self.machine)
         self.assertLessEqual(signed["lease_expires_at"], signed["trial"]["expires_at"])
-        self.assertIn("test-only-k2", trial.current_and_next_kids())
+        self.assertNotIn("test-only-k2", signed["kids"])
+        self.assertNotIn("test-only-k2", trial.current_and_next_kids())
         db = get_db()
         stored = db.execute("SELECT machine_hash, email_hash FROM free_trials").fetchone()
         counted = db.execute(
@@ -616,6 +617,23 @@ class TrialTests(unittest.TestCase):
         )
         self.assertEqual(started.status_code, 409)
         self.assertEqual(started.get_json()["error"]["details"]["reason"], "disabled")
+
+    def test_next_kid_is_omitted_without_a_valid_seed(self):
+        fixture_seed = os.environ["LEASE_SIGNING_KEY"]
+        os.environ["LEASE_SIGNING_KID_NEXT"] = "test-only-k2"
+        os.environ.pop("LEASE_SIGNING_KEY_NEXT", None)
+        self.assertNotIn("test-only-k2", trial.current_and_next_kids())
+        os.environ["LEASE_SIGNING_KEY_NEXT"] = "not-a-seed"
+        self.assertNotIn("test-only-k2", trial.current_and_next_kids())
+        os.environ["LEASE_SIGNING_KID_NEXT"] = "knext"
+        self.assertNotIn("knext", trial.current_and_next_kids())
+        os.environ["LEASE_SIGNING_KEY_NEXT"] = fixture_seed
+        self.assertIn("knext", trial.current_and_next_kids())
+        os.environ["LEASE_SIGNING_KID_NEXT"] = "test-only-k2"
+        self.assertIn("test-only-k2", trial.current_and_next_kids())
+        app.config["TESTING"] = False
+        self.assertNotIn("test-only-k2", trial.current_and_next_kids())
+        self.assertNotIn("test-only-k1", trial.current_and_next_kids())
 
     def test_test_only_kid_is_refused_unless_testing_and_next_key_verifies(self):
         app.config["TESTING"] = False

@@ -422,12 +422,18 @@ def verify_lease(token):
 
 
 def current_and_next_kids():
-    """Kids the app should accept. A test-only kid is omitted outside tests."""
+    """Kids the app should accept. A test-only kid is omitted outside tests.
+
+    The next kid is listed only when LEASE_SIGNING_KEY_NEXT decodes to an
+    Ed25519 seed and the kid itself is allowed.
+    """
     kids = []
-    for name in ("LEASE_SIGNING_KID", "LEASE_SIGNING_KID_NEXT"):
-        kid = (os.environ.get(name) or "").strip()
-        if _kid_ok(kid):
-            kids.append(kid)
+    current = (os.environ.get("LEASE_SIGNING_KID") or "").strip()
+    if _kid_ok(current):
+        kids.append(current)
+    nxt = _load_signing_key("LEASE_SIGNING_KEY_NEXT", "LEASE_SIGNING_KID_NEXT")
+    if nxt:
+        kids.append(nxt[0])
     return kids
 
 
