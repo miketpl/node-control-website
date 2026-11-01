@@ -53,7 +53,7 @@ For "where does this packet go?" type questions, L3 + WAN together usually answe
 ## Vendor support
 
 - Cisco IOS / IOS-XE — full BGP + IPSec
-- Cisco ASA — IPSec only (no BGP unless licensed)
+- Cisco ASA has no general support.
 - Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels
 - Velocloud, Viptela — SD-WAN overlay
 - Juniper — BGP, IPSec, MPLS pseudowires
