@@ -8,7 +8,6 @@ Node Control connects to network devices over SSH using vendor-specific drivers 
 |---|---|---|
 | [Cisco IOS / IOS-XE](cisco.md) | `cisco_ios`, `cisco_xe` | ✓ First-class |
 | [Cisco NX-OS](cisco.md#nx-os) | `cisco_nxos` | ✓ First-class |
-| [Cisco ASA](cisco.md#asa) | `cisco_asa` | ✓ |
 | [Cisco Meraki](meraki.md) | (Dashboard API, not SSH) | ✓ |
 | [Palo Alto PAN-OS](palo-alto.md) | `paloalto_panos` | ✓ First-class |
 | [HP ProCurve](hp-procurve.md) | `hp_procurve_cli` (aliased to `aruba_osswitch`) | ✓ First-class |
@@ -92,7 +91,7 @@ You don't have to know any of this — Node Control routes the right command bas
 
 For quirks, gotchas, and feature gaps:
 
-- [Cisco IOS / IOS-XE / NX-OS / ASA](cisco.md) — IOS-XR is not supported
+- [Cisco IOS / IOS-XE / NX-OS](cisco.md) — IOS-XR is not supported
 - [Palo Alto PAN-OS](palo-alto.md)
 - [HP ProCurve](hp-procurve.md)
 - [Aruba AOS-CX](aruba-aos-cx.md)

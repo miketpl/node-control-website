@@ -2,7 +2,7 @@
 
 **L2 Topology Builder** runs on **Free**, **Pro**, and the **AI** edition. On Free it is one of the five tasks that are not greyed out. Safe Mode leaves it in the list.
 
-The map walks the switches in scope, reads each MAC address table and the LLDP neighbours, and CDP on Cisco, and renders an HTML map of switch-to-switch connectivity. Free is free for up to 25 devices, so that is the largest map Free will draw.
+The map walks the switches in scope, reads each MAC address table and the LLDP neighbours, and CDP on Cisco, and renders an HTML map of switch-to-switch connectivity. The Free Edition is free for up to 25 devices, so that is the largest map Free will draw.
 
 On Arista EOS the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers, for LLDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). It does not use the MAC table. CDP is Cisco only.
 

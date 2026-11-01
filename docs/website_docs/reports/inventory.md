@@ -51,7 +51,7 @@ For modular chassis (e.g., 9500 supervisor + linecards), the report shows each l
 
 ## Cluster / HA pair handling
 
-Active/standby firewall pairs (Palo Alto, ASA, Checkpoint, Fortigate) appear as two rows.
+Active/standby firewall pairs appear as two rows.
 
 ## Filtering
 
@@ -78,7 +78,7 @@ On Cisco NX-OS, the host name comes from `Device name:` and is not `Kernel`. Inv
 
 On Cisco IOS / IOS-XE, Inventory reads the model from the `cisco <model>` line of `show version` when there is no Model Number line, the same way Asset Lifecycle does.
 
-On HP ProCurve / Aruba OS-Switch, firmware with a two-column `show system`: the uptime is only the Up Time value, and the serial number in the right-hand column is read.
+On HP ProCurve / Aruba OS-Switch firmware with a two-column `show system`, the serial number in the right-hand column is read.
 
 ## Next steps
 

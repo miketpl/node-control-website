@@ -23,7 +23,7 @@ Config-changing tasks check Safe Mode again inside the task, before credentials 
 
 Every time it opens, you choose Safe Mode or Config Mode. There is no default. Cancelling that choice quits the app. **Remember my choice** is off until you tick it. Settings → General → Startup Mode can be Ask every time, Always Safe Mode, or Always Config Mode. With nothing saved, it asks every time.
 
-In Safe Mode only read-only commands are sent, the write tasks leave the list, and the terminal is off. **HTTPS** is hidden and **Console** is hidden. A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. The allowlist is checked first: a command on the allowlist passes even if it also matches the blocklist. There is no list in Settings where you add your own never-run commands, and Safe Mode changes are not written to an audit log.
+In Safe Mode only read-only commands are sent, the write tasks leave the list, SSH terminal mode is off. The local network terminal on the log header stays available. **HTTPS** is hidden and **Console** is hidden. A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. The allowlist is checked first: a command on the allowlist passes even if it also matches the blocklist. There is no list in Settings where you add your own never-run commands, and Safe Mode changes are not written to an audit log.
 
 ## Compliance use cases
 

@@ -58,7 +58,7 @@ Three ways, in increasing automation:
 
 ## Free tier device cap
 
-Free is free for up to 25 devices.
+The Free Edition is free for up to 25 devices.
 
 - A manual add refuses the 26th device
 - A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP, and the log says so. Library Updater does not run on Free

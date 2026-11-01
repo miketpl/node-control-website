@@ -7,7 +7,7 @@ The "where is this MAC / IP?" tool. Give Find Device a MAC address, or an IP add
 | Tier | What works |
 |---|---|
 | Free | You pick one switch to start from, and it follows the trail from there to the edge port. Meraki wireless clients are included |
-| Pro / AI | Pro starts from the core switches at every site at once |
+| Pro / AI | Pick a site (or All); it starts from that site's saved core switches and follows CDP/LLDP into the fabric, including Meraki wireless clients. |
 
 On AOS-CX the wired search reads the MAC address table and the LLDP table.
 
@@ -64,7 +64,7 @@ For each starting core / dist switch (configured per site in Settings):
 
 If you give Find Device an IP address (not a MAC):
 
-It asks the switch you picked for that IP in its ARP table. If that switch does not hold it, the row says it could not resolve the IP to a MAC.
+It asks each starting switch (on Free, the one you picked; on Pro, the site's core switches) for that IP in its ARP table, VRF-aware. If none holds it, the row says it could not resolve the IP to a MAC.
 
 ## Meraki wireless lookup
 

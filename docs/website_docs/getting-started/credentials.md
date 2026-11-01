@@ -8,7 +8,6 @@ Node Control connects to your devices over SSH and needs login credentials to do
 |---|---|
 | macOS | Apple Keychain (Login keychain) |
 | Windows | Windows Credential Manager |
-| Linux | Secret Service (GNOME Keyring / KWallet) |
 
 See [How credentials are stored](../security/credential-storage.md) for the full security model.
 

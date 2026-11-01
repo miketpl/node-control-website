@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -166,7 +165,7 @@
 </tr>
 <tr>
 <td>Pro / AI</td>
-<td>Pro starts from the core switches at every site at once</td>
+<td>Pick a site (or All); it starts from that site&#x27;s saved core switches and follows CDP/LLDP into the fabric, including Meraki wireless clients.</td>
 </tr>
 </tbody>
 </table>
@@ -239,7 +238,7 @@
 <h2 id="ip-to-mac-resolution">IP-to-MAC resolution</h2>
 <p>If you give Find Device an IP address (not a MAC):</p>
 <ol>
-<li>It asks the switch you picked for that IP in its ARP table. If that switch does not hold it, the row says it could not resolve the IP to a MAC
+<li>It asks each starting switch (on Free, the one you picked; on Pro, the site&#x27;s core switches) for that IP in its ARP table, VRF-aware. If none holds it, the row says it could not resolve the IP to a MAC
 </li>
 </ol>
 <h2 id="meraki-wireless-lookup">Meraki wireless lookup</h2>

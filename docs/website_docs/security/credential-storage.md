@@ -8,7 +8,6 @@ Passwords and API keys are encrypted on your machine, and the key that unlocks t
 |---|---|---|
 | **macOS** | Apple Keychain (Login keychain) | Keychain Access.app |
 | **Windows** | Windows Credential Manager | Control Panel → User Accounts → Credential Manager |
-| **Linux** | Secret Service (GNOME Keyring, KWallet, KeePassXC-Secret-Service) | OS-specific UI |
 
 The master key is what the OS credential store holds. Passwords stay in the encrypted blob.
 

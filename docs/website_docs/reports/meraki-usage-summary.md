@@ -81,7 +81,7 @@ Find Device's wireless lookup uses the same Meraki API key. After running Meraki
 
 ## Export
 
-Export is CSV and JSON. There is no Excel export.
+The HTML report has an Export CSV link above each table. There is no Excel export.
 
 ## Troubleshooting
 

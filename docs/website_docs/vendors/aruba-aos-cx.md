@@ -78,7 +78,7 @@ An all-AOS-CX site reports interfaces, rates, utilisation, and key links. LAG ra
 
 On Pro and the AI edition.
 
-Asset Lifecycle and Health Monitor read model, serial, version, uptime, CPU, and memory.
+Asset Lifecycle reads model, serial, version and uptime. Health Monitor reads CPU and memory.
 
 ## Site Subnets
 

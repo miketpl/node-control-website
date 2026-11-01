@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: free for up to 25 devices, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with. The Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -29,7 +29,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
-| Find Device | one switch to start from, including Meraki wireless clients | site and cores | site and cores |
+| Find Device | one switch to start from, including Meraki wireless clients | Site and cores, including Meraki wireless clients | Site and cores, including Meraki wireless clients |
 | File Transfer task, Packet Capture | greyed | ✓, hidden in Safe Mode | ✓, hidden in Safe Mode |
 | Every other task | greyed, tooltip Upgrade to Pro to unlock this feature | ✓ | ✓ |
 | **Reports** | | | |
@@ -43,11 +43,11 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 
 ## Free
 
-Free is a working copy for a small estate, not a timed demo.
+Free is a working copy for a small estate.
 
 ### What you get
 
-- 25 devices in the library table. No time limit. The status bar shows **FREE VERSION**
+- 25 devices in the library table. The status bar shows **FREE VERSION**
 - Sidebar: Home, Engineer, Reports, File Transfer
 - Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
 - The Inventory report
@@ -86,7 +86,7 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
 - Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
 - Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
-- Config Push, with revert on Cisco IOS, IOS-XE, and NX-OS, the File Transfer task, Packet Capture, Config from File, and config compliance
+- Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts
 - Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. **Anonymise identifiable data before sending to AI** is on by default. **Enable AI analysis by default across all features** is off on a fresh install, so the Findings review does not run until you turn it on. From 0.9.41, Monitor on Pro and the AI edition has **Ask AI**, **Ask Network AI**, and **Architect Review**. **AI review** (Assess row, ticked by default) and **AI advisory** show on Pro and the AI edition. Free has no Firewall Analyser tab. See [AI features overview](../settings/ai-features.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token

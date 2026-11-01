@@ -126,7 +126,6 @@
       <a href="credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="safe-mode.html" class="docs-nav-link active">Safe Mode &amp; Allowlist</a>
-      <a href="audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -192,7 +191,7 @@
 </ul>
 <h2 id="default-state">Default state</h2>
 <p>Safe Mode is session-wide. It is not a per-tab setting.</p>
-<p>Every time it opens, you choose Safe Mode or Config Mode. There is no default. Cancelling that choice quits the app. <strong>Remember my choice</strong> is off until you tick it. With nothing saved, Startup Mode asks every time. In Safe Mode only read-only commands are sent, the write tasks leave the list, and the terminal is off. A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. There is no list in Settings where you add your own never-run commands.</p>
+<p>Every time it opens, you choose Safe Mode or Config Mode. There is no default. Cancelling that choice quits the app. <strong>Remember my choice</strong> is off until you tick it. With nothing saved, Startup Mode asks every time. In Safe Mode only read-only commands are sent, the write tasks leave the list, SSH terminal mode is off. The local network terminal on the log header stays available. A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. There is no list in Settings where you add your own never-run commands.</p>
 <h2 id="compliance-use-cases">Compliance use cases</h2>
 <p>For organisations that need a control against accidental change, choose Safe Mode at startup. You can set Startup Mode to Always Safe Mode. There is no audit log of that choice.</p>
 <p>For deployment to multiple machines, copy <code>settings.json</code>. See <a href="../settings/overview.html#sharing-a-settings-file">Sharing a settings file</a>.</p>
@@ -213,8 +212,6 @@
 <h2 id="related">Related</h2>
 <ul>
 <li><a href="../settings/safe-mode.html">Safe Mode</a> — Select Mode, Startup Mode, and what the session blocks
-</li>
-<li><a href="audit-log.html">Audit log</a> — what gets logged
 </li>
 <li><a href="credential-storage.html">Credential storage</a> — for the credential side of the security model
 </li>

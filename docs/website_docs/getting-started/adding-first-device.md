@@ -53,7 +53,7 @@ See [Library Updater](../library/subnet-scan.md) for the dialog, including the o
 
 ## Free tier device limit
 
-Free is free for up to 25 devices. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
+The Free Edition is free for up to 25 devices. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 

@@ -126,7 +126,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -267,7 +266,7 @@
 <p>For stacks (Cisco 3850 stack, Aruba CX VSF, Juniper VC) and chassis (Cisco 9500, Arista 7300, Juniper MX), each member appears as a separate row tagged with the master&#x27;s hostname plus member number.</p>
 <p>For modular chassis (e.g., 9500 supervisor + linecards), the report shows each line card model and serial.</p>
 <h2 id="cluster-ha-pair-handling">Cluster / HA pair handling</h2>
-<p>Active/standby firewall pairs (Palo Alto, ASA, Checkpoint, Fortigate) appear as two rows. The HA status column shows which is active, which is standby — useful during failover validation.</p>
+<p>Active/standby firewall pairs appear as two rows. The HA status column shows which is active, which is standby — useful during failover validation.</p>
 <h2 id="filtering">Filtering</h2>
 <p>The filter bar above the result table accepts substring matches across all columns. Useful filters:</p>
 <ul>
@@ -335,7 +334,7 @@
 </table>
 <p>On Cisco NX-OS, the host name comes from <code>Device name:</code> and is not <code>Kernel</code>. Inventory reads the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version.</p>
 <p>On Cisco IOS / IOS-XE, Inventory reads the model from the <code>cisco &lt;model&gt;</code> line of <code>show version</code> when there is no Model Number line, the same way Asset Lifecycle does.</p>
-<p>On HP ProCurve / Aruba OS-Switch, firmware with a two-column <code>show system</code>: the uptime is only the Up Time value, and the serial number in the right-hand column is read.</p>
+<p>On HP ProCurve / Aruba OS-Switch, firmware with a two-column <code>show system</code>: the serial number in the right-hand column is read.</p>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="overview.html">Other reports</a>

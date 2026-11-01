@@ -106,7 +106,7 @@ Only interface config can be reverted.
 
 Revert warns about drift. It does not detect drift.
 
-Juniper Junos loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Config Push revert works on Cisco IOS, IOS-XE, and NX-OS, not on Juniper.
+Juniper Junos loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.
 
 Revert is refused whenever the app-wide Safe Mode is on.
 
@@ -114,7 +114,7 @@ Revert is refused whenever the app-wide Safe Mode is on.
 
 Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.
 
-Config Push revert works on Cisco IOS, IOS-XE, and NX-OS. It does not revert other vendors.
+Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.
 
 The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
 
