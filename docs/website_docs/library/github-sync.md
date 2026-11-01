@@ -134,6 +134,8 @@ Every push and pull is logged locally in `library_sync.log` next to the DB file.
 | Pull shows no diff but you know the remote changed | Cache issue — restart the app | The library JSON is fetched once per session |
 | "Repo not found" | Typo in repo path, or token doesn't have access to it | Verify in a browser that you can see the repo with the same account |
 
+**Apply** sticks. Libraries with category tabs, manual rows, or padded tab names do not bring the same review dialog back on every sync. An Apply failure is shown in a message box.
+
 ## Next steps
 
 - [Library overview](overview.md)

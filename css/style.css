@@ -2071,6 +2071,21 @@ select.form-input {
     border-color: var(--cyan);
 }
 
+/* Thirteen quotes: keep the dot row on one line at 320px. */
+@media (max-width: 400px) {
+    .testimonial-carousel.is-ready .testimonial-controls {
+        gap: 8px;
+    }
+    .testimonial-dots {
+        gap: 3px;
+    }
+}
+@media (max-width: 340px) {
+    .testimonial-dots {
+        gap: 2px;
+    }
+}
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .features-grid,

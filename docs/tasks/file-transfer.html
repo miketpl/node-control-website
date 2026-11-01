@@ -172,7 +172,7 @@
 <h3 id="remote-client">Remote client</h3>
 <p>The section is collapsed, and its title is <strong>Remote client - send / fetch to an SFTP server</strong>. It is on Free as well as Pro and the AI edition.</p>
 <h2 id="the-file-transfer-task">The File Transfer task</h2>
-<p>The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko.</p>
+<p>The task pushes or pulls a file to or from device flash over SCP or TFTP, via Netmiko. A vendor without a file-transfer driver is skipped before any command is sent. The row reads <code>SKIP, &quot;File Transfer not supported on &lt;type&gt;&quot;</code>.</p>
 <p>The dialog is <strong>File Transfer</strong>:</p>
 <ul>
 <li><strong>Upload to device</strong> / <strong>Download from device</strong>

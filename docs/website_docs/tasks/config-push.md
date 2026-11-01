@@ -70,6 +70,10 @@ Uplink detection skips a port with more than 2 VLANs. Trunk mode has a checkbox 
 
 Port-channel members are detected live and block that switch. The only override is a trunk-mode option armed by typing `UPLINK`. It never unblocks SVIs, loopbacks, management, or tunnels.
 
+A Juniper Junos interface that is a LAG (`aeN`) member is blocked like a Cisco port-channel member, with the same **UPLINK** override. Aruba AOS-CX LAG members and ProCurve / Aruba OS-Switch trunk members are blocked the same way, and lag and Trk aggregates like port-channels. The typed **UPLINK** override still lets them through. Their rows say `LAG/trunk members`.
+
+On ProCurve / Aruba OS-Switch, trunk membership is read from the running configuration once per device. If that read fails, is not recognised, or has a trunk port range that cannot be expanded, the device is blocked unless the typed **TRUNKS** override (or **UPLINK**) is ticked.
+
 ## Preview and run
 
 The preview is on by default. There is no separate dry run. The preview is the dry run.
@@ -79,6 +83,12 @@ It shows the switches and interfaces, with ticks, editable config per switch, la
 How many switches run at once follows the **Conns** spinner on the main Engineer page. That spinner is 1 to 50, and the default is 6. Config Push caps it at 4, so the run is `min(4, Conns)` switches at once, on separate SSH sessions. Settings **Default Thread Count** does not drive it.
 
 A result is OK, WARN, BLOCKED, SKIP, or FAIL. Output is scanned for vendor errors and flagged WARN.
+
+Back from the preview, and the stops for a source file that cannot be read, a file with no ports, **No ports matched**, and No to the uptime warning, return to the filled-in first screen instead of ending the run. The typed **UPLINK** override is cleared each time that screen comes back and has to be typed again. A typed **TRUNKS** override is kept.
+
+The top summary line, each device's tab title, its Include box, and its Interfaces cell recount as you tick or untick ports and devices, and match the pre-push confirmation.
+
+A device that is blocked (nothing pushed) is counted as blocked in the summary (`N blocked`), not as succeeded. The run is not reported as a success while anything was blocked.
 
 Saving is opt-in and off by default. It uses the vendor save command.
 
@@ -96,11 +106,15 @@ Only interface config can be reverted.
 
 Revert warns about drift. It does not detect drift.
 
+Juniper Junos loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Each interface is snapshotted before the push, and revert restores that snapshot the same way. If the snapshot could not be taken, the revert is marked as manual.
+
+Revert is refused whenever the app-wide Safe Mode is on.
+
 ## Vendors and edition
 
-Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Palo Alto, Dell, and Extreme.
+Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.
 
-Full support is Cisco IOS, IOS-XE, and NX-OS only. On any other vendor the task can send a template, and nothing else: no activity targeting, and no reliable revert.
+Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no activity targeting and no reliable revert. (On Palo Alto, Config from File discards its own uncommitted changes when its commit is skipped or refused. See [Config from File](config-from-file.md).)
 
 The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
 

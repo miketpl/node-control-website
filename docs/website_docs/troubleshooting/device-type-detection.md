@@ -135,6 +135,12 @@ The detection system is designed to be:
 
 This makes detection issues recoverable — they don't cascade silently.
 
+## Wrong-driver reconnect
+
+A device reached on another driver and identified as Juniper Junos, Aruba AOS-CX, Arista EOS, or Aruba OS-Switch is reconnected on its own driver. If that reconnect fails, the connection stops instead of carrying on under the wrong driver. HP ProCurve, Palo Alto, and the other vendors connect as before.
+
+A device whose type you set with **Change Device Type**: if its own driver will not open and a fallback driver logs in, the session is reopened on the type you chose. If that fails too, the connection stops with that driver's real error instead of staying on the fallback.
+
 ## Next steps
 
 - [Vendor overview](../vendors/overview.md)

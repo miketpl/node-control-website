@@ -88,6 +88,8 @@ CSV / XLSX / HTML, same as other reports.
 | Some interfaces missing | Sub-interfaces or VLAN interfaces aren't counted by default | Settings → Reports → Include sub-interfaces |
 | Wildly inflated peak values | Single short burst skews the peak | Use 5-min avg as the more reliable indicator |
 
+On Cisco NX-OS, MAC-table entries are read on their real port. The age column is not taken as the port, and `vPC Peer-Link` is not cut short. IOS, IOS-XE, and Arista read as before.
+
 ## Next steps
 
 - [Port Utilisation](port-utilisation.md) — for per-port detail

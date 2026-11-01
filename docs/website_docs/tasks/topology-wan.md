@@ -58,6 +58,7 @@ For "where does this packet go?" type questions, L3 + WAN together usually answe
 - Velocloud, Viptela — SD-WAN overlay
 - Juniper — BGP, IPSec, MPLS pseudowires
 - Arista — BGP
+- FortiGate — treated as a firewall, not an access switch
 
 ## Troubleshooting
 
