@@ -637,17 +637,19 @@ class LicenceApiTests(unittest.TestCase):
         db = get_db()
         cols = [row["name"] for row in db.execute("PRAGMA table_info(funnel_daily)")]
         rows = db.execute(
-            "SELECT day, event, count FROM funnel_daily ORDER BY event"
+            "SELECT day, event, utm_source, utm_campaign, count FROM funnel_daily ORDER BY event"
         ).fetchall()
         db.close()
-        self.assertEqual(cols, ["day", "event", "count"])
+        self.assertEqual(
+            cols, ["day", "event", "utm_source", "utm_campaign", "count"]
+        )
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         self.assertEqual(
-            [(row["day"], row["event"], row["count"]) for row in rows],
+            [(row["day"], row["event"], row["utm_source"], row["utm_campaign"], row["count"]) for row in rows],
             [
-                (today, "free_form_start", 1),
-                (today, "free_form_submit", 1),
-                (today, "free_section_view", 1),
+                (today, "free_form_start", "none", "none", 1),
+                (today, "free_form_submit", "none", "none", 1),
+                (today, "free_section_view", "none", "none", 1),
             ],
         )
 
@@ -752,6 +754,162 @@ class LicenceApiTests(unittest.TestCase):
         ).fetchone()["count"]
         db.close()
         self.assertEqual(still, 10)
+
+    def test_funnel_tags_are_normalised_and_counted_apart(self):
+        self.assertEqual(api.normalise_funnel_tag(None), "none")
+        self.assertEqual(api.normalise_funnel_tag("   "), "none")
+        self.assertEqual(api.normalise_funnel_tag("  LinkedIn  "), "linkedin")
+        self.assertEqual(api.normalise_funnel_tag("ok.name-1_a"), "ok.name-1_a")
+        self.assertEqual(api.normalise_funnel_tag("a" * 70), "a" * 64)
+        self.assertEqual(api.normalise_funnel_tag("launch<script>"), "other")
+        self.assertEqual(api.normalise_funnel_tag("hello world"), "other")
+        self.assertEqual(api.normalise_funnel_tag("café"), "other")
+
+        headers = {"CF-Connecting-IP": "203.0.113.77"}
+        first = self.client.post(
+            "/api/funnel-event",
+            data=json.dumps({
+                "event": "free_section_view",
+                "utm_source": "LinkedIn",
+                "utm_campaign": "Launch Day",
+            }),
+            content_type="text/plain",
+            headers=headers,
+        )
+        second = self.client.post(
+            "/api/funnel-event",
+            data=json.dumps({
+                "event": "free_section_view",
+                "utm_source": "linkedin",
+                "utm_campaign": "launch-day",
+            }),
+            content_type="text/plain",
+            headers=headers,
+        )
+        plain = self.client.post(
+            "/api/funnel-event",
+            data=b"free_section_view",
+            content_type="text/plain",
+            headers=headers,
+        )
+        self.assertEqual(first.status_code, 204)
+        self.assertEqual(second.status_code, 204)
+        self.assertEqual(plain.status_code, 204)
+        db = get_db()
+        rows = db.execute(
+            """
+            SELECT utm_source, utm_campaign, count FROM funnel_daily
+            WHERE event = 'free_section_view' ORDER BY utm_campaign
+            """
+        ).fetchall()
+        stored = json.dumps([tuple(row) for row in rows])
+        db.close()
+        self.assertEqual(
+            [tuple(row) for row in rows],
+            [
+                ("linkedin", "launch-day", 1),
+                ("none", "none", 1),
+                ("linkedin", "other", 1),
+            ],
+        )
+        self.assertNotIn("203.0.113.77", stored)
+        self.assertNotIn("LinkedIn", stored)
+
+    def test_old_funnel_table_keeps_its_rows_as_none(self):
+        path = tempfile.NamedTemporaryFile(prefix="nc-old-funnel-", suffix=".db", delete=False)
+        path.close()
+        raw = sqlite3.connect(path.name)
+        raw.execute(
+            """
+            CREATE TABLE funnel_daily (
+                day TEXT NOT NULL,
+                event TEXT NOT NULL,
+                count INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (day, event)
+            )
+            """
+        )
+        raw.execute(
+            "INSERT INTO funnel_daily (day, event, count) VALUES ('2026-10-01', 'free_section_view', 7)"
+        )
+        raw.commit()
+        try:
+            api._migrate_funnel_daily(raw)
+            api._migrate_funnel_daily(raw)
+            raw.commit()
+            cols = [row[1] for row in raw.execute("PRAGMA table_info(funnel_daily)")]
+            row = raw.execute("SELECT * FROM funnel_daily").fetchone()
+            raw.execute(
+                """
+                INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+                VALUES ('2026-10-01', 'free_section_view', 'linkedin', 'launch', 3)
+                """
+            )
+            raw.commit()
+            count = raw.execute("SELECT COUNT(*) FROM funnel_daily").fetchone()[0]
+            kept = raw.execute(
+                """
+                SELECT count FROM funnel_daily
+                WHERE utm_source = 'none' AND utm_campaign = 'none'
+                """
+            ).fetchone()[0]
+        finally:
+            raw.close()
+            os.unlink(path.name)
+        self.assertEqual(cols, ["day", "event", "utm_source", "utm_campaign", "count"])
+        self.assertEqual(row[0], "2026-10-01")
+        self.assertEqual(row[1], "free_section_view")
+        self.assertEqual(row[2], "none")
+        self.assertEqual(row[3], "none")
+        self.assertEqual(row[4], 7)
+        self.assertEqual(count, 2)
+        self.assertEqual(kept, 7)
+
+    def test_funnel_command_by_campaign_splits_the_day(self):
+        from datetime import timedelta
+        from zoneinfo import ZoneInfo
+        import admin_cli
+        uk_today = datetime.now(ZoneInfo("Europe/London")).date().isoformat()
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+            VALUES (?, 'free_section_view', 'linkedin', 'launch', 6)
+            """,
+            (uk_today,),
+        )
+        db.execute(
+            """
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+            VALUES (?, 'free_section_view', 'none', 'none', 4)
+            """,
+            (uk_today,),
+        )
+        db.commit()
+        db.close()
+        previous = os.environ.get("DB_PATH")
+        os.environ["DB_PATH"] = app.config["DB_PATH"]
+        try:
+            with patch("sys.stdout", new_callable=StringIO) as totals:
+                admin_cli.cmd_funnel(argparse.Namespace(days=1, by_campaign=False))
+            with patch("sys.stdout", new_callable=StringIO) as split:
+                admin_cli.cmd_funnel(argparse.Namespace(days=1, by_campaign=True))
+        finally:
+            if previous is None:
+                os.environ.pop("DB_PATH", None)
+            else:
+                os.environ["DB_PATH"] = previous
+        total_lines = totals.getvalue().strip().splitlines()
+        self.assertTrue(total_lines[1].startswith(uk_today + "\t10\t0\t0\t"))
+        split_lines = split.getvalue().strip().splitlines()
+        self.assertEqual(split_lines[0], "day\tutm_source\tutm_campaign\tevent\tcount")
+        self.assertEqual(
+            split_lines[1:],
+            [
+                f"{uk_today}\tlinkedin\tlaunch\tfree_section_view\t6",
+                f"{uk_today}\tnone\tnone\tfree_section_view\t4",
+            ],
+        )
 
     def test_migration_keeps_an_existing_row_on_the_old_schema(self):
         old = tempfile.NamedTemporaryFile(prefix="nc-old-lic-", suffix=".db", delete=False)
