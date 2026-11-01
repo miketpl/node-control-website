@@ -522,6 +522,95 @@ class TrialTests(unittest.TestCase):
         derived = Ed25519PrivateKey.from_private_bytes(seed).public_key().public_bytes_raw()
         self.assertEqual(base64.urlsafe_b64encode(derived).decode("ascii").rstrip("="), fields["public_key"])
 
+    def _rotate(self, path):
+        stdout, stderr, logged = StringIO(), StringIO(), StringIO()
+        handler = logging.StreamHandler(logged)
+        root = logging.getLogger()
+        previous = root.level
+        root.setLevel(logging.DEBUG)
+        root.addHandler(handler)
+        try:
+            with patch("sys.stdout", stdout), patch("sys.stderr", stderr):
+                code = trial.rotate(path)
+        finally:
+            root.removeHandler(handler)
+            root.setLevel(previous)
+        return code, stdout.getvalue(), stderr.getvalue(), logged.getvalue()
+
+    def test_lease_rotate_moves_next_on_a_temp_file_and_hides_the_seed(self):
+        import admin_cli
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        seed_b64 = _load_fixture()["private_seed_b64"]
+        seed = base64.b64decode(seed_b64)
+        original = (
+            "SMTP_FROM_NAME=Node Control\n"
+            "LEASE_SIGNING_KEY=current-seed-do-not-print\n"
+            "LEASE_SIGNING_KID=kcurrent\n"
+            f"LEASE_SIGNING_KEY_NEXT={seed_b64}\n"
+            "LEASE_SIGNING_KID_NEXT=knext\n"
+            "# keep me\n"
+        )
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        os.chmod(path, 0o644)
+        code, out, err, logged = self._rotate(path)
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o600)
+        text = Path(path).read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("SMTP_FROM_NAME=Node Control\n"))
+        self.assertIn("# keep me\n", text)
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY"), seed_b64)
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KID"), "knext")
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KEY_NEXT"), "")
+        self.assertEqual(self._read_env_value(path, "LEASE_SIGNING_KID_NEXT"), "")
+        self.assertNotIn("current-seed-do-not-print", text)
+        captured = out + err + logged
+        self._assert_secret_hidden(captured, seed)
+        self.assertNotIn("current-seed-do-not-print", captured)
+        self.assertNotIn(seed_b64, captured)
+        self.assertIn("key_id=knext", out)
+        self.assertIn("env_file=" + os.path.abspath(path), out)
+        again = os.path.join(folder, "again.env")
+        with open(again, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        with patch("sys.stdout", StringIO()) as stdout, patch("sys.stderr", StringIO()) as stderr:
+            admin_cli.main(["lease-rotate", "--env-file", again])
+        self.assertEqual(stderr.getvalue(), "")
+        self.assertNotIn(seed_b64, stdout.getvalue())
+        self.assertNotIn("current-seed-do-not-print", stdout.getvalue())
+        self.assertEqual(self._read_env_value(again, "LEASE_SIGNING_KEY"), seed_b64)
+        self.assertEqual(self._read_env_value(again, "LEASE_SIGNING_KEY_NEXT"), "")
+        self.assertEqual(stat.S_IMODE(os.stat(again).st_mode), 0o600)
+
+    def test_lease_rotate_refuses_when_next_is_missing(self):
+        import admin_cli
+        folder = tempfile.mkdtemp(prefix="nc-lease-")
+        path = os.path.join(folder, ".env")
+        seed_b64 = _load_fixture()["private_seed_b64"]
+        original = f"LEASE_SIGNING_KEY={seed_b64}\nLEASE_SIGNING_KID=kcurrent\n"
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(original)
+        os.chmod(path, 0o644)
+        before = Path(path).read_bytes()
+        code, out, err, logged = self._rotate(path)
+        self.assertEqual(code, 1)
+        self.assertEqual(out, "")
+        self.assertIn("must both be set", err)
+        self.assertNotIn(seed_b64, err + logged)
+        self.assertEqual(Path(path).read_bytes(), before)
+        self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o644)
+        missing = os.path.join(folder, "missing.env")
+        code, out, err, logged = self._rotate(missing)
+        self.assertEqual(code, 1)
+        self.assertFalse(os.path.exists(missing))
+        with patch("sys.stdout", StringIO()), patch("sys.stderr", StringIO()):
+            with self.assertRaises(SystemExit) as caught:
+                admin_cli.main(["lease-rotate", "--env-file", path])
+        self.assertEqual(caught.exception.code, 1)
+        self.assertEqual(Path(path).read_bytes(), before)
+
     def _check(self, code, machine):
         headers = self._headers(code, machine=machine) if machine is not None else self._headers(code)
         return self.client.post(

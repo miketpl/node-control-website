@@ -872,3 +872,84 @@ def keygen(env_file=None, next_key=False, overwrite=False):
     print(f"public_key={public_text}")
     print(f"env_file={path}")
     return 0
+
+
+def rotate(env_file=None):
+    """Move the next lease key into the current slot. Never prints the seed.
+
+    Returns 0 on success and 1 when the file is left unchanged.
+    """
+    path = os.path.abspath(env_file or default_env_file())
+    if not os.path.exists(path):
+        print("Env file not found.", file=sys.stderr)
+        return 1
+    try:
+        with open(path, "rb") as handle:
+            raw = handle.read()
+    except OSError:
+        print("Could not read the env file.", file=sys.stderr)
+        return 1
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        print("The env file is not UTF-8.", file=sys.stderr)
+        return 1
+    lines = text.splitlines(keepends=True)
+    next_key = None
+    next_kid = None
+    for line in lines:
+        parsed = _assignment(line)
+        if not parsed:
+            continue
+        name, value = parsed
+        if name == "LEASE_SIGNING_KEY_NEXT" and _value_set(value):
+            next_key = value
+        elif name == "LEASE_SIGNING_KID_NEXT" and _value_set(value):
+            next_kid = value
+    if next_key is None or next_kid is None:
+        print(
+            "LEASE_SIGNING_KEY_NEXT and LEASE_SIGNING_KID_NEXT must both be set before rotating.",
+            file=sys.stderr,
+        )
+        return 1
+    wanted = {
+        "LEASE_SIGNING_KEY": next_key,
+        "LEASE_SIGNING_KID": next_kid,
+        "LEASE_SIGNING_KEY_NEXT": "",
+        "LEASE_SIGNING_KID_NEXT": "",
+    }
+    seen = set()
+    out = []
+    for line in lines:
+        parsed = _assignment(line)
+        if parsed and parsed[0] in wanted:
+            ending = _line_ending(line) or "\n"
+            out.append(f"{parsed[0]}={wanted[parsed[0]]}{ending}")
+            seen.add(parsed[0])
+        else:
+            out.append(line)
+    missing = [
+        name for name in (
+            "LEASE_SIGNING_KEY",
+            "LEASE_SIGNING_KID",
+            "LEASE_SIGNING_KEY_NEXT",
+            "LEASE_SIGNING_KID_NEXT",
+        )
+        if name not in seen
+    ]
+    if missing:
+        if out and not _line_ending(out[-1]):
+            out[-1] = out[-1] + "\n"
+        for name in missing:
+            out.append(f"{name}={wanted[name]}\n")
+    try:
+        _atomic_write(path, "".join(out).encode("utf-8"))
+    except OSError:
+        print("Could not write the env file.", file=sys.stderr)
+        return 1
+    printed_kid = next_kid.strip()
+    if len(printed_kid) >= 2 and printed_kid[0] == printed_kid[-1] and printed_kid[0] in "\"'":
+        printed_kid = printed_kid[1:-1]
+    print(f"key_id={printed_kid}")
+    print(f"env_file={path}")
+    return 0

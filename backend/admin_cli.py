@@ -452,6 +452,17 @@ def cmd_lease_keygen(args):
         sys.exit(code)
 
 
+def cmd_lease_rotate(args):
+    """Move the next lease key into the current slot. Does not print the seed."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import trial
+    code = trial.rotate(args.env_file)
+    if code:
+        sys.exit(code)
+
+
 def cmd_trial_reset(args):
     here = os.path.dirname(os.path.abspath(__file__))
     if here not in sys.path:
@@ -543,6 +554,17 @@ def main(argv=None):
         help="Replace a signing seed that is already set",
     )
     lease_keygen.set_defaults(func=cmd_lease_keygen)
+
+    lease_rotate = sub.add_parser(
+        "lease-rotate",
+        help="Move the next lease signing key into the current slot",
+    )
+    lease_rotate.add_argument(
+        "--env-file",
+        default=None,
+        help="Env file to update. Default is the server .env next to this backend",
+    )
+    lease_rotate.set_defaults(func=cmd_lease_rotate)
 
     trial_reset = sub.add_parser("trial-reset", help="Delete one trial row. Dry run unless --confirm")
     trial_reset.add_argument("--id", type=int)
