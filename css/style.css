@@ -354,7 +354,12 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: var(--nav-height);
+    scroll-padding-top: 0;
+}
+
+section[id],
+#free-edition {
+    scroll-margin-top: calc(var(--nav-height) + 12px);
 }
 
 body {
