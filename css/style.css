@@ -2139,10 +2139,24 @@ select.form-input {
 
     .hero {
         min-height: auto;
-        padding: calc(var(--nav-height) + 60px) 24px 60px;
+        padding: calc(var(--nav-height) + 16px) 16px 16px;
     }
     .hero-banner {
-        max-width: 550px;
+        max-width: min(550px, 100%);
+        max-height: 28vh;
+        width: auto;
+        object-fit: contain;
+    }
+    .hero-headline {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+    .hero-free-line,
+    .hero-subtitle {
+        margin-bottom: 10px;
+    }
+    .hero-buttons {
+        margin-bottom: 0;
     }
     .hero-headline {
         font-size: 1.5rem;
@@ -2374,7 +2388,9 @@ a.ai-coming-soon:hover {
 
 @media (max-width: 480px) {
     .hero-banner {
-        max-width: 300px;
+        max-width: min(300px, 100%);
+        max-height: 28vh;
+        object-fit: contain;
     }
     .pricing-price {
         font-size: 2rem;
