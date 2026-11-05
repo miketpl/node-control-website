@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NodeControl Free — up to 25 devices</title>
+    <meta name="description" content="NodeControl Free is free for up to 25 devices, on macOS and Windows. No card needed. Your network data stays on your laptop.">
+    <link rel="canonical" href="https://nodecontrol.io/free/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="NodeControl Free — up to 25 devices">
+    <meta property="og:description" content="NodeControl Free is free for up to 25 devices, on macOS and Windows. No card needed. Your network data stays on your laptop.">
+    <meta property="og:url" content="https://nodecontrol.io/free/">
+    <meta property="og:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="NodeControl. Desktop network operations for network engineers.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NodeControl Free — up to 25 devices">
+    <meta name="twitter:description" content="NodeControl Free is free for up to 25 devices, on macOS and Windows. No card needed. Your network data stays on your laptop.">
+    <meta name="twitter:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta name="twitter:site" content="@node_control_">
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=20261026mitch">
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <a href="../index.html" class="btn btn-outline">Back to the main page</a>
+        </div>
+    </nav>
+
+    <section class="section section-alt" id="download" style="padding-top: calc(var(--nav-height) + 32px);">
+        <div class="container">
+            <h1 class="section-title">Free for up to 25 devices</h1>
+            <p class="hero-free-line">macOS and Windows. No card needed.</p>
+            <ul class="pricing-features download-tier-features">
+                <li>Draw an L2 map over SSH</li>
+                <li>Back up a config when you run it</li>
+                <li>Find a MAC or IP down to the switch port</li>
+            </ul>
+
+            <div class="download-tier" id="free-edition">
+                <div class="download-tier-header">
+                    <h2 class="download-tier-title">Get <span class="cyan">Node Control Free</span></h2>
+                    <p class="free-pause-notice" id="free-paused-notice">Free downloads are temporarily paused</p>
+                    <p class="download-tier-desc free-signup-hint">Enter your details. A verification code comes back by email.</p>
+                </div>
+                <div class="download-cards">
+                    <div class="download-card" style="grid-column: 1 / -1;">
+                        <form class="request-form" id="freeRequestForm">
+                            <div class="form-row">
+                                <input type="text" id="reqName" placeholder="Full name" required class="form-input">
+                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email">
+                            </div>
+                            <div class="form-row">
+                                <select id="reqPlatform" required class="form-input">
+                                    <option value="" disabled selected>Platform</option>
+                                    <option value="macos">macOS</option>
+                                    <option value="windows">Windows</option>
+                                    <option value="both">Both</option>
+                                </select>
+                                <input type="text" id="reqCompany" placeholder="Company / Organisation" class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-download" id="reqSubmitBtn">Get Node Control Free</button>
+                            <div id="reqResult" class="redeem-result"></div>
+                        </form>
+
+                        <div class="request-form" id="verifySection" style="display: none;">
+                            <p style="color: #c8cdd3; margin-bottom: 16px;">A <strong style="color: #00e8ff;">6-digit code</strong> was sent to <span id="verifyEmailDisplay" style="color: #00e8ff;"></span>.</p>
+                            <div class="form-row form-row-redeem">
+                                <input type="text" id="verifyCode" placeholder="Enter 6-digit code" class="form-input form-input-code" maxlength="6" spellcheck="false" autocomplete="off" inputmode="numeric">
+                                <button type="button" id="verifyBtn" class="btn btn-primary">Verify</button>
+                            </div>
+                            <div id="verifyResult" class="redeem-result"></div>
+                            <button type="button" id="resendBtn" class="btn-link" style="margin-top: 12px; background: none; border: none; color: #636b75; cursor: pointer; font-size: 13px;">Didn't receive it? Resend code</button>
+                        </div>
+
+                        <div class="request-form" id="downloadCodeSection" style="display: none;">
+                            <p style="color: #c8cdd3; margin-bottom: 8px;">Email verified. Your download code is:</p>
+                            <div style="text-align: center; margin: 20px 0;">
+                                <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="download-tier download-tier-redeem">
+                <div class="download-tier-header">
+                    <h2 class="download-tier-title">Have a <span class="cyan">Download Code</span>?</h2>
+                    <p class="download-tier-desc">Enter the code from your email.</p>
+                </div>
+                <div class="download-cards">
+                    <div class="download-card" style="grid-column: 1 / -1;">
+                        <div class="redeem-form" id="redeemForm">
+                            <div class="form-row form-row-redeem">
+                                <input type="text" id="redeemCode" placeholder="NC-XXXX-XXXX" class="form-input form-input-code" spellcheck="false" autocomplete="off">
+                                <button type="button" id="redeemBtn" class="btn btn-outline">Redeem</button>
+                            </div>
+                            <div id="redeemResult" class="redeem-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="section-subtitle"><a href="../index.html">Back to the main page</a></p>
+        </div>
+    </section>
+
+    <script src="../js/free-form.js?v=20261105free"></script>
+</body>
+</html>
