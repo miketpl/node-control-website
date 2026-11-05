@@ -71,23 +71,22 @@
         ? 'http://localhost:5001'
         : 'https://api.nodecontrol.io';
 
-    // The HTML ships with class free-paused. This only removes it when the
-    // licence server says Free downloads are open. A failed fetch leaves
-    // the class in place, so the form stays hidden.
-    fetch(API_BASE + '/api/v1/status', { headers: { 'Accept': 'application/json' } })
+    // The form is visible unless this call succeeds and says downloads are
+    // paused. A failed, blocked, or timed-out call leaves the form up.
+    // The server still refuses a sign-up while downloads are paused.
+    var downloadSection = document.getElementById('download');
+    if (downloadSection) downloadSection.classList.remove('free-paused');
+    var statusOptions = { headers: { 'Accept': 'application/json' } };
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+        statusOptions.signal = AbortSignal.timeout(8000);
+    }
+    fetch(API_BASE + '/api/v1/status', statusOptions)
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (data) {
-            var section = document.getElementById('download');
+            if (!downloadSection || !data || data.free_downloads_paused !== true) return;
+            downloadSection.classList.add('free-paused');
             var notice = document.getElementById('free-paused-notice');
-            if (!section || !data || typeof data.free_downloads_paused !== 'boolean') return;
-            if (data.free_downloads_paused) {
-                section.classList.add('free-paused');
-                if (notice && typeof data.message === 'string' && data.message.trim()) {
-                    notice.textContent = data.message;
-                }
-            } else {
-                section.classList.remove('free-paused');
-            }
+            if (notice) notice.textContent = 'Free downloads are temporarily paused';
         })
         .catch(function () {});
 
@@ -398,13 +397,13 @@
                     document.getElementById('verifyCode').focus();
                 } else {
                     showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Request Free Access';
+                    btn.textContent = 'Get Node Control Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Request Free Access';
+                btn.textContent = 'Get Node Control Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
             }
@@ -508,10 +507,18 @@
             setTimeout(() => a.remove(), 1000);
         }
 
-        // True only for a direct installer URL — not the releases-page
-        // fallback the backend returns when it can't resolve assets.
+        // A direct installer ends in .dmg or .exe. A signed Free link is
+        // /api/v1/download/free/mac or /win and does not. The GitHub
+        // releases-page fallback is neither, so it still shows the buttons.
         function isInstallerUrl(url) {
-            return /\.(dmg|exe)$/i.test(url || '');
+            if (!url) return false;
+            if (/\.(dmg|exe)(\?|#|$)/i.test(url)) return true;
+            try {
+                var parsed = new URL(url, window.location.href);
+                return /\/api\/v1\/download\/free\/(mac|win)$/i.test(parsed.pathname);
+            } catch (err) {
+                return false;
+            }
         }
 
         async function validateCode(code) {
