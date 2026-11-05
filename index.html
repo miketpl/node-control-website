@@ -448,8 +448,8 @@
     </section>
 
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-    <!-- The free-paused class stays in the HTML. js/main.js removes it only when GET /api/v1/status says free_downloads_paused is false. A failed fetch leaves the pause in place. -->
-    <section class="section section-alt free-paused" id="download">
+    <!-- The form is visible unless js/main.js hears that free_downloads_paused is true. -->
+    <section class="section section-alt" id="download">
         <div class="container">
             <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
             <p class="section-subtitle">Your network data stays on your machine. Pick your edition and platform below.</p>
@@ -939,7 +939,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261101campaign"></script>
+    <script src="js/main.js?v=20261105download"></script>
     <script src="js/testimonials.js?v=20261019carousel" defer></script>
 </body>
 </html>
