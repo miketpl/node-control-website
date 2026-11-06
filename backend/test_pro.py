@@ -357,6 +357,14 @@ class ProBillingTests(unittest.TestCase):
         mac = self.client.get("/api/pro/download?token=" + body["downloads"]["mac"])
         self.assertEqual(mac.status_code, 302)
         self.assertEqual(mac.location, "https://objects.example/mac?sig=short")
+        db = app.get_db()
+        paid = db.execute(
+            "SELECT kind, platform, tier FROM download_events WHERE kind = 'pro_paid_redirect'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(paid["kind"], "pro_paid_redirect")
+        self.assertEqual(paid["platform"], "mac")
+        self.assertEqual(paid["tier"], "pro")
         self.assertNotIn("ghp_releases_secret", mac.location)
         self.assertNotIn("ghp_releases_secret", mac.get_data(as_text=True))
 

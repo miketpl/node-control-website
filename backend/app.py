@@ -117,6 +117,10 @@ app.config.update(
     ADMIN_ALERT_EMAIL=os.environ.get("ADMIN_ALERT_EMAIL", ""),
     # Optional comma-separated licence ids. Alerts for these ids are not sent.
     ADMIN_ALERT_SKIP_LICENCE_IDS=os.environ.get("ADMIN_ALERT_SKIP_LICENCE_IDS", ""),
+    # Licence ids left out of download counts. Comma-separated. Default is the
+    # owner's test licences. Addresses are a separate list and stay empty here.
+    STATS_EXCLUDE_LICENCE_IDS=os.environ.get("STATS_EXCLUDE_LICENCE_IDS", "23,24,32"),
+    STATS_EXCLUDE_EMAILS=os.environ.get("STATS_EXCLUDE_EMAILS", ""),
     API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
     # Signs one-click notice unsubscribe links. Empty or the placeholder disables sending.
     NOTICE_UNSUBSCRIBE_SECRET=os.environ.get("NOTICE_UNSUBSCRIBE_SECRET", ""),
@@ -204,7 +208,9 @@ def init_db():
             license_id INTEGER NOT NULL,
             platform TEXT DEFAULT '',
             kind TEXT DEFAULT '',
-            created_at TEXT NOT NULL
+            created_at TEXT NOT NULL,
+            version TEXT,
+            tier TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at);
 
@@ -274,6 +280,20 @@ def _add_license_column(db, column):
         raise ValueError("unknown licence column")
     try:
         db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_download_event_column(db, column):
+    """Add a nullable download_events column. Existing rows are left as NULL."""
+    if column not in ("version", "tier"):
+        raise ValueError("unknown download event column")
+    have = {row["name"] for row in db.execute("PRAGMA table_info(download_events)")}
+    if column in have:
+        return
+    try:
+        db.execute(f"ALTER TABLE download_events ADD COLUMN {column} TEXT")
     except sqlite3.OperationalError as exc:
         if not _schema_already_applied(exc):
             raise
@@ -379,6 +399,8 @@ def migrate_db():
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at)",
             )
+            _add_download_event_column(db, "version")
+            _add_download_event_column(db, "tier")
             _apply_schema(db, """
                 CREATE TABLE IF NOT EXISTS funnel_daily (
                     day TEXT NOT NULL,
@@ -1905,6 +1927,29 @@ def pro_download():
     except Exception:
         logger.exception("Pro download failed")
         return jsonify({"error": "The installer is not available right now"}), 503
+    version = ""
+    try:
+        import licence_v1
+        repo = (app.config.get("PRO_RELEASES_REPO") or "").strip()
+        release = licence_v1._load_release(repo, "latest")
+        described = licence_v1._describe_asset(repo, release, data["platform"], "")
+        version = (described or {}).get("version") or ""
+    except Exception:
+        version = ""
+    try:
+        import licence_v1
+        db = get_db()
+        key = db.execute(
+            "SELECT id FROM pro_keys WHERE subscription_id = ?",
+            (row["stripe_subscription_id"],),
+        ).fetchone()
+        db.close()
+        licence_id = key["id"] if key else row["id"]
+        licence_v1._record_download(
+            licence_id, data["platform"], "pro_paid_redirect", version, "pro"
+        )
+    except Exception:
+        logger.exception("Pro download was not recorded")
     return redirect(location, code=302)
 
 
