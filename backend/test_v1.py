@@ -531,9 +531,13 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(followed.status_code, 302)
         self.assertIn("release-assets.githubusercontent.com", followed.location)
         db = get_db()
-        kind = db.execute("SELECT kind FROM download_events").fetchone()["kind"]
+        stored = db.execute(
+            "SELECT kind, version, tier FROM download_events WHERE kind = 'redirect'"
+        ).fetchone()
         db.close()
-        self.assertEqual(kind, "redirect")
+        self.assertEqual(stored["kind"], "redirect")
+        self.assertEqual(stored["tier"], "free")
+        self.assertEqual(stored["version"], "0.9.41")
 
         expired = licence_v1._free_serializer().dumps({
             "lic": self.free["id"], "platform": "mac", "exp": int(time.time()) - 5,
@@ -1302,8 +1306,8 @@ class V1Tests(unittest.TestCase):
             set(body),
             {
                 "window", "licences", "pro_keys", "device_moves", "devices",
-                "registrations", "telemetry", "usage", "downloads", "update_checks",
-                "flags", "db_bytes", "generated_at",
+                "registrations", "telemetry", "usage", "downloads", "updates",
+                "downloads_by_version", "update_checks", "flags", "db_bytes", "generated_at",
             },
         )
         text = res.get_data(as_text=True)
@@ -1345,6 +1349,10 @@ class V1Tests(unittest.TestCase):
             "version": "0.9.41", "os": "mac", "count": 2,
         }])
         self.assertEqual(body["downloads"], [{"tier": "free", "platform": "mac", "count": 1}])
+        self.assertEqual(body["updates"], [])
+        self.assertEqual(body["downloads_by_version"], [
+            {"tier": "free", "source": "new", "platform": "mac", "version": "", "count": 1},
+        ])
         self.assertEqual(body["update_checks"], [])
         self.assertIsInstance(body["db_bytes"], int)
         self.assertGreater(body["db_bytes"], 0)
@@ -1548,6 +1556,114 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(looked.status_code, 200)
         self.assertEqual(looked.get_json()["min_supported_version"], "0.9.41")
         self.assertFalse(looked.get_json()["force_update"])
+
+    def test_download_counts_include_pro_and_version_and_skip_tests(self):
+        self._activate(self.free["code"], self.install_a)
+        self.github.digest = True
+        db = get_db()
+        db.execute("DELETE FROM release_cache")
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (23, 'NC-TEST-0023', 'Owner', 'owner-test@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (40, 'NC-HIDE-0040', 'Hidden', 'hidden@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, email, source, status, plan, created_at
+            ) VALUES
+                ('hash-counted', '1234', 'counted@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00'),
+                ('hash-hidden', '5678', 'hidden@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00')
+            """
+        )
+        counted = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'counted@example.com'"
+        ).fetchone()["id"]
+        hidden = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'hidden@example.com'"
+        ).fetchone()["id"]
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+            VALUES
+                (23, 'mac', 'redirect', '2026-10-21T01:00:00Z', '0.9.40', 'free'),
+                (40, 'win', 'redirect', '2026-10-21T01:00:00Z', '0.9.44', 'free'),
+                (?, 'mac', 'pro_redirect', '2026-10-21T01:00:00Z', '0.9.45', 'pro'),
+                (?, 'win', 'pro_paid_redirect', '2026-10-21T01:00:00Z', NULL, 'pro'),
+                (?, 'mac', 'click', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'mac', 'auto', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'win', 'app_download', '2026-10-21T01:00:00Z', '0.9.41', 'free')
+            """,
+            (counted, hidden, self.free["id"], self.free["id"], self.free["id"]),
+        )
+        db.commit()
+        db.close()
+        app.config["STATS_EXCLUDE_EMAILS"] = "hidden@example.com"
+        try:
+            res = self.client.get(
+                "/api/admin/stats/v1",
+                headers={"Authorization": "Bearer test-admin-token"},
+            )
+        finally:
+            app.config["STATS_EXCLUDE_EMAILS"] = ""
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        self.assertEqual(body["downloads"], [
+            {"tier": "pro", "platform": "mac", "count": 1},
+        ])
+        self.assertEqual(body["updates"], [
+            {"tier": "free", "platform": "win", "count": 1},
+        ])
+        self.assertEqual(body["downloads_by_version"], [
+            {"tier": "free", "source": "update", "platform": "win", "version": "0.9.41", "count": 1},
+            {"tier": "pro", "source": "new", "platform": "mac", "version": "0.9.45", "count": 1},
+        ])
+        self.assertNotIn("hidden@example.com", res.get_data(as_text=True))
+        self.assertNotIn("owner-test@example.com", res.get_data(as_text=True))
+
+        got = self.client.post(
+            "/api/v1/app/download",
+            json={"version": "latest", "platform": "win"},
+            headers=self._headers(self.free["code"], self.install_a, platform="win"),
+        )
+        self.assertEqual(got.status_code, 200)
+        self.assertEqual(got.get_json()["version"], "0.9.41")
+        db = get_db()
+        recorded = db.execute(
+            """
+            SELECT kind, tier, platform, version FROM download_events
+            WHERE kind = 'app_download'
+            """
+        ).fetchone()
+        old = db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at)
+            VALUES (?, 'mac', 'redirect', '2020-01-01T00:00:00Z')
+            """,
+            (self.free["id"],),
+        )
+        db.commit()
+        legacy_id = db.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
+        db.close()
+        api.migrate_db()
+        api.migrate_db()
+        db = get_db()
+        legacy = db.execute(
+            "SELECT version FROM download_events WHERE id = ?", (legacy_id,)
+        ).fetchone()
+        db.close()
+        self.assertEqual(recorded["kind"], "app_download")
+        self.assertEqual(recorded["tier"], "free")
+        self.assertEqual(recorded["platform"], "win")
+        self.assertEqual(recorded["version"], "0.9.41")
+        self.assertIsNone(legacy["version"])
 
 
 if __name__ == "__main__":

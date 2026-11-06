@@ -684,6 +684,109 @@ def _load_release(repo, version):
     return payload
 
 
+def _asset_version(repo, platform, arch=""):
+    """Normalised release version, or '' when the release cannot be described."""
+    try:
+        release = _load_release(repo, "latest")
+        described = _describe_asset(repo, release, platform, arch)
+    except Exception:
+        return ""
+    return ((described or {}).get("version") or "").strip()
+
+
+def _record_download(license_id, platform, kind, version, tier):
+    """One download count. No email or other personal data is stored."""
+    api = _api()
+    db = api.get_db()
+    try:
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                int(license_id),
+                platform,
+                kind,
+                iso(utcnow()),
+                (version or "").strip() or None,
+                tier or None,
+            ),
+        )
+        db.commit()
+    finally:
+        db.close()
+
+
+def _stats_exclude_ids():
+    raw = str(_api().app.config.get("STATS_EXCLUDE_LICENCE_IDS") or "")
+    ids = []
+    for part in raw.split(","):
+        part = part.strip()
+        if part.isdigit():
+            ids.append(int(part))
+    return ids
+
+
+def _stats_exclude_emails():
+    raw = str(_api().app.config.get("STATS_EXCLUDE_EMAILS") or "")
+    emails = []
+    for part in raw.split(","):
+        part = part.strip().lower()
+        if "@" in part:
+            emails.append(part)
+    return emails
+
+
+def _download_count_filters():
+    """SQL fragment and params that leave test licences out of download counts.
+
+    Licence ids come from STATS_EXCLUDE_LICENCE_IDS. Addresses come from
+    STATS_EXCLUDE_EMAILS and are matched in the query. Neither list is
+    written into the download row.
+    """
+    clauses = []
+    params = []
+    ids = _stats_exclude_ids()
+    if ids:
+        marks = ",".join("?" * len(ids))
+        clauses.append(f"download_events.license_id NOT IN ({marks})")
+        params.extend(ids)
+    emails = _stats_exclude_emails()
+    if emails:
+        marks = ",".join("?" * len(emails))
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM licenses
+                WHERE licenses.id = download_events.license_id
+                  AND lower(licenses.email) IN ({marks})
+                  AND (
+                    download_events.kind = 'redirect'
+                    OR COALESCE(download_events.tier, '') = 'free'
+                  )
+            )
+            """
+        )
+        params.extend(emails)
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM pro_keys
+                WHERE pro_keys.id = download_events.license_id
+                  AND lower(pro_keys.email) IN ({marks})
+                  AND download_events.kind IN (
+                    'pro_redirect', 'pro_paid_redirect', 'app_download'
+                  )
+            )
+            """
+        )
+        params.extend(emails)
+    if not clauses:
+        return "", []
+    return " AND " + " AND ".join(clauses), params
+
+
 def _version_of(release):
     tag = str(release.get("tag_name") or "")
     if tag.startswith("v"):
@@ -1714,6 +1817,12 @@ def app_download():
     except Exception:
         logger.exception("App download could not sign a release URL")
         return error(503, "upstream_unavailable", "The release service is unavailable. Nothing was installed.")
+    try:
+        _record_download(
+            record["id"], platform, "app_download", described.get("version") or "", record["tier"]
+        )
+    except Exception:
+        logger.exception("App download was not recorded")
     return jsonify({
         "url": url,
         "expires_in": ASSET_URL_TTL,
@@ -2078,22 +2187,27 @@ def download_free(platform):
     if not row or row["status"] != "active":
         db.close()
         return error(403, "code_invalid", "Enter your code again.")
-    db.execute(
-        "INSERT INTO download_events (license_id, platform, kind, created_at) VALUES (?, ?, 'redirect', ?)",
-        (row["id"], platform, iso(utcnow())),
-    )
-    db.commit()
-    db.close()
     repo = _repo_for("free")
     try:
         release = _load_release(repo, "latest")
         described = _describe_asset(repo, release, platform, "")
         if not described:
+            db.close()
             return error(404, "no_release", "No installer for that platform is published.")
         location = _signed_asset_url(repo, described["asset"])
     except Exception:
+        db.close()
         logger.exception("Free download redirect failed")
         return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    db.execute(
+        """
+        INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+        VALUES (?, ?, 'redirect', ?, ?, 'free')
+        """,
+        (row["id"], platform, iso(utcnow()), (described.get("version") or "") or None),
+    )
+    db.commit()
+    db.close()
     # click and auto are beacons for this same file. The redirect is the
     # download. Mail must not change the 302 or the location.
     _queue_free_download_alert(row["id"], platform, described)
@@ -2168,15 +2282,16 @@ def download_pro_beta(platform):
     except Exception:
         logger.exception("Pro beta download redirect failed")
         return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    version = _asset_version(_repo_for("pro"), platform)
     try:
         db = api.get_db()
         try:
             db.execute(
                 """
-                INSERT INTO download_events (license_id, platform, kind, created_at)
-                VALUES (?, ?, 'pro_redirect', ?)
+                INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+                VALUES (?, ?, 'pro_redirect', ?, ?, 'pro')
                 """,
-                (row["id"], platform, iso(utcnow())),
+                (row["id"], platform, iso(utcnow()), version or None),
             )
             db.commit()
         finally:
@@ -2863,9 +2978,10 @@ def admin_stats_v1():
     Device resets are not stored: the admin reset deletes the device rows.
     Move requests are not kept after the code is used. Telemetry has no
     separate event log and no opt-out deletion log. Rate-limit rows are
-    request counters, not 429 outcomes. Stripe checkout downloads are not
-    recorded. A hand-added key's first-install redirect is stored as kind
-    pro_redirect and is left out of the free downloads count.
+    request counters, not 429 outcomes. downloads counts new installs:
+    redirect is Free, and pro_redirect and pro_paid_redirect are Pro.
+    updates counts in-app app_download rows, split by the licence tier.
+    click and auto are beacons and are not counted.
     """
     api = _api()
     since = api._utc_day(request.args.get("since"), "0000-01-01")
@@ -2991,16 +3107,55 @@ def admin_stats_v1():
             + _labelled(installs, ("status", "tier"))
             + _labelled(rollups, ("status", "month", "tier", "version", "os"))
         )
+        exclude_sql, exclude_params = _download_count_filters()
+        new_kinds = "kind IN ('redirect', 'pro_redirect', 'pro_paid_redirect')"
+        update_kinds = "kind = 'app_download' AND COALESCE(tier, '') IN ('free', 'pro')"
+        tier_sql = """
+            CASE
+                WHEN kind = 'redirect' OR (kind = 'app_download' AND tier = 'free') THEN 'free'
+                ELSE 'pro'
+            END
+        """
+        source_sql = "CASE WHEN kind = 'app_download' THEN 'update' ELSE 'new' END"
         downloads = _labelled(db.execute(
-            """
-            SELECT 'free' AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            f"""
+            SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
             FROM download_events
-            WHERE kind = 'redirect' AND created_at >= ? AND created_at < ?
-            GROUP BY platform
-            ORDER BY platform
+            WHERE ({new_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, platform
+            ORDER BY 1, platform
             """,
-            window,
+            (*window, *exclude_params),
         ).fetchall(), ("tier", "platform"))
+        updates = _labelled(db.execute(
+            f"""
+            SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM download_events
+            WHERE ({update_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, platform
+            ORDER BY 1, platform
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "platform"))
+        downloads_by_version = _labelled(db.execute(
+            f"""
+            SELECT
+                {tier_sql} AS tier,
+                {source_sql} AS source,
+                COALESCE(platform, '') AS platform,
+                COALESCE(version, '') AS version,
+                COUNT(*) AS count
+            FROM download_events
+            WHERE (({new_kinds}) OR ({update_kinds}))
+              AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, 2, platform, COALESCE(version, '')
+            ORDER BY 1, 2, platform, version
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "source", "platform", "version"))
         update_checks = _labelled(db.execute(
             """
             SELECT
@@ -3036,6 +3191,8 @@ def admin_stats_v1():
         "telemetry": telemetry,
         "usage": usage,
         "downloads": downloads,
+        "updates": updates,
+        "downloads_by_version": downloads_by_version,
         "update_checks": update_checks,
         "flags": {
             "free_downloads_paused": flags["free_downloads_paused"],
