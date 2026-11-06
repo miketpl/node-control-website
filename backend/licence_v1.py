@@ -2978,9 +2978,9 @@ def admin_stats_v1():
     Device resets are not stored: the admin reset deletes the device rows.
     Move requests are not kept after the code is used. Telemetry has no
     separate event log and no opt-out deletion log. Rate-limit rows are
-    request counters, not 429 outcomes. A Free installer redirect is kind
-    redirect. A hand-added key is pro_redirect. A Stripe success download
-    is pro_paid_redirect. An in-app updater download is app_download.
+    request counters, not 429 outcomes. downloads counts new installs:
+    redirect is Free, and pro_redirect and pro_paid_redirect are Pro.
+    updates counts in-app app_download rows, split by the licence tier.
     click and auto are beacons and are not counted.
     """
     api = _api()
@@ -3108,23 +3108,31 @@ def admin_stats_v1():
             + _labelled(rollups, ("status", "month", "tier", "version", "os"))
         )
         exclude_sql, exclude_params = _download_count_filters()
-        counted = (
-            "kind = 'redirect' "
-            "OR kind IN ('pro_redirect', 'pro_paid_redirect') "
-            "OR (kind = 'app_download' AND COALESCE(tier, '') IN ('free', 'pro'))"
-        )
+        new_kinds = "kind IN ('redirect', 'pro_redirect', 'pro_paid_redirect')"
+        update_kinds = "kind = 'app_download' AND COALESCE(tier, '') IN ('free', 'pro')"
         tier_sql = """
             CASE
-                WHEN kind = 'redirect' THEN 'free'
-                WHEN kind = 'app_download' AND tier = 'free' THEN 'free'
+                WHEN kind = 'redirect' OR (kind = 'app_download' AND tier = 'free') THEN 'free'
                 ELSE 'pro'
             END
         """
+        source_sql = "CASE WHEN kind = 'app_download' THEN 'update' ELSE 'new' END"
         downloads = _labelled(db.execute(
             f"""
             SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
             FROM download_events
-            WHERE ({counted}) AND created_at >= ? AND created_at < ?
+            WHERE ({new_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, platform
+            ORDER BY 1, platform
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "platform"))
+        updates = _labelled(db.execute(
+            f"""
+            SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM download_events
+            WHERE ({update_kinds}) AND created_at >= ? AND created_at < ?
             {exclude_sql}
             GROUP BY 1, platform
             ORDER BY 1, platform
@@ -3135,17 +3143,19 @@ def admin_stats_v1():
             f"""
             SELECT
                 {tier_sql} AS tier,
+                {source_sql} AS source,
                 COALESCE(platform, '') AS platform,
                 COALESCE(version, '') AS version,
                 COUNT(*) AS count
             FROM download_events
-            WHERE ({counted}) AND created_at >= ? AND created_at < ?
+            WHERE (({new_kinds}) OR ({update_kinds}))
+              AND created_at >= ? AND created_at < ?
             {exclude_sql}
-            GROUP BY 1, platform, COALESCE(version, '')
-            ORDER BY 1, platform, version
+            GROUP BY 1, 2, platform, COALESCE(version, '')
+            ORDER BY 1, 2, platform, version
             """,
             (*window, *exclude_params),
-        ).fetchall(), ("tier", "platform", "version"))
+        ).fetchall(), ("tier", "source", "platform", "version"))
         update_checks = _labelled(db.execute(
             """
             SELECT
@@ -3181,6 +3191,7 @@ def admin_stats_v1():
         "telemetry": telemetry,
         "usage": usage,
         "downloads": downloads,
+        "updates": updates,
         "downloads_by_version": downloads_by_version,
         "update_checks": update_checks,
         "flags": {

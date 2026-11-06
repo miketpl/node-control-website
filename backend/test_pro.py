@@ -359,7 +359,7 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(mac.location, "https://objects.example/mac?sig=short")
         db = app.get_db()
         paid = db.execute(
-            "SELECT kind, platform, tier FROM download_events WHERE kind = 'pro_paid_redirect'"
+            "SELECT kind, platform, tier FROM download_events WHERE kind = 'pro_paid_redirect' ORDER BY id DESC LIMIT 1"
         ).fetchone()
         db.close()
         self.assertEqual(paid["kind"], "pro_paid_redirect")

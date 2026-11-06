@@ -1306,8 +1306,8 @@ class V1Tests(unittest.TestCase):
             set(body),
             {
                 "window", "licences", "pro_keys", "device_moves", "devices",
-                "registrations", "telemetry", "usage", "downloads", "downloads_by_version",
-                "update_checks", "flags", "db_bytes", "generated_at",
+                "registrations", "telemetry", "usage", "downloads", "updates",
+                "downloads_by_version", "update_checks", "flags", "db_bytes", "generated_at",
             },
         )
         text = res.get_data(as_text=True)
@@ -1349,8 +1349,9 @@ class V1Tests(unittest.TestCase):
             "version": "0.9.41", "os": "mac", "count": 2,
         }])
         self.assertEqual(body["downloads"], [{"tier": "free", "platform": "mac", "count": 1}])
+        self.assertEqual(body["updates"], [])
         self.assertEqual(body["downloads_by_version"], [
-            {"tier": "free", "platform": "mac", "version": "", "count": 1},
+            {"tier": "free", "source": "new", "platform": "mac", "version": "", "count": 1},
         ])
         self.assertEqual(body["update_checks"], [])
         self.assertIsInstance(body["db_bytes"], int)
@@ -1597,9 +1598,10 @@ class V1Tests(unittest.TestCase):
                 (?, 'mac', 'pro_redirect', '2026-10-21T01:00:00Z', '0.9.45', 'pro'),
                 (?, 'win', 'pro_paid_redirect', '2026-10-21T01:00:00Z', NULL, 'pro'),
                 (?, 'mac', 'click', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
-                (?, 'mac', 'auto', '2026-10-21T01:00:00Z', '0.9.45', 'free')
+                (?, 'mac', 'auto', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'win', 'app_download', '2026-10-21T01:00:00Z', '0.9.41', 'free')
             """,
-            (counted, hidden, self.free["id"], self.free["id"]),
+            (counted, hidden, self.free["id"], self.free["id"], self.free["id"]),
         )
         db.commit()
         db.close()
@@ -1616,8 +1618,12 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(body["downloads"], [
             {"tier": "pro", "platform": "mac", "count": 1},
         ])
+        self.assertEqual(body["updates"], [
+            {"tier": "free", "platform": "win", "count": 1},
+        ])
         self.assertEqual(body["downloads_by_version"], [
-            {"tier": "pro", "platform": "mac", "version": "0.9.45", "count": 1},
+            {"tier": "free", "source": "update", "platform": "win", "version": "0.9.41", "count": 1},
+            {"tier": "pro", "source": "new", "platform": "mac", "version": "0.9.45", "count": 1},
         ])
         self.assertNotIn("hidden@example.com", res.get_data(as_text=True))
         self.assertNotIn("owner-test@example.com", res.get_data(as_text=True))
