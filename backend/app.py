@@ -117,9 +117,11 @@ app.config.update(
     ADMIN_ALERT_EMAIL=os.environ.get("ADMIN_ALERT_EMAIL", ""),
     # Optional comma-separated licence ids. Alerts for these ids are not sent.
     ADMIN_ALERT_SKIP_LICENCE_IDS=os.environ.get("ADMIN_ALERT_SKIP_LICENCE_IDS", ""),
-    # Licence ids left out of download counts. Comma-separated. Default is the
-    # owner's test licences. Addresses are a separate list and stay empty here.
+    # Free licence ids left out of download and install counts. Comma-separated.
+    # The default is the owner's test licences. Pro key ids are a separate
+    # list and stay empty: every Pro key is a real beta user.
     STATS_EXCLUDE_LICENCE_IDS=os.environ.get("STATS_EXCLUDE_LICENCE_IDS", "23,24,32"),
+    STATS_EXCLUDE_PRO_KEY_IDS=os.environ.get("STATS_EXCLUDE_PRO_KEY_IDS", ""),
     STATS_EXCLUDE_EMAILS=os.environ.get("STATS_EXCLUDE_EMAILS", ""),
     API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
     # Signs one-click notice unsubscribe links. Empty or the placeholder disables sending.
