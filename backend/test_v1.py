@@ -244,6 +244,17 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(revoked.status_code, 403)
         self.assertEqual(self._body(revoked)["error"]["code"], "revoked")
 
+        self._insert_free("NC-PEND-PEND", email="pending@example.com", status="pending")
+        pending = self._activate("NC-PEND-PEND", self.install_a)
+        self.assertEqual(pending.status_code, 401)
+        self.assertEqual(self._body(pending)["error"]["code"], "invalid_key")
+
+        self._insert_free("NC-UNV1-UNV1", email="unverified@example.com", status="unverified")
+        unverified = self._activate("NC-UNV1-UNV1", self.install_a)
+        self.assertEqual(unverified.status_code, 200)
+        self.assertTrue(self._body(unverified)["active"])
+        self.assertEqual(self._body(unverified)["tier"], "free")
+
         mismatch = self.client.post(
             "/api/v1/app/activate",
             json={"tier": "pro", "app_version": "0.9.41", "platform": "mac", "arch": "arm64"},

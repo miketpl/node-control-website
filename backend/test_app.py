@@ -11,7 +11,7 @@ import sys
 import tempfile
 import threading
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
@@ -130,6 +130,30 @@ class LicenceApiTests(unittest.TestCase):
         self.assertTrue(stored.startswith("PENDING:"))
         return stored.split(":", 1)[1]
 
+    def _confirm(self, email="person@example.com"):
+        row = self._pending(email)
+        self.assertEqual(row["status"], "unverified")
+        token = api.make_email_confirm_token(row["id"])
+        res = self.client.get("/api/confirm-email?token=" + token)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(b"Email confirmed", res.data)
+        self.assertEqual(self._pending(email)["status"], "active")
+        return res
+
+    def _legacy_pending(self, email="legacy@example.com", verify="123456", code="NC-LEG1-LEG1"):
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO licenses (
+                code, name, email, company, platform, tier, status, created_at, verified_at
+            ) VALUES (?, '', ?, '', 'macos', 'free', 'pending', ?, ?)
+            """,
+            (code, email, datetime.utcnow().isoformat(), f"PENDING:{verify}"),
+        )
+        db.commit()
+        db.close()
+        return code
+
     def test_repo_name_and_env_example(self):
         root = Path(__file__).resolve().parent
         app_src = (root / "app.py").read_text()
@@ -191,15 +215,65 @@ class LicenceApiTests(unittest.TestCase):
 
     @patch("app.smtplib.SMTP")
     def test_request_sends_mail_and_stores_pending(self, smtp):
-        res = self._request()
+        res = self.client.post("/api/request-access", json={
+            "email": "person@example.com", "platform": "macos",
+        })
         self.assertEqual(res.status_code, 200)
         body = res.get_json()
         self.assertTrue(body["success"])
-        self.assertNotIn("download_code", body)
+        self.assertTrue(body["download_code"].startswith("NC-"))
+        self.assertIn("/api/v1/download/free/mac?t=", body["downloads"]["mac"])
         smtp.return_value.__enter__.return_value.send_message.assert_called_once()
         row = self._pending()
-        self.assertEqual(row["status"], "pending")
-        self.assertTrue(row["verified_at"].startswith("PENDING:"))
+        self.assertEqual(row["name"], "")
+        self.assertEqual(row["status"], "unverified")
+        self.assertEqual(row["verified_at"], "")
+        self.assertNotIn("PENDING:", row["verified_at"] or "")
+        sent = smtp.return_value.__enter__.return_value.send_message.call_args[0][0]
+        text = sent.get_payload(0).get_payload()
+        self.assertIn("Hi there,", text)
+        self.assertIn(body["download_code"], text)
+        self.assertIn("/api/confirm-email?token=", text)
+        self.assertNotIn("Hi ,", text)
+
+    @patch("app.smtplib.SMTP")
+    def test_same_email_reuses_the_unverified_licence(self, smtp):
+        first = self._request()
+        code = first.get_json()["download_code"]
+        created = self._pending()["created_at"]
+        again = self._request()
+        self.assertEqual(again.status_code, 200)
+        self.assertEqual(again.get_json()["download_code"], code)
+        db = get_db()
+        count = db.execute("SELECT COUNT(*) AS c FROM licenses").fetchone()["c"]
+        db.close()
+        self.assertEqual(count, 1)
+        self.assertEqual(self._pending()["created_at"], created)
+        self.assertEqual(self.github.codes, [code])
+
+    @patch("app.smtplib.SMTP")
+    def test_one_reminder_after_a_day_and_not_before(self, smtp):
+        self.assertEqual(self._request().status_code, 200)
+        young = api.send_unverified_reminders()
+        self.assertEqual(young, {"sent": 0, "failed": 0})
+        db = get_db()
+        db.execute(
+            "UPDATE licenses SET created_at = ? WHERE email = ?",
+            ((datetime.utcnow() - timedelta(hours=30)).isoformat(), "person@example.com"),
+        )
+        db.commit()
+        db.close()
+        smtp.return_value.__enter__.return_value.send_message.reset_mock()
+        first = api.send_unverified_reminders()
+        self.assertEqual(first["sent"], 1)
+        self.assertEqual(first["failed"], 0)
+        self.assertTrue(self._pending()["reminder_sent_at"])
+        message = smtp.return_value.__enter__.return_value.send_message.call_args[0][0]
+        self.assertEqual(message["Subject"], "Confirm your Node Control email")
+        second = api.send_unverified_reminders()
+        self.assertEqual(second["sent"], 0)
+        self._confirm()
+        self.assertEqual(self._pending()["status"], "active")
 
     def test_smtp_unconfigured_is_an_error_and_leaves_no_row(self):
         app.config["SMTP_USER"] = ""
@@ -218,57 +292,71 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(failed.status_code, 502)
         self.assertFalse(failed.get_json()["success"])
         self.assertIsNone(self._pending())
+        self.assertEqual(self.github.codes, [])
 
         smtp.return_value.__enter__.side_effect = None
         retried = self._request()
         self.assertEqual(retried.status_code, 200)
         self.assertTrue(retried.get_json()["success"])
-        self.assertEqual(self._pending()["status"], "pending")
+        self.assertEqual(self._pending()["status"], "unverified")
 
     @patch("app.smtplib.SMTP")
     def test_failed_resend_keeps_the_previous_pending_code(self, smtp):
         first = self._request()
         self.assertEqual(first.status_code, 200)
-        original = self._verify_code()
+        original = first.get_json()["download_code"]
 
         smtp.return_value.__enter__.side_effect = OSError("smtp down")
         failed = self._request()
         self.assertEqual(failed.status_code, 502)
-        self.assertEqual(self._verify_code(), original)
-        self.assertEqual(self._pending()["status"], "pending")
+        row = self._pending()
+        self.assertEqual(row["code"], original)
+        self.assertEqual(row["status"], "unverified")
 
     @patch("app.smtplib.SMTP")
     def test_verify_github_failure_hides_the_code_and_allows_retry(self, smtp):
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
         self.github.fail = True
-        failed = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        failed = self._request()
         self.assertEqual(failed.status_code, 502)
         body = failed.get_json()
         self.assertFalse(body["success"])
         self.assertNotIn("download_code", body)
         self.assertEqual(self.github.codes, [])
-        self.assertEqual(self._pending()["status"], "pending")
-        self.assertEqual(self._verify_code(), code)
+        self.assertIsNone(self._pending())
 
         self.github.fail = False
-        ok = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        ok = self._request()
         self.assertEqual(ok.status_code, 200)
         issued = ok.get_json()["download_code"]
         self.assertTrue(issued.startswith("NC-"))
         self.assertIn(issued, self.github.codes)
-        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self._pending()["status"], "unverified")
+
+    @patch("app.smtplib.SMTP")
+    def test_legacy_six_digit_code_still_activates(self, smtp):
+        issued = self._legacy_pending()
+        failed = self.client.post("/api/verify", json={"email": "legacy@example.com", "code": "000000"})
+        self.assertEqual(failed.status_code, 400)
+        self.github.fail = True
+        hidden = self.client.post("/api/verify", json={"email": "legacy@example.com", "code": "123456"})
+        self.assertEqual(hidden.status_code, 502)
+        self.assertNotIn("download_code", hidden.get_json())
+        self.assertEqual(self._pending("legacy@example.com")["status"], "pending")
+        self.github.fail = False
+        ok = self.client.post("/api/verify", json={"email": "legacy@example.com", "code": "123456"})
+        self.assertEqual(ok.status_code, 200)
+        self.assertEqual(ok.get_json()["download_code"], issued)
+        self.assertEqual(self._pending("legacy@example.com")["status"], "active")
+        self.assertIn(issued, self.github.codes)
 
     @patch("app.smtplib.SMTP")
     def test_verify_without_a_write_token_does_not_activate(self, smtp):
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
         app.config["GITHUB_PAT"] = ""
         app.config["GITHUB_PAT_WRITE"] = ""
-        res = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
+        res = self._request()
         self.assertEqual(res.status_code, 502)
         self.assertNotIn("download_code", res.get_json())
-        self.assertEqual(self._pending()["status"], "pending")
+        self.assertIsNone(self._pending())
 
     @patch("app.smtplib.SMTP")
     def test_verify_and_redeem_need_no_github_pat_when_legacy_sync_is_false(self, smtp):
@@ -277,13 +365,11 @@ class LicenceApiTests(unittest.TestCase):
         app.config["GITHUB_PAT_WRITE"] = ""
         self.github.fail = True
         self.github.calls = []
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        self.assertEqual(verified.status_code, 200)
-        issued = verified.get_json()["download_code"]
+        requested = self._request()
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
         self.assertTrue(issued.startswith("NC-"))
-        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self._pending()["status"], "unverified")
         self.assertEqual(self.github.calls, [])
         self.assertEqual(self.github.codes, [])
 
@@ -323,21 +409,17 @@ class LicenceApiTests(unittest.TestCase):
     @patch("app.smtplib.SMTP")
     def test_legacy_sync_publishes_the_code_when_enabled(self, smtp):
         app.config["LEGACY_ALLOWLIST_SYNC"] = "true"
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        self.assertEqual(verified.status_code, 200)
-        issued = verified.get_json()["download_code"]
+        requested = self._request()
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
         self.assertIn(issued, self.github.codes)
         self.assertTrue(any("licenses.json" in url for url in self.github.calls))
-        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self._pending()["status"], "unverified")
 
     @patch("app.smtplib.SMTP")
     def test_already_active_points_at_support(self, smtp):
         self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        self.assertEqual(verified.status_code, 200)
+        self._confirm()
         again = self._request()
         self.assertEqual(again.status_code, 409)
         message = again.get_json()["error"]
@@ -364,10 +446,9 @@ class LicenceApiTests(unittest.TestCase):
 
     @patch("app.smtplib.SMTP")
     def test_revoke_keeps_sqlite_when_github_fails(self, smtp):
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        issued = verified.get_json()["download_code"]
+        requested = self._request()
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
         self.assertIn(issued, self.github.codes)
         self.github.fail = True
         res = self.client.delete(
@@ -376,15 +457,14 @@ class LicenceApiTests(unittest.TestCase):
         )
         self.assertEqual(res.status_code, 502)
         self.assertFalse(res.get_json()["success"])
-        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self._pending()["status"], "unverified")
         self.assertIn(issued, self.github.codes)
 
     @patch("app.smtplib.SMTP")
     def test_revoke_removes_the_code_from_github_and_sqlite(self, smtp):
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        issued = verified.get_json()["download_code"]
+        requested = self._request()
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
         res = self.client.delete(
             f"/api/admin/licenses/{self._pending()['id']}",
             headers={"Authorization": "Bearer test-admin-token"},
@@ -396,10 +476,9 @@ class LicenceApiTests(unittest.TestCase):
 
     @patch("app.smtplib.SMTP")
     def test_revoke_restores_github_if_sqlite_update_fails(self, smtp):
-        self.assertEqual(self._request().status_code, 200)
-        code = self._verify_code()
-        verified = self.client.post("/api/verify", json={"email": "person@example.com", "code": code})
-        issued = verified.get_json()["download_code"]
+        requested = self._request()
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
 
         def flaky_db():
             db = get_db()
@@ -428,7 +507,7 @@ class LicenceApiTests(unittest.TestCase):
             )
         self.assertEqual(res.status_code, 502)
         self.assertIn("restored", res.get_json()["error"])
-        self.assertEqual(self._pending()["status"], "active")
+        self.assertEqual(self._pending()["status"], "unverified")
         self.assertIn(issued, self.github.codes)
 
     def test_cli_refuses_the_placeholder_token(self):
@@ -447,11 +526,10 @@ class LicenceApiTests(unittest.TestCase):
     def test_cli_lists_and_revokes_by_email(self, smtp):
         from werkzeug.serving import make_server
 
-        self.assertEqual(self._request("cli-user@example.com").status_code, 200)
-        code = self._verify_code("cli-user@example.com")
-        verified = self.client.post("/api/verify", json={"email": "cli-user@example.com", "code": code})
-        self.assertEqual(verified.status_code, 200)
-        issued = verified.get_json()["download_code"]
+        requested = self._request("cli-user@example.com")
+        self.assertEqual(requested.status_code, 200)
+        issued = requested.get_json()["download_code"]
+        self._confirm("cli-user@example.com")
 
         server = make_server("127.0.0.1", 0, app)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -512,11 +590,10 @@ class LicenceApiTests(unittest.TestCase):
 
     @patch("app.smtplib.SMTP")
     def test_download_event_needs_an_active_code_and_shows_in_stats(self, smtp):
-        self.client.post("/api/request-access", json={
+        requested = self.client.post("/api/request-access", json={
             "name": "Person", "email": "dl@example.com", "platform": "macos", "utm_source": "x",
         })
-        code = self._verify_code("dl@example.com")
-        issued = self.client.post("/api/verify", json={"email": "dl@example.com", "code": code}).get_json()["download_code"]
+        issued = requested.get_json()["download_code"]
 
         # sendBeacon posts text/plain
         ok = self.client.post("/api/download-event", data=json.dumps(
@@ -530,12 +607,21 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(stats.status_code, 200)
         body = stats.get_json()
         sources = {row["source"]: row for row in body["by_source"]}
-        self.assertEqual(sources["x"]["verified"], 1)
+        self.assertEqual(sources["x"]["verified"], 0)
+        self.assertEqual(sources["x"]["unverified"], 1)
+        self.assertEqual(body["unverified"], 1)
         self.assertEqual(body["download_events"], [{
             "platform": "mac", "kind": "auto",
             "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
             "events": 1, "licences": 1,
         }])
+        self._confirm("dl@example.com")
+        after = self.client.get(
+            "/api/admin/stats", headers={"Authorization": "Bearer test-admin-token"}
+        ).get_json()
+        sources = {row["source"]: row for row in after["by_source"]}
+        self.assertEqual(sources["x"]["verified"], 1)
+        self.assertEqual(sources["x"]["unverified"], 0)
         hidden = self.client.get("/api/admin/stats")
         self.assertEqual(hidden.status_code, 401)
 
@@ -561,11 +647,10 @@ class LicenceApiTests(unittest.TestCase):
 
     @patch("app.smtplib.SMTP")
     def test_download_event_is_capped_and_ignores_junk(self, smtp):
-        self.client.post("/api/request-access", json={
+        requested = self.client.post("/api/request-access", json={
             "name": "Person", "email": "cap@example.com", "platform": "macos",
         })
-        code = self._verify_code("cap@example.com")
-        issued = self.client.post("/api/verify", json={"email": "cap@example.com", "code": code}).get_json()["download_code"]
+        issued = requested.get_json()["download_code"]
         original = api.DOWNLOAD_EVENT_LICENCE_CAP
         api.DOWNLOAD_EVENT_LICENCE_CAP = 2
         try:
@@ -942,11 +1027,9 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(row["utm_campaign"], "paid30-launch")
         self.assertEqual(row["utm_content"], cleaned)
         self.assertLessEqual(len(row["utm_content"]), 128)
+        self.assertEqual(row["status"], "unverified")
 
-        code = self._verify_code("creative@example.com")
-        issued = self.client.post(
-            "/api/verify", json={"email": "creative@example.com", "code": code}
-        ).get_json()["download_code"]
+        issued = signed.get_json()["download_code"]
         beacon = self.client.post(
             "/api/download-event",
             data=json.dumps({
@@ -1007,6 +1090,7 @@ class LicenceApiTests(unittest.TestCase):
             [("c" * 64, 1), ("v1", 2), ("v2", 1)],
         )
 
+        self._confirm("creative@example.com")
         stats = self.client.get(
             "/api/admin/stats", headers={"Authorization": "Bearer test-admin-token"}
         )

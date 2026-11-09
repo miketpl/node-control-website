@@ -1,6 +1,6 @@
 # NodeControl licence API
 
-Flask service for the free-download form: email a 6-digit code, then store an `NC-` code in SQLite. Publishing that code to `licenses.json` happens only when `LEGACY_ALLOWLIST_SYNC=true`.
+Flask service for the free-download form. The form asks for an email and a platform. The `NC-` code is issued straight away and stored in SQLite with status `unverified`. A one-click link in the email sets the status to `active`. An unverified code still activates the app. The old 6-digit `/api/verify` route remains for a page that already has a pending row. Publishing a code to `licenses.json` happens only when `LEGACY_ALLOWLIST_SYNC=true`, and it happens when the code is issued.
 
 This repository does not deploy the VPS. Copy the files onto the box and restart the service yourself.
 
@@ -16,7 +16,7 @@ Copy `.env.example` to `.env` on the server and replace every placeholder. The a
 | `ADMIN_TOKEN` | Long random secret. Not the placeholder. |
 | `ADMIN_READ_TOKEN` | Long random secret for the read-only routes above. Not the placeholder. |
 | `GITHUB_PAT_WRITE` | GitHub PAT with Contents write on that repo |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the 6-digit code |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the download code and the confirmation link |
 
 `GITHUB_PAT` is optional and read-only. Writes use `GITHUB_PAT_WRITE`, then fall back to `GITHUB_PAT`. Neither token is sent unless `LEGACY_ALLOWLIST_SYNC=true`.
 

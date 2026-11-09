@@ -384,13 +384,14 @@
             trackFunnel('free_form_submit');
 
             const btn = document.getElementById('reqSubmitBtn');
-            const name = document.getElementById('reqName').value.trim();
+            const nameEl = document.getElementById('reqName');
+            const name = nameEl ? nameEl.value.trim() : '';
             const email = document.getElementById('reqEmail').value.trim();
             const platform = document.getElementById('reqPlatform').value;
             const company = document.getElementById('reqCompany').value.trim();
 
-            if (!name || !email || !platform) {
-                showResult(reqResult, 'Please fill in all required fields.', 'error');
+            if (!email || !platform) {
+                showResult(reqResult, 'Enter your email and platform.', 'error');
                 return;
             }
 
@@ -403,8 +404,21 @@
                 const { status, data } = await apiCall('/api/request-access',
                     Object.assign({ name, email, company, platform }, attributionPayload()));
 
-                if (data.success) {
-                    // Show verification step
+                if (data.success && data.download_code) {
+                    pendingEmail = email;
+                    freeForm.style.display = 'none';
+                    if (verifySection) verifySection.style.display = 'none';
+                    downloadCodeSection.style.display = 'block';
+                    document.getElementById('revealedCode').textContent = data.download_code;
+                    const note = document.getElementById('downloadConfirmNote');
+                    if (note) note.style.display = 'block';
+                    const redeemInput = document.getElementById('redeemCode');
+                    if (redeemInput) {
+                        redeemInput.value = data.download_code;
+                        setTimeout(() => document.getElementById('redeemBtn').click(), 500);
+                    }
+                } else if (data.success) {
+                    // A page that still has a 6-digit request in progress.
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     verifySection.style.display = 'block';
@@ -412,13 +426,13 @@
                     document.getElementById('verifyCode').focus();
                 } else {
                     showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Get Node Control Free';
+                    btn.textContent = 'Download Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Get Node Control Free';
+                btn.textContent = 'Download Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
             }
@@ -485,7 +499,8 @@
 
             try {
                 // Re-submit the original form data
-                const name = document.getElementById('reqName').value.trim();
+                const nameEl = document.getElementById('reqName');
+                const name = nameEl ? nameEl.value.trim() : '';
                 const platform = document.getElementById('reqPlatform').value;
                 const company = document.getElementById('reqCompany').value.trim();
                 await apiCall('/api/request-access',
