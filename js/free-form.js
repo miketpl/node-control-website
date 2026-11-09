@@ -181,12 +181,13 @@
             e.preventDefault();
             trackFunnel('free_form_submit');
             var btn = document.getElementById('reqSubmitBtn');
-            var name = document.getElementById('reqName').value.trim();
+            var nameEl = document.getElementById('reqName');
+            var name = nameEl ? nameEl.value.trim() : '';
             var email = document.getElementById('reqEmail').value.trim();
             var platform = document.getElementById('reqPlatform').value;
             var company = document.getElementById('reqCompany').value.trim();
-            if (!name || !email || !platform) {
-                showResult(reqResult, 'Please fill in all required fields.', 'error');
+            if (!email || !platform) {
+                showResult(reqResult, 'Enter your email and platform.', 'error');
                 return;
             }
             btn.textContent = 'Sending…';
@@ -196,21 +197,35 @@
             try {
                 var result = await apiCall('/api/request-access',
                     Object.assign({ name: name, email: email, company: company, platform: platform }, attributionPayload()));
-                if (result.data.success) {
+                var data = result.data;
+                if (data.success && data.download_code) {
+                    pendingEmail = email;
+                    freeForm.style.display = 'none';
+                    if (verifySection) verifySection.style.display = 'none';
+                    downloadCodeSection.style.display = 'block';
+                    document.getElementById('revealedCode').textContent = data.download_code;
+                    var note = document.getElementById('downloadConfirmNote');
+                    if (note) note.style.display = 'block';
+                    var redeemInput = document.getElementById('redeemCode');
+                    if (redeemInput) {
+                        redeemInput.value = data.download_code;
+                        setTimeout(function () { document.getElementById('redeemBtn').click(); }, 500);
+                    }
+                } else if (data.success) {
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     verifySection.style.display = 'block';
                     document.getElementById('verifyEmailDisplay').textContent = email;
                     document.getElementById('verifyCode').focus();
                 } else {
-                    showResult(reqResult, result.data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Get Node Control Free';
+                    showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
+                    btn.textContent = 'Download Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Get Node Control Free';
+                btn.textContent = 'Download Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
             }
@@ -265,7 +280,8 @@
             this.textContent = 'Resending…';
             this.style.pointerEvents = 'none';
             try {
-                var name = document.getElementById('reqName').value.trim();
+                var nameEl = document.getElementById('reqName');
+                var name = nameEl ? nameEl.value.trim() : '';
                 var platform = document.getElementById('reqPlatform').value;
                 var company = document.getElementById('reqCompany').value.trim();
                 await apiCall('/api/request-access',
@@ -280,6 +296,16 @@
                 button.style.pointerEvents = '';
             }, 5000);
         });
+    }
+
+    function trackDownload(code, platform, kind) {
+        try {
+            var body = JSON.stringify({ code: code, platform: platform, kind: kind });
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(API_BASE + '/api/download-event',
+                    new Blob([body], { type: 'text/plain' }));
+            }
+        } catch (err) { /* never block the download */ }
     }
 
     function startDownload(url) {
@@ -327,22 +353,28 @@
                         var other = key === 'mac' ? 'win' : 'mac';
                         var otherLabel = key === 'mac' ? 'Windows (.exe)' : 'macOS (.dmg)';
                         startDownload(urls[key]);
+                        trackDownload(normalised, key, 'auto');
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — your download is starting.' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls[key] + '">Download didn\'t start? Click here.</a>' +
+                            '<a href="' + urls[key] + '" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
                             '</div>' +
-                            '<a href="' + urls[other] + '">Need ' + otherLabel + ' instead?</a>',
+                            '<a href="' + urls[other] + '" data-platform="' + other + '">Need ' + otherLabel + ' instead?</a>',
                             'success');
                     } else {
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — choose your platform:' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
-                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
+                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
+                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
                             '</div>',
                             'success');
                     }
+                    redeemResult.querySelectorAll('a[data-platform]').forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            trackDownload(normalised, link.getAttribute('data-platform'), 'click');
+                        });
+                    });
                 } else {
                     showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
                 }

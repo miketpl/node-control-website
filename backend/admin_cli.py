@@ -6,8 +6,11 @@ commands call the API. They do not open the database. On the Spark the
 API listens on 127.0.0.1:5000. From anywhere else set
 API_BASE=https://api.nodecontrol.io.
 
-`maintenance --local` is the exception. It opens the database in this
-process, rolls up old telemetry, and does not issue a licence key.
+`maintenance --local` opens the database in this process, rolls up old
+telemetry, and sends one reminder for each Free licence still unverified
+after 24 hours. It does not issue a licence key. `remind-unverified --local`
+sends those reminders without the telemetry roll-up. There is no timer
+inside the API process.
 Nothing in this file runs unless you pass a subcommand.
 
     export ADMIN_TOKEN='…'
@@ -24,6 +27,7 @@ Nothing in this file runs unless you pass a subcommand.
     python3 admin_cli.py reset-device --licence NC-ABCD-2345
     python3 admin_cli.py pro-resync --subscription sub_123
     python3 admin_cli.py maintenance --local
+    python3 admin_cli.py remind-unverified --local
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --dry-run
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --below-version 0.9.41 --include-unknown-version --confirm
     python3 admin_cli.py notify --template upgrade-0.9.41 --audience free_downloaded --licence-id 22 --dry-run
@@ -199,13 +203,26 @@ def cmd_resync(args):
 
 
 def cmd_maintenance(_args):
-    """Roll up old telemetry in this process. Does not issue a licence key."""
+    """Roll up old telemetry in this process. Does not issue a licence key.
+
+    Also sends one reminder for each Free licence that is still unverified
+    after 24 hours. A licence is reminded once.
+    """
     here = os.path.dirname(os.path.abspath(__file__))
     if here not in sys.path:
         sys.path.insert(0, here)
     import app  # loads ~/node-control-website/.env and migrates
     import licence_v1
     print(json.dumps(licence_v1.run_maintenance()))
+
+
+def cmd_remind_unverified(_args):
+    """Send the one confirmation reminder. Does not issue a licence key."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import app
+    print(json.dumps(app.send_unverified_reminders()))
 
 
 def _licence_ids(values):
@@ -381,16 +398,17 @@ def cmd_stats(args):
         _die(status, payload)
     print(
         f"All time: {payload.get('total_licenses')} licences, "
-        f"{payload.get('active')} active, {payload.get('pending')} pending, "
+        f"{payload.get('active')} active, {payload.get('unverified')} unverified, "
+        f"{payload.get('pending')} pending, "
         f"{payload.get('total_downloads')} redeems"
     )
     window = payload.get("window", {})
     print(f"Window {window.get('since')} to {window.get('until')} (UTC)")
-    print("source\tmedium\trequested\tverified\tredeemed")
+    print("source\tmedium\trequested\tverified\tunverified\tredeemed")
     for row in payload.get("by_source", []):
         print(
             f"{row['source']}\t{row['medium']}\t{row['requested']}\t"
-            f"{row['verified']}\t{row['redeemed']}"
+            f"{row['verified']}\t{row.get('unverified', 0)}\t{row['redeemed']}"
         )
     print("platform\tkind\tevents\tlicences")
     for row in payload.get("download_events", []):
@@ -465,6 +483,18 @@ def main(argv=None):
         help="Open the database in this process",
     )
     maintenance.set_defaults(func=cmd_maintenance)
+
+    remind = sub.add_parser(
+        "remind-unverified",
+        help="Email one confirmation reminder for Free licences still unverified after 24 hours",
+    )
+    remind.add_argument(
+        "--local",
+        action="store_true",
+        required=True,
+        help="Open the database in this process",
+    )
+    remind.set_defaults(func=cmd_remind_unverified)
 
     notify = sub.add_parser("notify", help="Send a service notice. Prints counts only")
     notify.add_argument("--template", required=True)

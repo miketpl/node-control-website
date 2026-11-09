@@ -468,27 +468,26 @@
                     </ul>
                     <p class="download-tier-desc">Works with Cisco IOS, IOS-XE and NX-OS, Meraki, Palo Alto, HP/Aruba, Juniper, Arista, Dell and Extreme.</p>
                     <p class="free-pause-notice" id="free-paused-notice">Node Control Free downloads are temporarily paused while we ship an update. Please check back soon.</p>
-                    <p class="download-tier-desc free-signup-hint">Enter your details and we'll email you a verification code instantly.</p>
+                    <p class="download-tier-desc free-signup-hint">Enter your email and platform. Company is optional. The download starts on this page.</p>
                 </div>
                 <div class="download-cards">
                     <div class="download-card" style="grid-column: 1 / -1;">
                         <!-- Step 1: Request form -->
                         <form class="request-form" id="freeRequestForm">
                             <div class="form-row">
-                                <input type="text" id="reqName" placeholder="Full name" required class="form-input">
-                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email">
-                            </div>
-                            <div class="form-row">
-                                <select id="reqPlatform" required class="form-input">
+                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email" autocomplete="email">
+                                <select id="reqPlatform" required class="form-input" aria-label="Platform">
                                     <option value="" disabled selected>Platform</option>
                                     <option value="macos">macOS</option>
                                     <option value="windows">Windows</option>
                                     <option value="both">Both</option>
                                 </select>
-                                <input type="text" id="reqCompany" placeholder="Company / Organisation" class="form-input">
                             </div>
-                            <button type="submit" class="btn btn-outline btn-download" id="reqSubmitBtn">Get Node Control Free</button>
-                            <span class="download-meta">We'll send a verification code to your email within seconds.</span>
+                            <div class="form-row">
+                                <input type="text" id="reqCompany" placeholder="Company / Organisation (optional)" class="form-input" aria-label="Company, optional">
+                            </div>
+                            <button type="submit" class="btn btn-outline btn-download" id="reqSubmitBtn">Download Free</button>
+                            <span class="download-meta">The download starts on this page. A confirmation link comes by email.</span>
                             <div id="reqResult" class="redeem-result"></div>
                         </form>
 
@@ -505,11 +504,12 @@
 
                         <!-- Step 3: Download code revealed (hidden initially) -->
                         <div class="request-form" id="downloadCodeSection" style="display: none;">
-                            <p style="color: #c8cdd3; margin-bottom: 8px;">Email verified! Your permanent download code is:</p>
+                            <p style="color: #c8cdd3; margin-bottom: 8px;">Your download code is:</p>
                             <div style="text-align: center; margin: 20px 0;">
                                 <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
                             </div>
-                            <p style="color: #636b75; font-size: 13px; margin-bottom: 20px;">Save this code &mdash; you can use it anytime to download NodeControl Free Edition below.</p>
+                            <p id="downloadConfirmNote" style="display: none; color: #c8cdd3; font-size: 14px; margin-bottom: 12px;">A confirmation link is on its way to your email. The code works before you open it.</p>
+                            <p style="color: #636b75; font-size: 13px; margin-bottom: 20px;">Save this code. You can use it again in the box below.</p>
                         </div>
                     </div>
                 </div>
@@ -939,7 +939,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261105download"></script>
+    <script src="js/main.js?v=20261109signup"></script>
     <script src="js/testimonials.js?v=20261019carousel" defer></script>
 </body>
 </html>

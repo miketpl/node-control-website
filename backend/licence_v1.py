@@ -1186,7 +1186,7 @@ def _lookup_key(raw_key):
                 return None, "invalid"
             if row["status"] == "revoked":
                 return None, "revoked"
-            if row["status"] != "active":
+            if row["status"] not in ("active", "unverified"):
                 return None, "invalid"
             return {
                 "kind": "free",
@@ -2347,7 +2347,7 @@ def download_free(platform):
         "SELECT id, status FROM licenses WHERE id = ?",
         (int(data["lic"]),),
     ).fetchone()
-    if not row or row["status"] != "active":
+    if not row or row["status"] not in ("active", "unverified"):
         db.close()
         return error(403, "code_invalid", "Enter your code again.")
     repo = _repo_for("free")
@@ -2812,7 +2812,17 @@ def run_maintenance():
     db.execute("DELETE FROM email_codes WHERE expires_at < ?", (iso(utcnow()),))
     db.commit()
     db.close()
-    return {"telemetry_rolled": len(rows), "telemetry_deleted": deleted}
+    reminded = 0
+    try:
+        import app as api
+        reminded = int(api.send_unverified_reminders().get("sent") or 0)
+    except Exception:
+        logger.error("Unverified reminders were not sent")
+    return {
+        "telemetry_rolled": len(rows),
+        "telemetry_deleted": deleted,
+        "unverified_reminders": reminded,
+    }
 
 
 def _admin_flags_get():
