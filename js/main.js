@@ -264,7 +264,14 @@
     // Tell the API an installer download was started or a link was clicked.
     // sendBeacon with text/plain needs no CORS preflight and survives the
     // page starting a file download. Failure is silent by design.
+    function signalConversion(name) {
+        try {
+            document.dispatchEvent(new CustomEvent('nc-conversion', { detail: { name: name } }));
+        } catch (err) { /* the page still works */ }
+    }
+
     function trackDownload(code, platform, kind) {
+        if (kind === 'click') signalConversion('download');
         try {
             var tags = funnelCampaign();
             const body = JSON.stringify({
@@ -405,6 +412,7 @@
                     Object.assign({ name, email, company, platform }, attributionPayload()));
 
                 if (data.success && data.download_code) {
+                    signalConversion('sign_up');
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     if (verifySection) verifySection.style.display = 'none';

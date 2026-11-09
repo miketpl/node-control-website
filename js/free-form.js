@@ -206,6 +206,7 @@
                     Object.assign({ name: name, email: email, company: company, platform: platform }, attributionPayload()));
                 var data = result.data;
                 if (data.success && data.download_code) {
+                    signalConversion('sign_up');
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     if (verifySection) verifySection.style.display = 'none';
@@ -305,7 +306,14 @@
         });
     }
 
+    function signalConversion(name) {
+        try {
+            document.dispatchEvent(new CustomEvent('nc-conversion', { detail: { name: name } }));
+        } catch (err) { /* the page still works */ }
+    }
+
     function trackDownload(code, platform, kind) {
+        if (kind === 'click') signalConversion('download');
         try {
             var tags = funnelCampaign();
             var body = JSON.stringify({
