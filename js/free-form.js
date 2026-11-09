@@ -27,11 +27,13 @@
             var source = params.get('utm_source') || '';
             var medium = params.get('utm_medium') || '';
             var campaign = params.get('utm_campaign') || '';
-            if (!source && !medium && !campaign) return;
+            var content = params.get('utm_content') || '';
+            if (!source && !medium && !campaign && !content) return;
             sessionStorage.setItem(ATTR_KEY, JSON.stringify({
                 utm_source: source,
                 utm_medium: medium,
                 utm_campaign: campaign,
+                utm_content: content,
                 referrer: externalReferrerHost(),
                 landing_page: window.location.pathname,
             }));
@@ -48,6 +50,7 @@
                 utm_source: clip(parsed.utm_source, 64),
                 utm_medium: clip(parsed.utm_medium, 64),
                 utm_campaign: clip(parsed.utm_campaign, 128),
+                utm_content: clip(parsed.utm_content, 128),
                 referrer: clip(parsed.referrer, 128),
                 landing_page: clip(parsed.landing_page, 256),
             };
@@ -62,10 +65,11 @@
             utm_source: clip(params.get('utm_source'), 64),
             utm_medium: clip(params.get('utm_medium'), 64),
             utm_campaign: clip(params.get('utm_campaign'), 128),
+            utm_content: clip(params.get('utm_content'), 128),
             referrer: clip(externalReferrerHost(), 128),
             landing_page: clip(window.location.pathname, 256),
         };
-        if (current.utm_source || current.utm_medium || current.utm_campaign) {
+        if (current.utm_source || current.utm_medium || current.utm_campaign || current.utm_content) {
             return current;
         }
         return storedAttribution() || current;
@@ -78,14 +82,16 @@
             var params = new URLSearchParams(window.location.search);
             var source = params.get('utm_source') || '';
             var campaign = params.get('utm_campaign') || '';
-            if (!source && !campaign) {
+            var content = params.get('utm_content') || '';
+            if (!source && !campaign && !content) {
                 var stored = storedAttribution();
                 source = stored ? (stored.utm_source || '') : '';
                 campaign = stored ? (stored.utm_campaign || '') : '';
+                content = stored ? (stored.utm_content || '') : '';
             }
-            return { utm_source: source, utm_campaign: campaign };
+            return { utm_source: source, utm_campaign: campaign, utm_content: content };
         } catch (err) {
-            return { utm_source: '', utm_campaign: '' };
+            return { utm_source: '', utm_campaign: '', utm_content: '' };
         }
     }
 
@@ -97,6 +103,7 @@
                 event: event,
                 utm_source: tags.utm_source,
                 utm_campaign: tags.utm_campaign,
+                utm_content: tags.utm_content,
             });
             navigator.sendBeacon(API_BASE + '/api/funnel-event',
                 new Blob([body], { type: 'text/plain' }));
@@ -282,6 +289,24 @@
         });
     }
 
+    function trackDownload(code, platform, kind) {
+        try {
+            var tags = funnelCampaign();
+            var body = JSON.stringify({
+                code: code,
+                platform: platform,
+                kind: kind,
+                utm_source: tags.utm_source,
+                utm_campaign: tags.utm_campaign,
+                utm_content: tags.utm_content,
+            });
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(API_BASE + '/api/download-event',
+                    new Blob([body], { type: 'text/plain' }));
+            }
+        } catch (err) { /* never block the download */ }
+    }
+
     function startDownload(url) {
         var a = document.createElement('a');
         a.href = url;
@@ -327,22 +352,28 @@
                         var other = key === 'mac' ? 'win' : 'mac';
                         var otherLabel = key === 'mac' ? 'Windows (.exe)' : 'macOS (.dmg)';
                         startDownload(urls[key]);
+                        trackDownload(normalised, key, 'auto');
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — your download is starting.' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls[key] + '">Download didn\'t start? Click here.</a>' +
+                            '<a href="' + urls[key] + '" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
                             '</div>' +
-                            '<a href="' + urls[other] + '">Need ' + otherLabel + ' instead?</a>',
+                            '<a href="' + urls[other] + '" data-platform="' + other + '">Need ' + otherLabel + ' instead?</a>',
                             'success');
                     } else {
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — choose your platform:' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
-                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
+                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
+                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
                             '</div>',
                             'success');
                     }
+                    redeemResult.querySelectorAll('a[data-platform]').forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            trackDownload(normalised, link.getAttribute('data-platform'), 'click');
+                        });
+                    });
                 } else {
                     showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
                 }

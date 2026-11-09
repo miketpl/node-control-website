@@ -2385,7 +2385,8 @@ def _queue_free_download_alert(license_id, platform, described):
         try:
             full = db.execute(
                 """
-                SELECT utm_source, utm_medium, utm_campaign, referrer, landing_page
+                SELECT utm_source, utm_medium, utm_campaign, utm_content,
+                       referrer, landing_page
                 FROM licenses WHERE id = ?
                 """,
                 (license_id,),
@@ -2403,6 +2404,7 @@ def _queue_free_download_alert(license_id, platform, described):
             payload["utm_source"] = full["utm_source"] or ""
             payload["utm_medium"] = full["utm_medium"] or ""
             payload["utm_campaign"] = full["utm_campaign"] or ""
+            payload["utm_content"] = full["utm_content"] or ""
             payload["referrer"] = full["referrer"] or ""
             payload["landing_page"] = full["landing_page"] or ""
         alerts.queue(payload)
