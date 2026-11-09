@@ -197,6 +197,7 @@
                 var result = await apiCall('/api/request-access',
                     Object.assign({ name: name, email: email, company: company, platform: platform }, attributionPayload()));
                 if (result.data.success) {
+                    signalConversion('sign_up');
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     verifySection.style.display = 'block';
@@ -282,6 +283,12 @@
         });
     }
 
+    function signalConversion(name) {
+        try {
+            document.dispatchEvent(new CustomEvent('nc-conversion', { detail: { name: name } }));
+        } catch (err) { /* the page still works */ }
+    }
+
     function startDownload(url) {
         var a = document.createElement('a');
         a.href = url;
@@ -330,19 +337,24 @@
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — your download is starting.' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls[key] + '">Download didn\'t start? Click here.</a>' +
+                            '<a href="' + urls[key] + '" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
                             '</div>' +
-                            '<a href="' + urls[other] + '">Need ' + otherLabel + ' instead?</a>',
+                            '<a href="' + urls[other] + '" data-platform="' + other + '">Need ' + otherLabel + ' instead?</a>',
                             'success');
                     } else {
                         showResult(redeemResult,
                             '<strong>' + data.label + '</strong> — choose your platform:' +
                             '<div class="redeem-download-links">' +
-                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm">macOS (.dmg)</a>' +
-                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm">Windows (.exe)</a>' +
+                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
+                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
                             '</div>',
                             'success');
                     }
+                    redeemResult.querySelectorAll('a[data-platform]').forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            signalConversion('download');
+                        });
+                    });
                 } else {
                     showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
                 }
