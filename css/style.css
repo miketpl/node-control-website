@@ -495,12 +495,12 @@ a:hover {
 /* ── Hero ──────────────────────────────────────────────────── */
 .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 0;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     text-align: center;
-    padding: calc(var(--nav-height) + 10px) 24px 20px;
+    padding: calc(var(--nav-height) + 10px) 24px 28px;
     overflow: hidden;
 }
 
@@ -526,7 +526,7 @@ a:hover {
     max-width: min(820px, 100%);
     width: auto;
     height: auto;
-    max-height: 34vh;
+    max-height: 56vh;
     object-fit: contain;
     margin-bottom: 0;
 }
@@ -572,10 +572,16 @@ a:hover {
 
 .hero-buttons {
     display: flex;
-    gap: 16px;
+    column-gap: 16px;
+    row-gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+}
+@media (min-width: 900px) {
+    .hero-buttons {
+        flex-wrap: nowrap;
+    }
 }
 
 .hero-version {
@@ -2395,7 +2401,8 @@ a.ai-coming-soon:hover {
 }
 
 /* Shown only when js/conversions.js has NC_ADS.enabled true and the visitor
-   has not chosen yet. Reject and Accept are the same control. */
+   has not chosen yet. Reject and Accept are the same control.
+   position:fixed so a hidden or absent banner takes no space in the hero. */
 .nc-consent {
     position: fixed;
     left: 16px;
