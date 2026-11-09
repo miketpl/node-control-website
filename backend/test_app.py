@@ -571,6 +571,7 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(row["utm_source"], "linkedin")
         self.assertEqual(row["utm_medium"], "social")
         self.assertEqual(row["utm_campaign"], "launchscript")
+        self.assertEqual(row["utm_content"], "")
         self.assertEqual(row["referrer"], "www.linkedin.com")
         self.assertEqual(row["landing_page"], "/")
 
@@ -609,7 +610,11 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(sources["x"]["verified"], 0)
         self.assertEqual(sources["x"]["unverified"], 1)
         self.assertEqual(body["unverified"], 1)
-        self.assertEqual(body["download_events"], [{"platform": "mac", "kind": "auto", "events": 1, "licences": 1}])
+        self.assertEqual(body["download_events"], [{
+            "platform": "mac", "kind": "auto",
+            "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
+            "events": 1, "licences": 1,
+        }])
         self._confirm("dl@example.com")
         after = self.client.get(
             "/api/admin/stats", headers={"Authorization": "Bearer test-admin-token"}
@@ -722,19 +727,19 @@ class LicenceApiTests(unittest.TestCase):
         db = get_db()
         cols = [row["name"] for row in db.execute("PRAGMA table_info(funnel_daily)")]
         rows = db.execute(
-            "SELECT day, event, utm_source, utm_campaign, count FROM funnel_daily ORDER BY event"
+            "SELECT day, event, utm_source, utm_campaign, utm_content, count FROM funnel_daily ORDER BY event"
         ).fetchall()
         db.close()
         self.assertEqual(
-            cols, ["day", "event", "utm_source", "utm_campaign", "count"]
+            cols, ["day", "event", "utm_source", "utm_campaign", "utm_content", "count"]
         )
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         self.assertEqual(
-            [(row["day"], row["event"], row["utm_source"], row["utm_campaign"], row["count"]) for row in rows],
+            [(row["day"], row["event"], row["utm_source"], row["utm_campaign"], row["utm_content"], row["count"]) for row in rows],
             [
-                (today, "free_form_start", "none", "none", 1),
-                (today, "free_form_submit", "none", "none", 1),
-                (today, "free_section_view", "none", "none", 1),
+                (today, "free_form_start", "none", "none", "none", 1),
+                (today, "free_form_submit", "none", "none", "none", 1),
+                (today, "free_section_view", "none", "none", "none", 1),
             ],
         )
 
@@ -941,14 +946,166 @@ class LicenceApiTests(unittest.TestCase):
         finally:
             raw.close()
             os.unlink(path.name)
-        self.assertEqual(cols, ["day", "event", "utm_source", "utm_campaign", "count"])
+        self.assertEqual(
+            cols, ["day", "event", "utm_source", "utm_campaign", "utm_content", "count"]
+        )
         self.assertEqual(row[0], "2026-10-01")
         self.assertEqual(row[1], "free_section_view")
         self.assertEqual(row[2], "none")
         self.assertEqual(row[3], "none")
-        self.assertEqual(row[4], 7)
+        self.assertEqual(row[4], "none")
+        self.assertEqual(row[5], 7)
         self.assertEqual(count, 2)
         self.assertEqual(kept, 7)
+
+    def test_campaign_rows_keep_their_counts_when_content_is_added(self):
+        path = tempfile.NamedTemporaryFile(prefix="nc-funnel-content-", suffix=".db", delete=False)
+        path.close()
+        raw = sqlite3.connect(path.name)
+        raw.row_factory = sqlite3.Row
+        raw.execute(
+            """
+            CREATE TABLE funnel_daily (
+                day TEXT NOT NULL,
+                event TEXT NOT NULL,
+                utm_source TEXT NOT NULL DEFAULT 'none',
+                utm_campaign TEXT NOT NULL DEFAULT 'none',
+                count INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (day, event, utm_source, utm_campaign)
+            )
+            """
+        )
+        raw.execute(
+            """
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+            VALUES ('2026-10-02', 'free_form_submit', 'reddit', 'blitz-reddit-ads', 5)
+            """
+        )
+        raw.execute(
+            """
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
+            VALUES ('2026-10-02', 'free_form_submit', 'reddit', 'paid30-launch', 2)
+            """
+        )
+        raw.commit()
+        try:
+            api._migrate_funnel_daily(raw)
+            api._migrate_funnel_daily(raw)
+            raw.commit()
+            rows = raw.execute(
+                """
+                SELECT utm_campaign, utm_content, count FROM funnel_daily
+                ORDER BY utm_campaign
+                """
+            ).fetchall()
+        finally:
+            raw.close()
+            os.unlink(path.name)
+        self.assertEqual(
+            [tuple(row) for row in rows],
+            [("blitz-reddit-ads", "none", 5), ("paid30-launch", "none", 2)],
+        )
+
+    @patch("app.smtplib.SMTP")
+    def test_utm_content_is_counted_with_the_campaign(self, smtp):
+        raw_content = "V1<script>" + ("x" * 200)
+        cleaned = "".join(
+            ch for ch in raw_content.strip()[:128].lower()
+            if ch.isalnum() or ch in "._-"
+        )
+        signed = self.client.post("/api/request-access", json={
+            "name": "Person",
+            "email": "creative@example.com",
+            "platform": "macos",
+            "utm_source": "reddit",
+            "utm_campaign": "paid30-launch",
+            "utm_content": raw_content,
+        })
+        self.assertEqual(signed.status_code, 200)
+        row = self._pending("creative@example.com")
+        self.assertEqual(row["utm_source"], "reddit")
+        self.assertEqual(row["utm_campaign"], "paid30-launch")
+        self.assertEqual(row["utm_content"], cleaned)
+        self.assertLessEqual(len(row["utm_content"]), 128)
+        self.assertEqual(row["status"], "unverified")
+
+        issued = signed.get_json()["download_code"]
+        beacon = self.client.post(
+            "/api/download-event",
+            data=json.dumps({
+                "code": issued,
+                "platform": "mac",
+                "kind": "click",
+                "utm_source": "reddit",
+                "utm_campaign": "blitz-reddit-ads",
+                "utm_content": "v2",
+            }),
+            content_type="text/plain",
+        )
+        self.assertEqual(beacon.status_code, 204)
+        db = get_db()
+        event = db.execute(
+            "SELECT utm_source, utm_campaign, utm_content FROM download_events"
+        ).fetchone()
+        db.close()
+        self.assertEqual(tuple(event), ("reddit", "blitz-reddit-ads", "v2"))
+
+        headers = {"CF-Connecting-IP": "203.0.113.88"}
+        for content in ("v1", "v2", "v1"):
+            res = self.client.post(
+                "/api/funnel-event",
+                data=json.dumps({
+                    "event": "free_form_submit",
+                    "utm_source": "reddit",
+                    "utm_campaign": "paid30-launch",
+                    "utm_content": content,
+                }),
+                content_type="text/plain",
+                headers=headers,
+            )
+            self.assertEqual(res.status_code, 204)
+        long = self.client.post(
+            "/api/funnel-event",
+            data=json.dumps({
+                "event": "free_form_submit",
+                "utm_source": "reddit",
+                "utm_campaign": "paid30-launch",
+                "utm_content": "c" * 80,
+            }),
+            content_type="text/plain",
+            headers=headers,
+        )
+        self.assertEqual(long.status_code, 204)
+        db = get_db()
+        counts = db.execute(
+            """
+            SELECT utm_content, count FROM funnel_daily
+            WHERE event = 'free_form_submit' AND utm_campaign = 'paid30-launch'
+            ORDER BY utm_content
+            """
+        ).fetchall()
+        db.close()
+        self.assertEqual(
+            [tuple(item) for item in counts],
+            [("c" * 64, 1), ("v1", 2), ("v2", 1)],
+        )
+
+        self._confirm("creative@example.com")
+        stats = self.client.get(
+            "/api/admin/stats", headers={"Authorization": "Bearer test-admin-token"}
+        )
+        body = stats.get_json()
+        campaigns = {
+            (item["utm_campaign"], item["utm_content"]): item
+            for item in body["by_campaign"]
+        }
+        creative = campaigns[("paid30-launch", cleaned)]
+        self.assertEqual(creative["source"], "reddit")
+        self.assertEqual(creative["requested"], 1)
+        self.assertEqual(creative["verified"], 1)
+        downloads = body["download_events"]
+        self.assertEqual(downloads[0]["utm_content"], "v2")
+        self.assertEqual(downloads[0]["utm_campaign"], "blitz-reddit-ads")
 
     def test_funnel_command_by_campaign_splits_the_day(self):
         from datetime import timedelta
@@ -987,12 +1144,14 @@ class LicenceApiTests(unittest.TestCase):
         total_lines = totals.getvalue().strip().splitlines()
         self.assertTrue(total_lines[1].startswith(uk_today + "\t10\t0\t0\t"))
         split_lines = split.getvalue().strip().splitlines()
-        self.assertEqual(split_lines[0], "day\tutm_source\tutm_campaign\tevent\tcount")
+        self.assertEqual(
+            split_lines[0], "day\tutm_source\tutm_campaign\tutm_content\tevent\tcount"
+        )
         self.assertEqual(
             split_lines[1:],
             [
-                f"{uk_today}\tlinkedin\tlaunch\tfree_section_view\t6",
-                f"{uk_today}\tnone\tnone\tfree_section_view\t4",
+                f"{uk_today}\tlinkedin\tlaunch\tnone\tfree_section_view\t6",
+                f"{uk_today}\tnone\tnone\tnone\tfree_section_view\t4",
             ],
         )
 
@@ -1053,8 +1212,9 @@ class LicenceApiTests(unittest.TestCase):
         self.assertEqual(row["utm_source"], "")
         self.assertEqual(row["referrer"], "")
         self.assertIsNotNone(events)
-        for column in ("utm_source", "utm_medium", "utm_campaign", "referrer", "landing_page"):
+        for column in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing_page"):
             self.assertIn(column, cols)
+        self.assertEqual(row["utm_content"], "")
         os.unlink(old.name + ".migrate.lock")
 
     def test_adding_a_column_twice_is_not_an_error(self):
@@ -1155,8 +1315,9 @@ class LicenceApiTests(unittest.TestCase):
             if os.path.exists(lock):
                 os.unlink(lock)
 
-        for column in ("utm_source", "utm_medium", "utm_campaign", "referrer", "landing_page"):
+        for column in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing_page"):
             self.assertIn(column, cols)
+        self.assertEqual(row["utm_content"], "")
         self.assertEqual(row["email"], "part@example.com")
         self.assertEqual(row["utm_source"], "linkedin")
         self.assertEqual(row["utm_medium"], "social")

@@ -221,8 +221,9 @@ def init_db():
             event TEXT NOT NULL,
             utm_source TEXT NOT NULL DEFAULT 'none',
             utm_campaign TEXT NOT NULL DEFAULT 'none',
+            utm_content TEXT NOT NULL DEFAULT 'none',
             count INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (day, event, utm_source, utm_campaign)
+            PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
         );
 
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
@@ -265,6 +266,7 @@ ATTRIBUTION_FIELDS = {
     "utm_source": 64,
     "utm_medium": 64,
     "utm_campaign": 128,
+    "utm_content": 128,
     "referrer": 128,
     "landing_page": 256,
 }
@@ -315,6 +317,22 @@ def _add_download_event_column(db, column):
             raise
 
 
+def _add_download_event_tag(db, column):
+    """Add one campaign tag. Existing rows read as an empty string."""
+    if column not in ("utm_source", "utm_campaign", "utm_content"):
+        raise ValueError("unknown download event tag")
+    have = {row["name"] for row in db.execute("PRAGMA table_info(download_events)")}
+    if column in have:
+        return
+    try:
+        db.execute(
+            f"ALTER TABLE download_events ADD COLUMN {column} TEXT DEFAULT ''"
+        )
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
 _FUNNEL_TAG_RE = re.compile(r"^[a-z0-9._-]{1,64}$")
 
 
@@ -338,9 +356,11 @@ def normalise_funnel_tag(value):
 def _migrate_funnel_daily(db):
     """Give an older funnel_daily the campaign columns. Existing rows stay.
 
-    The old primary key was (day, event), so the table is rebuilt. Rows that
-    had no campaign are stored as source 'none' and campaign 'none'. Running
-    this again, once those columns exist, changes nothing.
+    The primary key includes the UTM fields, so the table is rebuilt rather
+    than altered. A table that only had (day, event) is stored as source
+    'none', campaign 'none' and content 'none'. A table that already had
+    source and campaign keeps those values and reads as content 'none'.
+    Running this again, once utm_content exists, changes nothing.
     """
     exists = db.execute(
         "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'funnel_daily'"
@@ -348,29 +368,34 @@ def _migrate_funnel_daily(db):
     if not exists:
         return
     have = {row[1] for row in db.execute("PRAGMA table_info(funnel_daily)")}
-    if "utm_source" in have and "utm_campaign" in have:
+    if {"utm_source", "utm_campaign", "utm_content"} <= have:
         return
-    db.execute("DROP TABLE IF EXISTS funnel_daily_campaign")
+    source_sql = "COALESCE(utm_source, 'none')" if "utm_source" in have else "'none'"
+    campaign_sql = "COALESCE(utm_campaign, 'none')" if "utm_campaign" in have else "'none'"
+    db.execute("DROP TABLE IF EXISTS funnel_daily_next")
     db.execute(
         """
-        CREATE TABLE funnel_daily_campaign (
+        CREATE TABLE funnel_daily_next (
             day TEXT NOT NULL,
             event TEXT NOT NULL,
             utm_source TEXT NOT NULL DEFAULT 'none',
             utm_campaign TEXT NOT NULL DEFAULT 'none',
+            utm_content TEXT NOT NULL DEFAULT 'none',
             count INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (day, event, utm_source, utm_campaign)
+            PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
         )
         """
     )
     db.execute(
-        """
-        INSERT INTO funnel_daily_campaign (day, event, utm_source, utm_campaign, count)
-        SELECT day, event, 'none', 'none', count FROM funnel_daily
+        f"""
+        INSERT INTO funnel_daily_next
+            (day, event, utm_source, utm_campaign, utm_content, count)
+        SELECT day, event, {source_sql}, {campaign_sql}, 'none', count
+        FROM funnel_daily
         """
     )
     db.execute("DROP TABLE funnel_daily")
-    db.execute("ALTER TABLE funnel_daily_campaign RENAME TO funnel_daily")
+    db.execute("ALTER TABLE funnel_daily_next RENAME TO funnel_daily")
 
 
 def _apply_schema(db, statement):
@@ -418,14 +443,17 @@ def migrate_db():
             )
             _add_download_event_column(db, "version")
             _add_download_event_column(db, "tier")
+            for column in ("utm_source", "utm_campaign", "utm_content"):
+                _add_download_event_tag(db, column)
             _apply_schema(db, """
                 CREATE TABLE IF NOT EXISTS funnel_daily (
                     day TEXT NOT NULL,
                     event TEXT NOT NULL,
                     utm_source TEXT NOT NULL DEFAULT 'none',
                     utm_campaign TEXT NOT NULL DEFAULT 'none',
+                    utm_content TEXT NOT NULL DEFAULT 'none',
                     count INTEGER NOT NULL DEFAULT 0,
-                    PRIMARY KEY (day, event, utm_source, utm_campaign)
+                    PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
                 )
             """)
             _migrate_funnel_daily(db)
@@ -579,7 +607,7 @@ def reset_funnel_limits():
 
 
 def _funnel_event_name():
-    """Accept a bare event name, or JSON {event, utm_source, utm_campaign}.
+    """Accept a bare event name, or JSON with event and optional UTM tags.
 
     A bare name has no campaign. Anything that is not one of the three
     events is ignored. The tags are normalised and are never an address.
@@ -589,7 +617,7 @@ def _funnel_event_name():
         return None
     text = raw.decode("utf-8", errors="replace").strip()
     if text in FUNNEL_EVENTS:
-        return text, "none", "none"
+        return text, "none", "none", "none"
     data = request.get_json(force=True, silent=True)
     if isinstance(data, dict):
         event = str(data.get("event") or "").strip()
@@ -598,6 +626,7 @@ def _funnel_event_name():
                 event,
                 normalise_funnel_tag(data.get("utm_source")),
                 normalise_funnel_tag(data.get("utm_campaign")),
+                normalise_funnel_tag(data.get("utm_content")),
             )
     return None
 
@@ -2175,13 +2204,13 @@ def _issue_unverified(name, email, company, platform, attr):
         INSERT INTO licenses (
             code, name, email, company, platform, tier, status, created_at,
             verified_at, ip_address, utm_source, utm_medium, utm_campaign,
-            referrer, landing_page
-        ) VALUES (?, ?, ?, ?, ?, 'free', 'unverified', ?, '', ?, ?, ?, ?, ?, ?)
+            utm_content, referrer, landing_page
+        ) VALUES (?, ?, ?, ?, ?, 'free', 'unverified', ?, '', ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             download_code, name, email, company, platform, now, ip,
             attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-            attr["referrer"], attr["landing_page"],
+            attr["utm_content"], attr["referrer"], attr["landing_page"],
         ),
     )
     license_id = cursor.lastrowid
@@ -2223,6 +2252,7 @@ def _repeat_unverified(db, existing, name, company, platform, attr):
             utm_source = COALESCE(NULLIF(?, ''), utm_source),
             utm_medium = COALESCE(NULLIF(?, ''), utm_medium),
             utm_campaign = COALESCE(NULLIF(?, ''), utm_campaign),
+            utm_content = COALESCE(NULLIF(?, ''), utm_content),
             referrer = COALESCE(NULLIF(?, ''), referrer),
             landing_page = COALESCE(NULLIF(?, ''), landing_page)
         WHERE id = ? AND status = 'unverified'
@@ -2230,7 +2260,8 @@ def _repeat_unverified(db, existing, name, company, platform, attr):
         (
             kept_name, company, platform,
             attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-            attr["referrer"], attr["landing_page"], previous["id"],
+            attr["utm_content"], attr["referrer"], attr["landing_page"],
+            previous["id"],
         ),
     )
     db.commit()
@@ -2246,14 +2277,15 @@ def _repeat_unverified(db, existing, name, company, platform, attr):
             """
             UPDATE licenses SET
                 name = ?, company = ?, platform = ?,
-                utm_source = ?, utm_medium = ?, utm_campaign = ?,
+                utm_source = ?, utm_medium = ?, utm_campaign = ?, utm_content = ?,
                 referrer = ?, landing_page = ?
             WHERE id = ?
             """,
             (
                 previous["name"], previous["company"], previous["platform"],
                 previous["utm_source"], previous["utm_medium"], previous["utm_campaign"],
-                previous["referrer"], previous["landing_page"], previous["id"],
+                previous["utm_content"], previous["referrer"], previous["landing_page"],
+                previous["id"],
             ),
         )
         db.commit()
@@ -2338,20 +2370,22 @@ def request_access():
                 utm_source = COALESCE(NULLIF(?, ''), utm_source),
                 utm_medium = COALESCE(NULLIF(?, ''), utm_medium),
                 utm_campaign = COALESCE(NULLIF(?, ''), utm_campaign),
+                utm_content = COALESCE(NULLIF(?, ''), utm_content),
                 referrer = COALESCE(NULLIF(?, ''), referrer),
                 landing_page = COALESCE(NULLIF(?, ''), landing_page)
             WHERE id = ?
         """, (name, company, platform, download_code, now, pending_marker, ip,
               attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-              attr["referrer"], attr["landing_page"], previous["id"]))
+              attr["utm_content"], attr["referrer"], attr["landing_page"],
+              previous["id"]))
     else:
         cursor = db.execute("""
             INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address,
-                                  utm_source, utm_medium, utm_campaign, referrer, landing_page)
-            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?, ?)
+                                  utm_source, utm_medium, utm_campaign, utm_content, referrer, landing_page)
+            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (download_code, name, email, company, platform, now, pending_marker, ip,
               attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-              attr["referrer"], attr["landing_page"]))
+              attr["utm_content"], attr["referrer"], attr["landing_page"]))
         inserted_id = cursor.lastrowid
 
     db.commit()
@@ -2367,7 +2401,7 @@ def request_access():
                 UPDATE licenses SET
                     name = ?, company = ?, platform = ?,
                     code = ?, created_at = ?, verified_at = ?, ip_address = ?,
-                    utm_source = ?, utm_medium = ?, utm_campaign = ?,
+                    utm_source = ?, utm_medium = ?, utm_campaign = ?, utm_content = ?,
                     referrer = ?, landing_page = ?
                 WHERE id = ?
             """, (
@@ -2375,7 +2409,7 @@ def request_access():
                 previous["code"], previous["created_at"], previous["verified_at"],
                 previous["ip_address"],
                 previous["utm_source"], previous["utm_medium"], previous["utm_campaign"],
-                previous["referrer"], previous["landing_page"],
+                previous["utm_content"], previous["referrer"], previous["landing_page"],
                 previous["id"],
             ))
         db.commit()
@@ -2495,6 +2529,7 @@ def _queue_free_signup_alert(license_row, license_id):
             "utm_source": license_row["utm_source"] if license_row else "",
             "utm_medium": license_row["utm_medium"] if license_row else "",
             "utm_campaign": license_row["utm_campaign"] if license_row else "",
+            "utm_content": license_row["utm_content"] if license_row else "",
             "referrer": license_row["referrer"] if license_row else "",
             "landing_page": license_row["landing_page"] if license_row else "",
         })
@@ -2634,6 +2669,16 @@ def download_event():
     kind = str(data.get("kind") or "").strip().lower()
     if platform not in ("mac", "win") or kind not in ("auto", "click"):
         return ("", 204)
+    tags = {
+        "utm_source": normalise_funnel_tag(data.get("utm_source")),
+        "utm_campaign": normalise_funnel_tag(data.get("utm_campaign")),
+        "utm_content": normalise_funnel_tag(data.get("utm_content")),
+    }
+    # A missing tag is an empty string on this table. 'none' is the funnel
+    # counter's word for the same thing, and is not stored here.
+    for key, value in tags.items():
+        if value == "none":
+            tags[key] = ""
 
     db = get_db()
     row = db.execute(
@@ -2647,8 +2692,16 @@ def download_event():
         ).fetchone()["c"]
         if count < DOWNLOAD_EVENT_LICENCE_CAP:
             db.execute(
-                "INSERT INTO download_events (license_id, platform, kind, created_at) VALUES (?, ?, ?, ?)",
-                (row["id"], platform, kind, datetime.utcnow().isoformat()),
+                """
+                INSERT INTO download_events (
+                    license_id, platform, kind, created_at,
+                    utm_source, utm_campaign, utm_content
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    row["id"], platform, kind, datetime.utcnow().isoformat(),
+                    tags["utm_source"], tags["utm_campaign"], tags["utm_content"],
+                ),
             )
             db.commit()
     db.close()
@@ -2660,25 +2713,26 @@ def funnel_event():
     """Add one to today's UTC count for a Free-section event.
 
     The site sends this with navigator.sendBeacon as text/plain. The body is
-    the event name, or JSON with event and optional utm_source and
-    utm_campaign. The row is a count for that day, event and campaign. It
-    does not store an address, a user agent, or a visitor. The response is
+    the event name, or JSON with event and optional utm_source, utm_campaign
+    and utm_content. The row is a count for that day, event and those tags.
+    It does not store an address, a user agent, or a visitor. The response is
     always 204.
     """
     parsed = _funnel_event_name()
     if parsed and _funnel_ip_allowed(_client_ip()):
-        event, source, campaign = parsed
+        event, source, campaign, content = parsed
         day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         db = get_db()
         try:
             db.execute(
                 """
-                INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
-                VALUES (?, ?, ?, ?, 1)
-                ON CONFLICT(day, event, utm_source, utm_campaign)
+                INSERT INTO funnel_daily (
+                    day, event, utm_source, utm_campaign, utm_content, count
+                ) VALUES (?, ?, ?, ?, ?, 1)
+                ON CONFLICT(day, event, utm_source, utm_campaign, utm_content)
                 DO UPDATE SET count = count + 1
                 """,
-                (day, event, source, campaign),
+                (day, event, source, campaign, content),
             )
             db.commit()
         finally:
@@ -2828,12 +2882,36 @@ def stats():
         GROUP BY source, medium
         ORDER BY requested DESC
     """, (since, until))]
+    by_campaign = [dict(r) for r in db.execute("""
+        SELECT
+            CASE
+                WHEN utm_source != '' THEN utm_source
+                WHEN referrer != '' THEN 'ref:' || referrer
+                ELSE '(direct)'
+            END AS source,
+            COALESCE(NULLIF(utm_campaign, ''), 'none') AS utm_campaign,
+            COALESCE(NULLIF(utm_content, ''), 'none') AS utm_content,
+            COUNT(*) AS requested,
+            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS verified,
+            SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
+        FROM licenses
+        WHERE tier = 'free' AND created_at >= ? AND created_at < ?
+        GROUP BY source, utm_campaign, utm_content
+        ORDER BY requested DESC
+    """, (since, until))]
     download_events = [dict(r) for r in db.execute("""
-        SELECT platform, kind, COUNT(*) AS events, COUNT(DISTINCT license_id) AS licences
+        SELECT
+            platform,
+            kind,
+            COALESCE(NULLIF(utm_source, ''), 'none') AS utm_source,
+            COALESCE(NULLIF(utm_campaign, ''), 'none') AS utm_campaign,
+            COALESCE(NULLIF(utm_content, ''), 'none') AS utm_content,
+            COUNT(*) AS events,
+            COUNT(DISTINCT license_id) AS licences
         FROM download_events
         WHERE created_at >= ? AND created_at < ?
-        GROUP BY platform, kind
-        ORDER BY platform, kind
+        GROUP BY platform, kind, utm_source, utm_campaign, utm_content
+        ORDER BY platform, kind, utm_source, utm_campaign, utm_content
     """, (since, until))]
     db.close()
 
@@ -2845,6 +2923,7 @@ def stats():
         "total_downloads": total_downloads,
         "window": {"since": since, "until": until},
         "by_source": by_source,
+        "by_campaign": by_campaign,
         "download_events": download_events,
     })
 
