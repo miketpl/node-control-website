@@ -329,10 +329,10 @@ def cmd_funnel(args):
         if getattr(args, "by_campaign", False):
             rows = db.execute(
                 """
-                SELECT day, utm_source, utm_campaign, event, count
+                SELECT day, utm_source, utm_campaign, utm_content, event, count
                 FROM funnel_daily
                 WHERE day >= ? AND day <= ?
-                ORDER BY day, utm_source, utm_campaign, event
+                ORDER BY day, utm_source, utm_campaign, utm_content, event
                 """,
                 (window[0], window[-1]),
             ).fetchall()
@@ -344,11 +344,11 @@ def cmd_funnel(args):
     finally:
         db.close()
     if getattr(args, "by_campaign", False):
-        print("day\tutm_source\tutm_campaign\tevent\tcount")
+        print("day\tutm_source\tutm_campaign\tutm_content\tevent\tcount")
         for row in rows:
             print(
                 f"{row['day']}\t{row['utm_source']}\t{row['utm_campaign']}\t"
-                f"{row['event']}\t{int(row['count'])}"
+                f"{row['utm_content']}\t{row['event']}\t{int(row['count'])}"
             )
         return
     counts = {}
@@ -392,9 +392,19 @@ def cmd_stats(args):
             f"{row['source']}\t{row['medium']}\t{row['requested']}\t"
             f"{row['verified']}\t{row['redeemed']}"
         )
-    print("platform\tkind\tevents\tlicences")
+    print("source\tutm_campaign\tutm_content\trequested\tverified\tredeemed")
+    for row in payload.get("by_campaign", []):
+        print(
+            f"{row['source']}\t{row['utm_campaign']}\t{row['utm_content']}\t"
+            f"{row['requested']}\t{row['verified']}\t{row['redeemed']}"
+        )
+    print("platform\tkind\tutm_source\tutm_campaign\tutm_content\tevents\tlicences")
     for row in payload.get("download_events", []):
-        print(f"{row['platform']}\t{row['kind']}\t{row['events']}\t{row['licences']}")
+        print(
+            f"{row['platform']}\t{row['kind']}\t{row.get('utm_source', 'none')}\t"
+            f"{row.get('utm_campaign', 'none')}\t{row.get('utm_content', 'none')}\t"
+            f"{row['events']}\t{row['licences']}"
+        )
 
 
 def main(argv=None):
@@ -416,7 +426,7 @@ def main(argv=None):
     funnel_cmd.add_argument(
         "--by-campaign",
         action="store_true",
-        help="One row per UK day, source, campaign and event",
+        help="One row per UK day, source, campaign, content and event",
     )
     funnel_cmd.set_defaults(func=cmd_funnel)
 

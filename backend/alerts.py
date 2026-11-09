@@ -99,6 +99,7 @@ def queue(payload):
         "utm_source": _plain(payload.get("utm_source")),
         "utm_medium": _plain(payload.get("utm_medium")),
         "utm_campaign": _plain(payload.get("utm_campaign")),
+        "utm_content": _plain(payload.get("utm_content")),
         "referrer": _plain(payload.get("referrer")),
         "landing_page": _plain(payload.get("landing_page")),
     }
@@ -258,6 +259,7 @@ def _event_text(safe, kind, platform, licence_id, today, all_time):
         ("Source", "utm_source"),
         ("Medium", "utm_medium"),
         ("Campaign", "utm_campaign"),
+        ("Content", "utm_content"),
     ):
         value = _attr(safe.get(key))
         if value:

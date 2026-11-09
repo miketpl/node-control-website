@@ -358,7 +358,8 @@ html {
 }
 
 section[id],
-#free-edition {
+#free-edition,
+#freeRequestForm {
     scroll-margin-top: calc(var(--nav-height) + 12px);
 }
 
