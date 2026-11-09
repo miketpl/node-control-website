@@ -188,12 +188,13 @@
             e.preventDefault();
             trackFunnel('free_form_submit');
             var btn = document.getElementById('reqSubmitBtn');
-            var name = document.getElementById('reqName').value.trim();
+            var nameEl = document.getElementById('reqName');
+            var name = nameEl ? nameEl.value.trim() : '';
             var email = document.getElementById('reqEmail').value.trim();
             var platform = document.getElementById('reqPlatform').value;
             var company = document.getElementById('reqCompany').value.trim();
-            if (!name || !email || !platform) {
-                showResult(reqResult, 'Please fill in all required fields.', 'error');
+            if (!email || !platform) {
+                showResult(reqResult, 'Enter your email and platform.', 'error');
                 return;
             }
             btn.textContent = 'Sending…';
@@ -203,22 +204,36 @@
             try {
                 var result = await apiCall('/api/request-access',
                     Object.assign({ name: name, email: email, company: company, platform: platform }, attributionPayload()));
-                if (result.data.success) {
+                var data = result.data;
+                if (data.success && data.download_code) {
                     signalConversion('sign_up');
+                    pendingEmail = email;
+                    freeForm.style.display = 'none';
+                    if (verifySection) verifySection.style.display = 'none';
+                    downloadCodeSection.style.display = 'block';
+                    document.getElementById('revealedCode').textContent = data.download_code;
+                    var note = document.getElementById('downloadConfirmNote');
+                    if (note) note.style.display = 'block';
+                    var redeemInput = document.getElementById('redeemCode');
+                    if (redeemInput) {
+                        redeemInput.value = data.download_code;
+                        setTimeout(function () { document.getElementById('redeemBtn').click(); }, 500);
+                    }
+                } else if (data.success) {
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     verifySection.style.display = 'block';
                     document.getElementById('verifyEmailDisplay').textContent = email;
                     document.getElementById('verifyCode').focus();
                 } else {
-                    showResult(reqResult, result.data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Get Node Control Free';
+                    showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
+                    btn.textContent = 'Download Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Get Node Control Free';
+                btn.textContent = 'Download Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
             }
@@ -273,7 +288,8 @@
             this.textContent = 'Resending…';
             this.style.pointerEvents = 'none';
             try {
-                var name = document.getElementById('reqName').value.trim();
+                var nameEl = document.getElementById('reqName');
+                var name = nameEl ? nameEl.value.trim() : '';
                 var platform = document.getElementById('reqPlatform').value;
                 var company = document.getElementById('reqCompany').value.trim();
                 await apiCall('/api/request-access',

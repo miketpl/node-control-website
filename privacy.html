@@ -67,7 +67,7 @@
             </ul>
             <p>Those uses cover the following.</p>
             <ul>
-                <li>Send the verification code, and issue and check a Free licence.</li>
+                <li>Send the download code and a confirmation link, and issue and check a Free licence.</li>
                 <li>Run a Professional subscription, including the licence key and the payment record.</li>
                 <li>See which computer a licence is active on, and confirm a move to another computer.</li>
                 <li>Tell the app when a newer build is published.</li>
@@ -76,16 +76,15 @@
                 <li>Store usage counts you choose to send, linked to the licence.</li>
                 <li>Limit repeated requests.</li>
             </ul>
-            <p>Name, email, and platform are required for a Free licence. Company is optional. If you register an install, name and email are required. Organisation and role are optional. Usage statistics can be turned off. The licence still works if they are off.</p>
+            <p>Email and platform are required for a Free licence. Company is optional. The Free form does not ask for a name. If you register an install, name and email are required. Organisation and role are optional. Usage statistics can be turned off. The licence still works if they are off.</p>
 
             <h2>Free download form</h2>
             <ul>
-                <li>Name</li>
                 <li>Email</li>
                 <li>Platform</li>
                 <li>Company, if you enter one</li>
             </ul>
-            <p>These are stored in the licence database on servers the company operates. The 6-digit verification code is stored with that request until you enter it, or until it expires. The default expiry is 72 hours. After you verify, that field is replaced with the time you verified. The rest of the row stays, including the free licence code.</p>
+            <p>These are stored in the licence database on servers the company operates. The download code is issued straight away. A confirmation link is emailed after that. The link is a signed token and is not stored. It expires after 14 days. When you open it, the licence row records the time. An older page can still use a 6-digit code. That code is stored with the request until you enter it, or until it expires. The default expiry is 72 hours. After you verify, that field is replaced with the time you verified. The rest of the row stays, including the free licence code.</p>
             <p>The form also sends the campaign tags in the link you followed (utm_source, utm_medium, utm_campaign, utm_content), the host name of the site that referred you, and the path of the page you landed on. If the page you submit from has none of those tags, the values kept in the browser's session storage for this visit are sent instead. They are stored on the same licence row. They are not stored in a cookie.</p>
             <p>When the site starts an installer download, or you click a download link, it records the platform, whether the download was started automatically or from a click, and the same campaign source, campaign name and content tag. That record is stored against the licence, with the time. It does not include an IP address. If that call fails, the download still starts.</p>
             <p>The site counts anonymous daily totals of views of the Free section and Free form starts and submissions. Each total is also split by the campaign source, campaign name and content tag from the link you followed, or from the tags kept in session storage for this visit when the link has none. The count stores those tags and the day. It does not store an IP address, a user agent, a cookie, or a row for each visitor.</p>
@@ -118,7 +117,7 @@
             <p>The Professional key is stored as a hash, with an encrypted copy so the same key can be emailed again. The welcome email contains the key.</p>
 
             <h2>Service email</h2>
-            <p>We email you when the product needs to: a verification code, a licence key, a device-move code, or a link to manage a Professional subscription.</p>
+            <p>We email you when the product needs to: a download code, a confirmation link, a verification code from an older page, a licence key, a device-move code, or a link to manage a Professional subscription. One reminder is sent if a Free email is still unconfirmed after about a day.</p>
             <p>The licence server can also send a product notice, for example that a version will stop working. Each notice has an unsubscribe link. Opening it records that this licence has opted out. The record is the licence and the time. It does not store your email address. We also record which notice template was sent to which licence, and when. That record does not include your email address either. The same template is not sent to the same licence twice.</p>
             <p>Unsubscribing stops further product notices. It does not stop verification codes, licence keys, or device-move codes.</p>
             <p>There is no promotional or marketing list. The only emails we send are service emails. Each product notice has an unsubscribe link.</p>
@@ -144,7 +143,7 @@
                 <li>Usage-statistics session rows: 365 days, then monthly totals that are not tied to a licence. We delete or anonymise those totals on request, or periodically.</li>
                 <li>Update-check totals are counts of edition, platform, and version. They are not tied to a person. We delete or anonymise them on request, or periodically.</li>
                 <li>Rate-limit hashes: about two days. Maintenance removes them.</li>
-                <li>An unverified sign-up: we keep it for 30 days. The 6-digit code expires after 72 hours. We delete or anonymise the sign-up on request, or periodically.</li>
+                <li>An unverified sign-up: we keep it for 30 days. The confirmation link expires after 14 days. A 6-digit code, where one was issued, expires after 72 hours. We delete or anonymise the sign-up on request, or periodically.</li>
                 <li>An expired email code: we keep it for 30 days. A device-move code expires after 15 minutes, and maintenance removes expired codes when it runs. We delete or anonymise any that remain on request, or periodically.</li>
                 <li>Licence and registration records, including the computer a licence is active on and the record that a product notice was sent: we keep them while the licence is active, and for 2 years after it ends. We delete or anonymise them on request, or periodically.</li>
                 <li>Stripe and billing records: we keep them for 6 years, for UK tax. We delete or anonymise them on request, or periodically.</li>

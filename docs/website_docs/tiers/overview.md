@@ -71,11 +71,10 @@ A larger library left by Pro is not deleted when you install Free. The Free tabl
 ### How to get it
 
 1. Visit [nodecontrol.io](https://nodecontrol.io)
-2. Enter your email
-3. Verify with the 6-digit code emailed to you
-4. Receive your `NC-XXXX-XXXX` activation code
-5. Download and install the Free build for your platform
-6. Enter your code on first launch
+2. Enter your email and platform
+3. The page shows your `NC-XXXX-XXXX` activation code and starts the download. Confirm the email when you can
+4. Install the Free build for your platform
+5. Enter your code on first launch
 
 ## Pro
 
