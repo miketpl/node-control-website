@@ -130,7 +130,7 @@ If you have a class of devices that consistently come up inconclusive, send us a
 The detection system is designed to be:
 
 - **Conservative**: when in doubt, leaves the existing type alone rather than guessing
-- **Reversible**: every detection decision is logged in the audit log; you can see what happened and when
+- **Reversible**: detection decisions are not written to an audit log. A type you set and lock by hand is kept
 - **Override-respectful**: manual + locked types are never overwritten
 
 This makes detection issues recoverable — they don't cascade silently.

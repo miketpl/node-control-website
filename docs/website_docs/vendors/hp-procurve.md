@@ -9,7 +9,7 @@ HP ProCurve switches (now Aruba OS-Switch since the HPE acquisition) are first-c
 ## What works
 
 - Detection (with the 0.9.x classifier improvements)
-- L2 topology with full CDP / LLDP + MAC table
+- L2 topology with LLDP and the MAC table. CDP is Cisco only
 - L3 topology (OSPF + BGP if configured and licensed)
 - Port Utilisation
 - Bandwidth (dedicated ProCurve parser branch)
@@ -41,7 +41,6 @@ ProCurve firmware varies more than most vendors in command syntax. The catalog h
 | MAC table | `show mac-address`, `show mac address`, `show mac` |
 | Interfaces | `show interfaces`, `show interface` |
 | LLDP neighbours | `show lldp info remote-device`, `show lldp neighbours-info` |
-| CDP neighbours | `show cdp neighbors` (capital N), `show cdp neighbours` |
 
 On first use against a device, all variants are tried until one succeeds. The winning variant is recorded in `device_command_prefs` and used first on future runs.
 

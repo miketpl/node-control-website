@@ -7,7 +7,7 @@
     <title>Installing on macOS — NodeControl Docs</title>
     <meta name="description" content="Installing on macOS — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -205,10 +207,10 @@
 </li>
 <li><code>settings.json</code> — per-tab UI state
 </li>
-<li>Credential <strong>secrets</strong> are stored separately in the macOS <strong>Keychain</strong>, not in this folder
+<li>The master key is held in the macOS <strong>Keychain</strong>. Passwords are encrypted on your machine with that key, not stored as separate keychain items for every profile
 </li>
 </ul>
-<p><strong>Uninstalling</strong>: drag the app from Applications to Trash. To fully remove your data, also delete <code>~/Library/Application Support/netOps/</code> and clear any Node Control entries from Keychain Access.</p>
+<p><strong>Uninstalling</strong>: drag the app from Applications to Trash. To fully remove your data, also delete <code>~/Library/Application Support/netOps/</code> The master key, not each password, is what you clear from Keychain Access.</p>
 <h2 id="updating">Updating</h2>
 <p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. <strong>Help → Check for Updates...</strong> checks again. If the server says it is busy or paused, the app backs off for 24 hours by default. The licence server never offers a downgrade. The app checks the checksum and the code signature (<code>codesign</code>, <code>spctl</code>, and the Team ID) before <strong>Install &amp; Restart</strong>. Downloads resume. macOS keeps <code>Node Control Pro.previous.app</code> until the new version starts.</p>
 <p><strong>Update required.</strong> The text is <code>This version (v…) is no longer supported. Version v… must be installed to continue.</code> It cannot be dismissed. The buttons are <strong>Download Update</strong>, <strong>Open nodecontrol.io</strong>, and <strong>Quit</strong>.</p>

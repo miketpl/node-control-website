@@ -2,7 +2,7 @@
 
 Node Control runs on your laptop and talks to switches, routers, and firewalls over SSH and vendor APIs. These pages are the how-to: install it, add devices, and draw an L2 map.
 
-Free is 25 devices, with no time limit. It is not a trial.
+The Free Edition is free for up to 25 devices.
 
 ## New to Node Control?
 
@@ -29,17 +29,18 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [L3 Topology Builder](tasks/topology-l3.md) — Pro and AI
 - [Watcher of The WAN](tasks/topology-wan.md) — Pro and AI
 - [Config Backup and Save Config](tasks/config-backup.md) — on Free
-- [Config Compliance](tasks/config-compliance.md) — Pro and AI
+- [Config Compliance](tasks/config-compliance.md) — Pro and AI. After VLAN Port Finder, **Open port list** sends the ports you tick to the audit, which then checks only those interfaces
 - [Config from File](tasks/config-from-file.md) — Pro and AI; hidden in Safe Mode
 - [Discover Variables](tasks/discover-variables.md) — Pro and AI; inventory enrichment
 - [Discover](tasks/discovery.md) — sidebar page, Pro and AI; not on Free
+- [Lab Export](tasks/lab-export.md) — Pro and AI. A saved Discovery or L2 topology, plus an optional L3 topology and a Config Backup folder, becomes a Cisco CML 2.10 or EVE-NG Community 6.2 lab. Nothing connects to a device, so it is also available in Safe Mode
 - [Find Device](tasks/find-device.md) — on Free, one switch at a time
 - [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
 - [Serial console](tasks/serial-console.md) — on the Engineer tab. Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — on the Engineer tab. Free and Pro; visible in Safe Mode
-- [Monitor](tasks/monitor.md) — Pro and AI; not on Free
-- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. On Palo Alto, [Config from File](tasks/config-from-file.md) discards its own uncommitted changes when its commit is skipped or refused. Safe Mode removes Config Push
+- [Monitor](tasks/monitor.md) — Pro and AI; not on Free. Link status colours L2 cables for Cisco IOS, IOS-XE, and NX-OS ports
+- [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Safe Mode removes Config Push
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
 - [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
 - [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
@@ -55,6 +56,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [Inventory](reports/inventory.md) — the report that runs on Free
 - [Meraki Usage Summary](reports/meraki-usage-summary.md)
 - [Security Audit](reports/security-audit.md)
+- [Access Review](reports/access-review.md) — Pro and AI. Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview
 - [Lifecycle and EoX](reports/lifecycle.md)
 - [Change Summary](reports/change-summary.md)
 
@@ -88,7 +90,6 @@ Free is 25 devices, with no time limit. It is not a trial.
 - [How credentials are stored](security/credential-storage.md)
 - [What leaves your laptop](security/data-and-privacy.md)
 - [Safe Mode and the command allowlist](security/safe-mode.md)
-- [Audit log](security/audit-log.md)
 
 ## Troubleshooting
 
@@ -100,7 +101,7 @@ Free is 25 devices, with no time limit. It is not a trial.
 
 ## Tiers
 
-- [Free, Pro, and AI](tiers/overview.md) — Free is 25 devices, no time limit
+- [Free, Pro, and AI](tiers/overview.md) — The Free Edition is free for up to 25 devices
 - [Upgrading from Free to Pro](tiers/upgrading.md)
 
 ## Getting help

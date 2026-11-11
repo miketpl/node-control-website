@@ -94,6 +94,8 @@ Same as L2 — the HTML is written to your app support directory with a timestam
 
 A FortiGate is a firewall on the L3 map, not an access switch.
 
+On Pro, after an L3 topology run, the map page says **Open in Monitor for live status**. Device names and other text read from devices are shown as plain text on this map. A device name containing page code cannot change or run anything in the page.
+
 ## Next steps
 
 - [Layer 2 topology](topology-l2.md)

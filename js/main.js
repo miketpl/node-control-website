@@ -71,23 +71,22 @@
         ? 'http://localhost:5001'
         : 'https://api.nodecontrol.io';
 
-    // The HTML ships with class free-paused. This only removes it when the
-    // licence server says Free downloads are open. A failed fetch leaves
-    // the class in place, so the form stays hidden.
-    fetch(API_BASE + '/api/v1/status', { headers: { 'Accept': 'application/json' } })
+    // The form is visible unless this call succeeds and says downloads are
+    // paused. A failed, blocked, or timed-out call leaves the form up.
+    // The server still refuses a sign-up while downloads are paused.
+    var downloadSection = document.getElementById('download');
+    if (downloadSection) downloadSection.classList.remove('free-paused');
+    var statusOptions = { headers: { 'Accept': 'application/json' } };
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+        statusOptions.signal = AbortSignal.timeout(8000);
+    }
+    fetch(API_BASE + '/api/v1/status', statusOptions)
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (data) {
-            var section = document.getElementById('download');
+            if (!downloadSection || !data || data.free_downloads_paused !== true) return;
+            downloadSection.classList.add('free-paused');
             var notice = document.getElementById('free-paused-notice');
-            if (!section || !data || typeof data.free_downloads_paused !== 'boolean') return;
-            if (data.free_downloads_paused) {
-                section.classList.add('free-paused');
-                if (notice && typeof data.message === 'string' && data.message.trim()) {
-                    notice.textContent = data.message;
-                }
-            } else {
-                section.classList.remove('free-paused');
-            }
+            if (notice) notice.textContent = 'Free downloads are temporarily paused';
         })
         .catch(function () {});
 
@@ -212,11 +211,13 @@
             var source = params.get('utm_source') || '';
             var medium = params.get('utm_medium') || '';
             var campaign = params.get('utm_campaign') || '';
-            if (!source && !medium && !campaign) return;
+            var content = params.get('utm_content') || '';
+            if (!source && !medium && !campaign && !content) return;
             sessionStorage.setItem(ATTR_KEY, JSON.stringify({
                 utm_source: source,
                 utm_medium: medium,
                 utm_campaign: campaign,
+                utm_content: content,
                 referrer: externalReferrerHost(),
                 landing_page: window.location.pathname,
             }));
@@ -233,6 +234,7 @@
                 utm_source: clip(parsed.utm_source, 64),
                 utm_medium: clip(parsed.utm_medium, 64),
                 utm_campaign: clip(parsed.utm_campaign, 128),
+                utm_content: clip(parsed.utm_content, 128),
                 referrer: clip(parsed.referrer, 128),
                 landing_page: clip(parsed.landing_page, 256),
             };
@@ -247,10 +249,11 @@
             utm_source: clip(params.get('utm_source'), 64),
             utm_medium: clip(params.get('utm_medium'), 64),
             utm_campaign: clip(params.get('utm_campaign'), 128),
+            utm_content: clip(params.get('utm_content'), 128),
             referrer: clip(externalReferrerHost(), 128),
             landing_page: clip(window.location.pathname, 256),
         };
-        if (current.utm_source || current.utm_medium || current.utm_campaign) {
+        if (current.utm_source || current.utm_medium || current.utm_campaign || current.utm_content) {
             return current;
         }
         return storedAttribution() || current;
@@ -261,9 +264,24 @@
     // Tell the API an installer download was started or a link was clicked.
     // sendBeacon with text/plain needs no CORS preflight and survives the
     // page starting a file download. Failure is silent by design.
-    function trackDownload(code, platform, kind) {
+    function signalConversion(name) {
         try {
-            const body = JSON.stringify({ code: code, platform: platform, kind: kind });
+            document.dispatchEvent(new CustomEvent('nc-conversion', { detail: { name: name } }));
+        } catch (err) { /* the page still works */ }
+    }
+
+    function trackDownload(code, platform, kind) {
+        if (kind === 'click') signalConversion('download');
+        try {
+            var tags = funnelCampaign();
+            const body = JSON.stringify({
+                code: code,
+                platform: platform,
+                kind: kind,
+                utm_source: tags.utm_source,
+                utm_campaign: tags.utm_campaign,
+                utm_content: tags.utm_content,
+            });
             if (navigator.sendBeacon) {
                 navigator.sendBeacon(API_BASE + '/api/download-event',
                     new Blob([body], { type: 'text/plain' }));
@@ -279,14 +297,16 @@
             var params = new URLSearchParams(window.location.search);
             var source = params.get('utm_source') || '';
             var campaign = params.get('utm_campaign') || '';
-            if (!source && !campaign) {
+            var content = params.get('utm_content') || '';
+            if (!source && !campaign && !content) {
                 var stored = storedAttribution();
                 source = stored ? (stored.utm_source || '') : '';
                 campaign = stored ? (stored.utm_campaign || '') : '';
+                content = stored ? (stored.utm_content || '') : '';
             }
-            return { utm_source: source, utm_campaign: campaign };
+            return { utm_source: source, utm_campaign: campaign, utm_content: content };
         } catch (err) {
-            return { utm_source: '', utm_campaign: '' };
+            return { utm_source: '', utm_campaign: '', utm_content: '' };
         }
     }
 
@@ -298,6 +318,7 @@
                 event: event,
                 utm_source: tags.utm_source,
                 utm_campaign: tags.utm_campaign,
+                utm_content: tags.utm_content,
             });
             navigator.sendBeacon(API_BASE + '/api/funnel-event',
                 new Blob([body], { type: 'text/plain' }));
@@ -370,13 +391,14 @@
             trackFunnel('free_form_submit');
 
             const btn = document.getElementById('reqSubmitBtn');
-            const name = document.getElementById('reqName').value.trim();
+            const nameEl = document.getElementById('reqName');
+            const name = nameEl ? nameEl.value.trim() : '';
             const email = document.getElementById('reqEmail').value.trim();
             const platform = document.getElementById('reqPlatform').value;
             const company = document.getElementById('reqCompany').value.trim();
 
-            if (!name || !email || !platform) {
-                showResult(reqResult, 'Please fill in all required fields.', 'error');
+            if (!email || !platform) {
+                showResult(reqResult, 'Enter your email and platform.', 'error');
                 return;
             }
 
@@ -389,8 +411,22 @@
                 const { status, data } = await apiCall('/api/request-access',
                     Object.assign({ name, email, company, platform }, attributionPayload()));
 
-                if (data.success) {
-                    // Show verification step
+                if (data.success && data.download_code) {
+                    signalConversion('sign_up');
+                    pendingEmail = email;
+                    freeForm.style.display = 'none';
+                    if (verifySection) verifySection.style.display = 'none';
+                    downloadCodeSection.style.display = 'block';
+                    document.getElementById('revealedCode').textContent = data.download_code;
+                    const note = document.getElementById('downloadConfirmNote');
+                    if (note) note.style.display = 'block';
+                    const redeemInput = document.getElementById('redeemCode');
+                    if (redeemInput) {
+                        redeemInput.value = data.download_code;
+                        setTimeout(() => document.getElementById('redeemBtn').click(), 500);
+                    }
+                } else if (data.success) {
+                    // A page that still has a 6-digit request in progress.
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     verifySection.style.display = 'block';
@@ -398,13 +434,13 @@
                     document.getElementById('verifyCode').focus();
                 } else {
                     showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Request Free Access';
+                    btn.textContent = 'Download Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Request Free Access';
+                btn.textContent = 'Download Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
             }
@@ -471,7 +507,8 @@
 
             try {
                 // Re-submit the original form data
-                const name = document.getElementById('reqName').value.trim();
+                const nameEl = document.getElementById('reqName');
+                const name = nameEl ? nameEl.value.trim() : '';
                 const platform = document.getElementById('reqPlatform').value;
                 const company = document.getElementById('reqCompany').value.trim();
                 await apiCall('/api/request-access',
@@ -508,10 +545,18 @@
             setTimeout(() => a.remove(), 1000);
         }
 
-        // True only for a direct installer URL — not the releases-page
-        // fallback the backend returns when it can't resolve assets.
+        // A direct installer ends in .dmg or .exe. A signed Free link is
+        // /api/v1/download/free/mac or /win and does not. The GitHub
+        // releases-page fallback is neither, so it still shows the buttons.
         function isInstallerUrl(url) {
-            return /\.(dmg|exe)$/i.test(url || '');
+            if (!url) return false;
+            if (/\.(dmg|exe)(\?|#|$)/i.test(url)) return true;
+            try {
+                var parsed = new URL(url, window.location.href);
+                return /\/api\/v1\/download\/free\/(mac|win)$/i.test(parsed.pathname);
+            } catch (err) {
+                return false;
+            }
         }
 
         async function validateCode(code) {

@@ -22,7 +22,7 @@
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20261026mitch">
+    <link rel="stylesheet" href="css/style.css?v=20261109hero">
 </head>
 <body>
 
@@ -53,14 +53,14 @@
     <section class="hero" id="hero">
         <div class="hero-bg-glow"></div>
         <div class="hero-content">
-            <img src="images/hero-banner.png?v=20260314d" alt="NodeControl Logo" class="hero-banner">
+            <img src="images/hero-banner.png?v=20260314d" alt="NodeControl Logo" class="hero-banner" width="2048" height="1500">
             <h1 class="hero-headline">Built by Network Engineers<br>for Network Engineers.</h1>
-            <p class="hero-subtitle">Automate discovery, topology mapping, compliance, and changes across the network, from one desktop app. Config Backup runs when you start it. No agent on the devices. No cloud. Everything stays on the laptop.</p>
-            <p class="hero-ai-line">Bring your own AI provider. Professional uses your own API key. There is no AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend) are supported.</p>
-            <p class="hero-free-line">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
+            <p class="hero-free-line">Free for up to 25 devices. macOS and Windows. No card needed.</p>
+            <p class="hero-subtitle">Topology, backups and Find Device from one desktop app. Your data stays on your laptop.</p>
             <div class="hero-buttons">
-                <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-primary">Join the Pro waitlist</a>
+                <a href="#freeRequestForm" class="btn btn-primary">Download Free</a>
                 <a href="#free-edition" class="btn btn-outline">Get Node Control Free</a>
+                <a href="mailto:support@nodecontrol.io?subject=Pro%20waitlist" class="btn btn-outline">Join the Pro waitlist</a>
             </div>
             <!-- TPL branding is part of the hero banner image -->
         </div>
@@ -71,6 +71,7 @@
         <div class="container">
             <h2 class="section-title">Your AI, on <span class="cyan">Professional</span></h2>
             <p class="section-subtitle">Bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. Professional sends a task, a report, or the whole estate to the provider you chose. Enable AI analysis by default across all features is off on a fresh install. AI Summary checkboxes can be ticked per run. Free can show you the anonymised payload. It never sends it.</p>
+            <p class="section-subtitle">Automate discovery, topology mapping, compliance, and changes across the network, from one desktop app. Config Backup runs when you start it. It connects to your devices straight from your laptop, with no agent on them, and your configs, inventory and maps are saved on your machine. The app only talks to our server to check its licence and look for updates, plus anonymous usage counts you can switch off. Professional uses your own API key. There is no AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend) are supported.</p>
             <div class="ai-pro-grid">
                 <article class="ai-pro-card">
                     <h3>Bring your own AI provider</h3>
@@ -117,7 +118,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
                     </div>
                     <h3>Network Discovery <span class="tier-badge">Pro</span></h3>
-                    <p>Give it a seed IP. CDP, LLDP, and SNMP walk the neighbours and build an inventory.</p>
+                    <p>Give it a seed IP. It walks CDP (on Cisco) and LLDP neighbours over SSH and builds the map.</p>
                 </div>
 
                 <div class="feature-card">
@@ -184,6 +185,21 @@
                     <p>Bring your own AI provider, with your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend). Reports, task summaries, the firewall analyser, and an architect review of the estate. The anonymiser runs first.</p>
                 </div>
 
+                <div class="feature-card">
+                    <h3>Access Review <span class="tier-badge">Pro</span></h3>
+                    <p>A report of the admin accounts on Palo Alto and FortiGate firewalls: role, where the account signs in from, and notes such as two-factor or an SSH key. Cisco ASA is a preview. Password hashes, keys, and tokens are not read into the report.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Lab Export <span class="tier-badge">Pro</span></h3>
+                    <p>Turn a saved Discovery or L2 topology, plus an optional L3 topology and a Config Backup folder, into a lab for Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Compliance by interface <span class="tier-badge">Pro</span></h3>
+                    <p>After VLAN Port Finder, tick the ports you care about. The Config Compliance Audit then checks only those interfaces. Cisco IOS, IOS-XE, NX-OS, Arista EOS, Aruba AOS-CX, and HP ProCurve / Aruba OS-Switch.</p>
+                </div>
+
             </div>
 
             <div class="safety-block">
@@ -199,7 +215,7 @@
                     </div>
                     <div class="feature-card">
                         <h3>Config Push <span class="tier-badge">Pro</span></h3>
-                        <p>Config Push never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. A revert restores the interface config saved before the push, only on Cisco IOS, IOS-XE, and NX-OS, and you type REVERT to arm it.</p>
+                        <p>Config Push never touches SVIs, loopbacks, management, tunnel, or port-channel interfaces, and it skips ports carrying more than 2 VLANs and port-channel members unless you type UPLINK. The push itself is a Yes/No. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. You type REVERT to arm a Cisco revert.</p>
                     </div>
                 </div>
             </div>
@@ -209,7 +225,7 @@
     <!-- ═══════════════════ STATEMENT ═══════════════════ -->
     <section class="section statement-section">
         <div class="container">
-            <img src="images/nc%20found%20it.jpg" alt="While you were troubleshooting, NodeControl already found it" class="statement-image">
+            <img src="images/nc%20found%20it.jpg" alt="While you were troubleshooting, NodeControl already found it" class="statement-image" width="1280" height="920">
         </div>
     </section>
 
@@ -317,16 +333,16 @@
             </div>
             <div class="watcher-showcase">
                 <div class="watcher-main-image screenshot-card">
-                    <img src="images/screenshots/nc-sdwan-watcher-topology.png" alt="Watcher of The WAN — Full Mesh Topology" loading="lazy">
+                    <img src="images/screenshots/nc-sdwan-watcher-topology.png" alt="Watcher of The WAN — Full Mesh Topology" loading="lazy" width="1920" height="1080">
                     <span class="screenshot-label">Full-Mesh SD-WAN Topology</span>
                 </div>
                 <div class="watcher-side-images">
                     <div class="screenshot-card">
-                        <img src="images/screenshots/nc-sdwan-links.png" alt="SDWAN Link View — Select One Device, See All Tunnels" loading="lazy">
+                        <img src="images/screenshots/nc-sdwan-links.png" alt="SDWAN Link View — Select One Device, See All Tunnels" loading="lazy" width="1200" height="1100">
                         <span class="screenshot-label">Select a Device &mdash; See All Its Tunnels</span>
                     </div>
                     <div class="screenshot-card">
-                        <img src="images/screenshots/nc-sdwan-route-table.png" alt="SDWAN Route Table" loading="lazy">
+                        <img src="images/screenshots/nc-sdwan-route-table.png" alt="SDWAN Route Table" loading="lazy" width="1400" height="1000">
                         <span class="screenshot-label">SD-WAN Route Table Lookup</span>
                     </div>
                 </div>
@@ -433,8 +449,8 @@
     </section>
 
     <!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-    <!-- The free-paused class stays in the HTML. js/main.js removes it only when GET /api/v1/status says free_downloads_paused is false. A failed fetch leaves the pause in place. -->
-    <section class="section section-alt free-paused" id="download">
+    <!-- The form is visible unless js/main.js hears that free_downloads_paused is true. -->
+    <section class="section section-alt" id="download">
         <div class="container">
             <h2 class="section-title">Get <span class="cyan">NodeControl</span></h2>
             <p class="section-subtitle">Your network data stays on your machine. Pick your edition and platform below.</p>
@@ -442,7 +458,7 @@
             <!-- Free Edition -->
             <div class="download-tier" id="free-edition">
                 <div class="download-tier-header">
-                    <h3 class="download-tier-title"><span class="cyan">Free Edition:</span> up to 25 devices, no time limit</h3>
+                    <h3 class="download-tier-title"><span class="cyan">The Free Edition is free for up to 25 devices</span></h3>
                     <ul class="pricing-features download-tier-features">
                         <li>L2 Topology Builder</li>
                         <li>Config Backup and Save Config</li>
@@ -453,27 +469,26 @@
                     </ul>
                     <p class="download-tier-desc">Works with Cisco IOS, IOS-XE and NX-OS, Meraki, Palo Alto, HP/Aruba, Juniper, Arista, Dell and Extreme.</p>
                     <p class="free-pause-notice" id="free-paused-notice">Node Control Free downloads are temporarily paused while we ship an update. Please check back soon.</p>
-                    <p class="download-tier-desc free-signup-hint">Enter your details and we'll email you a verification code instantly.</p>
+                    <p class="download-tier-desc free-signup-hint">Enter your email and platform. Company is optional. The download starts on this page.</p>
                 </div>
                 <div class="download-cards">
                     <div class="download-card" style="grid-column: 1 / -1;">
                         <!-- Step 1: Request form -->
                         <form class="request-form" id="freeRequestForm">
                             <div class="form-row">
-                                <input type="text" id="reqName" placeholder="Full name" required class="form-input">
-                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email">
-                            </div>
-                            <div class="form-row">
-                                <select id="reqPlatform" required class="form-input">
+                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email" autocomplete="email">
+                                <select id="reqPlatform" required class="form-input" aria-label="Platform">
                                     <option value="" disabled selected>Platform</option>
                                     <option value="macos">macOS</option>
                                     <option value="windows">Windows</option>
                                     <option value="both">Both</option>
                                 </select>
-                                <input type="text" id="reqCompany" placeholder="Company / Organisation" class="form-input">
                             </div>
-                            <button type="submit" class="btn btn-outline btn-download" id="reqSubmitBtn">Get Node Control Free</button>
-                            <span class="download-meta">We'll send a verification code to your email within seconds.</span>
+                            <div class="form-row">
+                                <input type="text" id="reqCompany" placeholder="Company / Organisation (optional)" class="form-input" aria-label="Company, optional">
+                            </div>
+                            <button type="submit" class="btn btn-outline btn-download" id="reqSubmitBtn">Download Free</button>
+                            <span class="download-meta">The download starts on this page. A confirmation link comes by email.</span>
                             <div id="reqResult" class="redeem-result"></div>
                         </form>
 
@@ -490,11 +505,12 @@
 
                         <!-- Step 3: Download code revealed (hidden initially) -->
                         <div class="request-form" id="downloadCodeSection" style="display: none;">
-                            <p style="color: #c8cdd3; margin-bottom: 8px;">Email verified! Your permanent download code is:</p>
+                            <p style="color: #c8cdd3; margin-bottom: 8px;">Your download code is:</p>
                             <div style="text-align: center; margin: 20px 0;">
                                 <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
                             </div>
-                            <p style="color: #636b75; font-size: 13px; margin-bottom: 20px;">Save this code &mdash; you can use it anytime to download NodeControl Free Edition below.</p>
+                            <p id="downloadConfirmNote" style="display: none; color: #c8cdd3; font-size: 14px; margin-bottom: 12px;">A confirmation link is on its way to your email. The code works before you open it.</p>
+                            <p style="color: #636b75; font-size: 13px; margin-bottom: 20px;">Save this code. You can use it again in the box below.</p>
                         </div>
                     </div>
                 </div>
@@ -576,7 +592,7 @@
     <section class="section" id="pricing">
         <div class="container">
             <h2 class="section-title">Pricing</h2>
-            <p class="section-subtitle">Simple pricing. No per-device fees. No cloud lock-in.</p>
+            <p class="section-subtitle">Simple pricing. No per-device fees.</p>
             <p class="section-subtitle">UK VAT (20%) is added at checkout where applicable. Business customers can add a VAT number.</p>
 
             <!-- Core Platform tiers -->
@@ -590,7 +606,7 @@
                         <p>For individual engineers</p>
                     </div>
                     <ul class="pricing-features">
-                        <li>Up to 25 devices, no time limit</li>
+                        <li>The Free Edition is free for up to 25 devices</li>
                         <li>L2 Topology Builder</li>
                         <li>Config Backup and Save Config</li>
                         <li>Find Device: one switch at a time, MAC or IP to the switch port</li>
@@ -622,6 +638,9 @@
                         <li>Bring your own AI provider. Your own API key. No AI subscription and no markup. Anthropic, OpenAI, Google Gemini, xAI Grok, any OpenAI-compatible endpoint, or local Ollama (or your own on-prem backend)</li>
                         <li>Anonymiser on by default. Enable AI analysis by default across all features is off on a fresh install. AI Summary checkboxes can be ticked per run</li>
                         <li>Architect review of the estate, and network-wide chat (Ask Network AI)</li>
+                        <li>Access Review of firewall admin accounts. Palo Alto and FortiGate. Cisco ASA is a preview only</li>
+                        <li>Lab Export to Cisco CML 2.10 or EVE-NG Community 6.2</li>
+                        <li>Config compliance on the interfaces you pick from VLAN Port Finder</li>
                         <li>Priority email support</li>
                     </ul>
                     <!--
@@ -652,7 +671,7 @@
 
             <div class="compare-wrap">
                 <h3 class="compare-title">Free Edition and Professional</h3>
-                <p class="compare-note">Free Edition is up to 25 devices, with no time limit. It is not a trial.</p>
+                <p class="compare-note">The Free Edition is free for up to 25 devices.</p>
                 <div class="compare-scroll">
                     <table class="compare-table">
                         <thead>
@@ -670,7 +689,7 @@
                             </tr>
                             <tr>
                                 <th>Devices</th>
-                                <td>Up to 25, no time limit</td>
+                                <td>The Free Edition is free for up to 25 devices</td>
                                 <td>Unlimited</td>
                             </tr>
                             <tr>
@@ -690,8 +709,8 @@
                             </tr>
                             <tr>
                                 <th>Find Device</th>
-                                <td>One switch at a time</td>
-                                <td>Site and cores, plus Meraki wireless</td>
+                                <td>One switch at a time, including Meraki wireless clients</td>
+                                <td>Site and cores, including Meraki wireless clients</td>
                             </tr>
                             <tr>
                                 <th>Inventory report</th>
@@ -726,7 +745,17 @@
                             <tr>
                                 <th>Compliance and config push</th>
                                 <td>No</td>
-                                <td>Yes</td>
+                                <td>Yes. After VLAN Port Finder, the audit can check only the interfaces you tick</td>
+                            </tr>
+                            <tr>
+                                <th>Access Review</th>
+                                <td>No</td>
+                                <td>Yes. Palo Alto and FortiGate. Cisco ASA is a preview only</td>
+                            </tr>
+                            <tr>
+                                <th>Lab Export</th>
+                                <td>No</td>
+                                <td>Cisco CML 2.10 or EVE-NG Community 6.2</td>
                             </tr>
                             <tr>
                                 <th>Monitor</th>
@@ -911,7 +940,8 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=20261101campaign"></script>
+    <script src="js/conversions.js?v=20261109ads"></script>
+    <script src="js/main.js?v=20261109ads"></script>
     <script src="js/testimonials.js?v=20261019carousel" defer></script>
 </body>
 </html>

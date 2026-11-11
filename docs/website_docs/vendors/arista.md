@@ -10,16 +10,16 @@ Arista switches (7050, 7150, 7280, 7320, 7500-series and cloud-grade boxes) are 
 
 Most things work through the EOS CLI. EOS reads LLDP and the MAC table. From 0.9.42 the L2 Topology Builder uses EOS parsers, not Cisco IOS parsers.
 
-- L2 topology uses those EOS parsers for LLDP and CDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table
+- L2 topology uses those EOS parsers for LLDP neighbours, port-channel members, the default gateway, and spanning tree (MST and rapid-PVST). The builder does not use the MAC table. CDP is Cisco only
 - The MAC table is read for VLAN Port Finder, Find Device (the wired trace), the Discover walk, and the Bandwidth report
-- Find Device's per-port probe tries CDP first and falls back to LLDP, so Arista answers from LLDP
+- Find Device's per-port probe on Arista answers from LLDP. CDP is Cisco only
 - Port Utilisation
 - Bandwidth and Path Bandwidth read the EOS route table. The per-VRF pass runs on EOS as well as the Cisco family
 - VLAN Port Finder
 - Find Device, traced with EOS MAC-table, LLDP, and LAG commands
 - Inventory reads the model, the serials, and the EOS version from EOS output
 - On Pro and the AI edition, L3 Topology Builder reads routes, interfaces, and BGP peers as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed
-- On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. Site Subnets has its L3 command
+- On Pro and the AI edition, Asset Lifecycle reads the EOS inventory and the EOS version. Health Monitor reads memory from `show version`. CPU is now reported too, in the Health Monitor report and in Monitor. On recent EOS versions the old CPU command was refused. Site Subnets has its L3 command
 - Monitor
 
 ## Detection
