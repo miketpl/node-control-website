@@ -106,7 +106,7 @@ Only interface config can be reverted.
 
 Revert warns about drift. It does not detect drift.
 
-Juniper Junos loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Each interface is snapshotted before the push, and revert restores that snapshot the same way. If the snapshot could not be taken, the revert is marked as manual.
+Juniper Junos loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.
 
 Revert is refused whenever the app-wide Safe Mode is on.
 
@@ -114,7 +114,7 @@ Revert is refused whenever the app-wide Safe Mode is on.
 
 Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.
 
-Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no activity targeting and no reliable revert. (On Palo Alto, Config from File discards its own uncommitted changes when its commit is skipped or refused. See [Config from File](config-from-file.md).)
+Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.
 
 The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
 
@@ -126,6 +126,8 @@ Safe Mode removes Config Push.
 
 [Config from File](config-from-file.md) is a separate task. It sends the lines in a file verbatim. There are no placeholders. Global-only config belongs there.
 
+On Juniper Junos, a failed commit shows the device's own error lines instead of a generic **Commit failed** header.
+
 ## What changed
 
 - 0.9.36: activity targeting, Admin shutdown, and Default interface.
@@ -133,6 +135,7 @@ Safe Mode removes Config Push.
 - 0.9.38: Exec mode.
 - 0.9.39: the task was renamed.
 - 0.9.40: the UPLINK override.
+- 0.9.45: a failed Junos commit shows the device's own error lines instead of a generic Commit failed header.
 
 ## Next steps
 

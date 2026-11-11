@@ -41,7 +41,7 @@ The table is sortable and filterable:
 |---|---|
 | **Switches** | Access, distribution, core switches |
 | **Routers** | WAN routers, branch ISRs, ASRs, CSRs |
-| **Firewalls** | Palo Alto, ASA, Fortigate, Checkpoint |
+| **Firewalls** | Palo Alto, Fortigate, Cisco ASA |
 | **SD-WAN** | Velocloud, Viptela, Silver Peak edges |
 | **Wireless** | Meraki MR, Cisco APs, Aruba IAP, controllers |
 | **Other** | Anything that doesn't fit above |
@@ -58,7 +58,7 @@ Three ways, in increasing automation:
 
 ## Free tier device cap
 
-Free holds **25 devices**. There is no time limit.
+The Free Edition is free for up to 25 devices.
 
 - A manual add refuses the 26th device
 - A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP, and the log says so. Library Updater does not run on Free
@@ -105,7 +105,7 @@ For multi-field edits, right-click → **Edit Device** opens a dialog with all f
 
 ## Deleting devices
 
-Right-click → **Delete**. Confirms before deletion. Doesn't remove the SSH host key from your known-hosts file or the credentials from your keychain — both are reusable if you re-add the same IP.
+Right-click → **Delete**. Confirms before deletion. Doesn't remove the SSH host key from your known-hosts file. The encrypted passwords stay in the local database, and the master key stays in the OS credential store.
 
 ## Library size limits
 

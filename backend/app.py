@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError
 
-from flask import Flask, g, request, jsonify, redirect
+from flask import Flask, g, request, jsonify, redirect, Response
 from flask_cors import CORS
 import stripe
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -119,6 +119,12 @@ app.config.update(
     ADMIN_ALERT_EMAIL=os.environ.get("ADMIN_ALERT_EMAIL", ""),
     # Optional comma-separated licence ids. Alerts for these ids are not sent.
     ADMIN_ALERT_SKIP_LICENCE_IDS=os.environ.get("ADMIN_ALERT_SKIP_LICENCE_IDS", ""),
+    # Free licence ids left out of download and install counts. Comma-separated.
+    # The default is the owner's test licences. Pro key ids are a separate
+    # list and stay empty: every Pro key is a real beta user.
+    STATS_EXCLUDE_LICENCE_IDS=os.environ.get("STATS_EXCLUDE_LICENCE_IDS", "23,24,32"),
+    STATS_EXCLUDE_PRO_KEY_IDS=os.environ.get("STATS_EXCLUDE_PRO_KEY_IDS", ""),
+    STATS_EXCLUDE_EMAILS=os.environ.get("STATS_EXCLUDE_EMAILS", ""),
     API_PUBLIC_URL=os.environ.get("API_PUBLIC_URL", "https://api.nodecontrol.io"),
     # Signs one-click notice unsubscribe links. Empty or the placeholder disables sending.
     NOTICE_UNSUBSCRIBE_SECRET=os.environ.get("NOTICE_UNSUBSCRIBE_SECRET", ""),
@@ -206,7 +212,9 @@ def init_db():
             license_id INTEGER NOT NULL,
             platform TEXT DEFAULT '',
             kind TEXT DEFAULT '',
-            created_at TEXT NOT NULL
+            created_at TEXT NOT NULL,
+            version TEXT,
+            tier TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at);
 
@@ -215,8 +223,9 @@ def init_db():
             event TEXT NOT NULL,
             utm_source TEXT NOT NULL DEFAULT 'none',
             utm_campaign TEXT NOT NULL DEFAULT 'none',
+            utm_content TEXT NOT NULL DEFAULT 'none',
             count INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (day, event, utm_source, utm_campaign)
+            PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
         );
 
         CREATE INDEX IF NOT EXISTS idx_licenses_code ON licenses(code);
@@ -260,6 +269,7 @@ ATTRIBUTION_FIELDS = {
     "utm_source": 64,
     "utm_medium": 64,
     "utm_campaign": 128,
+    "utm_content": 128,
     "referrer": 128,
     "landing_page": 256,
 }
@@ -302,6 +312,50 @@ def _add_column(db, table, column, declaration):
             raise
 
 
+def _add_license_text_column(db, column):
+    """Add one text column with an empty default. Existing rows stay."""
+    if column not in ("reminder_sent_at",):
+        raise ValueError("unknown licence column")
+    have = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
+    if column in have:
+        return
+    try:
+        db.execute(f"ALTER TABLE licenses ADD COLUMN {column} TEXT DEFAULT ''")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_download_event_column(db, column):
+    """Add a nullable download_events column. Existing rows are left as NULL."""
+    if column not in ("version", "tier"):
+        raise ValueError("unknown download event column")
+    have = {row["name"] for row in db.execute("PRAGMA table_info(download_events)")}
+    if column in have:
+        return
+    try:
+        db.execute(f"ALTER TABLE download_events ADD COLUMN {column} TEXT")
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
+def _add_download_event_tag(db, column):
+    """Add one campaign tag. Existing rows read as an empty string."""
+    if column not in ("utm_source", "utm_campaign", "utm_content"):
+        raise ValueError("unknown download event tag")
+    have = {row["name"] for row in db.execute("PRAGMA table_info(download_events)")}
+    if column in have:
+        return
+    try:
+        db.execute(
+            f"ALTER TABLE download_events ADD COLUMN {column} TEXT DEFAULT ''"
+        )
+    except sqlite3.OperationalError as exc:
+        if not _schema_already_applied(exc):
+            raise
+
+
 _FUNNEL_TAG_RE = re.compile(r"^[a-z0-9._-]{1,64}$")
 
 
@@ -325,9 +379,11 @@ def normalise_funnel_tag(value):
 def _migrate_funnel_daily(db):
     """Give an older funnel_daily the campaign columns. Existing rows stay.
 
-    The old primary key was (day, event), so the table is rebuilt. Rows that
-    had no campaign are stored as source 'none' and campaign 'none'. Running
-    this again, once those columns exist, changes nothing.
+    The primary key includes the UTM fields, so the table is rebuilt rather
+    than altered. A table that only had (day, event) is stored as source
+    'none', campaign 'none' and content 'none'. A table that already had
+    source and campaign keeps those values and reads as content 'none'.
+    Running this again, once utm_content exists, changes nothing.
     """
     exists = db.execute(
         "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'funnel_daily'"
@@ -335,29 +391,34 @@ def _migrate_funnel_daily(db):
     if not exists:
         return
     have = {row[1] for row in db.execute("PRAGMA table_info(funnel_daily)")}
-    if "utm_source" in have and "utm_campaign" in have:
+    if {"utm_source", "utm_campaign", "utm_content"} <= have:
         return
-    db.execute("DROP TABLE IF EXISTS funnel_daily_campaign")
+    source_sql = "COALESCE(utm_source, 'none')" if "utm_source" in have else "'none'"
+    campaign_sql = "COALESCE(utm_campaign, 'none')" if "utm_campaign" in have else "'none'"
+    db.execute("DROP TABLE IF EXISTS funnel_daily_next")
     db.execute(
         """
-        CREATE TABLE funnel_daily_campaign (
+        CREATE TABLE funnel_daily_next (
             day TEXT NOT NULL,
             event TEXT NOT NULL,
             utm_source TEXT NOT NULL DEFAULT 'none',
             utm_campaign TEXT NOT NULL DEFAULT 'none',
+            utm_content TEXT NOT NULL DEFAULT 'none',
             count INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (day, event, utm_source, utm_campaign)
+            PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
         )
         """
     )
     db.execute(
-        """
-        INSERT INTO funnel_daily_campaign (day, event, utm_source, utm_campaign, count)
-        SELECT day, event, 'none', 'none', count FROM funnel_daily
+        f"""
+        INSERT INTO funnel_daily_next
+            (day, event, utm_source, utm_campaign, utm_content, count)
+        SELECT day, event, {source_sql}, {campaign_sql}, 'none', count
+        FROM funnel_daily
         """
     )
     db.execute("DROP TABLE funnel_daily")
-    db.execute("ALTER TABLE funnel_daily_campaign RENAME TO funnel_daily")
+    db.execute("ALTER TABLE funnel_daily_next RENAME TO funnel_daily")
 
 
 def _apply_schema(db, statement):
@@ -389,6 +450,7 @@ def migrate_db():
             for column in ATTRIBUTION_FIELDS:
                 if column not in have:
                     _add_license_column(db, column)
+            _add_license_text_column(db, "reminder_sent_at")
             _apply_schema(db, """
                 CREATE TABLE IF NOT EXISTS download_events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -402,14 +464,19 @@ def migrate_db():
                 db,
                 "CREATE INDEX IF NOT EXISTS idx_download_events_created ON download_events(created_at)",
             )
+            _add_download_event_column(db, "version")
+            _add_download_event_column(db, "tier")
+            for column in ("utm_source", "utm_campaign", "utm_content"):
+                _add_download_event_tag(db, column)
             _apply_schema(db, """
                 CREATE TABLE IF NOT EXISTS funnel_daily (
                     day TEXT NOT NULL,
                     event TEXT NOT NULL,
                     utm_source TEXT NOT NULL DEFAULT 'none',
                     utm_campaign TEXT NOT NULL DEFAULT 'none',
+                    utm_content TEXT NOT NULL DEFAULT 'none',
                     count INTEGER NOT NULL DEFAULT 0,
-                    PRIMARY KEY (day, event, utm_source, utm_campaign)
+                    PRIMARY KEY (day, event, utm_source, utm_campaign, utm_content)
                 )
             """)
             _migrate_funnel_daily(db)
@@ -565,7 +632,7 @@ def reset_funnel_limits():
 
 
 def _funnel_event_name():
-    """Accept a bare event name, or JSON {event, utm_source, utm_campaign}.
+    """Accept a bare event name, or JSON with event and optional UTM tags.
 
     A bare name has no campaign. Anything that is not one of the three
     events is ignored. The tags are normalised and are never an address.
@@ -575,7 +642,7 @@ def _funnel_event_name():
         return None
     text = raw.decode("utf-8", errors="replace").strip()
     if text in FUNNEL_EVENTS:
-        return text, "none", "none"
+        return text, "none", "none", "none"
     data = request.get_json(force=True, silent=True)
     if isinstance(data, dict):
         event = str(data.get("event") or "").strip()
@@ -584,6 +651,7 @@ def _funnel_event_name():
                 event,
                 normalise_funnel_tag(data.get("utm_source")),
                 normalise_funnel_tag(data.get("utm_campaign")),
+                normalise_funnel_tag(data.get("utm_content")),
             )
     return None
 
@@ -626,7 +694,8 @@ def send_verification_email(to_email, to_name, verify_code, download_code):
     msg["From"] = f'{cfg["SMTP_FROM_NAME"]} <{cfg["SMTP_FROM"]}>'
     msg["To"] = to_email
 
-    text_body = f"""Hi {to_name},
+    who = " ".join(str(to_name or "").split()) or "there"
+    text_body = f"""Hi {who},
 
 Thanks for requesting NodeControl Free Edition!
 
@@ -652,7 +721,7 @@ https://nodecontrol.io
       <p style="color: #636b75; font-size: 13px; margin: 4px 0 0;">by The Promised LAN</p>
     </div>
 
-    <p>Hi {to_name},</p>
+    <p>Hi {html.escape(who)},</p>
     <p>Thanks for requesting <strong>NodeControl Free Edition</strong>!</p>
 
     <p>Your verification code is:</p>
@@ -1961,6 +2030,29 @@ def pro_download():
     except Exception:
         logger.exception("Pro download failed")
         return jsonify({"error": "The installer is not available right now"}), 503
+    version = ""
+    try:
+        import licence_v1
+        repo = (app.config.get("PRO_RELEASES_REPO") or "").strip()
+        release = licence_v1._load_release(repo, "latest")
+        described = licence_v1._describe_asset(repo, release, data["platform"], "")
+        version = (described or {}).get("version") or ""
+    except Exception:
+        version = ""
+    try:
+        import licence_v1
+        db = get_db()
+        key = db.execute(
+            "SELECT id FROM pro_keys WHERE subscription_id = ?",
+            (row["stripe_subscription_id"],),
+        ).fetchone()
+        db.close()
+        licence_id = key["id"] if key else row["id"]
+        licence_v1._record_download(
+            licence_id, data["platform"], "pro_paid_redirect", version, "pro"
+        )
+    except Exception:
+        logger.exception("Pro download was not recorded")
     return redirect(location, code=302)
 
 
@@ -2032,11 +2124,240 @@ def health():
     })
 
 
+CONFIRM_LINK_SECONDS = 14 * 24 * 3600
+FREE_PLATFORMS = ("macos", "windows", "both")
+
+
+def _hi(name):
+    """Greeting word. An empty name is 'there', so the mail never says 'Hi ,'."""
+    text = " ".join(str(name or "").split())
+    return text or "there"
+
+
+def _confirm_serializer():
+    secret = (app.config.get("SECRET_KEY") or "").strip()
+    if not secret:
+        raise RuntimeError("confirm signing secret is not set")
+    return URLSafeTimedSerializer(secret, salt="nodecontrol-free-email-confirm")
+
+
+def make_email_confirm_token(license_id):
+    """Signed link payload. The raw token is not stored."""
+    return _confirm_serializer().dumps({"id": int(license_id)})
+
+
+def read_email_confirm_token(token):
+    """Return (licence id, reason). reason is '' when the token is good."""
+    try:
+        data = _confirm_serializer().loads(str(token or ""), max_age=CONFIRM_LINK_SECONDS)
+    except SignatureExpired:
+        return None, "expired"
+    except BadSignature:
+        return None, "invalid"
+    if not isinstance(data, dict):
+        return None, "invalid"
+    try:
+        licence_id = int(data.get("id") or 0)
+    except (TypeError, ValueError):
+        return None, "invalid"
+    if licence_id < 1:
+        return None, "invalid"
+    return licence_id, ""
+
+
+def _confirm_url(token):
+    base = (app.config.get("API_PUBLIC_URL") or "https://api.nodecontrol.io").rstrip("/")
+    return f"{base}/api/confirm-email?token={token}"
+
+
+def _confirm_page(title, message, status=200):
+    page = (
+        "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+        f"<title>{html.escape(title)}</title></head>"
+        "<body style=\"font-family:sans-serif;background:#0b0f14;color:#d7e1ea;padding:48px 20px;\">"
+        "<main style=\"max-width:32rem;margin:0 auto;\">"
+        f"<h1 style=\"font-size:1.4rem;\">{html.escape(title)}</h1>"
+        f"<p>{html.escape(message)}</p>"
+        "<p><a href=\"https://nodecontrol.io/#free-edition\" style=\"color:#00e8ff;\">Back to Node Control</a></p>"
+        "</main></body></html>"
+    )
+    return Response(page, status=status, mimetype="text/html")
+
+
+def send_free_download_email(to_email, to_name, download_code, confirm_url, reminder=False):
+    """Mail the download code and a one-click confirm link."""
+    who = _hi(to_name)
+    if reminder:
+        subject = "Confirm your Node Control email"
+        lead = "Your Free licence is already issued. Confirm the email when you can."
+    else:
+        subject = "Your Node Control download code"
+        lead = "Your download code is below. It works before you confirm this email."
+    text_body = (
+        f"Hi {who},\n\n{lead}\n\n"
+        f"Download code: {download_code}\n\n"
+        f"Confirm this email:\n{confirm_url}\n\n"
+        "The link lasts 14 days.\n\n"
+        "Node Control\nhttps://nodecontrol.io\n"
+    )
+    safe_who = html.escape(who)
+    safe_code = html.escape(download_code)
+    safe_url = html.escape(confirm_url, quote=True)
+    html_body = (
+        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head>"
+        "<body style=\"font-family:sans-serif;background:#0b0f14;color:#c8cdd3;padding:40px 20px;\">"
+        "<div style=\"max-width:500px;margin:0 auto;background:#12171e;border-radius:12px;padding:40px;"
+        "border:1px solid rgba(0,232,255,0.1);\">"
+        f"<p>Hi {safe_who},</p><p>{html.escape(lead)}</p>"
+        f"<p style=\"font-family:monospace;font-size:20px;letter-spacing:2px;color:#00e8ff;\">{safe_code}</p>"
+        f"<p><a href=\"{safe_url}\" style=\"color:#00e8ff;\">Confirm this email</a></p>"
+        f"<p style=\"color:#636b75;font-size:13px;\">If the link does not open, copy this address:<br>{safe_url}</p>"
+        "<p style=\"color:#636b75;font-size:13px;\">The link lasts 14 days.</p>"
+        "</div></body></html>"
+    )
+    return _send_mail(to_email, subject, text_body, html_body)
+
+
+def _free_download_body(license_id, code):
+    """Download code plus signed installer links, when signing works."""
+    import licence_v1
+    body = {
+        "success": True,
+        "download_code": code,
+        "tier": "free",
+        "message": "Your download code is ready. A confirmation link is on its way to your email.",
+    }
+    try:
+        body["downloads"] = licence_v1.free_redeem_links(license_id)
+    except Exception:
+        logger.exception("Could not sign free download links")
+    return body
+
+
+def _drop_unconfirmed_row(license_id, code, published):
+    """Remove a row the visitor never received, and the allowlist entry with it."""
+    db = get_db()
+    db.execute("DELETE FROM licenses WHERE id = ?", (license_id,))
+    db.commit()
+    db.close()
+    if not published:
+        return
+    try:
+        _remove_code_from_licenses(code)
+    except Exception:
+        logger.error("Could not remove an unpublished free code from the allowlist")
+
+
+def _issue_unverified(name, email, company, platform, attr):
+    """New Free licence. Usable at once. Email confirm comes after."""
+    download_code = generate_code()
+    now = datetime.utcnow().isoformat()
+    ip = request.remote_addr or ""
+    db = get_db()
+    cursor = db.execute(
+        """
+        INSERT INTO licenses (
+            code, name, email, company, platform, tier, status, created_at,
+            verified_at, ip_address, utm_source, utm_medium, utm_campaign,
+            utm_content, referrer, landing_page
+        ) VALUES (?, ?, ?, ?, ?, 'free', 'unverified', ?, '', ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            download_code, name, email, company, platform, now, ip,
+            attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
+            attr["utm_content"], attr["referrer"], attr["landing_page"],
+        ),
+    )
+    license_id = cursor.lastrowid
+    db.commit()
+    db.close()
+
+    published = False
+    try:
+        _add_code_to_licenses(download_code)
+        published = True
+    except Exception as exc:
+        logger.error("License GitHub sync failed: %s", exc)
+        _drop_unconfirmed_row(license_id, download_code, False)
+        return jsonify({"success": False, "error": LICENCE_SYNC_ERROR}), 502
+
+    try:
+        confirm_url = _confirm_url(make_email_confirm_token(license_id))
+    except Exception:
+        logger.error("Could not sign a confirmation link")
+        _drop_unconfirmed_row(license_id, download_code, published)
+        return jsonify({"success": False, "error": EMAIL_SEND_ERROR}), 502
+
+    if not send_free_download_email(email, name, download_code, confirm_url):
+        _drop_unconfirmed_row(license_id, download_code, published)
+        logger.error("Confirmation email failed; unverified licence was not kept")
+        return jsonify({"success": False, "error": EMAIL_SEND_ERROR}), 502
+
+    return jsonify(_free_download_body(license_id, download_code))
+
+
+def _repeat_unverified(db, existing, name, company, platform, attr):
+    """Same email, same licence. Resend the confirm link. Do not mint a second code."""
+    previous = dict(existing)
+    kept_name = name or previous["name"] or ""
+    db.execute(
+        """
+        UPDATE licenses SET
+            name = ?, company = ?, platform = ?,
+            utm_source = COALESCE(NULLIF(?, ''), utm_source),
+            utm_medium = COALESCE(NULLIF(?, ''), utm_medium),
+            utm_campaign = COALESCE(NULLIF(?, ''), utm_campaign),
+            utm_content = COALESCE(NULLIF(?, ''), utm_content),
+            referrer = COALESCE(NULLIF(?, ''), referrer),
+            landing_page = COALESCE(NULLIF(?, ''), landing_page)
+        WHERE id = ? AND status = 'unverified'
+        """,
+        (
+            kept_name, company, platform,
+            attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
+            attr["utm_content"], attr["referrer"], attr["landing_page"],
+            previous["id"],
+        ),
+    )
+    db.commit()
+    db.close()
+    try:
+        confirm_url = _confirm_url(make_email_confirm_token(previous["id"]))
+    except Exception:
+        logger.error("Could not sign a confirmation link")
+        return jsonify({"success": False, "error": EMAIL_SEND_ERROR}), 502
+    if not send_free_download_email(previous["email"], kept_name, previous["code"], confirm_url):
+        db = get_db()
+        db.execute(
+            """
+            UPDATE licenses SET
+                name = ?, company = ?, platform = ?,
+                utm_source = ?, utm_medium = ?, utm_campaign = ?, utm_content = ?,
+                referrer = ?, landing_page = ?
+            WHERE id = ?
+            """,
+            (
+                previous["name"], previous["company"], previous["platform"],
+                previous["utm_source"], previous["utm_medium"], previous["utm_campaign"],
+                previous["utm_content"], previous["referrer"], previous["landing_page"],
+                previous["id"],
+            ),
+        )
+        db.commit()
+        db.close()
+        logger.error("Confirmation email failed; the existing licence was left as it was")
+        return jsonify({"success": False, "error": EMAIL_SEND_ERROR}), 502
+    return jsonify(_free_download_body(previous["id"], previous["code"]))
+
+
 @app.route("/api/request-access", methods=["POST"])
 def request_access():
-    """
-    Step 1: User submits their details to request free access.
-    Generates a verification code, emails it, and stores the pending license.
+    """Issue a Free download straight away. Email confirmation is a link afterwards.
+
+    Name is optional and stored as an empty string. A still-pending row from
+    the old 6-digit page is refreshed in place, and does not get a download
+    until that page calls /api/verify.
     """
     import licence_v1
     if licence_v1.get_flags()["maintenance"]:
@@ -2051,14 +2372,13 @@ def request_access():
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip().lower()
     company = (data.get("company") or "").strip()
-    platform = (data.get("platform") or "").strip()
+    platform = (data.get("platform") or "").strip().lower()
     attr = clean_attribution(data)
-
-    if not name or not email:
-        return jsonify({"error": "Name and email are required"}), 400
 
     if "@" not in email or "." not in email:
         return jsonify({"error": "Invalid email address"}), 400
+    if platform not in FREE_PLATFORMS:
+        return jsonify({"error": "Platform must be macos, windows, or both"}), 400
 
     db = get_db()
 
@@ -2077,6 +2397,13 @@ def request_access():
             ),
             "already_active": True,
         }), 409
+
+    if existing and existing["status"] == "unverified":
+        return _repeat_unverified(db, existing, name, company, platform, attr)
+
+    if not (existing and existing["status"] == "pending"):
+        db.close()
+        return _issue_unverified(name, email, company, platform, attr)
 
     # Generate codes
     verify_code = generate_verify_code()
@@ -2099,20 +2426,22 @@ def request_access():
                 utm_source = COALESCE(NULLIF(?, ''), utm_source),
                 utm_medium = COALESCE(NULLIF(?, ''), utm_medium),
                 utm_campaign = COALESCE(NULLIF(?, ''), utm_campaign),
+                utm_content = COALESCE(NULLIF(?, ''), utm_content),
                 referrer = COALESCE(NULLIF(?, ''), referrer),
                 landing_page = COALESCE(NULLIF(?, ''), landing_page)
             WHERE id = ?
         """, (name, company, platform, download_code, now, pending_marker, ip,
               attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-              attr["referrer"], attr["landing_page"], previous["id"]))
+              attr["utm_content"], attr["referrer"], attr["landing_page"],
+              previous["id"]))
     else:
         cursor = db.execute("""
             INSERT INTO licenses (code, name, email, company, platform, tier, status, created_at, verified_at, ip_address,
-                                  utm_source, utm_medium, utm_campaign, referrer, landing_page)
-            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?, ?)
+                                  utm_source, utm_medium, utm_campaign, utm_content, referrer, landing_page)
+            VALUES (?, ?, ?, ?, ?, 'free', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (download_code, name, email, company, platform, now, pending_marker, ip,
               attr["utm_source"], attr["utm_medium"], attr["utm_campaign"],
-              attr["referrer"], attr["landing_page"]))
+              attr["utm_content"], attr["referrer"], attr["landing_page"]))
         inserted_id = cursor.lastrowid
 
     db.commit()
@@ -2128,7 +2457,7 @@ def request_access():
                 UPDATE licenses SET
                     name = ?, company = ?, platform = ?,
                     code = ?, created_at = ?, verified_at = ?, ip_address = ?,
-                    utm_source = ?, utm_medium = ?, utm_campaign = ?,
+                    utm_source = ?, utm_medium = ?, utm_campaign = ?, utm_content = ?,
                     referrer = ?, landing_page = ?
                 WHERE id = ?
             """, (
@@ -2136,7 +2465,7 @@ def request_access():
                 previous["code"], previous["created_at"], previous["verified_at"],
                 previous["ip_address"],
                 previous["utm_source"], previous["utm_medium"], previous["utm_campaign"],
-                previous["referrer"], previous["landing_page"],
+                previous["utm_content"], previous["referrer"], previous["landing_page"],
                 previous["id"],
             ))
         db.commit()
@@ -2256,11 +2585,65 @@ def _queue_free_signup_alert(license_row, license_id):
             "utm_source": license_row["utm_source"] if license_row else "",
             "utm_medium": license_row["utm_medium"] if license_row else "",
             "utm_campaign": license_row["utm_campaign"] if license_row else "",
+            "utm_content": license_row["utm_content"] if license_row else "",
             "referrer": license_row["referrer"] if license_row else "",
             "landing_page": license_row["landing_page"] if license_row else "",
         })
     except Exception:
         logging.getLogger("alerts").error("Admin alert was not sent")
+
+
+@app.route("/api/confirm-email", methods=["GET"])
+def confirm_email():
+    """One-click confirm from the Free download email. The address is not in the URL."""
+    import licence_v1
+    if licence_v1.get_flags()["maintenance"]:
+        return licence_v1.maintenance_response()
+    token = (request.args.get("token") or "").strip()
+    if not token or len(token) > 400:
+        return _confirm_page("Link not valid", "This link is not valid.", 400)
+    ip = licence_v1.client_ip()
+    bucket = "ep:confirm-email:" + hashlib.sha256((ip or "").encode()).hexdigest()
+    allowed, _wait = licence_v1.consume_rate(bucket, 30, 3600)
+    if not allowed:
+        return _confirm_page("Try again later", "Too many attempts. Try again later.", 429)
+    licence_id, reason = read_email_confirm_token(token)
+    if reason == "expired":
+        return _confirm_page(
+            "Link expired",
+            "This link has expired. Submit the form again and use the new email.",
+            400,
+        )
+    if reason or not licence_id:
+        return _confirm_page("Link not valid", "This link is not valid.", 400)
+    db = get_db()
+    row = db.execute("SELECT * FROM licenses WHERE id = ?", (licence_id,)).fetchone()
+    if not row or row["tier"] != "free":
+        db.close()
+        return _confirm_page("Link not valid", "This link is not valid.", 400)
+    if row["status"] == "active":
+        db.close()
+        return _confirm_page(
+            "Email confirmed",
+            "This email is already confirmed. You can close this page.",
+        )
+    if row["status"] != "unverified":
+        db.close()
+        return _confirm_page("Link not valid", "This link is not valid.", 400)
+    now = datetime.utcnow().isoformat()
+    db.execute(
+        """
+        UPDATE licenses SET status = 'active', verified_at = ?
+        WHERE id = ? AND status = 'unverified'
+        """,
+        (now, licence_id),
+    )
+    db.commit()
+    updated = db.execute("SELECT * FROM licenses WHERE id = ?", (licence_id,)).fetchone()
+    db.close()
+    if updated and updated["status"] == "active":
+        _queue_free_signup_alert(updated, licence_id)
+    return _confirm_page("Email confirmed", "Email confirmed. You can close this page.")
 
 
 @app.route("/api/redeem", methods=["POST"])
@@ -2287,7 +2670,7 @@ def redeem():
     db = get_db()
 
     license_row = db.execute(
-        "SELECT * FROM licenses WHERE code = ? AND status = 'active'",
+        "SELECT * FROM licenses WHERE code = ? AND status IN ('active', 'unverified')",
         (code,)
     ).fetchone()
 
@@ -2342,10 +2725,20 @@ def download_event():
     kind = str(data.get("kind") or "").strip().lower()
     if platform not in ("mac", "win") or kind not in ("auto", "click"):
         return ("", 204)
+    tags = {
+        "utm_source": normalise_funnel_tag(data.get("utm_source")),
+        "utm_campaign": normalise_funnel_tag(data.get("utm_campaign")),
+        "utm_content": normalise_funnel_tag(data.get("utm_content")),
+    }
+    # A missing tag is an empty string on this table. 'none' is the funnel
+    # counter's word for the same thing, and is not stored here.
+    for key, value in tags.items():
+        if value == "none":
+            tags[key] = ""
 
     db = get_db()
     row = db.execute(
-        "SELECT id FROM licenses WHERE code = ? AND status = 'active'", (code,)
+        "SELECT id FROM licenses WHERE code = ? AND status IN ('active', 'unverified')", (code,)
     ).fetchone()
     if row:
         cutoff = (datetime.utcnow() - timedelta(hours=24)).isoformat()
@@ -2355,8 +2748,16 @@ def download_event():
         ).fetchone()["c"]
         if count < DOWNLOAD_EVENT_LICENCE_CAP:
             db.execute(
-                "INSERT INTO download_events (license_id, platform, kind, created_at) VALUES (?, ?, ?, ?)",
-                (row["id"], platform, kind, datetime.utcnow().isoformat()),
+                """
+                INSERT INTO download_events (
+                    license_id, platform, kind, created_at,
+                    utm_source, utm_campaign, utm_content
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    row["id"], platform, kind, datetime.utcnow().isoformat(),
+                    tags["utm_source"], tags["utm_campaign"], tags["utm_content"],
+                ),
             )
             db.commit()
     db.close()
@@ -2368,25 +2769,26 @@ def funnel_event():
     """Add one to today's UTC count for a Free-section event.
 
     The site sends this with navigator.sendBeacon as text/plain. The body is
-    the event name, or JSON with event and optional utm_source and
-    utm_campaign. The row is a count for that day, event and campaign. It
-    does not store an address, a user agent, or a visitor. The response is
+    the event name, or JSON with event and optional utm_source, utm_campaign
+    and utm_content. The row is a count for that day, event and those tags.
+    It does not store an address, a user agent, or a visitor. The response is
     always 204.
     """
     parsed = _funnel_event_name()
     if parsed and _funnel_ip_allowed(_client_ip()):
-        event, source, campaign = parsed
+        event, source, campaign, content = parsed
         day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         db = get_db()
         try:
             db.execute(
                 """
-                INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
-                VALUES (?, ?, ?, ?, 1)
-                ON CONFLICT(day, event, utm_source, utm_campaign)
+                INSERT INTO funnel_daily (
+                    day, event, utm_source, utm_campaign, utm_content, count
+                ) VALUES (?, ?, ?, ?, ?, 1)
+                ON CONFLICT(day, event, utm_source, utm_campaign, utm_content)
                 DO UPDATE SET count = count + 1
                 """,
-                (day, event, source, campaign),
+                (day, event, source, campaign, content),
             )
             db.commit()
         finally:
@@ -2507,6 +2909,9 @@ def stats():
     db = get_db()
     total = db.execute("SELECT COUNT(*) as c FROM licenses").fetchone()["c"]
     active = db.execute("SELECT COUNT(*) as c FROM licenses WHERE status = 'active'").fetchone()["c"]
+    unverified = db.execute(
+        "SELECT COUNT(*) as c FROM licenses WHERE status = 'unverified'"
+    ).fetchone()["c"]
     pending = db.execute("SELECT COUNT(*) as c FROM licenses WHERE status = 'pending'").fetchone()["c"]
     total_downloads = db.execute("SELECT SUM(download_count) as c FROM licenses").fetchone()["c"] or 0
 
@@ -2526,28 +2931,55 @@ def stats():
             COALESCE(NULLIF(utm_medium, ''), '-') AS medium,
             COUNT(*) AS requested,
             SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS verified,
+            SUM(CASE WHEN status = 'unverified' THEN 1 ELSE 0 END) AS unverified,
             SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
         FROM licenses
         WHERE tier = 'free' AND created_at >= ? AND created_at < ?
         GROUP BY source, medium
         ORDER BY requested DESC
     """, (since, until))]
+    by_campaign = [dict(r) for r in db.execute("""
+        SELECT
+            CASE
+                WHEN utm_source != '' THEN utm_source
+                WHEN referrer != '' THEN 'ref:' || referrer
+                ELSE '(direct)'
+            END AS source,
+            COALESCE(NULLIF(utm_campaign, ''), 'none') AS utm_campaign,
+            COALESCE(NULLIF(utm_content, ''), 'none') AS utm_content,
+            COUNT(*) AS requested,
+            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS verified,
+            SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
+        FROM licenses
+        WHERE tier = 'free' AND created_at >= ? AND created_at < ?
+        GROUP BY source, utm_campaign, utm_content
+        ORDER BY requested DESC
+    """, (since, until))]
     download_events = [dict(r) for r in db.execute("""
-        SELECT platform, kind, COUNT(*) AS events, COUNT(DISTINCT license_id) AS licences
+        SELECT
+            platform,
+            kind,
+            COALESCE(NULLIF(utm_source, ''), 'none') AS utm_source,
+            COALESCE(NULLIF(utm_campaign, ''), 'none') AS utm_campaign,
+            COALESCE(NULLIF(utm_content, ''), 'none') AS utm_content,
+            COUNT(*) AS events,
+            COUNT(DISTINCT license_id) AS licences
         FROM download_events
         WHERE created_at >= ? AND created_at < ?
-        GROUP BY platform, kind
-        ORDER BY platform, kind
+        GROUP BY platform, kind, utm_source, utm_campaign, utm_content
+        ORDER BY platform, kind, utm_source, utm_campaign, utm_content
     """, (since, until))]
     db.close()
 
     return jsonify({
         "total_licenses": total,
         "active": active,
+        "unverified": unverified,
         "pending": pending,
         "total_downloads": total_downloads,
         "window": {"since": since, "until": until},
         "by_source": by_source,
+        "by_campaign": by_campaign,
         "download_events": download_events,
     })
 
@@ -2560,6 +2992,60 @@ with app.app_context():
     licence_v1.register(app)
     import notices
     notices.register(app)
+
+def send_unverified_reminders(now=None):
+    """One reminder for each unverified Free licence at least 24 hours old.
+
+    A later run does not send again. Nothing is sent when the mail fails,
+    so the next run can retry. Prints no addresses.
+    """
+    moment = now or datetime.utcnow()
+    cutoff = (moment - timedelta(hours=24)).isoformat()
+    db = get_db()
+    try:
+        rows = db.execute(
+            """
+            SELECT id, email, name, code FROM licenses
+            WHERE tier = 'free' AND status = 'unverified'
+              AND COALESCE(reminder_sent_at, '') = ''
+              AND created_at <= ?
+            """,
+            (cutoff,),
+        ).fetchall()
+    finally:
+        db.close()
+    sent = 0
+    failed = 0
+    stamp = moment.isoformat()
+    for row in rows:
+        try:
+            confirm_url = _confirm_url(make_email_confirm_token(row["id"]))
+        except Exception:
+            logger.error("Could not sign a confirmation link")
+            failed += 1
+            continue
+        if not send_free_download_email(
+            row["email"], row["name"], row["code"], confirm_url, reminder=True
+        ):
+            failed += 1
+            continue
+        db = get_db()
+        try:
+            changed = db.execute(
+                """
+                UPDATE licenses SET reminder_sent_at = ?
+                WHERE id = ? AND status = 'unverified'
+                  AND COALESCE(reminder_sent_at, '') = ''
+                """,
+                (stamp, row["id"]),
+            ).rowcount
+            db.commit()
+        finally:
+            db.close()
+        if changed:
+            sent += 1
+    return {"sent": sent, "failed": failed}
+
 
 if __name__ == "__main__":
     app.run(

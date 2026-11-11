@@ -61,9 +61,11 @@ On AOS-CX, a port with no description does not take the next line as its descrip
 | "Which trunks exist?" | Filter VLAN = "trunk" |
 | "Is VLAN 100 spread correctly across access switches?" | Filter VLAN = "100", check distribution |
 
+Device names and other text read from devices are shown as plain text on this report. A device name containing page code cannot change or run anything in the page.
+
 ## Export
 
-Same CSV / XLSX / HTML options as other reports.
+Export is CSV and JSON. There is no Excel export.
 
 ## Performance
 

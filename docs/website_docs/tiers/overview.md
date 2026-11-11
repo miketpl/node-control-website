@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with. The Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -29,12 +29,14 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | L2 Topology Builder | ✓ | ✓ | ✓ |
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
-| Find Device | one switch, single thread, no site or cores model | site and cores, plus Meraki wireless | site and cores, plus Meraki wireless |
+| Find Device | one switch to start from, including Meraki wireless clients | Site and cores, including Meraki wireless clients | Site and cores, including Meraki wireless clients |
 | File Transfer task, Packet Capture | greyed | ✓, hidden in Safe Mode | ✓, hidden in Safe Mode |
 | Every other task | greyed, tooltip Upgrade to Pro to unlock this feature | ✓ | ✓ |
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
 | Security Audit (PSIRT), Lifecycle and EoX, and the other reports | — | ✓ | ✓ |
+| [Access Review](../reports/access-review.md) | — | ✓ | ✓ |
+| [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2 | — | ✓ | ✓ |
 | Update tab and Vuln Plan | — | — | ✓. Vuln Plan is a button on the Update tab |
 | **AI** | | | |
 | Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
@@ -43,11 +45,11 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 
 ## Free
 
-Free is a working copy for a small estate, not a timed demo.
+Free is a working copy for a small estate.
 
 ### What you get
 
-- 25 devices in the library table. No time limit. The status bar shows **FREE VERSION**
+- 25 devices in the library table. The status bar shows **FREE VERSION**
 - Sidebar: Home, Engineer, Reports, File Transfer
 - Tasks that run: None, L2 Topology Builder, Config Backup, Save Config, Find Device. Find Device is one switch at a time, single thread, with no site or cores model
 - The Inventory report
@@ -61,7 +63,7 @@ Free is a working copy for a small estate, not a timed demo.
 - Every task that Free greys out, with the tooltip **Upgrade to Pro to unlock this feature**. That includes L3 Topology Builder, Watcher of The WAN, Verify Device Types, Config Push, Config from File, Discover Variables, and config compliance
 - Discover, Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser. The Update tab is the AI edition, not Pro
 - Reports other than Inventory
-- Find Device across a site or a fabric, including Meraki wireless
+- Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
 - Feature-level AI on a provider you configure
 
 A larger library left by Pro is not deleted when you install Free. The Free table shows 25 of those devices.
@@ -69,11 +71,10 @@ A larger library left by Pro is not deleted when you install Free. The Free tabl
 ### How to get it
 
 1. Visit [nodecontrol.io](https://nodecontrol.io)
-2. Enter your email
-3. Verify with the 6-digit code emailed to you
-4. Receive your `NC-XXXX-XXXX` activation code
-5. Download and install the Free build for your platform
-6. Enter your code on first launch
+2. Enter your email and platform
+3. The page shows your `NC-XXXX-XXXX` activation code and starts the download. Confirm the email when you can
+4. Install the Free build for your platform
+5. Enter your code on first launch
 
 ## Pro
 
@@ -84,9 +85,11 @@ Pro is the tier for an engineer who needs the whole estate: maps, reports, compl
 - Unlimited devices, shown in full
 - L3 Topology Builder, Watcher of The WAN, Discover, and Verify Device Types. L2 Topology Builder is already on Free
 - The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
-- Find Device across a site or a fabric, with Meraki wireless lookup
-- Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
-- Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; on Juniper Junos, revert restores the snapshot taken before the push, and is marked manual if that snapshot could not be taken; every other vendor, Palo Alto included, gets a template only, with no activity targeting, no reliable revert, and no Default interface. On Palo Alto, [Config from File](../tasks/config-from-file.md) discards its own uncommitted changes when its commit is skipped or refused), the File Transfer task, Packet Capture, Config from File, and config compliance
+- Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
+- Monitor, including live link status on L2 maps for Cisco IOS, IOS-XE, and NX-OS ports. Also IPAM, the Meraki Configurator, and the Firewall Analyser
+- [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device, so it is also available in Safe Mode
+- [Access Review](../reports/access-review.md). Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview
+- Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance. After VLAN Port Finder, **Open port list** sends the ports you tick to the Config Compliance Audit, which then checks only those interfaces
 - [Custom scripts](../settings/scripts.md) under Settings → Scripts
 - Bring your own AI provider. Settings → AI / LLM uses your own API key. No Node Control AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. **Anonymise identifiable data before sending to AI** is on by default. **Enable AI analysis by default across all features** is off on a fresh install, so the Findings review does not run until you turn it on. From 0.9.41, Monitor on Pro and the AI edition has **Ask AI**, **Ask Network AI**, and **Architect Review**. **AI review** (Assess row, ticked by default) and **AI advisory** show on Pro and the AI edition. Free has no Firewall Analyser tab. See [AI features overview](../settings/ai-features.md)
 - GitHub push and pull without the 25-device cut. You still set your own repository and token

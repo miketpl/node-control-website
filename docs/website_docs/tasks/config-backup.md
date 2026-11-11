@@ -32,6 +32,16 @@ One timestamp covers the whole run. A row shows **Backed up** or FAIL. The summa
 
 **Dry run** logs the commands and the file it would write. **Stop** cancels the run.
 
+## Extreme EXOS
+
+An EXOS switch reached on first contact through the Cisco driver is recognised from `show version` and reconnected on the EXOS driver. Commands no longer wait about 30 seconds each, and backups no longer time out.
+
+Config Backup reads the whole EXOS configuration and saves it only if it is complete. A read that stops early, is missing configuration sections that an earlier backup of the same switch had, or comes from an account without permission, is not saved. The row says why.
+
+The first backup of a switch is read twice and saved only if both reads match. If they differ, for example because the configuration changed in between, nothing is saved. Run the backup again. Later backups are read once and checked against the last good one.
+
+EXOS host names are saved without the prompt's changing number. On Free that is the L2 map and backups. On Pro it is Discovery, the topology maps, and backups. See [Extreme](../vendors/extreme.md).
+
 ## Save Config
 
 **Save Config** writes the running configuration into the saved config on the devices that are ticked or highlighted in the library. Config Backup does not do that, and [Config from File](config-from-file.md) does not either.

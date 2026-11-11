@@ -24,6 +24,10 @@ When a device will not enter configuration mode (for example a read-only account
 
 On Palo Alto, after a skipped or refused commit, or a commit that errored, only the changes made by the login Node Control used are reverted. The revert is checked against the firewall's change list. If the revert can't be confirmed, the row says REVERT FAILED, and Node Control's uncommitted changes may still be on the firewall, so check its change list. If the login name can't be used safely, nothing is reverted. Other admins' pending changes are left alone. A commit output that just says `commit failed` counts as refused. Nothing is reverted in Safe Mode. The login name is masked where it appears in Node Control's own revert and change-list commands, and on the change list's owner and other-admins lines. The rest of the firewall's output is kept as written.
 
+On Palo Alto, Config from File removes the file's own commit and revert lines, so other admins' pending changes are never committed by a plain `commit`. A file with only commit or revert lines is refused, and nothing is sent. A commit that does not finish is reported as **commit outcome unknown**.
+
+On Juniper Junos, a failed commit shows the device's own error lines instead of a generic **Commit failed** header.
+
 There are no output files. There is no save option. Use [Save Config](config-backup.md) for that.
 
 **Dry run (log only)** on the main window logs `would push N config lines` per device. How many devices run at once comes from the **Conns** spinner on the Engineer page.
