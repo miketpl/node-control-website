@@ -42,6 +42,11 @@ REVEAL_TTL = 24 * 3600
 ASSET_URL_TTL = 300
 MAINTENANCE_RETRY = 300
 PAUSED_RETRY = 3600
+# Shown on stats/v1. Install totals only include copies that sent usage telemetry.
+TELEMETRY_INSTALL_NOTE = (
+    "These counts are installs seen via usage telemetry, "
+    "so copies that do not report usage do not appear."
+)
 
 FREE_KEY_RE = re.compile(r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
 PRO_KEY_RE = re.compile(r"^NCP-[0-9A-HJKMNP-TV-Z]{4}(?:-[0-9A-HJKMNP-TV-Z]{4}){3}$")
@@ -709,6 +714,267 @@ def _load_release(repo, version):
     return payload
 
 
+def _asset_version(repo, platform, arch=""):
+    """Normalised release version, or '' when the release cannot be described."""
+    try:
+        release = _load_release(repo, "latest")
+        described = _describe_asset(repo, release, platform, arch)
+    except Exception:
+        return ""
+    return ((described or {}).get("version") or "").strip()
+
+
+def _record_download(license_id, platform, kind, version, tier):
+    """One download count. No email or other personal data is stored."""
+    api = _api()
+    db = api.get_db()
+    try:
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                int(license_id),
+                platform,
+                kind,
+                iso(utcnow()),
+                (version or "").strip() or None,
+                tier or None,
+            ),
+        )
+        db.commit()
+    finally:
+        db.close()
+
+
+# Free download rows store licenses.id. Pro rows store pro_keys.id
+# (pro_paid_redirect falls back to pro_subscriptions.id when no key exists yet).
+_FREE_DOWNLOAD_SQL = """(
+    download_events.kind = 'redirect'
+    OR COALESCE(download_events.tier, '') = 'free'
+)"""
+_PRO_DOWNLOAD_SQL = """(
+    download_events.kind IN ('pro_redirect', 'pro_paid_redirect')
+    OR COALESCE(download_events.tier, '') = 'pro'
+)"""
+
+
+def _stats_id_list(config_key):
+    raw = str(_api().app.config.get(config_key) or "")
+    ids = []
+    for part in raw.split(","):
+        part = part.strip()
+        if part.isdigit():
+            ids.append(int(part))
+    return ids
+
+
+def _stats_exclude_emails():
+    raw = str(_api().app.config.get("STATS_EXCLUDE_EMAILS") or "")
+    emails = []
+    for part in raw.split(","):
+        part = part.strip().lower()
+        if "@" in part:
+            emails.append(part)
+    return emails
+
+
+def _download_count_filters():
+    """SQL fragment and params that leave test licences out of download counts.
+
+    STATS_EXCLUDE_LICENCE_IDS applies only to Free rows (kind redirect, or
+    tier free). Those rows store licenses.id. STATS_EXCLUDE_PRO_KEY_IDS
+    applies only to Pro rows (pro_redirect, pro_paid_redirect, or tier pro).
+    pro_redirect stores pro_keys.id. pro_paid_redirect stores pro_keys.id,
+    or the subscription id when the key row does not exist yet. Addresses
+    come from STATS_EXCLUDE_EMAILS and are matched in the query. Neither
+    list is written into the download row.
+    """
+    clauses = []
+    params = []
+    free_ids = _stats_id_list("STATS_EXCLUDE_LICENCE_IDS")
+    if free_ids:
+        marks = ",".join("?" * len(free_ids))
+        clauses.append(
+            f"NOT (download_events.license_id IN ({marks}) AND {_FREE_DOWNLOAD_SQL})"
+        )
+        params.extend(free_ids)
+    pro_ids = _stats_id_list("STATS_EXCLUDE_PRO_KEY_IDS")
+    if pro_ids:
+        marks = ",".join("?" * len(pro_ids))
+        clauses.append(
+            f"NOT (download_events.license_id IN ({marks}) AND {_PRO_DOWNLOAD_SQL})"
+        )
+        params.extend(pro_ids)
+    emails = _stats_exclude_emails()
+    if emails:
+        marks = ",".join("?" * len(emails))
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM licenses
+                WHERE licenses.id = download_events.license_id
+                  AND lower(licenses.email) IN ({marks})
+                  AND {_FREE_DOWNLOAD_SQL}
+            )
+            """
+        )
+        params.extend(emails)
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM pro_keys
+                WHERE pro_keys.id = download_events.license_id
+                  AND lower(pro_keys.email) IN ({marks})
+                  AND {_PRO_DOWNLOAD_SQL}
+            )
+            """
+        )
+        params.extend(emails)
+    if not clauses:
+        return "", []
+    return " AND " + " AND ".join(clauses), params
+
+
+def _telemetry_count_filters():
+    """SQL fragment and params that leave test licences out of install counts.
+
+    telemetry_sessions.licence_ref is the licence row id for that kind:
+    licences of kind 'free' store licenses.id, and kind 'pro' stores
+    pro_keys.id. Both are written from the same record id the app activated.
+    STATS_EXCLUDE_LICENCE_IDS matches free rows only. STATS_EXCLUDE_PRO_KEY_IDS
+    matches pro rows only and defaults to empty, because every Pro key is a
+    real beta user. STATS_EXCLUDE_EMAILS is matched by joining the same id
+    to licenses.email or pro_keys.email. No address is copied into the result.
+    """
+    clauses = []
+    params = []
+    free_ids = _stats_id_list("STATS_EXCLUDE_LICENCE_IDS")
+    if free_ids:
+        marks = ",".join("?" * len(free_ids))
+        clauses.append(
+            "NOT (telemetry_sessions.licence_kind = 'free' "
+            f"AND telemetry_sessions.licence_ref IN ({marks}))"
+        )
+        params.extend(free_ids)
+    pro_ids = _stats_id_list("STATS_EXCLUDE_PRO_KEY_IDS")
+    if pro_ids:
+        marks = ",".join("?" * len(pro_ids))
+        clauses.append(
+            "NOT (telemetry_sessions.licence_kind = 'pro' "
+            f"AND telemetry_sessions.licence_ref IN ({marks}))"
+        )
+        params.extend(pro_ids)
+    emails = _stats_exclude_emails()
+    if emails:
+        marks = ",".join("?" * len(emails))
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM licenses
+                WHERE telemetry_sessions.licence_kind = 'free'
+                  AND licenses.id = telemetry_sessions.licence_ref
+                  AND lower(licenses.email) IN ({marks})
+            )
+            """
+        )
+        params.extend(emails)
+        clauses.append(
+            f"""
+            NOT EXISTS (
+                SELECT 1 FROM pro_keys
+                WHERE telemetry_sessions.licence_kind = 'pro'
+                  AND pro_keys.id = telemetry_sessions.licence_ref
+                  AND lower(pro_keys.email) IN ({marks})
+            )
+            """
+        )
+        params.extend(emails)
+    if not clauses:
+        return "", []
+    return " AND " + " AND ".join(clauses), params
+
+
+def _platform_sql(column):
+    """mac, win, or linux. The column is one of os_family or platform."""
+    lowered = f"lower(trim(COALESCE({column}, '')))"
+    return (
+        "CASE "
+        f"WHEN {lowered} LIKE '%mac%' OR {lowered} IN ('darwin', 'osx') THEN 'mac' "
+        f"WHEN {lowered} LIKE '%win%' THEN 'win' "
+        f"WHEN {lowered} LIKE '%linux%' THEN 'linux' "
+        "ELSE '' END"
+    )
+
+
+def _plain_version_sql(column):
+    """Drop a single leading v. '0.9.45' and 'v0.9.45' are the same version."""
+    text = f"trim(COALESCE({column}, ''))"
+    return (
+        f"CASE WHEN lower(substr({text}, 1, 1)) = 'v' "
+        f"THEN substr({text}, 2) ELSE {text} END"
+    )
+
+
+def _version_rank_sql(version_sql):
+    """Zero-padded N.N.N so 0.9.45 sorts after 0.9.9. version_sql is SQL."""
+    version = f"({version_sql})"
+    major = (
+        f"CASE WHEN instr({version}, '.') > 0 "
+        f"THEN substr({version}, 1, instr({version}, '.') - 1) "
+        f"ELSE {version} END"
+    )
+    rest = f"substr({version}, instr({version}, '.') + 1)"
+    minor = (
+        f"CASE WHEN instr({version}, '.') = 0 THEN '0' "
+        f"WHEN instr({rest}, '.') > 0 "
+        f"THEN substr({rest}, 1, instr({rest}, '.') - 1) "
+        f"ELSE {rest} END"
+    )
+    patch = (
+        f"CASE WHEN instr({rest}, '.') > 0 "
+        f"THEN substr({rest}, instr({rest}, '.') + 1) "
+        "ELSE '0' END"
+    )
+    return (
+        "printf('%010d.%010d.%010d', "
+        f"CAST(({major}) AS INTEGER), "
+        f"CAST(({minor}) AS INTEGER), "
+        f"CAST(({patch}) AS INTEGER))"
+    )
+
+
+def _session_date_sql():
+    """UTC day from session_start_date. A timestamp is cut to YYYY-MM-DD."""
+    return "substr(trim(COALESCE(telemetry_sessions.session_start_date, '')), 1, 10)"
+
+
+def _current_install_cutoff():
+    """UTC calendar day 30 days before now. That day still counts as current."""
+    return (utcnow() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+
+def _install_version_rows(rows, with_seen):
+    """Drop empty buckets. first_seen and last_seen are YYYY-MM-DD or blank."""
+    items = []
+    for row in rows:
+        installs = int(row["installs"] or 0)
+        if installs <= 0:
+            continue
+        item = {
+            "tier": row["tier"] or "",
+            "platform": row["platform"] or "",
+            "version": row["version"] or "",
+            "installs": installs,
+        }
+        if with_seen:
+            item["first_seen"] = row["first_seen"] or ""
+            item["last_seen"] = row["last_seen"] or ""
+        items.append(item)
+    return items
+
+
 def _version_of(release):
     tag = str(release.get("tag_name") or "")
     if tag.startswith("v"):
@@ -945,7 +1211,7 @@ def _lookup_key(raw_key):
                 return None, "invalid"
             if row["status"] == "revoked":
                 return None, "revoked"
-            if row["status"] != "active":
+            if row["status"] not in ("active", "unverified"):
                 return None, "invalid"
             return {
                 "kind": "free",
@@ -1803,6 +2069,12 @@ def app_download():
     except Exception:
         logger.exception("App download could not sign a release URL")
         return error(503, "upstream_unavailable", "The release service is unavailable. Nothing was installed.")
+    try:
+        _record_download(
+            record["id"], platform, "app_download", described.get("version") or "", record["tier"]
+        )
+    except Exception:
+        logger.exception("App download was not recorded")
     return jsonify({
         "url": url,
         "expires_in": ASSET_URL_TTL,
@@ -2164,25 +2436,30 @@ def download_free(platform):
         "SELECT id, status FROM licenses WHERE id = ?",
         (int(data["lic"]),),
     ).fetchone()
-    if not row or row["status"] != "active":
+    if not row or row["status"] not in ("active", "unverified"):
         db.close()
         return error(403, "code_invalid", "Enter your code again.")
-    db.execute(
-        "INSERT INTO download_events (license_id, platform, kind, created_at) VALUES (?, ?, 'redirect', ?)",
-        (row["id"], platform, iso(utcnow())),
-    )
-    db.commit()
-    db.close()
     repo = _repo_for("free")
     try:
         release = _load_release(repo, "latest")
         described = _describe_asset(repo, release, platform, "")
         if not described:
+            db.close()
             return error(404, "no_release", "No installer for that platform is published.")
         location = _signed_asset_url(repo, described["asset"])
     except Exception:
+        db.close()
         logger.exception("Free download redirect failed")
         return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    db.execute(
+        """
+        INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+        VALUES (?, ?, 'redirect', ?, ?, 'free')
+        """,
+        (row["id"], platform, iso(utcnow()), (described.get("version") or "") or None),
+    )
+    db.commit()
+    db.close()
     # click and auto are beacons for this same file. The redirect is the
     # download. Mail must not change the 302 or the location.
     _queue_free_download_alert(row["id"], platform, described)
@@ -2197,7 +2474,8 @@ def _queue_free_download_alert(license_id, platform, described):
         try:
             full = db.execute(
                 """
-                SELECT utm_source, utm_medium, utm_campaign, referrer, landing_page
+                SELECT utm_source, utm_medium, utm_campaign, utm_content,
+                       referrer, landing_page
                 FROM licenses WHERE id = ?
                 """,
                 (license_id,),
@@ -2215,6 +2493,7 @@ def _queue_free_download_alert(license_id, platform, described):
             payload["utm_source"] = full["utm_source"] or ""
             payload["utm_medium"] = full["utm_medium"] or ""
             payload["utm_campaign"] = full["utm_campaign"] or ""
+            payload["utm_content"] = full["utm_content"] or ""
             payload["referrer"] = full["referrer"] or ""
             payload["landing_page"] = full["landing_page"] or ""
         alerts.queue(payload)
@@ -2257,15 +2536,16 @@ def download_pro_beta(platform):
     except Exception:
         logger.exception("Pro beta download redirect failed")
         return error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    version = _asset_version(_repo_for("pro"), platform)
     try:
         db = api.get_db()
         try:
             db.execute(
                 """
-                INSERT INTO download_events (license_id, platform, kind, created_at)
-                VALUES (?, ?, 'pro_redirect', ?)
+                INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+                VALUES (?, ?, 'pro_redirect', ?, ?, 'pro')
                 """,
-                (row["id"], platform, iso(utcnow())),
+                (row["id"], platform, iso(utcnow()), version or None),
             )
             db.commit()
         finally:
@@ -2665,7 +2945,17 @@ def run_maintenance():
     db.execute("DELETE FROM email_codes WHERE expires_at < ?", (iso(utcnow()),))
     db.commit()
     db.close()
-    return {"telemetry_rolled": len(rows), "telemetry_deleted": deleted}
+    reminded = 0
+    try:
+        import app as api
+        reminded = int(api.send_unverified_reminders().get("sent") or 0)
+    except Exception:
+        logger.error("Unverified reminders were not sent")
+    return {
+        "telemetry_rolled": len(rows),
+        "telemetry_deleted": deleted,
+        "unverified_reminders": reminded,
+    }
 
 
 def _admin_flags_get():
@@ -3009,9 +3299,18 @@ def admin_stats_v1():
     Device resets are not stored: the admin reset deletes the device rows.
     Move requests are not kept after the code is used. Telemetry has no
     separate event log and no opt-out deletion log. Rate-limit rows are
-    request counters, not 429 outcomes. Stripe checkout downloads are not
-    recorded. A hand-added key's first-install redirect is stored as kind
-    pro_redirect and is left out of the free downloads count.
+    request counters, not 429 outcomes. downloads counts new installs:
+    redirect is Free, and pro_redirect and pro_paid_redirect are Pro.
+    updates counts in-app app_download rows, split by the licence tier.
+    click and auto are beacons and are not counted.
+    installs_by_version is all time and ignores since/until. One install
+    is counted under every version it reported. current_installs_by_version
+    keeps one row per install_id, the latest session by session_start_date
+    with the higher version breaking a tie, and only if that day is within
+    the last 30 UTC days. It also ignores since/until. Tier and platform
+    on that row come from the latest session. update_checks_by_version
+    follows since/until. Empty buckets are omitted. telemetry_note says
+    these install counts only include copies that reported usage.
     """
     api = _api()
     since = api._utc_day(request.args.get("since"), "0000-01-01")
@@ -3137,16 +3436,55 @@ def admin_stats_v1():
             + _labelled(installs, ("status", "tier"))
             + _labelled(rollups, ("status", "month", "tier", "version", "os"))
         )
+        exclude_sql, exclude_params = _download_count_filters()
+        new_kinds = "kind IN ('redirect', 'pro_redirect', 'pro_paid_redirect')"
+        update_kinds = "kind = 'app_download' AND COALESCE(tier, '') IN ('free', 'pro')"
+        tier_sql = """
+            CASE
+                WHEN kind = 'redirect' OR (kind = 'app_download' AND tier = 'free') THEN 'free'
+                ELSE 'pro'
+            END
+        """
+        source_sql = "CASE WHEN kind = 'app_download' THEN 'update' ELSE 'new' END"
         downloads = _labelled(db.execute(
-            """
-            SELECT 'free' AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            f"""
+            SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
             FROM download_events
-            WHERE kind = 'redirect' AND created_at >= ? AND created_at < ?
-            GROUP BY platform
-            ORDER BY platform
+            WHERE ({new_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, platform
+            ORDER BY 1, platform
             """,
-            window,
+            (*window, *exclude_params),
         ).fetchall(), ("tier", "platform"))
+        updates = _labelled(db.execute(
+            f"""
+            SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM download_events
+            WHERE ({update_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, platform
+            ORDER BY 1, platform
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "platform"))
+        downloads_by_version = _labelled(db.execute(
+            f"""
+            SELECT
+                {tier_sql} AS tier,
+                {source_sql} AS source,
+                COALESCE(platform, '') AS platform,
+                COALESCE(version, '') AS version,
+                COUNT(*) AS count
+            FROM download_events
+            WHERE (({new_kinds}) OR ({update_kinds}))
+              AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, 2, platform, COALESCE(version, '')
+            ORDER BY 1, 2, platform, version
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "source", "platform", "version"))
         update_checks = _labelled(db.execute(
             """
             SELECT
@@ -3162,6 +3500,89 @@ def admin_stats_v1():
             """,
             window,
         ).fetchall(), ("day", "tier", "platform", "version"))
+        install_exclude_sql, install_exclude_params = _telemetry_count_filters()
+        os_platform = _platform_sql("telemetry_sessions.os_family")
+        app_version = _plain_version_sql("telemetry_sessions.app_version")
+        session_date = _session_date_sql()
+        installs_by_version = _install_version_rows(db.execute(
+            f"""
+            SELECT
+                COALESCE(telemetry_sessions.tier, '') AS tier,
+                {os_platform} AS platform,
+                {app_version} AS version,
+                COUNT(DISTINCT telemetry_sessions.install_id) AS installs,
+                MIN(NULLIF({session_date}, '')) AS first_seen,
+                MAX(NULLIF({session_date}, '')) AS last_seen
+            FROM telemetry_sessions
+            WHERE 1 = 1
+            {install_exclude_sql}
+            GROUP BY 1, 2, 3
+            ORDER BY 1, 2, 3
+            """,
+            install_exclude_params,
+        ).fetchall(), True)
+        # One row per install before the tier/platform/version group, so an
+        # install that changed version is not counted twice as "running now".
+        # `version` here is the plain version column of the sessions CTE.
+        version_rank = _version_rank_sql("version")
+        current_installs_by_version = _install_version_rows(db.execute(
+            f"""
+            WITH sessions AS (
+                SELECT
+                    telemetry_sessions.install_id AS install_id,
+                    COALESCE(telemetry_sessions.tier, '') AS tier,
+                    {os_platform} AS platform,
+                    {app_version} AS version,
+                    {session_date} AS session_date,
+                    COALESCE(telemetry_sessions.last_received_at, '') AS seen_at,
+                    telemetry_sessions.id AS id
+                FROM telemetry_sessions
+                WHERE 1 = 1
+                {install_exclude_sql}
+            ),
+            latest AS (
+                SELECT tier, platform, version, session_date
+                FROM (
+                    SELECT
+                        tier,
+                        platform,
+                        version,
+                        session_date,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY install_id
+                            ORDER BY session_date DESC, {version_rank} DESC,
+                                     seen_at DESC, id DESC
+                        ) AS rn
+                    FROM sessions
+                )
+                WHERE rn = 1 AND session_date >= ?
+            )
+            SELECT tier, platform, version, COUNT(*) AS installs
+            FROM latest
+            GROUP BY tier, platform, version
+            ORDER BY tier, platform, version
+            """,
+            (*install_exclude_params, _current_install_cutoff()),
+        ).fetchall(), False)
+        check_platform = _platform_sql("platform")
+        check_version = _plain_version_sql("app_version")
+        update_checks_by_version = [
+            row for row in _labelled(db.execute(
+                f"""
+                SELECT
+                    COALESCE(tier, '') AS tier,
+                    {check_platform} AS platform,
+                    {check_version} AS version,
+                    SUM(count) AS count
+                FROM update_check_daily
+                WHERE day >= ? AND day < ?
+                GROUP BY 1, 2, 3
+                ORDER BY 1, 2, 3
+                """,
+                window,
+            ).fetchall(), ("tier", "platform", "version"))
+            if row["count"] > 0
+        ]
     finally:
         db.close()
 
@@ -3182,7 +3603,13 @@ def admin_stats_v1():
         "telemetry": telemetry,
         "usage": usage,
         "downloads": downloads,
+        "updates": updates,
+        "downloads_by_version": downloads_by_version,
         "update_checks": update_checks,
+        "installs_by_version": installs_by_version,
+        "current_installs_by_version": current_installs_by_version,
+        "update_checks_by_version": update_checks_by_version,
+        "telemetry_note": TELEMETRY_INSTALL_NOTE,
         "flags": {
             "free_downloads_paused": flags["free_downloads_paused"],
             "maintenance": flags["maintenance"],

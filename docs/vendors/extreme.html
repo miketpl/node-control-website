@@ -7,7 +7,7 @@
     <title>Extreme — EXOS and VSP — NodeControl Docs</title>
     <meta name="description" content="Extreme — EXOS and VSP — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -257,6 +259,12 @@
 <li><code>show isis adjacencies</code> (VSP uses IS-IS for fabric, not OSPF)</li>
 </ul>
 <p>The 0.9.x release added missing VSP capabilities for running config, startup config, VRFs, and switchport details.</p>
+<h2 id="first-contact-and-backups">First contact and backups</h2>
+<p>An EXOS switch reached on first contact through the Cisco driver is recognised from <code>show version</code> and reconnected on the EXOS driver. Commands no longer wait about 30 seconds each, and backups no longer time out.</p>
+<p>Host names are saved without the prompt's changing number. On Free that is the L2 map and backups. On Pro it is Discovery, the topology maps, and backups.</p>
+<p>Config Backup reads the whole configuration and saves it only if it is complete. A read that stops early, is missing configuration sections that an earlier backup of the same switch had, or comes from an account without permission, is not saved. The row says why.</p>
+<p>The first backup of a switch is read twice and saved only if both reads match. If they differ, for example because the configuration changed in between, nothing is saved. Run the backup again. Later backups are read once and checked against the last good one.</p>
+<p>On Pro, the Config Compliance Audit checks EXOS against a complete configuration only, so a configuration that was cut off cannot give a wrong result.</p>
 <h2 id="detection">Detection</h2>
 <p>EXOS and VSP have distinct prompts. The classifier should pick them apart cleanly, but if you see one detected as the other (or as something generic), manually set + lock.</p>
 <h2 id="spb-spbm-shortest-path-bridging-vsp-fabric">SPB / SPBM (Shortest Path Bridging — VSP fabric)</h2>

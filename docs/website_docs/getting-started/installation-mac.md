@@ -48,9 +48,9 @@ This includes:
 
 - `netOps.db` — the device library, settings, and credential references
 - `settings.json` — per-tab UI state
-- Credential **secrets** are stored separately in the macOS **Keychain**, not in this folder
+- The master key is held in the macOS **Keychain**. Passwords are encrypted on your machine with that key, not stored as separate keychain items for every profile
 
-**Uninstalling**: drag the app from Applications to Trash. To fully remove your data, also delete `~/Library/Application Support/netOps/` and clear any Node Control entries from Keychain Access.
+**Uninstalling**: drag the app from Applications to Trash. To fully remove your data, also delete `~/Library/Application Support/netOps/`. The master key, not each password, is what you clear from Keychain Access.
 
 ## Updating
 

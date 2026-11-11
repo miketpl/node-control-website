@@ -7,7 +7,7 @@
     <title>Find Device — NodeControl Docs</title>
     <meta name="description" content="Find Device — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="find-device.html" class="docs-nav-link active">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -150,7 +152,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tasks/">Tasks</a> &rsaquo; Find Device
                 </div>
                 <h1 id="find-device">Find Device</h1>
-<p>The &quot;where is this MAC / IP?&quot; tool. Give Find Device a MAC address or an IP, and it tells you which switch port it is on. On Pro and the AI edition it can also name the Meraki AP.</p>
+<p>The &quot;where is this MAC / IP?&quot; tool. Give Find Device a MAC address, or an IP address if that switch holds it in its ARP table, and it tells you which switch port it is on. Meraki wireless clients are included on Free as well as Pro.</p>
 <h2 id="tier-differences">Tier differences</h2>
 <table>
 <thead>
@@ -162,11 +164,11 @@
 <tbody>
 <tr>
 <td>Free</td>
-<td>One switch at a time, single thread. No site model and no cores model. It walks that switch&#x27;s MAC table</td>
+<td>You pick one switch to start from, and it follows the trail from there to the edge port. Meraki wireless clients are included</td>
 </tr>
 <tr>
 <td>Pro / AI</td>
-<td>Pick a site (or All); Find Device walks every site&#x27;s cores in parallel, recursively follows CDP/LLDP into the fabric, and includes Meraki wireless lookup</td>
+<td>Pick a site (or All); it starts from that site&#x27;s saved core switches and follows CDP/LLDP into the fabric, including Meraki wireless clients.</td>
 </tr>
 </tbody>
 </table>
@@ -239,12 +241,9 @@
 <h2 id="ip-to-mac-resolution">IP-to-MAC resolution</h2>
 <p>If you give Find Device an IP address (not a MAC):</p>
 <ol>
-<li>It first does a VRF-aware ARP probe: SSH to the L3 owner of that IP&#x27;s subnet, run <code>show ip arp &lt;ip&gt;</code> (with VRF if applicable), extract the MAC
-</li>
-<li>Then continues the wired walk using the resolved MAC
+<li>It asks each starting switch (on Free, the one you picked; on Pro, the site&#x27;s core switches) for that IP in its ARP table, VRF-aware. If none holds it, the row says it could not resolve the IP to a MAC
 </li>
 </ol>
-<p>The probe handles common VRF layouts automatically — no need to tell Find Device which VRF to look in.</p>
 <h2 id="meraki-wireless-lookup">Meraki wireless lookup</h2>
 <p>If you&#x27;ve configured a Meraki Dashboard API key (Settings → Credentials → Meraki API), Find Device queries every Meraki org your key can access for the target MACs:</p>
 <ul>
@@ -316,7 +315,7 @@
 </li>
 <li>Node Control SSHes to the edge switch, sets the port to admin down
 </li>
-<li>The action is recorded in the audit log
+<li>The action is stored in the local port-action table
 </li>
 </ol>
 <p>The reverse (<strong>Re-enable Port</strong>) follows the same flow with <code>ENABLE</code> as the confirmation word.</p>
@@ -327,7 +326,7 @@
 <li>Device type must support the action — currently Cisco IOS / IOS-XE / NX-OS, Aruba, ProCurve, Juniper
 </li>
 </ul>
-<p>See the <a href="../security/audit-log.html">audit log</a> for what&#x27;s recorded.</p>
+<p>There is no plain-text audit log. The port action stays in that local table.</p>
 <h2 id="performance-pro-ai">Performance — Pro / AI</h2>
 <p>Find Device is heavily optimised in 0.9.26+:</p>
 <ul>

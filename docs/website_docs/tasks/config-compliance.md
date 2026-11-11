@@ -55,6 +55,16 @@ After the push, the config is pulled again and audited again. A full transcript 
 - A wildcard line, or a parent block that is not on the device, is flagged for you to do by hand
 - Remediation does not run against vendors other than Cisco IOS, IOS-XE, and NX-OS
 
+## Compliance by interface
+
+After a VLAN Port Finder run, an **Open port list** button lets you tick the ports you care about and send them to the Config Compliance Audit. The audit then checks only those interfaces, instead of whole devices.
+
+Supported on Cisco IOS, IOS-XE, and NX-OS, Arista EOS, Aruba AOS-CX, and HP ProCurve / Aruba OS-Switch, including VLAN and trunk membership. Other devices show **Not supported yet**.
+
+Cisco IOS short port names such as `e0/1` are accepted.
+
+The audit checks an Extreme EXOS switch against a complete configuration only, so a configuration that was cut off cannot give a wrong result.
+
 ## Next steps
 
 - [Security Audit](../reports/security-audit.md) — optional baseline section in the same SSH session as the PSIRT check

@@ -7,7 +7,7 @@
     <title>Safe Mode — NodeControl Docs</title>
     <meta name="description" content="Safe Mode — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -151,7 +153,7 @@
                 </div>
                 <h1 id="safe-mode">Safe Mode</h1>
 <p>Safe Mode is session-wide. It is not a per-tab setting.</p>
-<p>At startup the <strong>Select Mode</strong> dialog asks which mode to use. <strong>Settings → General → Startup Mode</strong> is what that dialog defaults to.</p>
+<p>Every time it opens, you choose Safe Mode or Config Mode. There is no default. Cancelling that choice quits the app. With nothing saved, Startup Mode asks every time.</p>
 <p>Mid-session, switch it from the <strong>Edit</strong> menu (<strong>Switch to Safe Mode</strong> / <strong>Switch to Config Mode</strong>) or from the mode badge.</p>
 <h2 id="the-task-list-in-safe-mode">The task list in Safe Mode</h2>
 <p>In Safe Mode the Engineer dropdown is cut to:</p>
@@ -180,6 +182,8 @@
 </li>
 <li><strong>Config Compliance Audit</strong>
 </li>
+<li><strong>Lab Export</strong>
+</li>
 </ul>
 <p><strong>Find Device</strong> runs read-only. <strong>Config Compliance Audit</strong> is in the list. Its remediation offer is suppressed in Safe Mode.</p>
 <p>Safe Mode hides these from the dropdown:</p>
@@ -202,6 +206,7 @@
 </li>
 </ul>
 <p><strong>Config Compliance Remediate</strong> stays out of Safe Mode. The audit task above does not offer remediation while Safe Mode is on.</p>
+<p><strong>Lab Export</strong> does not connect to a device, so it is also available in Safe Mode. Unless Startup Mode is set to always use one mode, you choose Safe Mode or Config Mode when the app opens.</p>
 <p>When Safe Mode is off, the dropdown is the full list. On Free, the tasks outside None, L2 Topology Builder, Config Backup, Save Config, and Find Device stay greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
 <p>Config-changing tasks check Safe Mode again inside the task, before credentials are asked for or a connection is opened. That covers Config from File, Save Config, Config Push and its revert, Bulk Port Config, NTP Config, port actions, Packet Capture, Meraki pushes, and scripts, plus config sent from SSH sessions and file uploads. They refuse even if a screen misses its own check. Anything refused is marked <strong>Blocked: Safe Mode is on</strong>. Read-only tasks, reports, and downloads run as before.</p>
 <p>While Safe Mode is on:</p>
@@ -257,7 +262,7 @@
 </li>
 <li><code>set interfaces ... disable</code> (Junos)
 </li>
-<li><code>commit</code> (Junos, IOS-XR)
+<li><code>commit</code> (Junos)
 </li>
 <li><code>write memory</code> / <code>copy running-config startup-config</code>
 </li>
@@ -270,7 +275,7 @@
 <ul>
 <li>Refuses to send it
 </li>
-<li>Logs the attempt in the audit log
+<li>A built-in blocklist stops commands like reload, write, erase and configure from going out of a read-only task. There is no Settings page for your own never-run list.
 </li>
 <li>Shows a UI warning
 </li>
@@ -280,37 +285,6 @@
 <h2 id="switching-mode">Switching mode</h2>
 <p>Use the <strong>Edit</strong> menu or the mode badge. The next launch follows <strong>Settings → General → Startup Mode</strong>, which you confirm in the <strong>Select Mode</strong> dialog.</p>
 <p>Once you are in Config Mode, write commands are allowed, subject to the confirmation the action already asks for (such as the type-to-confirm port shut).</p>
-<h2 id="customising-the-allowlist">Customising the allowlist</h2>
-<p>For advanced users who need to allow specific custom commands:</p>
-<ol>
-<li>Settings → Safe Mode → <strong>Allowlist patterns</strong>
-</li>
-<li>Add a regex matching the commands you want to allow
-</li>
-<li>Save
-</li>
-</ol>
-<p>Be careful — allowing a regex that accidentally matches a config command opens the safety net.</p>
-<h2 id="customising-the-blocklist">Customising the blocklist</h2>
-<p>The blocklist takes precedence over the allowlist. To explicitly forbid commands that might otherwise slip through:</p>
-<ol>
-<li>Settings → Safe Mode → <strong>Blocklist patterns</strong>
-</li>
-<li>Add regex
-</li>
-<li>Save
-</li>
-</ol>
-<p>Useful for: &quot;always block <code>reload</code>, even when Safe Mode is off.&quot;</p>
-<h2 id="audit-log">Audit log</h2>
-<p>Every Safe Mode decision (allow, block, override) is recorded in:</p>
-<pre><code>~/Library/Application Support/netOps/audit.log
-</code></pre>
-<p>Format:</p>
-<pre><code>2026-05-25T14:32:01Z [SAFE_MODE_BLOCK] device=10.1.1.5 cmd=&quot;interface gi1/0/3&quot; reason=&quot;Config mode entry&quot;
-2026-05-25T14:32:15Z [SAFE_MODE_OVERRIDE_OFF] user=admin
-</code></pre>
-<p>See <a href="../security/audit-log.html">Audit log</a> for the full event taxonomy.</p>
 <h2 id="when-you-would-actually-disable-safe-mode">When you would actually disable Safe Mode</h2>
 <ul>
 <li>Doing a Find Device port action (shut/no-shut) to contain a compromised endpoint
@@ -320,7 +294,7 @@
 <li>Performing a one-off remediation script
 </li>
 </ul>
-<p>For everyday operations (topology, reports, troubleshooting), Safe Mode should stay on.</p>
+<p>For a read-only session, choose Safe Mode when the app opens.</p>
 <h2 id="best-practice">Best practice</h2>
 <ul>
 <li>Set <strong>Startup Mode</strong> to the mode you want the <strong>Select Mode</strong> dialog to offer
@@ -329,14 +303,10 @@
 </li>
 <li>The mode applies to the whole session, including SSH
 </li>
-<li>Review the audit log when you need to see that the mode changed
-</li>
 </ul>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../tasks/find-device.html#port-actions-shut-no-shut">Find Device port actions</a> — the main use case for temporarily disabling Safe Mode
-</li>
-<li><a href="../security/audit-log.html">Audit log</a>
 </li>
 <li><a href="../security/credential-storage.html">Credential storage</a>
 </li>

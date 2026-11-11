@@ -414,16 +414,14 @@ class AdminAlertTests(unittest.TestCase):
         )
         db.commit()
         db.close()
-        code = pending["verified_at"].split(":", 1)[1]
-        verified = self.client.post("/api/verify", json={
-            "email": "person@example.com",
-            "code": code,
-        })
+        self.assertEqual(pending["status"], "unverified")
+        self.assertTrue(requested.get_json()["download_code"].startswith("NC-"))
+        token = api.make_email_confirm_token(pending["id"])
+        verified = self.client.get("/api/confirm-email?token=" + token)
         self.assertEqual(verified.status_code, 200)
-        body = verified.get_json()
+        body = requested.get_json()
         self.assertEqual(body["tier"], "free")
         self.assertTrue(body["download_code"].startswith("NC-"))
-        self.assertEqual(set(body), {"success", "download_code", "tier", "message"})
         mails = self._admin()
         self.assertEqual(len(mails), 1)
         self.assertEqual(mails[0]["subject"], "[Node Control] New Free sign-up")

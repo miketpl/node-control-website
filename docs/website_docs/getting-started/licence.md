@@ -19,7 +19,7 @@ The confirmation email after purchase contains the NCP key.
 
 ## Activating Free with your code
 
-1. Request Free at [nodecontrol.io](https://nodecontrol.io) and verify the 6-digit email code
+1. Request Free at [nodecontrol.io](https://nodecontrol.io). The page shows your `NC-` code. Confirm the email when you can
 2. Copy the `NC-XXXX-XXXX` activation code
 3. On first launch, paste it into **Activation code**
 4. Click **Activate**

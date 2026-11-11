@@ -7,7 +7,7 @@
     <title>Tier overview — Free, Pro, AI — NodeControl Docs</title>
     <meta name="description" content="Tier overview — Free, Pro, AI — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -150,7 +152,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/tiers/">Tiers</a> &rsaquo; Tier overview — Free, Pro, AI
                 </div>
                 <h1 id="tier-overview-free-pro-ai">Tier overview — Free, Pro, AI</h1>
-<p>Node Control is one codebase with three gates. Free is the one to start with: 25 devices, no time limit, not a trial. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="../settings/ai-llm.html">AI on Professional</a>.</p>
+<p>Node Control is one codebase with three gates. Free is the one to start with. The Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See <a href="../settings/ai-llm.html">AI on Professional</a>.</p>
 <p>The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.</p>
 <h2 id="quick-comparison">Quick comparison</h2>
 <table>
@@ -291,9 +293,9 @@
 </tr>
 <tr>
 <td>Find Device</td>
-<td style="text-align: center;">one switch, single thread, no site or cores model</td>
-<td style="text-align: center;">site and cores, plus Meraki wireless</td>
-<td style="text-align: center;">site and cores, plus Meraki wireless</td>
+<td style="text-align: center;">one switch to start from, including Meraki wireless clients</td>
+<td style="text-align: center;">Site and cores, including Meraki wireless clients</td>
+<td style="text-align: center;">Site and cores, including Meraki wireless clients</td>
 </tr>
 <tr>
 <td>File Transfer task, Packet Capture</td>
@@ -321,6 +323,18 @@
 </tr>
 <tr>
 <td>Security Audit (PSIRT), Lifecycle and EoX, and the other reports</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><a href="../reports/access-review.html">Access Review</a></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><a href="../tasks/lab-export.html">Lab Export</a> to Cisco CML 2.10 or EVE-NG Community 6.2</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
@@ -358,10 +372,10 @@
 </tbody>
 </table>
 <h2 id="free">Free</h2>
-<p>Free is a working copy for a small estate, not a timed demo.</p>
+<p>Free is a working copy for a small estate.</p>
 <h3 id="what-you-get">What you get</h3>
 <ul>
-<li>25 devices in the library table. No time limit. The status bar shows <strong>FREE VERSION</strong>
+<li>25 devices in the library table. The status bar shows <strong>FREE VERSION</strong>
 </li>
 <li>Sidebar: Home, Engineer, Reports, File Transfer
 </li>
@@ -386,7 +400,7 @@
 </li>
 <li>Reports other than Inventory
 </li>
-<li>Find Device across a site or a fabric, including Meraki wireless
+<li>Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
 </li>
 <li>Feature-level AI on a provider you configure
 </li>
@@ -396,13 +410,11 @@
 <ol>
 <li>Visit <a href="https://nodecontrol.io">nodecontrol.io</a>
 </li>
-<li>Enter your email
+<li>Enter your email and platform
 </li>
-<li>Verify with the 6-digit code emailed to you
+<li>The page shows your <code>NC-XXXX-XXXX</code> activation code and starts the download. Confirm the email when you can
 </li>
-<li>Receive your <code>NC-XXXX-XXXX</code> activation code
-</li>
-<li>Download and install the Free build for your platform
+<li>Install the Free build for your platform
 </li>
 <li>Enter your code on first launch
 </li>
@@ -417,11 +429,15 @@
 </li>
 <li>The full report list, including Security Audit (the PSIRT checks), Lifecycle and EoX, and Change Summary. Pro has no Update tab and no Vuln Plan
 </li>
-<li>Find Device across a site or a fabric, with Meraki wireless lookup
+<li>Find Device across a site or a fabric. Meraki wireless clients are in Find Device on Free as well
 </li>
-<li>Monitor, IPAM, the Meraki Configurator, and the Firewall Analyser
+<li>Monitor, including live link status on L2 maps for Cisco IOS, IOS-XE, and NX-OS ports. Also IPAM, the Meraki Configurator, and the Firewall Analyser
 </li>
-<li>Config Push (full support is Cisco IOS, IOS-XE, and NX-OS; on Juniper Junos, revert restores the snapshot taken before the push, and is marked manual if that snapshot could not be taken; every other vendor, Palo Alto included, gets a template only, with no activity targeting, no reliable revert, and no Default interface. On Palo Alto, <a href="../tasks/config-from-file.html">Config from File</a> discards its own uncommitted changes when its commit is skipped or refused), the File Transfer task, Packet Capture, Config from File, and config compliance
+<li><a href="../tasks/lab-export.html">Lab Export</a> to Cisco CML 2.10 or EVE-NG Community 6.2. Nothing connects to a device, so it is also available in Safe Mode
+</li>
+<li><a href="../reports/access-review.html">Access Review</a>. Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview
+</li>
+<li>Config Push. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Also the File Transfer task, Packet Capture, Config from File, and config compliance. After VLAN Port Finder, <strong>Open port list</strong> sends the ports you tick to the Config Compliance Audit, which then checks only those interfaces
 </li>
 <li><a href="../settings/scripts.html">Custom scripts</a> under Settings → Scripts
 </li>

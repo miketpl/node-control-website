@@ -8,10 +8,10 @@ When you launch Node Control Free for the first time, an **Activate Node Control
 
 ### Where the code comes from
 
-1. Visit [nodecontrol.io](https://nodecontrol.io) and click **Get Free**
-2. Enter your email
-3. Check your inbox for a 6-digit verification code; enter it on the website
-4. The website then generates your activation code in the format `NC-XXXX-XXXX`
+1. Visit [nodecontrol.io](https://nodecontrol.io) and click **Download Free**
+2. Enter your email and platform
+3. The page shows your activation code in the format `NC-XXXX-XXXX` and starts the download
+4. A confirmation link comes by email. The code works before you open it
 5. Save the code somewhere safe — your password manager is ideal
 
 ### Entering the code in the app

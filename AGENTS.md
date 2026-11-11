@@ -29,8 +29,8 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 - **Professional is the main product.** Pro-only cards stay labelled, so it
   is clear what Free Edition includes. Free stays easy to reach: one
   secondary hero CTA, the free section, and the form.
-- **Free Edition** is up to 25 devices, no time limit, not a trial. Say so
-  on the free section. Do not make the page all about Free.
+- **Free Edition** is free for up to 25 devices. Don't write 'no time limit' or 'not a trial' in long-lived copy.
+  Say so on the free section. Do not make the page all about Free.
 - **Professional includes bring-your-own AI.** Lead with "Bring your own
   AI provider". It uses the user's own API key. There is no Node Control
   AI subscription and no markup. The providers are Anthropic, OpenAI,
@@ -74,13 +74,17 @@ sentences. If a claim can't be made concretely, don't make it.
 
 ## Hard rules — do not break these
 
-1. **The free-download flow is load-bearing.** The request form, 6-digit email
-   verification, and `NC-XXXX-XXXX` redeem sections in `index.html` are wired
-   to `js/main.js` by element IDs (`freeRequestForm`, `reqName`, `reqEmail`,
-   `reqPlatform`, `reqCompany`, `reqSubmitBtn`, `reqResult`, `verifySection`,
-   `verifyCode`, `verifyBtn`, `verifyResult`, `resendBtn`,
-   `downloadCodeSection`, `revealedCode`, `redeemCode`, `redeemBtn`,
-   `redeemResult`). Do not rename, remove, or restructure these elements.
+1. **The free-download flow is load-bearing.** The form asks for email and
+   platform. Company is optional. There is no name field. Submit returns the
+   download on the page. A one-click email link confirms the address
+   afterwards. An unverified Free licence still activates the app. The
+   6-digit endpoint remains for a page that is already open, and its
+   elements stay in the page, hidden. These element IDs stay:
+   `freeRequestForm`, `reqEmail`, `reqPlatform`, `reqCompany`, `reqSubmitBtn`,
+   `reqResult`, `verifySection`, `verifyCode`, `verifyBtn`, `verifyResult`,
+   `resendBtn`, `downloadCodeSection`, `revealedCode`, `redeemCode`,
+   `redeemBtn`, `redeemResult`. Do not rename or remove them. `reqName` is
+   not on the page.
 2. **Never hardcode release version numbers** in download URLs or copy. Free
    Edition installer URLs come from the backend, which resolves the latest
    release of `miketpl/node-control-releases-free` at request time. That repo

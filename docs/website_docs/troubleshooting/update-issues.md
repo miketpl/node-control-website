@@ -4,7 +4,7 @@ When **Help → Check for Updates...** does not work, or a download fails, or an
 
 ## Symptom 1 — you expected a newer version
 
-**Help → Check for Updates...** says **You're running the latest version (v0.9.44).** when nothing newer is offered. The version in parentheses is the one you are running.
+**Help → Check for Updates...** says **You're running the latest version (v0.9.45).** when nothing newer is offered. The version in parentheses is the one you are running.
 
 ### You're on a different edition
 

@@ -127,6 +127,8 @@ There is no built-in scheduler, and there is no Tools menu.
 
 A FortiGate found by Library Updater is a firewall, not an access switch. Its host name is saved without the trailing prompt character or the `(vdom)`.
 
+Juniper Junos devices are not saved as Palo Alto firewalls. Both show a `user@host>` prompt, so the Library Updater asks the device which it is and saves a Junos device with its Juniper Junos type. Palo Alto firewalls are recognised as before.
+
 ## Next steps
 
 - [Organising devices by site](sites.md)

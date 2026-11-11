@@ -7,7 +7,7 @@
     <title>Config Push — NodeControl Docs</title>
     <meta name="description" content="Push commands to switch ports from a file, with a preview, safety exclusions, and revert. Pro and AI. Full support is Cisco IOS, IOS-XE, and NX-OS.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -66,9 +66,11 @@
       <a href="topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="discovery.html" class="docs-nav-link">Discover</a>
+      <a href="lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="find-device.html" class="docs-nav-link">Find Device</a>
       <a href="verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="config-push.html" class="docs-nav-link active">Config Push</a>
@@ -91,6 +93,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -124,7 +127,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -295,16 +297,17 @@
 </li>
 </ul>
 <p>Revert warns about drift. It does not detect drift.</p>
-<p>Juniper Junos loads the lines in <code>configure private</code> and runs <code>commit check</code> and <code>commit and-quit</code>, rolling back on any error. Each interface is snapshotted before the push, and revert restores that snapshot the same way. If the snapshot could not be taken, the revert is marked as manual.</p>
+<p>Juniper Junos loads the lines in <code>configure private</code> and runs <code>commit check</code> and <code>commit and-quit</code>, rolling back on any error. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.</p>
 <p>Revert is refused whenever the app-wide Safe Mode is on.</p>
 <h2 id="vendors-and-edition">Vendors and edition</h2>
 <p>Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Aruba, Juniper, Dell, and Extreme.</p>
-<p>Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no activity targeting and no reliable revert. (On Palo Alto, Config from File discards its own uncommitted changes when its commit is skipped or refused. See <a href="config-from-file.html">Config from File</a>.)</p>
+<p>Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.</p>
 <p>The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Safe Mode removes Config Push.</p>
 <h2 id="config-from-file">Config from File</h2>
 <p><a href="config-from-file.html">Config from File</a> is a separate task. It sends the lines in a file verbatim. There are no placeholders. Global-only config belongs there.</p>
+<p>On Juniper Junos, a failed commit shows the device's own error lines instead of a generic <strong>Commit failed</strong> header.</p>
 <h2 id="what-changed">What changed</h2>
 <ul>
 <li>0.9.36: activity targeting, Admin shutdown, and Default interface.
@@ -316,6 +319,8 @@
 <li>0.9.39: the task was renamed.
 </li>
 <li>0.9.40: the UPLINK override.
+</li>
+<li>0.9.45: a failed Junos commit shows the device's own error lines instead of a generic Commit failed header.
 </li>
 </ul>
 <h2 id="next-steps">Next steps</h2>

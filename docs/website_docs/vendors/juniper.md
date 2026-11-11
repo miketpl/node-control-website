@@ -58,7 +58,9 @@ Junos has a commit-based config model with `commit` / `commit and-quit`. The wri
 
 A device reached on another driver and identified as Juniper Junos is reconnected on the Junos driver. If that reconnect fails, the connection stops.
 
-**Config Push** loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Each interface is snapshotted before the push. Revert restores that snapshot. If the snapshot could not be taken, the revert is marked as manual. An `aeN` LAG member is blocked like a Cisco port-channel member, with the same **UPLINK** override.
+In an SSH session, a refused line is reported straight away with the device's own error, for example `syntax error.`, instead of waiting about two minutes for a timeout. On Pro, the row shows the device's full reason lines. On Pro, a failed commit in Config from File or Config Push shows the device's own error lines instead of a generic **Commit failed** header.
+
+**Config Push** loads the lines in `configure private` and runs `commit check` and `commit and-quit`, rolling back on any error. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. An `aeN` LAG member is blocked like a Cisco port-channel member, with the same **UPLINK** override.
 
 Discovery saves the host name without the `user@` prefix. Find Device skips Junos with a clear reason until the output format is confirmed. Asset Lifecycle reports the model and serial.
 

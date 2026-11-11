@@ -245,6 +245,17 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(revoked.status_code, 403)
         self.assertEqual(self._body(revoked)["error"]["code"], "revoked")
 
+        self._insert_free("NC-PEND-PEND", email="pending@example.com", status="pending")
+        pending = self._activate("NC-PEND-PEND", self.install_a)
+        self.assertEqual(pending.status_code, 401)
+        self.assertEqual(self._body(pending)["error"]["code"], "invalid_key")
+
+        self._insert_free("NC-UNV1-UNV1", email="unverified@example.com", status="unverified")
+        unverified = self._activate("NC-UNV1-UNV1", self.install_a)
+        self.assertEqual(unverified.status_code, 200)
+        self.assertTrue(self._body(unverified)["active"])
+        self.assertEqual(self._body(unverified)["tier"], "free")
+
         mismatch = self.client.post(
             "/api/v1/app/activate",
             json={"tier": "pro", "app_version": "0.9.41", "platform": "mac", "arch": "arm64"},
@@ -532,9 +543,13 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(followed.status_code, 302)
         self.assertIn("release-assets.githubusercontent.com", followed.location)
         db = get_db()
-        kind = db.execute("SELECT kind FROM download_events").fetchone()["kind"]
+        stored = db.execute(
+            "SELECT kind, version, tier FROM download_events WHERE kind = 'redirect'"
+        ).fetchone()
         db.close()
-        self.assertEqual(kind, "redirect")
+        self.assertEqual(stored["kind"], "redirect")
+        self.assertEqual(stored["tier"], "free")
+        self.assertEqual(stored["version"], "0.9.41")
 
         expired = licence_v1._free_serializer().dumps({
             "lic": self.free["id"], "platform": "mac", "exp": int(time.time()) - 5,
@@ -1303,8 +1318,10 @@ class V1Tests(unittest.TestCase):
             set(body),
             {
                 "window", "licences", "pro_keys", "device_moves", "devices",
-                "registrations", "telemetry", "usage", "downloads", "update_checks",
-                "flags", "db_bytes", "generated_at",
+                "registrations", "telemetry", "usage", "downloads", "updates",
+                "downloads_by_version", "update_checks", "installs_by_version",
+                "current_installs_by_version", "update_checks_by_version",
+                "telemetry_note", "flags", "db_bytes", "generated_at",
             },
         )
         text = res.get_data(as_text=True)
@@ -1346,6 +1363,10 @@ class V1Tests(unittest.TestCase):
             "version": "0.9.41", "os": "mac", "count": 2,
         }])
         self.assertEqual(body["downloads"], [{"tier": "free", "platform": "mac", "count": 1}])
+        self.assertEqual(body["updates"], [])
+        self.assertEqual(body["downloads_by_version"], [
+            {"tier": "free", "source": "new", "platform": "mac", "version": "", "count": 1},
+        ])
         self.assertEqual(body["update_checks"], [])
         self.assertIsInstance(body["db_bytes"], int)
         self.assertGreater(body["db_bytes"], 0)
@@ -2125,6 +2146,349 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(allowed.get_json()["licence_key"], plain)
         self.assertEqual(allowed.get_json()["status"], "paid")
 
+    def test_download_counts_include_pro_and_version_and_skip_tests(self):
+        self._activate(self.free["code"], self.install_a)
+        self.github.digest = True
+        db = get_db()
+        db.execute("DELETE FROM release_cache")
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (23, 'NC-TEST-0023', 'Owner', 'owner-test@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (40, 'NC-HIDE-0040', 'Hidden', 'hidden@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, email, source, status, plan, created_at
+            ) VALUES
+                ('hash-counted', '1234', 'counted@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00'),
+                ('hash-hidden', '5678', 'hidden@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00')
+            """
+        )
+        counted = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'counted@example.com'"
+        ).fetchone()["id"]
+        hidden = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'hidden@example.com'"
+        ).fetchone()["id"]
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+            VALUES
+                (23, 'mac', 'redirect', '2026-10-21T01:00:00Z', '0.9.40', 'free'),
+                (40, 'win', 'redirect', '2026-10-21T01:00:00Z', '0.9.44', 'free'),
+                (?, 'mac', 'pro_redirect', '2026-10-21T01:00:00Z', '0.9.45', 'pro'),
+                (?, 'win', 'pro_paid_redirect', '2026-10-21T01:00:00Z', NULL, 'pro'),
+                (?, 'mac', 'click', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'mac', 'auto', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'win', 'app_download', '2026-10-21T01:00:00Z', '0.9.41', 'free')
+            """,
+            (counted, hidden, self.free["id"], self.free["id"], self.free["id"]),
+        )
+        db.commit()
+        db.close()
+        app.config["STATS_EXCLUDE_EMAILS"] = "hidden@example.com"
+        try:
+            res = self.client.get(
+                "/api/admin/stats/v1",
+                headers={"Authorization": "Bearer test-admin-token"},
+            )
+        finally:
+            app.config["STATS_EXCLUDE_EMAILS"] = ""
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        self.assertEqual(body["downloads"], [
+            {"tier": "pro", "platform": "mac", "count": 1},
+        ])
+        self.assertEqual(body["updates"], [
+            {"tier": "free", "platform": "win", "count": 1},
+        ])
+        self.assertEqual(body["downloads_by_version"], [
+            {"tier": "free", "source": "update", "platform": "win", "version": "0.9.41", "count": 1},
+            {"tier": "pro", "source": "new", "platform": "mac", "version": "0.9.45", "count": 1},
+        ])
+        self.assertNotIn("hidden@example.com", res.get_data(as_text=True))
+        self.assertNotIn("owner-test@example.com", res.get_data(as_text=True))
 
-if __name__ == "__main__":
-    unittest.main()
+        got = self.client.post(
+            "/api/v1/app/download",
+            json={"version": "latest", "platform": "win"},
+            headers=self._headers(self.free["code"], self.install_a, platform="win"),
+        )
+        self.assertEqual(got.status_code, 200)
+        self.assertEqual(got.get_json()["version"], "0.9.41")
+        db = get_db()
+        recorded = db.execute(
+            """
+            SELECT kind, tier, platform, version FROM download_events
+            WHERE kind = 'app_download'
+            """
+        ).fetchone()
+        old = db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at)
+            VALUES (?, 'mac', 'redirect', '2020-01-01T00:00:00Z')
+            """,
+            (self.free["id"],),
+        )
+        db.commit()
+        legacy_id = db.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
+        db.close()
+        api.migrate_db()
+        api.migrate_db()
+        db = get_db()
+        legacy = db.execute(
+            "SELECT version FROM download_events WHERE id = ?", (legacy_id,)
+        ).fetchone()
+        db.close()
+        self.assertEqual(recorded["kind"], "app_download")
+        self.assertEqual(recorded["tier"], "free")
+        self.assertEqual(recorded["platform"], "win")
+        self.assertEqual(recorded["version"], "0.9.41")
+        self.assertIsNone(legacy["version"])
+
+    def test_installs_by_version_keep_history_and_one_current_row(self):
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+
+        def day(days_ago):
+            return (now - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+        def seen(days_ago, hour="12"):
+            return (now - timedelta(days=days_ago)).strftime(f"%Y-%m-%dT{hour}:00:00Z")
+
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES
+                (23, 'NC-TEST-0023', 'Owner', 'owner-test@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00'),
+                (40, 'NC-HIDE-0040', 'Hidden', 'hidden-free@example.com', '', 'macos', 'free', 'active', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                id, key_hash, key_last4, email, source, status, plan, created_at
+            ) VALUES
+                (23, 'hash-pro-23', '2323', 'beta23@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00'),
+                (41, 'hash-pro-hide', '4141', 'hidden-pro@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, email, source, status, plan, created_at
+            ) VALUES (
+                'hash-pro-real', '9999', 'counted-pro@example.com', 'manual', 'active', 'monthly', '2026-10-21T00:00:00'
+            )
+            """
+        )
+        counted_pro = db.execute(
+            "SELECT id FROM pro_keys WHERE email = 'counted-pro@example.com'"
+        ).fetchone()["id"]
+        rows = (
+            # One install upgraded 0.9.44 -> 0.9.45. History keeps both.
+            (self.free["id"], "free", "install-upgraded-hidden", "s-old", "free", "0.9.44", "macOS", day(12), seen(12)),
+            (self.free["id"], "free", "install-upgraded-hidden", "s-mid", "free", "0.9.45", "macOS", day(5), seen(5)),
+            (self.free["id"], "free", "install-upgraded-hidden", "s-new", "free", "0.9.45", "macOS", day(1), seen(1)),
+            # Same day: 0.9.45 beats 0.9.9 even though 0.9.9 was stored later.
+            (self.free["id"], "free", "install-rank-hidden", "s-low", "free", "0.9.45", "Windows", day(0), seen(0, "01")),
+            (self.free["id"], "free", "install-rank-hidden", "s-high", "free", "0.9.9", "Windows", day(0), seen(0, "23")),
+            # Latest day wins over a higher version on an older day.
+            (self.free["id"], "free", "install-rolled-hidden", "s-highver", "free", "0.9.50", "Windows", day(20), seen(20)),
+            (self.free["id"], "free", "install-rolled-hidden", "s-later", "free", "0.9.44", "Windows", day(2), seen(2)),
+            (self.free["id"], "free", "install-stale-hidden", "s-stale", "free", "0.8.1", "Linux", day(40), seen(40)),
+            (self.free["id"], "free", "install-edge-hidden", "s-edge", "free", "3.0.0", "Linux", day(30), seen(30)),
+            (self.free["id"], "free", "install-older-hidden", "s-older", "free", "3.0.1", "Linux", day(31), seen(31)),
+            (23, "free", "install-excluded-free", "s-ex", "free", "7.7.7", "macOS", day(1), seen(1)),
+            (40, "free", "install-hidden-email", "s-mail", "free", "6.6.6", "macOS", day(1), seen(1)),
+            (23, "pro", "install-pro-23-hidden", "s-pro", "pro", "8.8.8", "macOS", day(1), seen(1)),
+            (41, "pro", "install-hidden-pro", "s-hpro", "pro", "6.6.7", "macOS", day(1), seen(1)),
+            # Tier and platform come from the latest session, after dedup.
+            (self.free["id"], "free", "install-switched-hidden", "s-was", "free", "0.9.44", "Windows", day(8), seen(8)),
+            (counted_pro, "pro", "install-switched-hidden", "s-now", "pro", "0.9.50", "Linux", day(1), seen(1)),
+            (self.free["id"], "free", "install-prefix-hidden", "s-v", "free", "v0.9.46", "Darwin", day(4), seen(4)),
+            (self.free["id"], "free", "install-prefix-hidden", "s-plain", "free", "0.9.46", "Darwin", day(2), seen(2)),
+        )
+        for ref, kind, install, session, tier, version, family, start, stamp in rows:
+            db.execute(
+                """
+                INSERT INTO telemetry_sessions (
+                    licence_ref, licence_kind, install_id, session_id, tier, app_version,
+                    os_family, session_start_date, first_received_at, last_received_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (ref, kind, install, session, tier, version, family, start, stamp, stamp),
+            )
+        db.execute(
+            """
+            INSERT INTO download_events (license_id, platform, kind, created_at, version, tier)
+            VALUES
+                (23, 'mac', 'redirect', '2026-10-21T01:00:00Z', '0.9.40', 'free'),
+                (40, 'win', 'redirect', '2026-10-21T01:00:00Z', '0.9.44', 'free'),
+                (23, 'mac', 'pro_redirect', '2026-10-21T01:00:00Z', '8.8.8', 'pro'),
+                (41, 'win', 'pro_paid_redirect', '2026-10-21T01:00:00Z', '0.9.45', 'pro'),
+                (?, 'mac', 'pro_redirect', '2026-10-21T01:00:00Z', '0.9.45', 'pro'),
+                (?, 'mac', 'click', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (?, 'mac', 'auto', '2026-10-21T01:00:00Z', '0.9.45', 'free'),
+                (23, 'win', 'app_download', '2026-10-21T01:00:00Z', '0.9.41', 'free'),
+                (23, 'mac', 'app_download', '2026-10-21T01:00:00Z', '0.9.45', 'pro')
+            """,
+            (counted_pro, self.free["id"], self.free["id"]),
+        )
+        db.execute(
+            """
+            INSERT INTO update_check_daily (day, tier, platform, app_version, count)
+            VALUES
+                (?, 'free', 'mac', '0.9.45', 2),
+                (?, 'free', 'mac', 'v0.9.45', 3),
+                (?, 'pro', 'Windows', '0.9.40', 4),
+                (?, 'free', 'linux', '0.9.45', 0)
+            """,
+            (day(0), day(1), day(40), day(0)),
+        )
+        db.commit()
+        db.close()
+
+        headers = {"Authorization": "Bearer test-admin-token"}
+        previous = {
+            "STATS_EXCLUDE_LICENCE_IDS": app.config.get("STATS_EXCLUDE_LICENCE_IDS"),
+            "STATS_EXCLUDE_PRO_KEY_IDS": app.config.get("STATS_EXCLUDE_PRO_KEY_IDS"),
+            "STATS_EXCLUDE_EMAILS": app.config.get("STATS_EXCLUDE_EMAILS"),
+        }
+        app.config["STATS_EXCLUDE_LICENCE_IDS"] = "23,24,32"
+        app.config["STATS_EXCLUDE_PRO_KEY_IDS"] = ""
+        app.config["STATS_EXCLUDE_EMAILS"] = "hidden-free@example.com,hidden-pro@example.com"
+        try:
+            res = self.client.get("/api/admin/stats/v1", headers=headers)
+            self.assertEqual(res.status_code, 200)
+            body = res.get_json()
+            self.assertEqual(
+                body["telemetry_note"],
+                "These counts are installs seen via usage telemetry, "
+                "so copies that do not report usage do not appear.",
+            )
+            self.assertEqual(body["installs_by_version"], [
+                {"tier": "free", "platform": "linux", "version": "0.8.1", "installs": 1,
+                 "first_seen": day(40), "last_seen": day(40)},
+                {"tier": "free", "platform": "linux", "version": "3.0.0", "installs": 1,
+                 "first_seen": day(30), "last_seen": day(30)},
+                {"tier": "free", "platform": "linux", "version": "3.0.1", "installs": 1,
+                 "first_seen": day(31), "last_seen": day(31)},
+                {"tier": "free", "platform": "mac", "version": "0.9.44", "installs": 1,
+                 "first_seen": day(12), "last_seen": day(12)},
+                {"tier": "free", "platform": "mac", "version": "0.9.45", "installs": 1,
+                 "first_seen": day(5), "last_seen": day(1)},
+                {"tier": "free", "platform": "mac", "version": "0.9.46", "installs": 1,
+                 "first_seen": day(4), "last_seen": day(2)},
+                {"tier": "free", "platform": "win", "version": "0.9.44", "installs": 2,
+                 "first_seen": day(8), "last_seen": day(2)},
+                {"tier": "free", "platform": "win", "version": "0.9.45", "installs": 1,
+                 "first_seen": day(0), "last_seen": day(0)},
+                {"tier": "free", "platform": "win", "version": "0.9.50", "installs": 1,
+                 "first_seen": day(20), "last_seen": day(20)},
+                {"tier": "free", "platform": "win", "version": "0.9.9", "installs": 1,
+                 "first_seen": day(0), "last_seen": day(0)},
+                {"tier": "pro", "platform": "linux", "version": "0.9.50", "installs": 1,
+                 "first_seen": day(1), "last_seen": day(1)},
+                {"tier": "pro", "platform": "mac", "version": "8.8.8", "installs": 1,
+                 "first_seen": day(1), "last_seen": day(1)},
+            ])
+            self.assertEqual(body["current_installs_by_version"], [
+                {"tier": "free", "platform": "linux", "version": "3.0.0", "installs": 1},
+                {"tier": "free", "platform": "mac", "version": "0.9.45", "installs": 1},
+                {"tier": "free", "platform": "mac", "version": "0.9.46", "installs": 1},
+                {"tier": "free", "platform": "win", "version": "0.9.44", "installs": 1},
+                {"tier": "free", "platform": "win", "version": "0.9.45", "installs": 1},
+                {"tier": "pro", "platform": "linux", "version": "0.9.50", "installs": 1},
+                {"tier": "pro", "platform": "mac", "version": "8.8.8", "installs": 1},
+            ])
+            self.assertEqual(sum(row["installs"] for row in body["current_installs_by_version"]), 7)
+            upgraded = [
+                row for row in body["installs_by_version"]
+                if row["version"] in ("0.9.44", "0.9.45") and row["platform"] == "mac"
+            ]
+            self.assertEqual([row["installs"] for row in upgraded], [1, 1])
+            self.assertEqual(
+                [row for row in body["current_installs_by_version"] if row["version"] == "0.9.45" and row["platform"] == "mac"],
+                [{"tier": "free", "platform": "mac", "version": "0.9.45", "installs": 1}],
+            )
+            for row in body["installs_by_version"]:
+                self.assertEqual(set(row), {"tier", "platform", "version", "installs", "first_seen", "last_seen"})
+                self.assertRegex(row["first_seen"], r"^\d{4}-\d{2}-\d{2}$")
+                self.assertRegex(row["last_seen"], r"^\d{4}-\d{2}-\d{2}$")
+                self.assertGreater(row["installs"], 0)
+            for row in body["current_installs_by_version"]:
+                self.assertEqual(set(row), {"tier", "platform", "version", "installs"})
+                self.assertGreater(row["installs"], 0)
+            self.assertEqual(body["update_checks_by_version"], [
+                {"tier": "free", "platform": "mac", "version": "0.9.45", "count": 5},
+                {"tier": "pro", "platform": "win", "version": "0.9.40", "count": 4},
+            ])
+            self.assertNotIn(
+                {"tier": "free", "platform": "linux", "version": "0.9.45", "count": 0},
+                body["update_checks_by_version"],
+            )
+            self.assertEqual(body["downloads"], [
+                {"tier": "pro", "platform": "mac", "count": 2},
+            ])
+            self.assertEqual(body["updates"], [
+                {"tier": "pro", "platform": "mac", "count": 1},
+            ])
+            text = res.get_data(as_text=True)
+            for secret in (
+                "owner-test@example.com", "hidden-free@example.com", "hidden-pro@example.com",
+                "beta23@example.com", "counted-pro@example.com", self.free["email"],
+                "install-upgraded-hidden", "install-rank-hidden", "install-rolled-hidden",
+                "install-stale-hidden", "install-edge-hidden", "install-older-hidden",
+                "install-excluded-free", "install-hidden-email", "install-pro-23-hidden",
+                "install-hidden-pro", "install-switched-hidden", "install-prefix-hidden",
+            ):
+                self.assertNotIn(secret, text)
+            self.assertNotIn("install_id", text)
+
+            narrow = self.client.get(
+                "/api/admin/stats/v1?since=2099-01-01&until=2099-01-02",
+                headers=headers,
+            )
+            narrowed = narrow.get_json()
+            self.assertEqual(narrowed["installs_by_version"], body["installs_by_version"])
+            self.assertEqual(
+                narrowed["current_installs_by_version"], body["current_installs_by_version"]
+            )
+            self.assertEqual(narrowed["update_checks_by_version"], [])
+            self.assertEqual(narrowed["telemetry_note"], body["telemetry_note"])
+            today_only = self.client.get(
+                f"/api/admin/stats/v1?since={day(0)}&until={day(-1)}",
+                headers=headers,
+            ).get_json()
+            self.assertEqual(today_only["installs_by_version"], body["installs_by_version"])
+            self.assertEqual(
+                today_only["current_installs_by_version"], body["current_installs_by_version"]
+            )
+            self.assertEqual(today_only["update_checks_by_version"], [
+                {"tier": "free", "platform": "mac", "version": "0.9.45", "count": 2},
+            ])
+
+            app.config["STATS_EXCLUDE_PRO_KEY_IDS"] = "23"
+            hidden_pro = self.client.get("/api/admin/stats/v1", headers=headers).get_json()
+            self.assertNotIn("8.8.8", json.dumps(hidden_pro["installs_by_version"]))
+            self.assertNotIn("8.8.8", json.dumps(hidden_pro["current_installs_by_version"]))
+            self.assertEqual(hidden_pro["downloads"], [
+                {"tier": "pro", "platform": "mac", "count": 1},
+            ])
+            self.assertEqual(hidden_pro["updates"], [])
+            self.assertEqual(
+                [row for row in hidden_pro["current_installs_by_version"] if row["tier"] == "pro"],
+                [{"tier": "pro", "platform": "linux", "version": "0.9.50", "installs": 1}],
+            )
+        finally:
+            app.config.update(previous)
+
