@@ -1,6 +1,6 @@
-# Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+# Cisco — IOS, IOS-XE, NX-OS
 
-Node Control's most comprehensive vendor coverage. All Cisco platforms are first-class supported.
+IOS, IOS-XE and NX-OS are supported. Cisco ASA has partial support (see [Cisco ASA](#cisco-asa)). IOS-XR is not.
 
 ## Driver mapping
 
@@ -10,8 +10,7 @@ Node Control's most comprehensive vendor coverage. All Cisco platforms are first
 | Catalyst 9k (9200, 9300, 9500) | `cisco_xe` (IOS-XE) |
 | ISR / ASR / CSR | `cisco_xe` or `cisco_ios` |
 | Nexus 5k / 7k / 9k | `cisco_nxos` |
-| IOS-XR (ASR9k, NCS) | `cisco_xr` |
-| ASA firewalls | `cisco_asa` |
+| ASA / ASAv firewalls | `cisco_xe` (partial support, see [Cisco ASA](#cisco-asa)) |
 | Cisco Meraki | (Dashboard API, not SSH) — see [Meraki page](meraki.md) |
 
 ## What works
@@ -27,7 +26,7 @@ Everything Node Control does works on Cisco:
 - Find Device (wired walk + ARP probe + port shut/no-shut)
 - Inventory (stack members, line cards, transceivers)
 - Verify Device Types
-- Monitor (CPU, memory, environmental, BGP/OSPF peers)
+- Monitor (CPU, memory, environmental, BGP/OSPF peers). On L2 maps, link status covers IOS, IOS-XE, and NX-OS ports
 - [Config Push](../tasks/config-push.md), [packet capture](../tasks/packet-capture.md), and [config compliance](../tasks/config-compliance.md) (remediation is IOS, IOS-XE, and NX-OS)
 - [Security Audit](../reports/security-audit.md) and [Lifecycle / EoX](../reports/lifecycle.md)
 - Feature-level AI summaries, on Pro and the AI edition, with your own provider. The AI dashboard is the AI edition only. See [AI provider](../settings/ai.md)
@@ -39,8 +38,6 @@ For type detection, Node Control looks for in `show version`:
 - "Cisco IOS Software" → cisco_ios
 - "Cisco IOS XE Software" → cisco_xe
 - "Cisco Nexus Operating System" → cisco_nxos
-- "Cisco IOS XR" → cisco_xr
-- "Cisco Adaptive Security Appliance" → cisco_asa
 
 ## NX-OS
 
@@ -54,26 +51,15 @@ NX-OS route tables are read correctly, including long via lines.
 
 MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and `vPC Peer-Link` is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.
 
-Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the `Processor Board ID` serial.
+Inventory and Asset Lifecycle take the host name from `Device name:`. It is not `Kernel`. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the model from the chassis line of `show inventory` (for example N9K-C9372PX), so Nexus switches match their end-of-life dates, and it reads the `Processor Board ID` serial.
 
 If NX-OS answers `Permission denied` to `configure terminal`, that device's Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with `could not enter configuration mode (check account privileges)`, and the lines not sent are listed as skipped.
 
-## ASA
+## Cisco ASA
 
-Cisco ASA firewalls are supported with these caveats:
+Cisco ASA, including ASAv, has partial support. Node Control logs in on its Cisco driver, recognises the ASA, files it under Firewalls, turns the ASA pager off for the session, shows its software version and model in Inventory, and backs up its running config. The SSH terminal works. Access Review (Pro) reads ASA admin accounts as a preview. On L3 and Discover maps it appears as a firewall without links. Config Push, compliance remediation, L2 and WAN links, Security Audit (PSIRT), Firewall Health, Monitor and upgrades are not supported on ASA. Tested on ASAv 9.24 in the lab. Physical ASAs, failover pairs and multiple-context mode are not yet lab-tested.
 
-- `show interface` works but counters differ from IOS
-- VPN / IPSec inspection via `show crypto ipsec sa`
-- No L3 routing protocol parsing beyond BGP (ASA's OSPF is rarely used at scale)
-- Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-
-## IOS-XR
-
-For service-provider-grade ASR9k / NCS gear:
-
-- Most "show" commands match IOS conventions
-- Configuration commit model is different but Node Control is read-only in tasks (won't see this difference)
-- BGP at SP scale — full peer enumeration
+Leave the device type on `cisco_xe`, or let Node Control detect it. Put the ASA in the Firewalls tab (or let it be detected once) so the pager is turned off at login.
 
 ## Stack and VSS
 

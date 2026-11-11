@@ -1,6 +1,6 @@
 # NodeControl licence API
 
-Flask service for the free-download form: email a 6-digit code, then store an `NC-` code in SQLite. Publishing that code to `licenses.json` happens only when `LEGACY_ALLOWLIST_SYNC=true`.
+Flask service for the free-download form. The form asks for an email and a platform. The `NC-` code is issued straight away and stored in SQLite with status `unverified`. A one-click link in the email sets the status to `active`. An unverified code still activates the app. The old 6-digit `/api/verify` route remains for a page that already has a pending row. Publishing a code to `licenses.json` happens only when `LEGACY_ALLOWLIST_SYNC=true`, and it happens when the code is issued.
 
 This repository does not deploy the VPS. Copy the files onto the box and restart the service yourself.
 
@@ -16,7 +16,7 @@ Copy `.env.example` to `.env` on the server and replace every placeholder. The a
 | `ADMIN_TOKEN` | Long random secret. Not the placeholder. |
 | `ADMIN_READ_TOKEN` | Long random secret for the read-only routes above. Not the placeholder. |
 | `GITHUB_PAT_WRITE` | GitHub PAT with Contents write on that repo |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the 6-digit code |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail account that sends the download code and the confirmation link |
 
 `GITHUB_PAT` is optional and read-only. Writes use `GITHUB_PAT_WRITE`, then fall back to `GITHUB_PAT`. Neither token is sent unless `LEGACY_ALLOWLIST_SYNC=true`.
 
@@ -62,7 +62,11 @@ A click or an auto beacon is the same download as the installer redirect that fo
 
 `ADMIN_ALERT_SKIP_LICENCE_IDS` is an optional comma-separated list of licence ids to ignore. A Free id is the number `list` prints. A Professional id is the Professional key id.
 
-`GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `device_moves` for rows in `device_moves`, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for free installer redirects, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month`, `day` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].day` is the UTC day.
+`GET /api/admin/stats/v1` takes the same `since` and `until` dates as `GET /api/admin/stats` (`until` is exclusive). The body is counts: `licences` by tier, status and source, `pro_keys` by status and plan, `device_moves` for rows in `device_moves`, `devices` for current active seats, `registrations` as a number, `telemetry` for sessions, distinct installs and monthly rollups, `downloads` for new Free and Pro installs, `updates` for in-app downloads, `downloads_by_version`, and `update_checks` per UTC day, tier, platform and version. `flags`, `db_bytes` and `generated_at` are included. List items carry only a label (`platform`, `tier`, `version`, `os`, `status`, `plan`, `month`, `day` or `source`) and a `count`. Emails, keys, install ids and IP addresses are not included. Device resets, move requests, telemetry opt-outs and rate-limit 429s are not stored, so they are left out. `update_checks[].day` is the UTC day.
+
+`installs_by_version` and `current_installs_by_version` ignore `since` and `until`. `installs_by_version` is all time: a distinct install is counted under every version it reported, with `first_seen` and `last_seen` as UTC `YYYY-MM-DD` dates from `session_start_date`. `current_installs_by_version` keeps one row per install, at the latest session by that date (the higher version breaks a tie). The install's tier and platform come from that latest session, and the install is included only when that day is within the last 30 UTC days counted back from now. `update_checks_by_version` follows `since` and `until`, like the other windowed fields. A bucket with no rows is left out. `telemetry_note` says these install counts are copies seen via usage telemetry, so a copy that does not report usage does not appear. Platform is `mac`, `win`, or `linux`. A version has no leading `v`.
+
+`STATS_EXCLUDE_LICENCE_IDS` (default `23,24,32`) drops Free rows, matched on `licenses.id`. `STATS_EXCLUDE_PRO_KEY_IDS` drops Pro rows, matched on `pro_keys.id`, and stays empty because every Pro key is a real beta user. `STATS_EXCLUDE_EMAILS` matches `licenses.email` or `pro_keys.email` in the query. On a telemetry row, `licence_kind` `free` stores `licenses.id` in `licence_ref`, and `licence_kind` `pro` stores `pro_keys.id`.
 
 `GET /api/v1/status` and update-check report no minimum when `MIN_SUPPORTED_VERSION_FREE` or `MIN_SUPPORTED_VERSION_PRO` is empty and no flag is set. If the configured minimum is higher than the latest published release for that tier, the response uses the published version and the process logs a warning.
 

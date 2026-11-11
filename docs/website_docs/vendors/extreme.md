@@ -56,6 +56,18 @@ VSP (legacy Nortel/Avaya) uses different syntax again:
 
 The 0.9.x release added missing VSP capabilities for running config, startup config, VRFs, and switchport details.
 
+## First contact and backups
+
+An EXOS switch reached on first contact through the Cisco driver is recognised from `show version` and reconnected on the EXOS driver. Commands no longer wait about 30 seconds each, and backups no longer time out.
+
+Host names are saved without the prompt's changing number. On Free that is the L2 map and backups. On Pro it is Discovery, the topology maps, and backups.
+
+Config Backup reads the whole configuration and saves it only if it is complete. A read that stops early, is missing configuration sections that an earlier backup of the same switch had, or comes from an account without permission, is not saved. The row says why.
+
+The first backup of a switch is read twice and saved only if both reads match. If they differ, for example because the configuration changed in between, nothing is saved. Run the backup again. Later backups are read once and checked against the last good one.
+
+On Pro, the Config Compliance Audit checks EXOS against a complete configuration only, so a configuration that was cut off cannot give a wrong result.
+
 ## Detection
 
 EXOS and VSP have distinct prompts. The classifier should pick them apart cleanly, but if you see one detected as the other (or as something generic), manually set + lock.

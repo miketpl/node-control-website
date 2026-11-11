@@ -853,9 +853,10 @@ class TrialTests(unittest.TestCase):
         uk = datetime.now(ZoneInfo("Europe/London")).date().isoformat()
         db.execute(
             """
-            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
-            VALUES (?, 'trial_ended', 'none', 'none', 3)
-            ON CONFLICT(day, event, utm_source, utm_campaign) DO UPDATE SET count = 3
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, utm_content, count)
+            VALUES (?, 'trial_ended', 'none', 'none', 'none', 3)
+            ON CONFLICT(day, event, utm_source, utm_campaign, utm_content)
+            DO UPDATE SET count = 3
             """,
             (uk,),
         )

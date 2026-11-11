@@ -37,7 +37,7 @@ Discovery runs in phases:
 
 ### Phase 1 — Seed login
 
-SSH to the seed switch, run `show cdp neighbours detail` and `show lldp neighbours detail`, list its directly-connected peers.
+SSH to the seed switch, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.
 
 ### Phase 2 — Ping sweep (optional)
 
@@ -74,9 +74,9 @@ The Discovery map updates as devices are walked. You'll see:
 
 ## Right-click a node for Port Connections
 
-Same Port Connections dialog as L2 topology — shows the per-port MAC + CDP/LLDP table for the selected switch.
+Port Connections is opened from the Discover tab's right-click menu. It is a Pro dialog. It is not the L2 map.
 
-Useful workflow: discover a site, spot a switch you don't recognise, right-click it, see what's plugged into each port → answer "what device is on this port?" type questions immediately.
+Useful workflow: discover a site, spot a switch you don't recognise, right-click it, and open Port Connections to see what is on each port.
 
 ## What gets added to your library
 
@@ -111,6 +111,8 @@ Same as L2/L3 topology — HTML file in your app support directory. Reload it an
 | Tons of red/yellow nodes | CDP/LLDP entries are mostly endpoints | Tighten the infrastructure filter (Settings → Discovery → Infra gate patterns) |
 | Map overlapping labels | Too many nodes in one tier | Discovery has force-direction tuning to spread same-tier nodes — usually self-corrects after a few seconds of layout |
 | Walk seems hung | One slow switch holding up parallel workers | Bounded read timeout (45s) per command prevents hangs — wait or restart |
+
+Device names and other text read from devices are shown as plain text on the Discovery map. A device name containing page code cannot change or run anything in the page.
 
 ## Host names
 

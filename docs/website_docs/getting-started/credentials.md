@@ -1,14 +1,13 @@
 # Setting up credentials
 
-Node Control connects to your devices over SSH and needs login credentials to do so. Credentials are stored in your OS keychain. The database stores a reference to the profile, not the password.
+Node Control connects to your devices over SSH and needs login credentials to do so. Passwords and API keys are encrypted on your machine, and the key that unlocks them is held in the macOS Keychain or Windows Credential Manager. The database holds profile names, usernames, and that encrypted password blob. It is unlocked once per session with a single keychain prompt.
 
 ## Where credentials are stored
 
-| OS | Storage backend |
+| OS | Where the master key is held |
 |---|---|
 | macOS | Apple Keychain (Login keychain) |
 | Windows | Windows Credential Manager |
-| Linux | Secret Service (GNOME Keyring / KWallet) |
 
 See [How credentials are stored](../security/credential-storage.md) for the full security model.
 
@@ -77,7 +76,7 @@ See [Troubleshooting SSH connection issues](../troubleshooting/ssh-connection-is
 
 1. **Settings → Credentials**
 2. Select the row → **Remove**
-3. Confirm. The password is removed from the keychain
+3. Confirm. The password is removed from the encrypted blob on your machine
 
 To rotate a password, edit the profile and click **Save Profile**.
 

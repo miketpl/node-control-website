@@ -1,13 +1,13 @@
 # Find Device
 
-The "where is this MAC / IP?" tool. Give Find Device a MAC address or an IP, and it tells you which switch port it is on. On Pro and the AI edition it can also name the Meraki AP.
+The "where is this MAC / IP?" tool. Give Find Device a MAC address, or an IP address if that switch holds it in its ARP table, and it tells you which switch port it is on. Meraki wireless clients are included on Free as well as Pro.
 
 ## Tier differences
 
 | Tier | What works |
 |---|---|
-| Free | One switch at a time, single thread. No site model and no cores model. It walks that switch's MAC table |
-| Pro / AI | Pick a site (or All); Find Device walks every site's cores in parallel, recursively follows CDP/LLDP into the fabric, and includes Meraki wireless lookup |
+| Free | You pick one switch to start from, and it follows the trail from there to the edge port. Meraki wireless clients are included |
+| Pro / AI | Pick a site (or All); it starts from that site's saved core switches and follows CDP/LLDP into the fabric, including Meraki wireless clients. |
 
 On AOS-CX the wired search reads the MAC address table and the LLDP table.
 
@@ -64,10 +64,7 @@ For each starting core / dist switch (configured per site in Settings):
 
 If you give Find Device an IP address (not a MAC):
 
-1. It first does a VRF-aware ARP probe: SSH to the L3 owner of that IP's subnet, run `show ip arp <ip>` (with VRF if applicable), extract the MAC
-2. Then continues the wired walk using the resolved MAC
-
-The probe handles common VRF layouts automatically — no need to tell Find Device which VRF to look in.
+It asks each starting switch (on Free, the one you picked; on Pro, the site's core switches) for that IP in its ARP table, VRF-aware. If none holds it, the row says it could not resolve the IP to a MAC.
 
 ## Meraki wireless lookup
 
@@ -106,7 +103,7 @@ If you need to disable a port on the edge switch (e.g., contain a compromised de
 1. Right-click the result row → **Shut Port**
 2. A type-to-confirm dialog appears — type `SHUTDOWN` to proceed
 3. Node Control SSHes to the edge switch, sets the port to admin down
-4. The action is recorded in the audit log
+4. The action is stored in the local port-action table
 
 The reverse (**Re-enable Port**) follows the same flow with `ENABLE` as the confirmation word.
 
@@ -115,7 +112,7 @@ Port actions are subject to:
 - **Safe Mode** must be off (Safe Mode allows only read commands)
 - Device type must support the action — currently Cisco IOS / IOS-XE / NX-OS, Aruba, ProCurve, Juniper
 
-See the [audit log](../security/audit-log.md) for what's recorded.
+There is no plain-text audit log. The port action stays in that local table.
 
 ## Performance — Pro / AI
 

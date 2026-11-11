@@ -7,7 +7,7 @@
     <title>Where things are — NodeControl Docs</title>
     <meta name="description" content="Where things are — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -66,9 +66,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -91,6 +93,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -124,7 +127,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -207,7 +209,7 @@
 </ol>
 <p><strong>Config Push Script</strong> appears only when <strong>Settings → Paths → Config Push Script</strong> points at an existing file. A configured <a href="../settings/scripts.html">custom script</a> appears as <code>Script: &lt;name&gt;</code>. On Free that task is greyed, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>, and <strong>Run</strong> refuses. Safe Mode hides it on every tier.</p>
 <p>On Free only <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>Config Backup</strong>, <strong>Save Config</strong>, and <strong>Find Device</strong> are enabled. The rest are greyed out, with the tooltip <strong>Upgrade to Pro to unlock this feature</strong>.</p>
-<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, <strong>Find Device</strong> (read-only), and <strong>Config Compliance Audit</strong>. The audit&#x27;s remediation offer is suppressed. <strong>Config Compliance Remediate</strong> is not in the list. <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, the <strong>Terminal</strong> button on the log header stays visible, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
+<p>Safe Mode is session-wide. It is not a per-tab setting. The <strong>Select Mode</strong> dialog at startup uses <strong>Settings → General → Startup Mode</strong>. The <strong>Edit</strong> menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to <strong>None</strong>, <strong>L2 Topology Builder</strong>, <strong>L3 Topology Builder</strong>, <strong>Watcher of The WAN</strong>, <strong>Config Backup</strong>, <strong>Library Updater</strong>, <strong>VLAN Port Finder</strong>, <strong>Refresh Hostnames</strong>, <strong>Verify Device Types</strong>, <strong>Discover Variables</strong>, <strong>Find Device</strong> (read-only), <strong>Config Compliance Audit</strong>, and <strong>Lab Export</strong>. The audit&#x27;s remediation offer is suppressed. <strong>Config Compliance Remediate</strong> is not in the list. <strong>HTTPS</strong> is hidden, <strong>Console</strong> is hidden, the <strong>Terminal</strong> button on the log header stays visible, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See <a href="../settings/safe-mode.html">Safe Mode</a>.</p>
 <p>The bar across the top is a command bar, in labelled groups:</p>
 <ul>
 <li><strong>Task</strong> — which task to run

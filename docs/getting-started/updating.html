@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Updating Node Control — NodeControl Docs</title>
-    <meta name="description" content="How Node Control updates. The current release is 0.9.44. The minimum version is 0.9.41.">
+    <meta name="description" content="How Node Control updates. The current release is 0.9.45. The minimum version is 0.9.41.">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -150,7 +152,7 @@
                     <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/getting-started/">Getting Started</a> &rsaquo; Updating
                 </div>
                 <h1 id="updating-node-control">Updating Node Control</h1>
-<p>The current release is 0.9.44. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
+<p>The current release is 0.9.45. Install it over the existing copy. The library, settings, and credentials are kept. Licensing, activation, updates, and privacy work as in 0.9.44. 0.9.41 is still the minimum version the licence server accepts. Anything below 0.9.41 is refused.</p>
 <h2 id="updating-from-0-9-41">Updating from 0.9.41</h2>
 <p>From 0.9.41 the app checks once at launch, right after the licence check. There is no timer after that. The licence server never offers a downgrade. The installer file is still downloaded from GitHub, so a network that blocks GitHub can fail the download even when the check itself succeeds.</p>
 <h2 id="help-check-for-updates">Help &gt; Check for Updates...</h2>
@@ -165,7 +167,7 @@
 </li>
 <li><strong>Download failed.</strong>
 </li>
-<li><strong>You&#x27;re running the latest version (v0.9.44).</strong>
+<li><strong>You&#x27;re running the latest version (v0.9.45).</strong>
 </li>
 <li><strong>Update available!</strong>
 </li>

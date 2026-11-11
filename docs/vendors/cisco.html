@@ -4,10 +4,10 @@
     <script>document.documentElement.classList.add("docs-js")</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl Docs</title>
-    <meta name="description" content="Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA — NodeControl documentation">
+    <title>Cisco — IOS, IOS-XE, NX-OS — NodeControl Docs</title>
+    <meta name="description" content="Cisco — IOS, IOS-XE, NX-OS — NodeControl documentation">
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261021fonts">
+    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
 </head>
 <body>
@@ -68,9 +68,11 @@
       <a href="../tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
       <a href="../tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
       <a href="../tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
       <a href="../tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
       <a href="../tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
       <a href="../tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
       <a href="../tasks/find-device.html" class="docs-nav-link">Find Device</a>
       <a href="../tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
       <a href="../tasks/config-push.html" class="docs-nav-link">Config Push</a>
@@ -93,6 +95,7 @@
       <a href="../reports/inventory.html" class="docs-nav-link">Inventory</a>
       <a href="../reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
       <a href="../reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../reports/access-review.html" class="docs-nav-link">Access Review</a>
       <a href="../reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
       <a href="../reports/change-summary.html" class="docs-nav-link">Change Summary</a>
     </div>
@@ -126,7 +129,6 @@
       <a href="../security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
       <a href="../security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
       <a href="../security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
-      <a href="../security/audit-log.html" class="docs-nav-link">Audit Log</a>
     </div>
     <div class="docs-nav-section">
       <h4>Troubleshooting</h4>
@@ -147,10 +149,10 @@
         <main class="docs-content">
             <div class="docs-content-inner">
                 <div class="docs-breadcrumb">
-                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA
+                    <a href="../../docs/">Docs</a> &rsaquo; <a href="../../docs/vendors/">Vendors</a> &rsaquo; Cisco — IOS, IOS-XE, NX-OS
                 </div>
-                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, IOS-XR, NX-OS, ASA</h1>
-<p>Node Control&#x27;s most comprehensive vendor coverage. All Cisco platforms are first-class supported.</p>
+                <h1 id="cisco-ios-ios-xe-ios-xr-nx-os-asa">Cisco — IOS, IOS-XE, NX-OS</h1>
+<p>IOS, IOS-XE and NX-OS are supported. Cisco ASA has partial support (see <a href="#cisco-asa">Cisco ASA</a>). IOS-XR is not.</p>
 <h2 id="driver-mapping">Driver mapping</h2>
 <table>
 <thead>
@@ -177,12 +179,8 @@
 <td><code>cisco_nxos</code></td>
 </tr>
 <tr>
-<td>IOS-XR (ASR9k, NCS)</td>
-<td><code>cisco_xr</code></td>
-</tr>
-<tr>
-<td>ASA firewalls</td>
-<td><code>cisco_asa</code></td>
+<td>ASA / ASAv firewalls</td>
+<td><code>cisco_xe</code> (partial support, see <a href="#cisco-asa">Cisco ASA</a>)</td>
 </tr>
 <tr>
 <td>Cisco Meraki</td>
@@ -211,7 +209,7 @@
 </li>
 <li>Verify Device Types
 </li>
-<li>Monitor (CPU, memory, environmental, BGP/OSPF peers)
+<li>Monitor (CPU, memory, environmental, BGP/OSPF peers). On L2 maps, link status covers IOS, IOS-XE, and NX-OS ports
 </li>
 <li><a href="../tasks/config-push.html">Config Push</a>, <a href="../tasks/packet-capture.html">packet capture</a>, and <a href="../tasks/config-compliance.html">config compliance</a> (remediation is IOS, IOS-XE, and NX-OS)
 </li>
@@ -229,10 +227,6 @@
 </li>
 <li>&quot;Cisco Nexus Operating System&quot; → cisco_nxos
 </li>
-<li>&quot;Cisco IOS XR&quot; → cisco_xr
-</li>
-<li>&quot;Cisco Adaptive Security Appliance&quot; → cisco_asa
-</li>
 </ul>
 <h2 id="nx-os">NX-OS</h2>
 <p>NX-OS has subtle CLI differences from IOS-XE:</p>
@@ -246,30 +240,11 @@
 </ul>
 <p>NX-OS route tables are read correctly, including long via lines.</p>
 <p>MAC-table entries are read on their real port on the L2 map, in Find Device, and in the Bandwidth report. The age column is not taken as the port, and <code>vPC Peer-Link</code> is not cut short. VLAN Port Finder gives NX-OS ports their status and description, and MAC addresses on their real port.</p>
-<p>Inventory and Asset Lifecycle take the host name from <code>Device name:</code>. It is not <code>Kernel</code>. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the <code>Processor Board ID</code> serial.</p>
+<p>Inventory and Asset Lifecycle take the host name from <code>Device name:</code>. It is not <code>Kernel</code>. They read the Nexus model (for example N9K-C93180YC-EX) and the NX-OS version instead of the BIOS version. Asset Lifecycle reads the model from the chassis line of <code>show inventory</code> (for example N9K-C9372PX), so Nexus switches match their end-of-life dates, and it reads the <code>Processor Board ID</code> serial.</p>
 <p>If NX-OS answers <code>Permission denied</code> to <code>configure terminal</code>, that device&#x27;s Config from File push stops at once. Nothing is sent outside configuration mode. The row fails with <code>could not enter configuration mode (check account privileges)</code>, and the lines not sent are listed as skipped.</p>
-<h2 id="asa">ASA</h2>
-<p>Cisco ASA firewalls are supported with these caveats:</p>
-<ul>
-<li><code>show interface</code> works but counters differ from IOS
-</li>
-<li>VPN / IPSec inspection via <code>show crypto ipsec sa</code>
-</li>
-<li>No L3 routing protocol parsing beyond BGP (ASA&#x27;s OSPF is rarely used at scale)
-</li>
-<li>Failover pairs (active/standby) appear as two rows in Inventory, HA status flagged
-</li>
-</ul>
-<h2 id="ios-xr">IOS-XR</h2>
-<p>For service-provider-grade ASR9k / NCS gear:</p>
-<ul>
-<li>Most &quot;show&quot; commands match IOS conventions
-</li>
-<li>Configuration commit model is different but Node Control is read-only in tasks (won&#x27;t see this difference)
-</li>
-<li>BGP at SP scale — full peer enumeration
-</li>
-</ul>
+<h2 id="cisco-asa">Cisco ASA</h2>
+<p>Cisco ASA, including ASAv, has partial support. Node Control logs in on its Cisco driver, recognises the ASA, files it under Firewalls, turns the ASA pager off for the session, shows its software version and model in Inventory, and backs up its running config. The SSH terminal works. Access Review (Pro) reads ASA admin accounts as a preview. On L3 and Discover maps it appears as a firewall without links. Config Push, compliance remediation, L2 and WAN links, Security Audit (PSIRT), Firewall Health, Monitor and upgrades are not supported on ASA. Tested on ASAv 9.24 in the lab. Physical ASAs, failover pairs and multiple-context mode are not yet lab-tested.</p>
+<p>Leave the device type on <code>cisco_xe</code>, or let Node Control detect it. Put the ASA in the Firewalls tab (or let it be detected once) so the pager is turned off at login.</p>
 <h2 id="stack-and-vss">Stack and VSS</h2>
 <p>Cisco stacks (3850 stack, 9300 stack) and VSS pairs (4500/6500/6800):</p>
 <ul>

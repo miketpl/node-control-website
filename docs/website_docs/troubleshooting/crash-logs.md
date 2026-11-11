@@ -95,7 +95,7 @@ The crash log can contain:
 
 It does NOT contain:
 
-- Passwords or credentials (those are in the OS keychain, not in Python memory normally)
+- Passwords or credentials (those are in the encrypted local database, unlocked by the master key, not normally in the crash log)
 - Network device configurations
 - Personal data of network end-users
 

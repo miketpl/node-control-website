@@ -93,9 +93,10 @@ def _count(event):
     try:
         db.execute(
             """
-            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, count)
-            VALUES (?, ?, 'none', 'none', 1)
-            ON CONFLICT(day, event, utm_source, utm_campaign) DO UPDATE SET count = count + 1
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, utm_content, count)
+            VALUES (?, ?, 'none', 'none', 'none', 1)
+            ON CONFLICT(day, event, utm_source, utm_campaign, utm_content)
+            DO UPDATE SET count = count + 1
             """,
             (day, event),
         )

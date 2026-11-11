@@ -53,12 +53,13 @@ For "where does this packet go?" type questions, L3 + WAN together usually answe
 ## Vendor support
 
 - Cisco IOS / IOS-XE — full BGP + IPSec
-- Cisco ASA — IPSec only (no BGP unless licensed)
 - Palo Alto PAN-OS — BGP via virtual routers, IPSec tunnels
 - Velocloud, Viptela — SD-WAN overlay
 - Juniper — BGP, IPSec, MPLS pseudowires
 - Arista — BGP
 - FortiGate — treated as a firewall, not an access switch
+
+Device names and other text read from devices are shown as plain text on this map. A device name containing page code cannot change or run anything in the page.
 
 ## Troubleshooting
 

@@ -53,7 +53,7 @@ See [Library Updater](../library/subnet-scan.md) for the dialog, including the o
 
 ## Free tier device limit
 
-Free holds **25 devices**. There is no time limit. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
+The Free Edition is free for up to 25 devices. Adding another device by hand refuses the 26th. A workbook import is cut to the first 25. A GitHub pull is cut to the first 25, sorted by IP. **Library Updater** does not run on Free. The table shows 25 even when an older database holds more. Those extra rows are not deleted.
 
 To remove this cap, [upgrade to Pro](../tiers/overview.md).
 
@@ -65,7 +65,7 @@ Devices are organised into tabs based on their role:
 |---|---|
 | **Switches** | Access switches, distribution switches, core switches |
 | **Routers** | WAN edge routers, branch routers, ISR / ASR / CSR |
-| **Firewalls** | Palo Alto, Cisco ASA, Fortigate, Checkpoint |
+| **Firewalls** | Palo Alto, Fortigate, Cisco ASA |
 | **SD-WAN** | Velocloud, Viptela, Silver Peak edges |
 | **Wireless** | Access points (Meraki MR, Cisco APs, Aruba IAP) and controllers |
 | **Other** | Anything that doesn't fit above |

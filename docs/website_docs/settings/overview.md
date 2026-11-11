@@ -22,7 +22,6 @@ Settings is organised by section. Pick the one you need.
 | **Reports** | Workers (parallelism), output cache TTL, export defaults |
 | **Discovery** | Infra patterns, max hops, ping method preference, force-direction tuning |
 | **Topology (L2/L3/WAN)** | Endpoint filter patterns, layout preferences, render style |
-| **Terminal** | Colour theme, scrollback size, paste-with-delay toggle, session logging |
 | **Monitor** | SSH keepalive, sample persistence, default polling interval |
 | **Safe Mode** | Not a per-tab setting. The mode is session-wide. See [Safe Mode](safe-mode.md) |
 | **Custom Commands** | [Per-vendor command catalog overrides](custom-commands.md) |
@@ -84,16 +83,9 @@ A future release may add named settings profiles to skip the manual copy — let
 | Find Device knows my cores | **Find Device** → Starting Switches per site |
 | Topology maps look right | **Topology** → Endpoint filter patterns |
 | Custom hostname pattern for site detection | **Site Detection** → adjust regex |
-| Don't want SSH session logging | **Terminal** → uncheck Log session output |
 | Check for an update now | **Help → Check for Updates...**. Node Control checks once at launch, right after the licence check, and there is no timer after that. See [Updating](../getting-started/updating.md) |
-| Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out |
+| Turn off usage statistics | **Privacy** → uncheck **Send anonymous usage statistics**. Usage counts are on by default. No personal or network data is sent: no name, email, hostname, device name, or licence key. It contains session times and length, the app version, per-task counters, connections opened, errors, the tier, CPU architecture, and OS family and major version. It is sent every 30 minutes and at close, only while the toggle is on. No personal or network data; linked to your licence so it can be erased on opt-out |
 
 ## Settings audit log
 
-Every settings change is recorded in:
-
-```
-~/Library/Application Support/netOps/settings_audit.log
-```
-
-Useful when "what changed?" needs an answer after multiple users / multiple sessions.
+Node Control does not write a settings audit log. Safe Mode changes and credential changes are not written to a plain-text audit file. You can record every SSH session to a plain-text log. That recording is off until you turn it on in Settings → General → Session Recording, or with the Record toggle on the connection toolbar.
