@@ -1,0 +1,5 @@
+TEST ONLY. Not a production key. Not used by the live licence server.
+The private seed below is a fixture for unit tests. Do not copy it into .env.
+key_id=test-only-k1
+private_seed_b64=N7P6duyKii4ptZh4jGAoagiteH4WNViJHERILjht3R8=
+public_key_b64=_MFjaDR3Aeue5n5GpN5KcC4INas4w922YmwLf4AIyBk
