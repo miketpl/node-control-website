@@ -632,6 +632,38 @@ def _client_ip():
     return licence_v1.client_ip()
 
 
+def _public_rate_wait(endpoint, parts):
+    """Shared SQLite limiter. parts are (scope, token, limit, window seconds).
+
+    Returns the Retry-After seconds when any part is over its limit, else None.
+    """
+    import licence_v1
+    retry = 0
+    blocked = False
+    for scope, token, limit, window in parts:
+        token = (token or "").strip()
+        if not token:
+            continue
+        bucket = licence_v1._limit_bucket(endpoint, scope, window, token)
+        ok, wait = licence_v1.consume_rate(bucket, limit, window)
+        if not ok:
+            blocked = True
+            retry = max(retry, wait)
+    if not blocked:
+        return None
+    return max(1, retry)
+
+
+def _too_many(retry_after, body=None):
+    response = jsonify(body if body is not None else {
+        "error": "Too many requests. Try again later.",
+    })
+    response.status_code = 429
+    response.headers["Retry-After"] = str(int(retry_after))
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 def _download_event_ip_allowed(ip):
     """Shared SQLite cap so both gunicorn workers count the same addresses."""
     import hashlib
@@ -2042,6 +2074,9 @@ def create_app_checkout_session(email, plan, intent_id):
 @app.route("/api/checkout", methods=["POST"])
 def pro_checkout():
     """Start a Professional subscription Checkout Session."""
+    wait = _public_rate_wait("public-checkout", [("ip", _client_ip(), 10, 3600)])
+    if wait:
+        return _too_many(wait)
     data = request.get_json(silent=True) or {}
     plan = (data.get("plan") or "").strip()
     if plan not in ("monthly", "annual"):
@@ -2129,6 +2164,12 @@ def stripe_webhook():
 def pro_session():
     """Success page: confirm the Checkout Session is paid, then mint download tokens."""
     session_id = (request.args.get("session_id") or "").strip()
+    wait = _public_rate_wait("public-pro-session", [
+        ("ip", _client_ip(), 30, 3600),
+        ("session", session_id, 60, 3600),
+    ])
+    if wait:
+        return _too_many(wait)
     if not session_id:
         return jsonify({"error": "session_id is required"}), 400
     if not (app.config.get("STRIPE_SECRET_KEY") or "").strip():
@@ -2175,6 +2216,9 @@ def pro_session():
 @app.route("/api/pro/download", methods=["GET"])
 def pro_download():
     """Redeem a short-lived token for a redirect to the private Pro installer."""
+    wait = _public_rate_wait("public-pro-download", [("ip", _client_ip(), 20, 3600)])
+    if wait:
+        return _too_many(wait)
     data, err = _read_download_token(request.args.get("token", ""))
     if err == "expired":
         return jsonify({
@@ -2233,6 +2277,12 @@ def pro_portal():
     }
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
+    parts = [("ip", _client_ip(), 10, 3600)]
+    if email and "@" in email:
+        parts.append(("email", email, 3, 3600))
+    wait = _public_rate_wait("public-portal", parts)
+    if wait:
+        return _too_many(wait, generic)
     if not email or "@" not in email:
         return jsonify(generic)
     try:
