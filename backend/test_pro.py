@@ -490,7 +490,7 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn("macOS: " + mac_url + "\n", text)
         self.assertIn("Windows: " + win_url + "\n", text)
         self.assertIn("These links last 24 hours and only work while the subscription is active.", text)
-        self.assertIn("Professional, £25/month ex VAT", text)
+        self.assertIn("Professional, £25/month\n", text)
         self.assertIn("NCP-AAAA-BBBB", text)
         self.assertIn("https://nodecontrol.io/#manage", text)
         self.assertNotIn("<a", text)
@@ -506,7 +506,7 @@ class ProBillingTests(unittest.TestCase):
         _to, subject, text, html_body = captured[1]
         page = 'https://nodecontrol.io/pro-success.html?session_id=cs_1&x="y'
         self.assertIn(page + "\n", text)
-        self.assertIn("Professional, £255/year ex VAT", text)
+        self.assertIn("Professional, £255/year (£21.25/mo billed annually, save 15%)\n", text)
         self.assertNotIn("api/pro/download?token=", text)
         self.assertNotIn("<a", text)
         self.assertIn(f'href="{html.escape(page, quote=True)}"', html_body)

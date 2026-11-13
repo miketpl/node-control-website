@@ -1538,9 +1538,9 @@ def _html_link(url, label):
 def _send_pro_welcome(row):
     site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
     if row["plan"] == "annual":
-        plan_text = "Professional, £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%)"
+        plan_text = "Professional, £255/year (£21.25/mo billed annually, save 15%)"
     else:
-        plan_text = "Professional, £25/month ex VAT"
+        plan_text = "Professional, £25/month"
     import licence_v1
     plain_key = ""
     try:
