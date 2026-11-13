@@ -1951,20 +1951,38 @@ def _handle_payment_failed(invoice):
 
 
 def _event_processed(event_id):
+    """True when this Stripe event id was handled.
+
+    A row stored as ignored: was skipped while test events were closed.
+    It is not processed. A later delivery of the same id can still be handled.
+    Nothing here scans or replays those rows.
+    """
     db = get_db()
     row = db.execute(
-        "SELECT event_id FROM stripe_events WHERE event_id = ?",
+        "SELECT event_type FROM stripe_events WHERE event_id = ?",
         (event_id,),
     ).fetchone()
     db.close()
-    return row is not None
+    if row is None:
+        return False
+    return not str(row["event_type"] or "").startswith("ignored:")
 
 
 def _mark_event(event_id, event_type):
     db = get_db()
+    now = datetime.utcnow().isoformat()
     db.execute(
         "INSERT OR IGNORE INTO stripe_events (event_id, event_type, processed_at) VALUES (?, ?, ?)",
-        (event_id, event_type, datetime.utcnow().isoformat()),
+        (event_id, event_type, now),
+    )
+    # INSERT OR IGNORE leaves an old ignored: row in place. Replace only that row.
+    db.execute(
+        """
+        UPDATE stripe_events
+        SET event_type = ?, processed_at = ?
+        WHERE event_id = ? AND event_type LIKE 'ignored:%'
+        """,
+        (event_type, now, event_id),
     )
     db.commit()
     db.close()
@@ -2140,7 +2158,7 @@ def stripe_webhook():
     obj = (event.get("data") or {}).get("object") or {}
     g.stripe_is_test = _event_is_test(event, obj)
     if g.stripe_is_test and not _stripe_test_events_allowed():
-        _mark_event(event_id, "ignored:" + event_type)
+        # Do not store this id. A Stripe resend is processed once the window is open.
         return jsonify({"received": True, "ignored": True})
     try:
         if event_type == "checkout.session.completed":
