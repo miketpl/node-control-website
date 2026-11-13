@@ -2252,9 +2252,9 @@ select.form-input {
     }
 }
 
-/* Pro buy and download controls stay in the DOM until Stripe is live.
-   Hide them with .payment-pending. The AI edition anchors use the same
-   class and stay hidden: that edition has no price and no public download. */
+/* .payment-pending hides a control that is not for sale yet.
+   The AI edition anchors use it: that edition has no price and no public download.
+   Professional subscribe buttons stay visible. */
 .payment-pending {
     display: none !important;
 }
@@ -2436,6 +2436,89 @@ a.ai-coming-soon:hover {
     border: 1px solid var(--cyan);
     border-radius: 8px;
     cursor: pointer;
+}
+
+/* Professional checkout dialog. Closed until a Subscribe button calls showModal. */
+.checkout-dialog {
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    margin: auto;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+.checkout-dialog:not([open]) {
+    display: none;
+}
+.checkout-dialog::backdrop {
+    background: rgba(5, 8, 12, 0.72);
+}
+.checkout-dialog h2 {
+    font-size: 1.35rem;
+    margin: 0 0 8px;
+}
+.checkout-lead {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0 0 16px;
+}
+.checkout-plan {
+    border: 0;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.checkout-plan legend {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+.checkout-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+.checkout-dialog .form-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+}
+.checkout-dialog .form-input[aria-invalid="true"] {
+    border-color: #ff5252;
+}
+.checkout-dialog .redeem-result {
+    text-align: left;
+}
+.checkout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+.checkout-dialog .btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+.checkout-dialog :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .checkout-dialog .btn {
+        width: 100%;
+        max-width: none;
+    }
 }
 
 @media (max-width: 480px) {

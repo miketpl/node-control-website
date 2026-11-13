@@ -90,10 +90,10 @@
         })
         .catch(function () {});
 
-    // SINGLE SWITCH. Pro checkout stays off until it is turned on.
-    // true: show .pro-checkout, hide .pro-waitlist, and point the hero button at pricing.
-    // false: class "payment-pending" keeps the subscribe buttons hidden.
-    const PRO_CHECKOUT_LIVE = false;
+    // Professional checkout is the call to action. The owner turned this on.
+    // true: Subscribe buttons open the email form and POST /api/checkout.
+    // false: those buttons are hidden. The Free download button stays a download.
+    const PRO_CHECKOUT_LIVE = true;
 
     function selectedProPlan() {
         const checked = document.querySelector('input[name="proPlan"]:checked');
@@ -105,11 +105,11 @@
         const note = document.getElementById('proPriceNote');
         if (!price || !note) return;
         if (selectedProPlan() === 'annual') {
-            price.innerHTML = '£21.25<span>/mo ex VAT</span>';
-            note.textContent = '£21.25/mo billed annually, ex VAT. £255/year ex VAT. Save 15%.';
+            price.innerHTML = '£21.25<span>/mo</span>';
+            note.textContent = '£21.25/mo billed annually. £255/year. Save 15%.';
         } else {
-            price.innerHTML = '£25<span>/month ex VAT</span>';
-            note.textContent = 'Or £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%).';
+            price.innerHTML = '£25<span>/month</span>';
+            note.textContent = 'Or £255/year (£21.25/mo billed annually, save 15%).';
         }
     }
 
@@ -118,47 +118,153 @@
     });
     renderProPrice();
 
-    if (PRO_CHECKOUT_LIVE) {
+    if (!PRO_CHECKOUT_LIVE) {
         document.querySelectorAll('.pro-checkout').forEach(function (el) {
-            el.classList.remove('payment-pending');
+            el.classList.add('payment-pending');
         });
-        document.querySelectorAll('.pro-waitlist').forEach(function (el) {
-            el.hidden = true;
-        });
-        const hero = document.querySelector('.hero-buttons a.btn-primary');
-        if (hero) {
-            hero.textContent = 'Subscribe to Pro';
-            hero.setAttribute('href', '#pricing');
-        }
     }
 
-    async function startProCheckout(plan) {
-        const result = document.getElementById('proCheckoutResult');
+    const checkoutDialog = document.getElementById('proCheckoutDialog');
+    const checkoutForm = document.getElementById('proCheckoutForm');
+    const checkoutEmail = document.getElementById('proCheckoutEmail');
+    const checkoutError = document.getElementById('proCheckoutError');
+    const checkoutSubmit = document.getElementById('proCheckoutSubmit');
+    const checkoutClose = document.getElementById('proCheckoutClose');
+    let checkoutAttempt = 0;
+
+    function showCheckoutError(message) {
+        if (!checkoutError) return;
+        checkoutError.textContent = message;
+        checkoutError.className = 'redeem-result visible error';
+    }
+
+    function clearCheckoutError() {
+        if (!checkoutError) return;
+        checkoutError.textContent = '';
+        checkoutError.className = 'redeem-result';
+    }
+
+    function setCheckoutBusy(busy) {
+        if (!checkoutSubmit) return;
+        checkoutSubmit.disabled = busy;
+        checkoutSubmit.textContent = busy ? 'Starting checkout…' : 'Continue to checkout';
+        checkoutSubmit.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function selectedCheckoutPlan() {
+        const checked = document.querySelector('#proCheckoutDialog input[name="checkoutPlan"]:checked');
+        if (!checked) return '';
+        return checked.value;
+    }
+
+    function validCheckoutEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function checkoutErrorMessage(status) {
+        if (status === 429) {
+            return 'Too many checkout attempts from this network. Wait a while and try again.';
+        }
+        if (status === 503) {
+            return 'Checkout is not available right now. Try again later.';
+        }
+        if (status === 400) {
+            return 'Choose monthly or annual, and enter a valid email.';
+        }
+        return 'Checkout could not be started. Try again in a moment.';
+    }
+
+    function checkoutUrl(value) {
+        try {
+            const url = new URL(value);
+            if (url.protocol === 'https:' || url.protocol === 'http:') return url.href;
+        } catch (err) { /* not a URL */ }
+        return '';
+    }
+
+    function openProCheckout() {
+        if (!PRO_CHECKOUT_LIVE || !checkoutDialog || typeof checkoutDialog.showModal !== 'function') return;
+        const pagePlan = selectedProPlan();
+        const match = checkoutDialog.querySelector('input[name="checkoutPlan"][value="' + pagePlan + '"]');
+        if (match) match.checked = true;
+        clearCheckoutError();
+        if (checkoutEmail) checkoutEmail.removeAttribute('aria-invalid');
+        if (!checkoutDialog.open) checkoutDialog.showModal();
+    }
+
+    async function startProCheckout(plan, email) {
+        const attempt = ++checkoutAttempt;
+        setCheckoutBusy(true);
+        clearCheckoutError();
         try {
             const res = await fetch(API_BASE + '/api/checkout', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan: plan })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ plan: plan, email: email })
             });
-            const data = await res.json();
-            if (!res.ok || !data.url) {
-                throw new Error('checkout failed');
+            let data = {};
+            try {
+                data = await res.json();
+            } catch (err) {
+                data = {};
             }
-            window.location.href = data.url;
+            if (attempt !== checkoutAttempt || !checkoutDialog || !checkoutDialog.open) return;
+            const url = checkoutUrl(data && data.url);
+            if (!res.ok || !url) {
+                showCheckoutError(checkoutErrorMessage(res.ok ? 502 : res.status));
+                setCheckoutBusy(false);
+                return;
+            }
+            window.location.assign(url);
         } catch (err) {
-            if (result) {
-                result.textContent = 'Checkout could not be started. Try again, or use the waitlist.';
-                result.className = 'redeem-result visible error';
-            }
+            if (attempt !== checkoutAttempt || !checkoutDialog || !checkoutDialog.open) return;
+            showCheckoutError('Could not reach the licence service. Check your connection and try again.');
+            setCheckoutBusy(false);
         }
     }
 
     document.querySelectorAll('[data-pro-checkout]').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            if (!PRO_CHECKOUT_LIVE) return;
-            startProCheckout(selectedProPlan());
+            openProCheckout();
         });
     });
+
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!PRO_CHECKOUT_LIVE || !checkoutEmail || !checkoutSubmit || checkoutSubmit.disabled) return;
+            const email = checkoutEmail.value.trim().toLowerCase();
+            const plan = selectedCheckoutPlan();
+            if (plan !== 'monthly' && plan !== 'annual') {
+                showCheckoutError('Choose monthly or annual.');
+                return;
+            }
+            if (!validCheckoutEmail(email)) {
+                checkoutEmail.setAttribute('aria-invalid', 'true');
+                showCheckoutError('Enter a valid email address.');
+                checkoutEmail.focus();
+                return;
+            }
+            checkoutEmail.removeAttribute('aria-invalid');
+            startProCheckout(plan, email);
+        });
+    }
+
+    if (checkoutClose && checkoutDialog) {
+        checkoutClose.addEventListener('click', function () {
+            checkoutDialog.close();
+        });
+    }
+
+    if (checkoutDialog) {
+        checkoutDialog.addEventListener('close', function () {
+            checkoutAttempt += 1;
+            setCheckoutBusy(false);
+        });
+    }
 
     const portalForm = document.getElementById('portalForm');
     if (portalForm) {
