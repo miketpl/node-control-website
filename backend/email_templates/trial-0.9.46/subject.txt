@@ -1,1 +1,1 @@
-A 14-day Pro trial is in Node Control 0.9.46
+Node Control 0.9.46 is out, with a 14-day Pro trial
