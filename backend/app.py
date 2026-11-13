@@ -782,7 +782,7 @@ Enter this code on the download page to get your permanent download code.
 This verification code expires in {cfg['CODE_EXPIRY_HOURS']} hours.
 
 ---
-NodeControl by The Promised LAN
+Node Control
 https://nodecontrol.io
 """
 
@@ -794,7 +794,7 @@ https://nodecontrol.io
   <div style="max-width: 500px; margin: 0 auto; background: #12171e; border-radius: 12px; padding: 40px; border: 1px solid rgba(0,232,255,0.1);">
     <div style="text-align: center; margin-bottom: 30px;">
       <h1 style="color: #ffffff; font-size: 24px; margin: 0;">Node<span style="color: #00e8ff;">Control</span></h1>
-      <p style="color: #636b75; font-size: 13px; margin: 4px 0 0;">by The Promised LAN</p>
+      <p style="color: #636b75; font-size: 13px; margin: 4px 0 0;">Node Control</p>
     </div>
 
     <p>Hi {html.escape(who)},</p>
@@ -1538,9 +1538,9 @@ def _html_link(url, label):
 def _send_pro_welcome(row):
     site = (app.config.get("SITE_URL") or "https://nodecontrol.io").rstrip("/")
     if row["plan"] == "annual":
-        plan_text = "Professional, £255/year ex VAT (£21.25/mo billed annually, ex VAT, save 15%)"
+        plan_text = "Professional, £255/year (£21.25/mo billed annually, save 15%)"
     else:
-        plan_text = "Professional, £25/month ex VAT"
+        plan_text = "Professional, £25/month"
     import licence_v1
     plain_key = ""
     try:
@@ -1595,7 +1595,7 @@ def _send_pro_welcome(row):
         "period already paid. After that the app blocks, once its 7-day offline "
         "grace runs out if it cannot check in.\n\n"
         "---\n"
-        "Node Control by The Promised LAN\n"
+        "Node Control\n"
         f"{site}\n"
     )
     key_html = ""
@@ -1620,7 +1620,7 @@ def _send_pro_welcome(row):
         "<p>Cancelling stops the next renewal. Access continues until the end of the "
         "period already paid. After that the app blocks, once its 7-day offline "
         "grace runs out if it cannot check in.</p>"
-        "<p>Node Control by The Promised LAN</p>"
+        "<p>Node Control</p>"
         f"{_html_link(site, 'nodecontrol.io')}"
     )
     return _send_mail(
@@ -1637,7 +1637,7 @@ def _send_portal_email(email, portal_url):
         f"{portal_url}\n\n"
         f"The link expires. If it does, request another from {manage}\n\n"
         "---\n"
-        "Node Control by The Promised LAN\n"
+        "Node Control\n"
         f"{site}\n"
     )
     html_body = (
@@ -1646,7 +1646,7 @@ def _send_portal_email(email, portal_url):
         f"{_html_link(portal_url, 'Cancel or update the card')}"
         "<p>The link expires. If it does, request another from:</p>"
         f"{_html_link(manage, 'Request another link')}"
-        "<p>Node Control by The Promised LAN</p>"
+        "<p>Node Control</p>"
         f"{_html_link(site, 'nodecontrol.io')}"
     )
     return _send_mail(

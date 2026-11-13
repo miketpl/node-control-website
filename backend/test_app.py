@@ -237,6 +237,25 @@ class LicenceApiTests(unittest.TestCase):
         self.assertNotIn("Hi ,", text)
 
     @patch("app.smtplib.SMTP")
+    def test_verification_email_signs_off_node_control(self, smtp):
+        sent = api.send_verification_email(
+            "person@example.com", "Ada", "123456", "NC-TESTCODE",
+        )
+        self.assertTrue(sent)
+        message = smtp.return_value.__enter__.return_value.send_message.call_args[0][0]
+        text = message.get_payload(0).get_payload(decode=True).decode()
+        html_body = message.get_payload(1).get_payload(decode=True).decode()
+        self.assertIn("---\nNode Control\nhttps://nodecontrol.io\n", text)
+        self.assertIn(">Node Control</p>", html_body)
+        self.assertNotIn("Promised", text)
+        self.assertNotIn("Promised", html_body)
+        self.assertNotIn("NodeControl by", text)
+        self.assertNotIn("Node Control by", text)
+        self.assertNotIn("Node Control by", html_body)
+        self.assertNotIn(" by ", text)
+        self.assertNotIn("by The", html_body)
+
+    @patch("app.smtplib.SMTP")
     def test_same_email_reuses_the_unverified_licence(self, smtp):
         first = self._request()
         code = first.get_json()["download_code"]

@@ -40,10 +40,11 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
   infrastructure you host. No price, no buy button, no download. The badge
   is "Coming to customers soon". Register interest uses the existing
   contact section. Do not describe it as unfinished.
-- While checkout is off, Pro calls to action go to the Pro waitlist or the
-  contact section. Do not show a live buy button. The switch is
-  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it false until the owner
-  turns it on.
+- Pro checkout is live on the site. "Subscribe to Pro" posts to
+  `POST /api/checkout`, using Node Control Ltd's Stripe account. Prices
+  are £25/month and £255/year, with no VAT added (the seller is not VAT
+  registered). The site footer, terms and privacy name Node Control Ltd
+  as seller and data controller.
 
 **Voice:** first person, plain, specific, written for network engineers who
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
@@ -122,11 +123,12 @@ sentences. If a claim can't be made concretely, don't make it.
 - macOS minimum version is not confirmed. Cards say "macOS (Apple silicon
   and Intel)" and do not state a version. The install doc still says macOS
   11 Big Sur or later. Confirm with the developer before changing either.
-- Professional is £25/month ex VAT or £255/year ex VAT (£21.25/mo billed
-  annually, ex VAT, save 15%). Prices are VAT-exclusive. UK VAT (20%) is
-  added at checkout where applicable. Checkout is built and stays off. The only switch is
-  `PRO_CHECKOUT_LIVE` in `js/main.js`. Leave it `false` until the owner
-  turns it on. Do not point Pro buttons at a GitHub release. Professional
+- Professional is £25/month or £255/year (£21.25/mo billed
+  annually, save 15%). No VAT is added (the seller is not VAT
+  registered). Pro checkout is live on the site. "Subscribe to Pro" posts to
+  `POST /api/checkout`, using Node Control Ltd's Stripe account. The site
+  footer, terms and privacy name Node Control Ltd as seller and data
+  controller. Do not point Pro buttons at a GitHub release. Professional
   AI is bring-your-own: Anthropic, OpenAI, Google Gemini, xAI Grok, any
   OpenAI-compatible endpoint, or local Ollama (or your own on-prem
   backend). The AI edition badge is "Coming to customers soon", with no
