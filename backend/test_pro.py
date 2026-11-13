@@ -524,6 +524,16 @@ class ProBillingTests(unittest.TestCase):
         self.assertNotIn('href="' + portal + '"', html_body)
         self.assertNotIn("&b=", html_body)
 
+        for _to, _subject, text, html_body in captured:
+            self.assertIn("---\nNode Control\nhttps://nodecontrol.io\n", text)
+            self.assertIn("<p>Node Control</p>", html_body)
+            self.assertNotIn("Promised", text)
+            self.assertNotIn("Promised", html_body)
+            self.assertNotIn("Node Control by", text)
+            self.assertNotIn("Node Control by", html_body)
+            self.assertNotIn(" by ", text)
+            self.assertNotIn("by The", html_body)
+
     def test_website_checkout_does_not_need_an_intent(self):
         self._sub("sub_site")
         res = self._post_event("evt_site", "checkout.session.completed", {

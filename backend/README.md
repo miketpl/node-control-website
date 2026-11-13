@@ -142,7 +142,7 @@ cd backend && python3 -m unittest test_app test_pro test_v1 test_notify test_ale
 
 ## Professional subscriptions
 
-Pro is a Stripe subscription: £25/month ex VAT (`STRIPE_PRICE_PRO_MONTHLY`) or £255/year ex VAT (`STRIPE_PRICE_PRO_ANNUAL`). UK VAT (20%) is added at checkout where applicable. Checkout is created by `POST /api/checkout`. The site button stays hidden until `PRO_CHECKOUT_LIVE` in `js/main.js` is set to `true`.
+Pro is a Stripe subscription: £25/month (`STRIPE_PRICE_PRO_MONTHLY`) or £255/year (`STRIPE_PRICE_PRO_ANNUAL`). No VAT is added. The seller is Node Control Ltd and is not VAT registered. Checkout is created by `POST /api/checkout`. The site button stays hidden until `PRO_CHECKOUT_LIVE` in `js/main.js` is set to `true`.
 
 The webhook is `https://api.nodecontrol.io/api/stripe/webhook`. In the Stripe Dashboard, send these events:
 
@@ -154,7 +154,7 @@ The webhook is `https://api.nodecontrol.io/api/stripe/webhook`. In the Stripe Da
 
 `STRIPE_WEBHOOK_SECRET` is the signing secret for that endpoint. A bad signature is rejected. A handler failure returns a non-2xx status so Stripe retries. Event ids are stored after a successful handler, so a retry does not add the email twice or send a second welcome email.
 
-Stripe Tax is on (`automatic_tax`, billing address required, tax ID collection). The Promised Lan Limited is VAT registered. Set the Stripe Tax origin address in the Dashboard before taking live payments.
+Stripe Tax is on (`automatic_tax`, billing address required, tax ID collection). The seller is Node Control Ltd and is not VAT registered. Set the Stripe Tax origin address in the Dashboard before taking live payments.
 
 Checkout issues one `NCP-` key per Stripe subscription and stores it encrypted with `KEY_ENCRYPTION_KEY`. Resend returns one key for the address: a key with no active computer if one exists, otherwise the most recently issued key. The recovery email lists every active key. The success page shows the checkout key for 24 hours. `allowlist.json` is not updated. Set `LEGACY_ALLOWLIST_SYNC=true` only if an old client still needs that file. Hand-added beta keys are `python3 admin_cli.py pro-key issue --email …`. That command emails the key and 7-day Mac and Windows links for the first install, and does not run on startup. A second key for the same address is a second computer. `python3 admin_cli.py pro-key send-links --id N` sends those links again for one active manual key and does not change the key. `GET /api/v1/download/pro/<platform>?t=` checks that signed link and redirects to the Professional installer while the key is active. A revoked key is refused.
 
@@ -168,8 +168,8 @@ Free codes stay in SQLite. They are published to `licenses.json` with `GITHUB_PA
 |---|---|
 | `STRIPE_SECRET_KEY` | Secret key. Test mode until checkout is switched on. |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/stripe/webhook`. |
-| `STRIPE_PRICE_PRO_MONTHLY` | Price id for £25/month ex VAT. |
-| `STRIPE_PRICE_PRO_ANNUAL` | Price id for £255/year ex VAT. |
+| `STRIPE_PRICE_PRO_MONTHLY` | Price id for £25/month. |
+| `STRIPE_PRICE_PRO_ANNUAL` | Price id for £255/year. |
 | `GITHUB_PAT_REGISTRATIONS` | Unused while `LEGACY_ALLOWLIST_SYNC` is false. |
 | `PRO_ALLOWLIST_REPO` | Default `miketpl/node-control-registrations`. |
 | `PRO_ALLOWLIST_PATH` | Default `allowlist.json`. |
@@ -187,4 +187,4 @@ Free codes stay in SQLite. They are published to `licenses.json` with `GITHUB_PA
 | `PRO_DOWNLOAD_SECRET` | Signs download tokens. Falls back to `SECRET_KEY`. |
 | `SITE_URL` | `https://nodecontrol.io`. Used for Checkout return URLs. |
 
-Do not set `PRO_CHECKOUT_LIVE` until a test-mode subscription has been checked end to end. The prices stay £25/month ex VAT and £255/year ex VAT.
+Do not set `PRO_CHECKOUT_LIVE` until a test-mode subscription has been checked end to end. The prices stay £25/month and £255/year.
