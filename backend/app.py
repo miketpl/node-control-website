@@ -3221,6 +3221,66 @@ def stats():
 
 
 # ── Init & Run ───────────────────────────────────────────────
+_ENV_ASSIGN_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=")
+
+
+def _dotenv_paths():
+    """The .env file this process loads. No other path is configured."""
+    return [Path(__file__).resolve().parent.parent / ".env"]
+
+
+def _env_key_name(line):
+    """Assignment key, or empty for a comment, blank, or other line."""
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return ""
+    match = _ENV_ASSIGN_RE.match(stripped)
+    if not match:
+        return ""
+    return match.group(1)
+
+
+def _duplicate_env_keys(text):
+    """Keys set on more than one non-comment line, with 1-based line numbers."""
+    found = {}
+    for number, line in enumerate(text.splitlines(), start=1):
+        key = _env_key_name(line)
+        if not key:
+            continue
+        found.setdefault(key, []).append(number)
+    return {key: lines for key, lines in found.items() if len(lines) > 1}
+
+
+def _warn_duplicate_env_file(path):
+    try:
+        file_path = Path(path)
+        if not file_path.is_file():
+            return
+        text = file_path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        logger.warning("Could not scan .env for duplicate keys")
+        return
+    for key, lines in _duplicate_env_keys(text).items():
+        logger.warning(
+            "Duplicate .env key %s on lines %s; the later line wins",
+            key,
+            ", ".join(str(number) for number in lines),
+        )
+
+
+def _warn_duplicate_env_keys(paths=None):
+    """One warning per duplicated key. Names and line numbers only. Never raises."""
+    try:
+        if paths is None:
+            paths = _dotenv_paths()
+        for path in paths:
+            _warn_duplicate_env_file(path)
+    except Exception:
+        logger.warning("Could not scan .env for duplicate keys")
+
+
+_warn_duplicate_env_keys()
+
 with app.app_context():
     init_db()
     migrate_db()

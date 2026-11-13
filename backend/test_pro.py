@@ -1109,5 +1109,77 @@ class ProBillingTests(unittest.TestCase):
         self.assertFalse(app._legacy_allowlist_enabled())
 
 
+class EnvDuplicateTests(unittest.TestCase):
+    def test_duplicate_env_keys_log_names_and_line_numbers_only(self):
+        secret = "sk_live_do_not_log_this_value"
+        lines = [
+            "# STRIPE_ALLOW_TEST_EVENTS=" + secret,
+            "export STRIPE_ALLOW_TEST_EVENTS=first-setting",
+            "OTHER_KEY=kept-once",
+            "  STRIPE_ALLOW_TEST_EVENTS = " + secret,
+            "",
+            "export SMTP_PASS=" + secret,
+            "SMTP_PASS=" + secret,
+            "  export  STRIPE_ALLOW_TEST_EVENTS\t= " + secret,
+            "# SMTP_PASS=" + secret,
+        ]
+        text = "\n".join(lines) + "\n"
+        found = app._duplicate_env_keys(text)
+        self.assertEqual(found["STRIPE_ALLOW_TEST_EVENTS"], [2, 4, 8])
+        self.assertEqual(found["SMTP_PASS"], [6, 7])
+        self.assertNotIn("OTHER_KEY", found)
+        self.assertNotIn(secret, repr(found))
+        self.assertNotIn("first-setting", repr(found))
+        self.assertNotIn("kept-once", repr(found))
+
+        folder = tempfile.mkdtemp()
+        path = os.path.join(folder, ".env")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        with self.assertLogs("app", level="WARNING") as logs:
+            app._warn_duplicate_env_keys([path])
+        output = "\n".join(logs.output)
+        self.assertIn(
+            "Duplicate .env key STRIPE_ALLOW_TEST_EVENTS on lines 2, 4, 8; the later line wins",
+            output,
+        )
+        self.assertIn(
+            "Duplicate .env key SMTP_PASS on lines 6, 7; the later line wins",
+            output,
+        )
+        self.assertEqual(output.count("Duplicate .env key"), 2)
+        self.assertNotIn(secret, output)
+        self.assertNotIn("first-setting", output)
+        self.assertNotIn("kept-once", output)
+        for line in logs.output:
+            if "Duplicate .env key" not in line:
+                continue
+            self.assertRegex(
+                line,
+                r"Duplicate \.env key [A-Za-z_][A-Za-z0-9_]* on lines \d+(, \d+)+; the later line wins$",
+            )
+
+    def test_duplicate_env_scan_never_raises(self):
+        folder = tempfile.mkdtemp()
+        missing = os.path.join(folder, "missing.env")
+        app._warn_duplicate_env_keys([missing, folder])
+        path = os.path.join(folder, ".env")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write("STRIPE_SECRET_KEY=sk_live_hidden\n")
+        with patch("pathlib.Path.read_text", side_effect=OSError("denied")):
+            with self.assertLogs("app", level="WARNING") as logs:
+                app._warn_duplicate_env_keys([path])
+        output = "\n".join(logs.output)
+        self.assertIn("Could not scan .env for duplicate keys", output)
+        self.assertNotIn("sk_live_hidden", output)
+        self.assertNotIn("denied", output)
+
+        clean = os.path.join(folder, "once.env")
+        with open(clean, "w", encoding="utf-8") as handle:
+            handle.write("# note\nexport ONLY_ONCE=value\n\n")
+        with self.assertNoLogs("app", level="WARNING"):
+            app._warn_duplicate_env_keys([clean])
+
+
 if __name__ == "__main__":
     unittest.main()
