@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with. The Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with. A new Free activation starts a 14-day trial: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. After 14 days, the Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -8,7 +8,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 
 | Feature | Free | Pro | AI |
 |---|:---:|:---:|:---:|
-| Device library | 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
+| Device library | No device cap for the first 14 days. Then 25 shown. Manual add refuses the 26th. Imports keep the first 25 | Unlimited | Unlimited |
 | Licence check | Online, then a 7-day offline grace, then the app is blocked until it can check again. One computer per licence. In-app updates from 0.9.41 | Paid licence. One computer per licence. In-app updates from 0.9.41 | Not yet available to buy |
 | FREE VERSION badge in the status bar | ✓ | — | — |
 | Multi-vendor SSH (Cisco, PA, HP, Aruba, Juniper, Arista, Dell, Extreme) | ✓ | ✓ | ✓ |
@@ -18,10 +18,10 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | Update tab | — | — | ✓ |
 | AI page | — | — | ✓ |
 | **Library** | | | |
-| Add devices manually | ✓, until 25 | ✓ | ✓ |
+| Add devices manually | No cap for the first 14 days. Then until 25 | ✓ | ✓ |
 | Library Updater (subnet scan, not Discover) | greyed | ✓ | ✓ |
-| Workbook import | ✓, first 25 | ✓ | ✓ |
-| GitHub push and pull | pull keeps the first 25, sorted by IP | ✓ | ✓, and a fallback repository |
+| Workbook import | No cap for the first 14 days. Then first 25 | ✓ | ✓ |
+| GitHub push and pull | No cap for the first 14 days. Then a pull keeps the first 25, sorted by IP | ✓ | ✓, and a fallback repository |
 | **Engineer tasks** | | | |
 | None | ✓ | ✓ | ✓ |
 | [Serial console](../tasks/serial-console.md), beside SSH/HTTPS on the Engineer tab | ✓ | ✓ | ✓ |
@@ -30,22 +30,24 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 | Config Backup | ✓ | ✓ | ✓ |
 | Save Config | ✓ | ✓ | ✓ |
 | Find Device | one switch to start from, including Meraki wireless clients | Site and cores, including Meraki wireless clients | Site and cores, including Meraki wireless clients |
-| File Transfer task, Packet Capture | greyed | ✓, hidden in Safe Mode | ✓, hidden in Safe Mode |
-| Every other task | greyed, tooltip Upgrade to Pro to unlock this feature | ✓ | ✓ |
+| File Transfer task, Packet Capture | Included for the first 14 days. Then greyed | ✓, hidden in Safe Mode | ✓, hidden in Safe Mode |
+| Every other task | Included for the first 14 days. Then greyed, tooltip Upgrade to Pro to unlock this feature | ✓ | ✓ |
 | **Reports** | | | |
 | Inventory | ✓ | ✓ | ✓ |
-| Security Audit (PSIRT), Lifecycle and EoX, and the other reports | — | ✓ | ✓ |
-| [Access Review](../reports/access-review.md) | — | ✓ | ✓ |
-| [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2 | — | ✓ | ✓ |
+| Security Audit (PSIRT), Lifecycle and EoX, and the other reports | Included for the first 14 days | ✓ | ✓ |
+| [Access Review](../reports/access-review.md) | Included for the first 14 days | ✓ | ✓ |
+| [Lab Export](../tasks/lab-export.md) to Cisco CML 2.10 or EVE-NG Community 6.2 | Included for the first 14 days | ✓ | ✓ |
 | Update tab and Vuln Plan | — | — | ✓. Vuln Plan is a button on the Update tab |
 | **AI** | | | |
 | Payload dialog | opens, nothing is sent | opt-in, your provider | opt-in, your provider |
-| A provider you can configure for sending | — | ✓ | ✓ |
+| A provider you can configure for sending | Included for the first 14 days. Then you cannot configure a provider for sending | ✓ | ✓ |
 | AI dashboard, chat, and backend assistant | — | — | ✓ |
 
 ## Free
 
 Free is a working copy for a small estate.
+
+A new activation starts a 14-day trial. One trial per email address, and one per computer. For those 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator stay off. After 14 days the trial ends, and the limits below are what remains.
 
 ### What you get
 
@@ -58,6 +60,8 @@ Free is a working copy for a small estate.
 - The Free code is checked online. Offline, you have 7 days. After that the app is blocked until the check succeeds
 
 ### What is on Pro instead
+
+The 14-day trial covers a subset of this list. It is described under Free. After 14 days, this list stays on Professional.
 
 - A library past 25 devices, and a table that shows all of them
 - Every task that Free greys out, with the tooltip **Upgrade to Pro to unlock this feature**. That includes L3 Topology Builder, Watcher of The WAN, Verify Device Types, Config Push, Config from File, Discover Variables, and config compliance
