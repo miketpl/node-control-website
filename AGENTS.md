@@ -29,7 +29,7 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 - **Professional is the main product.** Pro-only cards stay labelled, so it
   is clear what Free Edition includes. Free stays easy to reach: one
   secondary hero CTA, the free section, and the form.
-- **Free Edition** starts with a 14-day trial on a new activation: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator stay off. After 14 days it is free for up to 25 devices. Don't write 'no time limit' or 'not a trial' in long-lived copy. Don't call the trial full Professional, and don't hardcode an app version in that copy.
+- **Free Edition** is free for up to 25 devices. Don't write 'no time limit' or 'not a trial' in long-lived copy.
   Say so on the free section. Do not make the page all about Free.
 - **Professional includes bring-your-own AI.** Lead with "Bring your own
   AI provider". It uses the user's own API key. There is no Node Control
