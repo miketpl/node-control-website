@@ -304,4 +304,12 @@
     <loc>https://nodecontrol.io/docs/vendors/palo-alto.html</loc>
     <lastmod>2026-10-24</lastmod>
   </url>
+  <url>
+    <loc>https://nodecontrol.io/guides/find-mac-address-switch-port.html</loc>
+    <lastmod>2026-11-11</lastmod>
+  </url>
+  <url>
+    <loc>https://nodecontrol.io/guides/multi-vendor-config-backup.html</loc>
+    <lastmod>2026-11-11</lastmod>
+  </url>
 </urlset>
