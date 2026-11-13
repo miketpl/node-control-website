@@ -11,19 +11,19 @@ Open **Reports** in the left sidebar. It is its own page, not a task in the Engi
 | Report | Free | Pro | Purpose |
 |---|:---:|:---:|---|
 | [Inventory](inventory.md) | ✓ | ✓ | Hardware model, OS version, serial number |
-| [Port Utilisation](port-utilisation.md) | — | ✓ | Per port: status, VLAN, MAC count, in/out traffic |
-| [Bandwidth](bandwidth.md) | — | ✓ | Aggregate in/out bandwidth per interface |
-| [VLAN Port Finder](vlan-port-finder.md) | — | ✓ | Which ports are on a VLAN, across the devices in scope |
-| [Meraki Usage Summary](meraki-usage-summary.md) | — | ✓ | Per-org and per-network Meraki usage |
-| [Security Audit](security-audit.md) | — | ✓ | Cisco advisories by severity, plus an optional baseline check |
-| [Access Review](access-review.md) | — | ✓ | Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview |
-| [Lifecycle and EoX](lifecycle.md) | — | ✓ | End-of-sale and end-of-life dates, and a replacement plan |
-| [Change Summary](change-summary.md) | — | ✓ | Commands that were entered, and who entered them |
-| Site Subnets | — | ✓ | The subnet list [IPAM](../tasks/ipam.md) is filled from |
+| [Port Utilisation](port-utilisation.md) | Included for the first 14 days | ✓ | Per port: status, VLAN, MAC count, in/out traffic |
+| [Bandwidth](bandwidth.md) | Included for the first 14 days | ✓ | Aggregate in/out bandwidth per interface |
+| [VLAN Port Finder](vlan-port-finder.md) | Included for the first 14 days | ✓ | Which ports are on a VLAN, across the devices in scope |
+| [Meraki Usage Summary](meraki-usage-summary.md) | Included for the first 14 days | ✓ | Per-org and per-network Meraki usage |
+| [Security Audit](security-audit.md) | Included for the first 14 days | ✓ | Cisco advisories by severity, plus an optional baseline check |
+| [Access Review](access-review.md) | Included for the first 14 days | ✓ | Admin accounts on Palo Alto and FortiGate, with Cisco ASA as a preview |
+| [Lifecycle and EoX](lifecycle.md) | Included for the first 14 days | ✓ | End-of-sale and end-of-life dates, and a replacement plan |
+| [Change Summary](change-summary.md) | Included for the first 14 days | ✓ | Commands that were entered, and who entered them |
+| Site Subnets | Included for the first 14 days | ✓ | The subnet list [IPAM](../tasks/ipam.md) is filled from |
 
-The Reports page is on Free. The only report that runs there is Inventory, and it covers the whole library, up to 25 devices. Every other report is Pro and the AI edition.
+The Reports page is on Free. Inventory keeps running after the trial, and it covers the library up to 25 devices. Every other report in this table is included for the first 14 days, then it is Pro and the AI edition.
 
-Site Subnets is Pro and the AI edition. On AOS-CX it reads the per-VRF interface listing. On Arista EOS it has its own L3 command.
+Site Subnets is included for the first 14 days, then it is Pro and the AI edition. The IPAM page is not part of the trial. On AOS-CX it reads the per-VRF interface listing. On Arista EOS it has its own L3 command.
 
 ## Running a report
 
