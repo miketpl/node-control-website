@@ -89,9 +89,25 @@
             var keyEl = document.getElementById('proKey');
             var downloads = document.getElementById('proDownloads');
             var tries = 0;
+            var waits = [2000, 3000, 5000, 5000, 5000, 5000, 5000];
+            var rateLimitUsed = false;
+            var rateLimitRetry = false;
+            var preparing = 'Payment is confirmed, and the download link is still being prepared. Use the link in the email, or reload this page in a minute.';
 
             function showError(message) {
                 statusEl.textContent = message;
+            }
+
+            function giveUp() {
+                showError(preparing);
+            }
+
+            function retryAfterMs(header) {
+                var seconds = parseInt(header, 10);
+                if (isNaN(seconds) || seconds < 0) {
+                    seconds = 15;
+                }
+                return Math.min(seconds, 15) * 1000;
             }
 
             function paint(data) {
@@ -115,8 +131,39 @@
                     return;
                 }
                 fetch(api + '/api/pro/session?session_id=' + encodeURIComponent(sessionId))
-                    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+                    .then(function (res) {
+                        var retryAfter = res.headers.get('Retry-After');
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, status: res.status, data: data, retryAfter: retryAfter };
+                        }, function () {
+                            return { ok: res.ok, status: res.status, data: {}, retryAfter: retryAfter };
+                        });
+                    })
                     .then(function (result) {
+                        if (result.status === 429) {
+                            if (rateLimitUsed) {
+                                giveUp();
+                                return;
+                            }
+                            rateLimitUsed = true;
+                            rateLimitRetry = true;
+                            statusEl.textContent = 'Still preparing your download…';
+                            setTimeout(poll, retryAfterMs(result.retryAfter));
+                            return;
+                        }
+                        if (rateLimitRetry) {
+                            rateLimitRetry = false;
+                            if (result.ok && result.data.status === 'active' && result.data.downloads) {
+                                paint(result.data);
+                                return;
+                            }
+                            if (result.ok && result.data.status === 'unpaid') {
+                                showError('This checkout is not paid. You can subscribe from the pricing page.');
+                                return;
+                            }
+                            giveUp();
+                            return;
+                        }
                         if (!result.ok) {
                             showError(result.data.error || 'Could not confirm the payment.');
                             return;
@@ -129,13 +176,14 @@
                             showError('This checkout is not paid. You can subscribe from the pricing page.');
                             return;
                         }
-                        tries += 1;
-                        if (tries > 15) {
-                            showError('Payment is confirmed, and the download link is still being prepared. Use the link in the email, or reload this page in a minute.');
+                        if (tries >= waits.length) {
+                            giveUp();
                             return;
                         }
+                        var delay = waits[tries];
+                        tries += 1;
                         statusEl.textContent = 'Payment received. Preparing the download links…';
-                        setTimeout(poll, 2000);
+                        setTimeout(poll, delay);
                     })
                     .catch(function () {
                         showError('Could not reach the licence service. Reload this page.');

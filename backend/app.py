@@ -660,6 +660,8 @@ def _too_many(retry_after, body=None):
     })
     response.status_code = 429
     response.headers["Retry-After"] = str(int(retry_after))
+    # The success page is on another origin, so the browser can read this.
+    response.headers["Access-Control-Expose-Headers"] = "Retry-After"
     response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -1951,20 +1953,38 @@ def _handle_payment_failed(invoice):
 
 
 def _event_processed(event_id):
+    """True when this Stripe event id was handled.
+
+    A row stored as ignored: was skipped while test events were closed.
+    It is not processed. A later delivery of the same id can still be handled.
+    Nothing here scans or replays those rows.
+    """
     db = get_db()
     row = db.execute(
-        "SELECT event_id FROM stripe_events WHERE event_id = ?",
+        "SELECT event_type FROM stripe_events WHERE event_id = ?",
         (event_id,),
     ).fetchone()
     db.close()
-    return row is not None
+    if row is None:
+        return False
+    return not str(row["event_type"] or "").startswith("ignored:")
 
 
 def _mark_event(event_id, event_type):
     db = get_db()
+    now = datetime.utcnow().isoformat()
     db.execute(
         "INSERT OR IGNORE INTO stripe_events (event_id, event_type, processed_at) VALUES (?, ?, ?)",
-        (event_id, event_type, datetime.utcnow().isoformat()),
+        (event_id, event_type, now),
+    )
+    # INSERT OR IGNORE leaves an old ignored: row in place. Replace only that row.
+    db.execute(
+        """
+        UPDATE stripe_events
+        SET event_type = ?, processed_at = ?
+        WHERE event_id = ? AND event_type LIKE 'ignored:%'
+        """,
+        (event_type, now, event_id),
     )
     db.commit()
     db.close()
@@ -2140,7 +2160,7 @@ def stripe_webhook():
     obj = (event.get("data") or {}).get("object") or {}
     g.stripe_is_test = _event_is_test(event, obj)
     if g.stripe_is_test and not _stripe_test_events_allowed():
-        _mark_event(event_id, "ignored:" + event_type)
+        # Do not store this id. A Stripe resend is processed once the window is open.
         return jsonify({"received": True, "ignored": True})
     try:
         if event_type == "checkout.session.completed":
@@ -2165,7 +2185,7 @@ def pro_session():
     """Success page: confirm the Checkout Session is paid, then mint download tokens."""
     session_id = (request.args.get("session_id") or "").strip()
     wait = _public_rate_wait("public-pro-session", [
-        ("ip", _client_ip(), 30, 3600),
+        ("ip", _client_ip(), 120, 3600),
         ("session", session_id, 60, 3600),
     ])
     if wait:
@@ -3203,6 +3223,66 @@ def stats():
 
 
 # ── Init & Run ───────────────────────────────────────────────
+_ENV_ASSIGN_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=")
+
+
+def _dotenv_paths():
+    """The .env file this process loads. No other path is configured."""
+    return [Path(__file__).resolve().parent.parent / ".env"]
+
+
+def _env_key_name(line):
+    """Assignment key, or empty for a comment, blank, or other line."""
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return ""
+    match = _ENV_ASSIGN_RE.match(stripped)
+    if not match:
+        return ""
+    return match.group(1)
+
+
+def _duplicate_env_keys(text):
+    """Keys set on more than one non-comment line, with 1-based line numbers."""
+    found = {}
+    for number, line in enumerate(text.splitlines(), start=1):
+        key = _env_key_name(line)
+        if not key:
+            continue
+        found.setdefault(key, []).append(number)
+    return {key: lines for key, lines in found.items() if len(lines) > 1}
+
+
+def _warn_duplicate_env_file(path):
+    try:
+        file_path = Path(path)
+        if not file_path.is_file():
+            return
+        text = file_path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        logger.warning("Could not scan .env for duplicate keys")
+        return
+    for key, lines in _duplicate_env_keys(text).items():
+        logger.warning(
+            "Duplicate .env key %s on lines %s; the later line wins",
+            key,
+            ", ".join(str(number) for number in lines),
+        )
+
+
+def _warn_duplicate_env_keys(paths=None):
+    """One warning per duplicated key. Names and line numbers only. Never raises."""
+    try:
+        if paths is None:
+            paths = _dotenv_paths()
+        for path in paths:
+            _warn_duplicate_env_file(path)
+    except Exception:
+        logger.warning("Could not scan .env for duplicate keys")
+
+
+_warn_duplicate_env_keys()
+
 with app.app_context():
     init_db()
     migrate_db()

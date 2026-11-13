@@ -211,8 +211,16 @@ class ProBillingTests(unittest.TestCase):
         self.assertEqual(self.github.doc["kept"], "yes")
         db = app.get_db()
         keys = db.execute("SELECT COUNT(*) AS c FROM pro_keys WHERE subscription_id = 'sub_new'").fetchone()["c"]
+        stored = db.execute(
+            "SELECT event_type FROM stripe_events WHERE event_id = 'evt_1'"
+        ).fetchone()
+        event_rows = db.execute(
+            "SELECT COUNT(*) AS c FROM stripe_events WHERE event_id = 'evt_1'"
+        ).fetchone()["c"]
         db.close()
         self.assertEqual(keys, 1)
+        self.assertEqual(event_rows, 1)
+        self.assertEqual(stored["event_type"], "checkout.session.completed")
 
     def test_hand_added_beta_email_is_not_removed(self):
         before = json.loads(json.dumps(self.github.doc))
@@ -671,15 +679,30 @@ class ProBillingTests(unittest.TestCase):
                 headers={"CF-Connecting-IP": ip},
             )
 
+        # A fresh session id on each call, so the per-session cap of 60
+        # does not hide the per-IP cap of 120.
         with patch.object(app.stripe.checkout.Session, "retrieve", return_value={"status": "open"}):
-            for _ in range(30):
-                self.assertNotEqual(session("203.0.113.30").status_code, 429)
-            ip_session = session("203.0.113.30")
+            for n in range(120):
+                allowed = session("203.0.113.30", "cs_ip_%s" % n)
+                self.assertNotEqual(allowed.status_code, 429)
+            ip_session = self.client.get(
+                "/api/pro/session?session_id=cs_ip_over",
+                headers={
+                    "CF-Connecting-IP": "203.0.113.30",
+                    "Origin": "https://nodecontrol.io",
+                },
+            )
             for n in range(60):
                 self.assertNotEqual(session(f"203.0.113.{40 + n}", "cs_same").status_code, 429)
             same_session = session("198.51.100.9", "cs_same")
         self.assertEqual(ip_session.status_code, 429)
+        self.assertEqual(ip_session.get_json()["error"], "Too many requests. Try again later.")
         self.assertIn("Retry-After", ip_session.headers)
+        self.assertEqual(ip_session.headers.get("Access-Control-Expose-Headers"), "Retry-After")
+        self.assertEqual(
+            ip_session.headers.get("Access-Control-Allow-Origin"),
+            "https://nodecontrol.io",
+        )
         self.assertEqual(same_session.status_code, 429)
         self.assertIn("Retry-After", same_session.headers)
 
@@ -722,7 +745,7 @@ class ProBillingTests(unittest.TestCase):
             "SELECT event_type FROM stripe_events WHERE event_id = 'evt_test_off'"
         ).fetchone()
         db.close()
-        self.assertEqual(stored["event_type"], "ignored:checkout.session.completed")
+        self.assertIsNone(stored)
 
         invoice = self._post_event(
             "evt_test_invoice",
@@ -814,6 +837,165 @@ class ProBillingTests(unittest.TestCase):
             allowed = self.client.get("/api/pro/session?session_id=cs_test_on")
         self.assertEqual(allowed.status_code, 200)
         app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+
+    def _paid_checkout(self, session_id, subscription_id):
+        return {
+            "id": session_id,
+            "mode": "subscription",
+            "payment_status": "paid",
+            "customer": "cus_test",
+            "customer_email": "payer@example.com",
+            "customer_details": {"email": "payer@example.com", "name": "Ada"},
+            "subscription": subscription_id,
+            "metadata": {"plan": "monthly"},
+        }
+
+    def test_ignored_test_event_is_not_stored_and_a_resend_grants_the_key(self):
+        payload = self._paid_checkout("cs_resend", "sub_resend")
+        ignored = self._post_event(
+            "evt_resend", "checkout.session.completed", payload, livemode=False,
+        )
+        self.assertEqual(ignored.status_code, 200)
+        self.assertTrue(ignored.get_json().get("ignored"))
+        self.assertTrue(ignored.get_json().get("received"))
+        self.assertEqual(self.welcomes, [])
+        db = app.get_db()
+        stored = db.execute(
+            "SELECT event_id FROM stripe_events WHERE event_id = 'evt_resend'"
+        ).fetchone()
+        keys = db.execute("SELECT COUNT(*) AS c FROM pro_keys").fetchone()["c"]
+        db.close()
+        self.assertIsNone(stored)
+        self.assertEqual(keys, 0)
+
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        self._sub("sub_resend")
+        granted = self._post_event(
+            "evt_resend", "checkout.session.completed", payload, livemode=False,
+        )
+        self.assertEqual(granted.status_code, 200)
+        self.assertFalse(granted.get_json().get("ignored"))
+        self.assertEqual(len(self.welcomes), 1)
+        db = app.get_db()
+        row = db.execute(
+            "SELECT event_type FROM stripe_events WHERE event_id = 'evt_resend'"
+        ).fetchone()
+        key = db.execute(
+            "SELECT is_test, status FROM pro_keys WHERE subscription_id = 'sub_resend'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(row["event_type"], "checkout.session.completed")
+        self.assertEqual(key["is_test"], 1)
+        self.assertEqual(key["status"], "active")
+
+        again = self._post_event(
+            "evt_resend", "checkout.session.completed", payload, livemode=False,
+        )
+        self.assertEqual(again.status_code, 200)
+        self.assertEqual(len(self.welcomes), 1)
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+
+    def test_legacy_ignored_row_is_reprocessed_when_stripe_redelivers(self):
+        db = app.get_db()
+        db.execute(
+            """
+            INSERT INTO stripe_events (event_id, event_type, processed_at)
+            VALUES ('evt_legacy', 'ignored:checkout.session.completed', '2026-01-01T00:00:00')
+            """
+        )
+        db.commit()
+        db.close()
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = "1"
+        self._sub("sub_legacy")
+        granted = self._post_event(
+            "evt_legacy",
+            "checkout.session.completed",
+            self._paid_checkout("cs_legacy", "sub_legacy"),
+            livemode=False,
+        )
+        self.assertEqual(granted.status_code, 200)
+        self.assertEqual(len(self.welcomes), 1)
+        db = app.get_db()
+        row = db.execute(
+            "SELECT event_type FROM stripe_events WHERE event_id = 'evt_legacy'"
+        ).fetchone()
+        count = db.execute(
+            "SELECT COUNT(*) AS c FROM stripe_events WHERE event_id = 'evt_legacy'"
+        ).fetchone()["c"]
+        key = db.execute(
+            "SELECT status, is_test FROM pro_keys WHERE subscription_id = 'sub_legacy'"
+        ).fetchone()
+        db.close()
+        self.assertEqual(count, 1)
+        self.assertEqual(row["event_type"], "checkout.session.completed")
+        self.assertEqual(key["status"], "active")
+        self.assertEqual(key["is_test"], 1)
+        app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
+
+    def test_handler_failure_leaves_a_legacy_ignored_row_unmarked(self):
+        db = app.get_db()
+        db.execute(
+            """
+            INSERT INTO stripe_events (event_id, event_type, processed_at)
+            VALUES ('evt_legacy_fail', 'ignored:checkout.session.completed', '2026-01-01T00:00:00')
+            """
+        )
+        db.commit()
+        db.close()
+        self._sub("sub_legacy_fail")
+        self.welcome_patch.stop()
+        failed = patch.object(app, "_send_pro_welcome", return_value=False)
+        failed.start()
+        try:
+            res = self._checkout(
+                "evt_legacy_fail",
+                "sub_legacy_fail",
+                "payer@example.com",
+                session_id="cs_legacy_fail",
+            )
+        finally:
+            failed.stop()
+            self.welcome_patch.start()
+        self.assertEqual(res.status_code, 500)
+        db = app.get_db()
+        row = db.execute(
+            """
+            SELECT event_type, processed_at FROM stripe_events
+            WHERE event_id = 'evt_legacy_fail'
+            """
+        ).fetchone()
+        db.close()
+        self.assertEqual(row["event_type"], "ignored:checkout.session.completed")
+        self.assertEqual(row["processed_at"], "2026-01-01T00:00:00")
+
+    def test_startup_migration_leaves_ignored_rows_untouched(self):
+        db = app.get_db()
+        db.execute(
+            """
+            INSERT INTO stripe_events (event_id, event_type, processed_at)
+            VALUES ('evt_left_behind', 'ignored:checkout.session.completed', '2026-01-01T00:00:00')
+            """
+        )
+        db.commit()
+        db.close()
+        app.init_db()
+        app.migrate_db()
+        db = app.get_db()
+        row = db.execute(
+            """
+            SELECT event_id, event_type, processed_at FROM stripe_events
+            WHERE event_id = 'evt_left_behind'
+            """
+        ).fetchone()
+        keys = db.execute("SELECT COUNT(*) AS c FROM pro_keys").fetchone()["c"]
+        subs = db.execute("SELECT COUNT(*) AS c FROM pro_subscriptions").fetchone()["c"]
+        db.close()
+        self.assertEqual(row["event_id"], "evt_left_behind")
+        self.assertEqual(row["event_type"], "ignored:checkout.session.completed")
+        self.assertEqual(row["processed_at"], "2026-01-01T00:00:00")
+        self.assertEqual(keys, 0)
+        self.assertEqual(subs, 0)
+        self.assertEqual(self.welcomes, [])
 
     def test_live_events_stay_live_while_the_test_flag_is_off(self):
         app.app.config["STRIPE_ALLOW_TEST_EVENTS"] = ""
@@ -940,6 +1122,78 @@ class ProBillingTests(unittest.TestCase):
         self.assertIn("added_to_allowlist", source)
         self.assertIn("LEGACY_ALLOWLIST_SYNC", source)
         self.assertFalse(app._legacy_allowlist_enabled())
+
+
+class EnvDuplicateTests(unittest.TestCase):
+    def test_duplicate_env_keys_log_names_and_line_numbers_only(self):
+        secret = "sk_live_do_not_log_this_value"
+        lines = [
+            "# STRIPE_ALLOW_TEST_EVENTS=" + secret,
+            "export STRIPE_ALLOW_TEST_EVENTS=first-setting",
+            "OTHER_KEY=kept-once",
+            "  STRIPE_ALLOW_TEST_EVENTS = " + secret,
+            "",
+            "export SMTP_PASS=" + secret,
+            "SMTP_PASS=" + secret,
+            "  export  STRIPE_ALLOW_TEST_EVENTS\t= " + secret,
+            "# SMTP_PASS=" + secret,
+        ]
+        text = "\n".join(lines) + "\n"
+        found = app._duplicate_env_keys(text)
+        self.assertEqual(found["STRIPE_ALLOW_TEST_EVENTS"], [2, 4, 8])
+        self.assertEqual(found["SMTP_PASS"], [6, 7])
+        self.assertNotIn("OTHER_KEY", found)
+        self.assertNotIn(secret, repr(found))
+        self.assertNotIn("first-setting", repr(found))
+        self.assertNotIn("kept-once", repr(found))
+
+        folder = tempfile.mkdtemp()
+        path = os.path.join(folder, ".env")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        with self.assertLogs("app", level="WARNING") as logs:
+            app._warn_duplicate_env_keys([path])
+        output = "\n".join(logs.output)
+        self.assertIn(
+            "Duplicate .env key STRIPE_ALLOW_TEST_EVENTS on lines 2, 4, 8; the later line wins",
+            output,
+        )
+        self.assertIn(
+            "Duplicate .env key SMTP_PASS on lines 6, 7; the later line wins",
+            output,
+        )
+        self.assertEqual(output.count("Duplicate .env key"), 2)
+        self.assertNotIn(secret, output)
+        self.assertNotIn("first-setting", output)
+        self.assertNotIn("kept-once", output)
+        for line in logs.output:
+            if "Duplicate .env key" not in line:
+                continue
+            self.assertRegex(
+                line,
+                r"Duplicate \.env key [A-Za-z_][A-Za-z0-9_]* on lines \d+(, \d+)+; the later line wins$",
+            )
+
+    def test_duplicate_env_scan_never_raises(self):
+        folder = tempfile.mkdtemp()
+        missing = os.path.join(folder, "missing.env")
+        app._warn_duplicate_env_keys([missing, folder])
+        path = os.path.join(folder, ".env")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write("STRIPE_SECRET_KEY=sk_live_hidden\n")
+        with patch("pathlib.Path.read_text", side_effect=OSError("denied")):
+            with self.assertLogs("app", level="WARNING") as logs:
+                app._warn_duplicate_env_keys([path])
+        output = "\n".join(logs.output)
+        self.assertIn("Could not scan .env for duplicate keys", output)
+        self.assertNotIn("sk_live_hidden", output)
+        self.assertNotIn("denied", output)
+
+        clean = os.path.join(folder, "once.env")
+        with open(clean, "w", encoding="utf-8") as handle:
+            handle.write("# note\nexport ONLY_ONCE=value\n\n")
+        with self.assertNoLogs("app", level="WARNING"):
+            app._warn_duplicate_env_keys([clean])
 
 
 if __name__ == "__main__":
