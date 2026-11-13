@@ -18,7 +18,7 @@ Once your network outgrows Free's 25-device cap, or you need the tasks and repor
 
 ### 1. Buy a Pro license
 
-Go to [nodecontrol.io](https://nodecontrol.io) and subscribe to Professional. Choose monthly (£25/month ex VAT) or annual (£255/year ex VAT, which is £21.25/mo billed annually, ex VAT, save 15%). Checkout asks for:
+Go to [nodecontrol.io](https://nodecontrol.io) and subscribe to Professional. Choose monthly (£25/month) or annual (£255/year, which is £21.25/mo billed annually, save 15%). Checkout asks for:
 
 - Your name
 - Email (this becomes the licensed identity)
@@ -90,7 +90,7 @@ On a new laptop:
 
 ## Renewing or transferring a license
 
-Professional is a subscription: £25/month ex VAT, or £255/year ex VAT. Cancelling stops the next renewal. The app keeps working until the end of the period you have already paid. When that period ends, or a renewal fails, the licence is no longer accepted. The app then blocks. If it cannot check in, it blocks after the 7-day offline grace.
+Professional is a subscription: £25/month, or £255/year. Cancelling stops the next renewal. The app keeps working until the end of the period you have already paid. When that period ends, or a renewal fails, the licence is no longer accepted. The app then blocks. If it cannot check in, it blocks after the 7-day offline grace.
 
 Manage the card or cancel from the link on [nodecontrol.io](https://nodecontrol.io/#manage). That page emails a billing link. It does not show whether the address has a subscription.
 
