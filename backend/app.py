@@ -660,6 +660,8 @@ def _too_many(retry_after, body=None):
     })
     response.status_code = 429
     response.headers["Retry-After"] = str(int(retry_after))
+    # The success page is on another origin, so the browser can read this.
+    response.headers["Access-Control-Expose-Headers"] = "Retry-After"
     response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -2183,7 +2185,7 @@ def pro_session():
     """Success page: confirm the Checkout Session is paid, then mint download tokens."""
     session_id = (request.args.get("session_id") or "").strip()
     wait = _public_rate_wait("public-pro-session", [
-        ("ip", _client_ip(), 30, 3600),
+        ("ip", _client_ip(), 120, 3600),
         ("session", session_id, 60, 3600),
     ])
     if wait:

@@ -679,15 +679,30 @@ class ProBillingTests(unittest.TestCase):
                 headers={"CF-Connecting-IP": ip},
             )
 
+        # A fresh session id on each call, so the per-session cap of 60
+        # does not hide the per-IP cap of 120.
         with patch.object(app.stripe.checkout.Session, "retrieve", return_value={"status": "open"}):
-            for _ in range(30):
-                self.assertNotEqual(session("203.0.113.30").status_code, 429)
-            ip_session = session("203.0.113.30")
+            for n in range(120):
+                allowed = session("203.0.113.30", "cs_ip_%s" % n)
+                self.assertNotEqual(allowed.status_code, 429)
+            ip_session = self.client.get(
+                "/api/pro/session?session_id=cs_ip_over",
+                headers={
+                    "CF-Connecting-IP": "203.0.113.30",
+                    "Origin": "https://nodecontrol.io",
+                },
+            )
             for n in range(60):
                 self.assertNotEqual(session(f"203.0.113.{40 + n}", "cs_same").status_code, 429)
             same_session = session("198.51.100.9", "cs_same")
         self.assertEqual(ip_session.status_code, 429)
+        self.assertEqual(ip_session.get_json()["error"], "Too many requests. Try again later.")
         self.assertIn("Retry-After", ip_session.headers)
+        self.assertEqual(ip_session.headers.get("Access-Control-Expose-Headers"), "Retry-After")
+        self.assertEqual(
+            ip_session.headers.get("Access-Control-Allow-Origin"),
+            "https://nodecontrol.io",
+        )
         self.assertEqual(same_session.status_code, 429)
         self.assertIn("Retry-After", same_session.headers)
 
