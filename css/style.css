@@ -532,25 +532,36 @@ a:hover {
 }
 
 .hero-headline {
-    font-size: 2.15rem;
+    font-size: 2rem;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     margin: 16px auto 12px;
-    max-width: 780px;
+    max-width: 720px;
     text-align: center;
 }
 
 .hero-headline,
-.hero-headline-then,
+.hero-offer,
+.hero-offer-then,
 .hero-subtitle,
 .hero .hero-free-line {
     text-wrap: balance;
 }
 
-.hero-headline-then {
+.hero-offer {
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--cyan);
+    margin: 0 auto 12px;
+    max-width: 740px;
+    text-align: center;
+}
+
+.hero-offer-then {
     display: block;
-    margin-top: 10px;
-    font-size: 1.28rem;
+    margin-top: 8px;
+    font-size: 1.08rem;
     font-weight: 600;
     line-height: 1.35;
     color: var(--text-primary);
@@ -578,25 +589,15 @@ a:hover {
     margin-bottom: 14px;
 }
 
-.hero-stay,
-.hero-built {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 720px;
-    line-height: 1.45;
-    color: var(--text-muted);
-}
-
 .hero-stay {
     margin-top: 16px;
     margin-bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 720px;
     font-size: 0.85rem;
-}
-
-.hero-built {
-    margin-top: 4px;
-    margin-bottom: 0;
-    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--text-muted);
 }
 
 .hero-tagline {
@@ -2207,9 +2208,13 @@ select.form-input {
         margin-bottom: 8px;
         font-size: 1.5rem;
     }
-    .hero-headline-then {
-        margin-top: 8px;
-        font-size: 1.05rem;
+    .hero-offer {
+        margin-bottom: 8px;
+        font-size: 1.35rem;
+    }
+    .hero-offer-then {
+        margin-top: 6px;
+        font-size: 0.98rem;
     }
     .hero-free-line,
     .hero-subtitle {
@@ -2224,9 +2229,6 @@ select.form-input {
     .hero-stay {
         margin-top: 12px;
         font-size: 0.8rem;
-    }
-    .hero-built {
-        font-size: 0.72rem;
     }
 
     .section {
