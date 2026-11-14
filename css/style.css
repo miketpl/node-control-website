@@ -532,12 +532,28 @@ a:hover {
 }
 
 .hero-headline {
-    font-size: 2rem;
+    font-size: 2.15rem;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.2;
     margin: 16px auto 12px;
-    max-width: 720px;
+    max-width: 780px;
     text-align: center;
+}
+
+.hero-headline,
+.hero-headline-then,
+.hero-subtitle,
+.hero .hero-free-line {
+    text-wrap: balance;
+}
+
+.hero-headline-then {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.28rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-primary);
 }
 
 .hero-subtitle {
@@ -545,7 +561,7 @@ a:hover {
     color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 12px;
-    max-width: 620px;
+    max-width: 740px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -556,6 +572,31 @@ a:hover {
     font-family: var(--mono);
     text-align: center;
     margin-bottom: 20px;
+}
+
+.hero .hero-free-line {
+    margin-bottom: 14px;
+}
+
+.hero-stay,
+.hero-built {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 720px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.hero-stay {
+    margin-top: 16px;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+}
+
+.hero-built {
+    margin-top: 4px;
+    margin-bottom: 0;
+    font-size: 0.75rem;
 }
 
 .hero-tagline {
@@ -2164,6 +2205,11 @@ select.form-input {
     .hero-headline {
         margin-top: 8px;
         margin-bottom: 8px;
+        font-size: 1.5rem;
+    }
+    .hero-headline-then {
+        margin-top: 8px;
+        font-size: 1.05rem;
     }
     .hero-free-line,
     .hero-subtitle {
@@ -2172,11 +2218,15 @@ select.form-input {
     .hero-buttons {
         margin-bottom: 0;
     }
-    .hero-headline {
-        font-size: 1.5rem;
-    }
     .hero-subtitle {
         font-size: 1rem;
+    }
+    .hero-stay {
+        margin-top: 12px;
+        font-size: 0.8rem;
+    }
+    .hero-built {
+        font-size: 0.72rem;
     }
 
     .section {
