@@ -155,7 +155,17 @@
             if (!downloadSection || !data || data.free_downloads_paused !== true) return;
             downloadSection.classList.add('free-paused');
             var notice = document.getElementById('free-paused-notice');
-            if (notice) notice.textContent = 'Free downloads are temporarily paused';
+            if (!notice) {
+                var header = document.querySelector('#free-edition .download-tier-header');
+                if (!header) return;
+                notice = document.createElement('p');
+                notice.className = 'free-pause-notice';
+                notice.id = 'free-paused-notice';
+                var hint = header.querySelector('.free-signup-hint');
+                if (hint) header.insertBefore(notice, hint);
+                else header.appendChild(notice);
+            }
+            notice.textContent = 'Free downloads are temporarily paused';
         })
         .catch(function () {});
 
