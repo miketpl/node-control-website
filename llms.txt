@@ -1,0 +1,119 @@
+# Node Control
+
+> NodeControl is a desktop network-operations tool for network engineers. L2 topology mapping over SSH, find any MAC or IP, multi-vendor terminal, config backup and inventory. Runs on your laptop; your data stays there.
+
+Map your whole multi-vendor network over SSH, trace any MAC or IP to its switch port, and run audits, reports and config pushes from one app. Your data stays on your laptop.
+
+Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%). A new Free activation starts a 14-day trial: all Engineer tasks, all reports, your own AI provider, and no device cap. After 14 days, the Free Edition is free for up to 25 devices.
+
+## Key pages
+
+- [Home](https://nodecontrol.io/): NodeControl is a desktop network-operations tool for network engineers. Runs on your laptop; your data stays there.
+- [Free download](https://nodecontrol.io/free/): A new Free activation starts a 14-day trial, then it is free for up to 25 devices, on macOS and Windows. No card needed.
+- [Pricing and Professional](https://nodecontrol.io/#pricing): Free Edition, Professional at £25/month or £255/year, and Enterprise at a custom price.
+- [Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map from SSH. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
+
+## Documentation
+
+- [NodeControl Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map from SSH. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
+
+### Getting Started
+
+- [Installing on macOS](https://nodecontrol.io/docs/getting-started/installation-mac.html): Node Control is a notarized macOS app. Drag it to Applications. It needs macOS 11 Big Sur or later, Intel or Apple Silicon, about 500 MB, and SSH to devices.
+- [Installing on Windows](https://nodecontrol.io/docs/getting-started/installation-windows.html): Node Control ships as an NSIS .exe installer. It needs Windows 10 or 11, 64-bit, about 500 MB, and SSH from the PC to the devices you manage.
+- [First launch and activation](https://nodecontrol.io/docs/getting-started/first-launch-activation.html): On first launch, Node Control checks the licence at api.nodecontrol.io. Pro uses the NCP key. Free uses an activation code. There is no GitHub licence check.
+- [Your licence and moving between computers](https://nodecontrol.io/docs/getting-started/licence.html): One NCP key or Free code runs on one computer. Move it with Move licence here, or deactivate the other computer. The server allows two moves in 30 days.
+- [Updating Node Control](https://nodecontrol.io/docs/getting-started/updating.html): The current release is 0.9.47. Install it over the existing copy. Library, settings, and credentials are kept. 0.9.41 is the minimum the licence server accepts.
+- [Where things are](https://nodecontrol.io/docs/getting-started/navigation.html): The app opens on Home. A left sidebar moves between pages. On Free the sidebar is Home, Engineer, Reports, and File Transfer, with a FREE VERSION badge.
+- [Adding your first device](https://nodecontrol.io/docs/getting-started/adding-first-device.html): After activation, add a switch, firewall, router, or AP to the library. Enter one device by hand, or ping-sweep a range and auto-add hosts that accept SSH.
+- [Setting up credentials](https://nodecontrol.io/docs/getting-started/credentials.html): SSH login credentials are required. Passwords and API keys are encrypted on the machine. The unlock key is in the macOS Keychain or Windows Credential Manager.
+
+### Library
+
+- [Library overview](https://nodecontrol.io/docs/library/overview.html): The library is the list of devices Node Control can connect to. Topology maps, reports, Find Device, and the SSH terminal all run against devices in that list.
+- [Adding devices manually](https://nodecontrol.io/docs/library/adding-devices.html): Add one device from the Engineer device table. The management IP is required, and it is IPv4 only. Hostname, site code, and tab are optional.
+- [Subnet scan (Library Updater)](https://nodecontrol.io/docs/library/subnet-scan.html): Library Updater walks an IP range, tries SSH, and adds devices with type, hostname, and site code. Pro and the AI edition. On Free the task is greyed out.
+- [Organising devices by site](https://nodecontrol.io/docs/library/sites.html): A site code groups devices by location, customer, or domain. The codes narrow which devices a tool runs on, which appear on a map, and how reports aggregate.
+- [Sharing libraries via GitHub](https://nodecontrol.io/docs/library/github-sync.html): GitHub push and pull run on Free, Pro, and the AI edition. Set the repository and token in Settings. On Free, a pulled library is cut to the first 25 devices.
+
+### Tasks
+
+- [Layer 2 topology map](https://nodecontrol.io/docs/tasks/topology-l2.html): L2 Topology Builder reads MAC address tables, LLDP neighbours, and CDP on Cisco, and draws switch-to-switch links. It runs on Free, Pro, and the AI edition.
+- [Layer 3 topology map](https://nodecontrol.io/docs/tasks/topology-l3.html): L3 Topology Builder reads routing tables, OSPF, and BGP, and draws which routers and firewalls peer. On Pro and the AI edition. On Free it is greyed out.
+- [WAN topology map](https://nodecontrol.io/docs/tasks/topology-wan.html): Watcher of The WAN draws cross-site links: routers, firewalls, and SD-WAN edges. On Pro and the AI edition. On Free it is greyed out. Safe Mode keeps it listed.
+- [Config Backup and Save Config](https://nodecontrol.io/docs/tasks/config-backup.html): Config Backup and Save Config run on Free, Pro, and the AI edition. Config Backup is allowed in Safe Mode. Safe Mode hides Save Config.
+- [Config Compliance](https://nodecontrol.io/docs/tasks/config-compliance.html): Config Compliance Audit checks selected devices. Remediation is Cisco IOS, IOS-XE, and NX-OS only. On Pro and the AI edition. On Free both tasks are greyed out.
+- [Config from File](https://nodecontrol.io/docs/tasks/config-from-file.html): Config from File sends a file's lines to the devices you ticked. Lines go verbatim, with no placeholders. On Pro and the AI edition. Safe Mode hides the task.
+- [Discover Variables](https://nodecontrol.io/docs/tasks/discover-variables.html): Discover Variables reads a few facts off each device and stores them on the library row. It is read-only. On Pro and the AI edition. On Free it is greyed out.
+- [Network Discovery](https://nodecontrol.io/docs/tasks/discovery.html): Discover walks CDP and LLDP from a seed switch and maps devices not yet in the library. On Pro and the AI edition. Free does not show this page.
+- [Lab Export](https://nodecontrol.io/docs/tasks/lab-export.html): Lab Export turns a saved Discovery or L2 topology into a Cisco CML 2.10 or EVE-NG Community 6.2 lab. Nothing connects to a device. On Pro and the AI edition.
+- [Find Device](https://nodecontrol.io/docs/tasks/find-device.html): Find Device takes a MAC, or an IP from ARP, and names the switch port. On Free you start from one switch. Pro starts from the core switches at each site.
+- [Verify Device Types](https://nodecontrol.io/docs/tasks/verify-device-types.html): Verify Device Types re-runs device type detection on the library, or a subset. On Pro and the AI edition. On Free it is greyed out. Safe Mode leaves it listed.
+- [Config Push](https://nodecontrol.io/docs/tasks/config-push.html): Push commands to switch ports from a file, with a preview, safety exclusions, and revert. Pro and AI. Full support is Cisco IOS, IOS-XE, and NX-OS.
+- [Packet Capture](https://nodecontrol.io/docs/tasks/packet-capture.html): Packet Capture runs an IOS-XE Embedded Packet Capture, copies the file locally, and opens it in Wireshark. Cisco IOS and IOS-XE only. On Pro and the AI edition.
+- [File Transfer](https://nodecontrol.io/docs/tasks/file-transfer.html): The File Transfer page is on Free, Pro, and the AI edition. The Engineer task is Pro and AI. Its local server speaks SFTP and SCP, on port 2222 by default.
+- [SSH Terminal](https://nodecontrol.io/docs/tasks/ssh-terminal.html): SSH Terminal opens an interactive session to a library device, from that device's row. It is on Free, Pro, and the AI edition. It is not an Engineer task.
+- [Serial console](https://nodecontrol.io/docs/tasks/serial-console.html): Serial console on the Engineer tab, beside SSH and HTTPS. USB serial, Send Break, paced paste, log to file. Hidden in Safe Mode.
+- [Local network terminal](https://nodecontrol.io/docs/tasks/local-terminal.html): Terminal, on the Engineer log header, runs local networking commands only: ping, traceroute, and dig. There is no shell. It stays visible in Safe Mode.
+- [Monitor](https://nodecontrol.io/docs/tasks/monitor.html): Monitor polls interface counters, CPU, memory, and environment over SSH, with graphs and threshold alerts. On Pro and the AI edition. Free does not show it.
+- [Firewall Rule Analyser](https://nodecontrol.io/docs/tasks/firewall-analyser.html): Firewall Rule Analyser is a PAN-OS tool on Pro and the AI edition. Load a config file, edit standards, and analyse. Free does not show this page.
+- [IPAM](https://nodecontrol.io/docs/tasks/ipam.html): IPAM tracks subnets and how much of each was seen in use. The list is the Site Subnets report. On Pro and the AI edition. Free does not show this page.
+- [Meraki Configurator](https://nodecontrol.io/docs/tasks/meraki-configurator.html): Meraki Configurator changes SSIDs and RF profiles across many networks in one pass, via the Dashboard API. It does not SSH to the APs. Pro and the AI edition.
+
+### Reports
+
+- [Reports overview](https://nodecontrol.io/docs/reports/overview.html): A report collects from devices and usually renders a table. Every command must match the report allowlist or it is refused. Open Reports in the sidebar.
+- [Port Utilisation report](https://nodecontrol.io/docs/reports/port-utilisation.html): Port Utilisation lists every port on switches in scope, with status, VLAN, MAC count, and traffic counters. On Pro and the AI edition. Free does not run it.
+- [Bandwidth report](https://nodecontrol.io/docs/reports/bandwidth.html): The Bandwidth report collects per-interface traffic in scope, including the 5-minute average inbound rate. On Pro and the AI edition. Free does not run it.
+- [VLAN Port Finder](https://nodecontrol.io/docs/reports/vlan-port-finder.html): VLAN Port Finder lists every port in scope on a given VLAN. The Engineer task of the same name is also Pro. Config Push can read this report's export.
+- [Inventory report](https://nodecontrol.io/docs/reports/inventory.html): Inventory collects hostname, IP, device type, model, OS version, and serial. The HTML report can be filtered and exported to CSV. It runs on Free, Pro, and AI.
+- [Meraki Usage Summary report](https://nodecontrol.io/docs/reports/meraki-usage-summary.html): Meraki Usage Summary is a per-network summary for each organisation the API key can access: clients, bandwidth, and top consumers. On Pro and the AI edition.
+- [Security Audit report](https://nodecontrol.io/docs/reports/security-audit.html): Security Audit reads the running software and lists Cisco security advisories for that version, grouped by severity. Non-Cisco devices are skipped. Pro and AI.
+- [Access Review](https://nodecontrol.io/docs/reports/access-review.html): Access Review lists firewall admin accounts, roles, and sign-in source. It covers Palo Alto and FortiGate. Cisco ASA is a preview only. Pro and the AI edition.
+- [Lifecycle and EoX](https://nodecontrol.io/docs/reports/lifecycle.html): Lifecycle and EoX shows which hardware and software in scope are at end of sale or end of life, and when. On Pro and the AI edition. Free does not run it.
+- [Change Summary report](https://nodecontrol.io/docs/reports/change-summary.html): Change Summary lists the commands entered and who entered them. Devices with no config archive are named. On Pro and the AI edition. Free does not run it.
+
+### Vendors
+
+- [Vendor support](https://nodecontrol.io/docs/vendors/overview.html): Node Control connects over SSH with Netmiko drivers and its own parsers. This page lists the supported vendors and links to the notes for each one.
+- [Cisco — IOS, IOS-XE, NX-OS](https://nodecontrol.io/docs/vendors/cisco.html): Cisco IOS, IOS-XE, and NX-OS are supported. Cisco ASA is partial. IOS-XR is not. Meraki uses the Dashboard API, not SSH, and has its own page.
+- [Palo Alto PAN-OS](https://nodecontrol.io/docs/vendors/palo-alto.html): Palo Alto PAN-OS firewalls use paloalto_panos over SSH. Inventory, L3 BGP and OSPF, WAN peers and IPSec tunnels, and Find Device ARP probes are included.
+- [HP ProCurve](https://nodecontrol.io/docs/vendors/hp-procurve.html): HP ProCurve, now Aruba OS-Switch, uses hp_procurve_cli, aliased to aruba_osswitch. Detection and L2 topology use ProCurve parsers for LLDP and the MAC table.
+- [Aruba (CX, OS-Switch)](https://nodecontrol.io/docs/vendors/aruba.html): Aruba has two operating systems. AOS-CX uses aruba_os. OS-Switch, the legacy ProCurve line, uses aruba_osswitch. Node Control treats the two CLIs separately.
+- [Aruba AOS-CX](https://nodecontrol.io/docs/vendors/aruba-aos-cx.html): AOS-CX is its own platform, not ProCurve and not Cisco. Node Control uses SSH and the aruba_os driver. Only AOS-CX 10.x command forms are sent.
+- [Juniper Junos](https://nodecontrol.io/docs/vendors/juniper.html): Juniper Junos switches, routers, and SRX firewalls use the juniper_junos driver. L2 topology uses LLDP. Juniper does not do CDP. L3 topology reads OSPF and BGP.
+- [Arista EOS](https://nodecontrol.io/docs/vendors/arista.html): Arista EOS uses the arista_eos driver. From 0.9.42, L2 topology uses EOS parsers for LLDP, port-channel members, the default gateway, and spanning tree.
+- [Dell — OS6 and OS10](https://nodecontrol.io/docs/vendors/dell.html): Dell OS6 (PowerConnect-style) and OS10 are both supported, with drivers dell_os6 and dell_os10. Detection, inventory, and L2 topology work on both.
+- [Extreme — EXOS and VSP](https://nodecontrol.io/docs/vendors/extreme.html): Extreme EXOS and VSP are both supported, with drivers extreme_exos and extreme_vsp. Detection, inventory, L2 and L3 topology, and Find Device work on both.
+- [Cisco Meraki](https://nodecontrol.io/docs/vendors/meraki.html): Meraki MR, MS, MX, and MV devices use the Dashboard API. Node Control does not SSH to them. Set the API key under Settings, Credentials, Meraki API.
+
+### Settings
+
+- [Settings overview](https://nodecontrol.io/docs/settings/overview.html): Open Settings from the navigation footer, or Edit, Settings. On macOS it is in the application menu. There is no Tools menu and no Ctrl or Cmd comma shortcut.
+- [Site detection rules](https://nodecontrol.io/docs/settings/site-detection.html): Site detection reads a hostname and extracts a short site code, usually two to four characters, such as LON or NYC. Those codes drive filters and scopes.
+- [Custom command catalogs](https://nodecontrol.io/docs/settings/custom-commands.html): The command catalog maps a vendor and a capability to a show command. Defaults cover most devices. Unusual firmware can override or add commands per device.
+- [Custom Scripts](https://nodecontrol.io/docs/settings/scripts.html): A custom script is a Python file run as an Engineer task, on Pro and the AI edition. On Free it can be registered, but the task is greyed out and Run refuses.
+- [Safe Mode](https://nodecontrol.io/docs/settings/safe-mode.html): Safe Mode is session-wide. Each launch asks for Safe Mode or Config Mode. There is no default. Cancel quits the app. The task list is cut while it is on.
+- [AI provider](https://nodecontrol.io/docs/settings/ai.html): Feature-level AI runs on Pro, on a provider you configure. Free opens the payload and sends nothing. The AI edition is nine specialist agents, not this setting.
+- [AI on Professional](https://nodecontrol.io/docs/settings/ai-llm.html): AI on Professional: bring your own key. Auto-detect, Backend, Anthropic, OpenAI, Gemini, Grok, OpenAI-compatible endpoint, Ollama, or Disabled.
+- [AI features overview](https://nodecontrol.io/docs/settings/ai-features.html): Where AI shows up: providers, the three switches, Monitor, Findings, and Background Learning. Pro uses your own key. Free gets an AI preview only.
+
+### Security
+
+- [How credentials are stored](https://nodecontrol.io/docs/security/credential-storage.html): Passwords and API keys are encrypted on the machine. The master key is held in the macOS Keychain or Windows Credential Manager. The database stores the blob.
+- [What leaves your laptop](https://nodecontrol.io/docs/security/data-and-privacy.html): What Node Control sends off the laptop: licence checks, usage statistics, AI requests, unattended logins, and update checks.
+- [Safe Mode (security view)](https://nodecontrol.io/docs/security/safe-mode.html): Safe Mode rechecks a config-changing task before credentials or a connection. A refusal is marked Blocked: Safe Mode is on. Read-only tasks still run.
+- [Audit log](https://nodecontrol.io/docs/security/audit-log.html): Node Control writes no plain-text audit log. Find Device port actions on Pro are stored in the local database. SSH session recording is off until you enable it.
+
+### Troubleshooting
+
+- [Troubleshooting](https://nodecontrol.io/docs/troubleshooting/overview.html): Common problems: SSH fails, a device is detected as the wrong type, the app crashes, or Check for Updates does not work. Each topic links to the checks to run.
+- [SSH connection problems](https://nodecontrol.io/docs/troubleshooting/ssh-connection-issues.html): If SSH fails, check that the IP answers, then TCP port 22, then the username and password, then a changed host key. Most problems are the network or the login.
+- [Device type misdetection](https://nodecontrol.io/docs/troubleshooting/device-type-detection.html): A wrong vendor or OS makes topology, reports, and Find Device send the wrong commands. This page covers why detection misses and how to fix the device type.
+- [Reading the crash log](https://nodecontrol.io/docs/troubleshooting/crash-logs.html): A crash appends to ~/NodeControl_crash.log on Mac, and to %USERPROFILE%\NodeControl_crash.log on Windows. The newest crash is the last block in the file.
+- [Update problems](https://nodecontrol.io/docs/troubleshooting/update-issues.html): Check for Updates asks api.nodecontrol.io, then GitHub serves the installer. The server never offers a downgrade. Failed checks and installs are on this page.
+
+### Tiers
+
+- [Tier overview — Free, Pro, AI](https://nodecontrol.io/docs/tiers/overview.html): A new Free activation is a 14-day trial, then free for up to 25 devices. Pro is available today, with your own AI provider. The AI edition is separate.
+- [Upgrading from Free to Pro](https://nodecontrol.io/docs/tiers/upgrading.html): Upgrading to Pro keeps the device library, settings, and accepted SSH host keys. Pro asks for the NCP licence key. The price is £25 a month, or £255 a year.
