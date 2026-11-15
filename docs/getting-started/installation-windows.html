@@ -21,8 +21,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <title>Installing on Windows — NodeControl Docs</title>
     <meta name="description" content="Node Control ships as an NSIS .exe installer. It needs Windows 10 or 11, 64-bit, about 500 MB, and SSH from the PC to the devices you manage.">
     <link rel="canonical" href="https://nodecontrol.io/docs/getting-started/installation-windows.html">
-    <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg">
-    <link rel="stylesheet" href="../../css/style.css?v=20261109hero">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="../../css/style.css?v=20261115logo">
     <link rel="stylesheet" href="../../css/docs.css?v=20261017">
     <script type="application/ld+json">
 {
@@ -61,7 +65,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
         <div class="nav-container">
             <a href="../../index.html" class="nav-logo">
-                <img src="../../images/logo-simple.svg" alt="NodeControl" class="nav-logo-img">
+                <picture>
+                    <source type="image/webp" srcset="../../images/logo-lockup.webp 1x, ../../images/logo-lockup@2x.webp 2x">
+                    <img src="../../images/logo-lockup.png" srcset="../../images/logo-lockup.png 1x, ../../images/logo-lockup@2x.png 2x" alt="NodeControl" class="nav-logo-img" width="166" height="40">
+                </picture>
                 <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
             </a>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">

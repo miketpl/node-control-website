@@ -422,12 +422,20 @@ a:hover {
     color: var(--text-primary);
 }
 
+.nav-logo picture,
+.footer-brand picture {
+    display: flex;
+    line-height: 0;
+}
+
 .nav-logo-img {
-    width: 36px;
-    height: 36px;
+    height: 40px;
+    width: auto;
+    display: block;
 }
 
 .nav-logo-text {
+    display: none;
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -1509,11 +1517,13 @@ select.form-input {
 }
 
 .footer-logo {
-    width: 40px;
     height: 40px;
+    width: auto;
+    display: block;
 }
 
 .footer-logo-text {
+    display: none;
     font-size: 1.15rem;
     font-weight: 600;
 }
