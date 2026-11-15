@@ -1,0 +1,144 @@
+/* Cookie banner. Loaded on every public page. Matches the site palette. */
+
+.nc-consent {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1100;
+    background: var(--bg-card, #111b26);
+    color: var(--text-primary, #d7e1ea);
+    border-top: 1px solid var(--cyan, #00e5ff);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+    font-family: var(--font, Inter, sans-serif);
+}
+
+.nc-consent-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nc-consent-copy {
+    flex: 1 1 280px;
+}
+
+.nc-consent-copy p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #a9b7c6);
+}
+
+#nc-consent-title {
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: var(--text-primary, #d7e1ea);
+}
+
+.nc-consent a {
+    color: var(--cyan, #00e5ff);
+}
+
+.nc-consent-actions,
+.nc-consent-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.nc-consent-panel[hidden] {
+    display: none;
+}
+
+.nc-consent-choice {
+    appearance: none;
+    background: transparent;
+    color: var(--cyan, #00e5ff);
+    border: 1px solid var(--cyan, #00e5ff);
+    border-radius: 8px;
+    padding: 10px 18px;
+    min-width: 8.75rem;
+    font-family: var(--font, Inter, sans-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+}
+
+.nc-consent-choice:hover,
+.nc-consent-manage:hover {
+    background: var(--cyan-glow, rgba(0, 229, 255, 0.15));
+}
+
+.nc-consent-choice:focus-visible,
+.nc-consent-manage:focus-visible,
+.nc-consent a:focus-visible,
+.nc-consent input:focus-visible {
+    outline: 2px solid var(--cyan, #00e5ff);
+    outline-offset: 2px;
+}
+
+.nc-consent-manage {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #a9b7c6);
+    font-family: var(--font, Inter, sans-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 10px 4px;
+}
+
+.nc-consent-panel label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--text-primary, #d7e1ea);
+}
+
+html.nc-consent-open body {
+    padding-bottom: 16rem;
+}
+
+html.nc-consent-manage-open body {
+    padding-bottom: 24rem;
+}
+
+@media (max-width: 640px) {
+    .nc-consent-actions,
+    .nc-consent-panel {
+        width: 100%;
+    }
+
+    .nc-consent-choice {
+        flex: 1 1 calc(50% - 10px);
+    }
+
+    html.nc-consent-open body {
+        padding-bottom: 24rem;
+    }
+
+    html.nc-consent-manage-open body {
+        padding-bottom: 32rem;
+    }
+}
+
+.footer-bottom .nc-cookie-settings {
+    color: var(--text-secondary, #a9b7c6);
+}
+
+.footer-social-bar .footer-bottom .nc-cookie-settings {
+    display: inline-block;
+    margin-top: 12px;
+}

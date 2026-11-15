@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TC3ZN5NN');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/css/consent.css?v=20261115consent">
+<script src="/js/consent.js?v=20261115consent"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional download — Node Control</title>
@@ -11,6 +25,10 @@
     <link rel="stylesheet" href="css/style.css?v=20261109hero">
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TC3ZN5NN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
     <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
@@ -60,7 +78,7 @@
                     </a>
                 </nav>
                 <p>&copy; 2026 Node Control Ltd. Node Control is a product of Node Control Ltd.</p>
-                <p><a href="index.html">Home</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+                <p><a href="index.html">Home</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="/privacy.html#cookies" class="nc-cookie-settings">Cookie settings</a></p>
             </div>
         </div>
     </footer>
@@ -110,7 +128,45 @@
                 return Math.min(seconds, 15) * 1000;
             }
 
+            var purchaseMemory = {};
+
+            function pushPurchase(data) {
+                if (!sessionId || purchaseMemory[sessionId]) return;
+                var key = 'nc_purchase_sent';
+                var sent = [];
+                try {
+                    var stored = JSON.parse(localStorage.getItem(key) || '[]');
+                    if (Array.isArray(stored)) {
+                        sent = stored.filter(function (item) {
+                            return typeof item === 'string';
+                        });
+                    }
+                } catch (err) {
+                    sent = [];
+                }
+                if (sent.indexOf(sessionId) !== -1) {
+                    purchaseMemory[sessionId] = true;
+                    return;
+                }
+                var payload = {
+                    event: 'purchase',
+                    transaction_id: sessionId,
+                    currency: 'GBP'
+                };
+                if (data && data.plan === 'monthly') payload.value = 25;
+                else if (data && data.plan === 'annual') payload.value = 255;
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push(payload);
+                purchaseMemory[sessionId] = true;
+                sent.push(sessionId);
+                if (sent.length > 20) sent = sent.slice(sent.length - 20);
+                try {
+                    localStorage.setItem(key, JSON.stringify(sent));
+                } catch (err) { /* this page view is already marked in memory */ }
+            }
+
             function paint(data) {
+                pushPurchase(data);
                 emailEl.hidden = false;
                 emailEl.textContent = 'This subscription is for ' + data.email + '.';
                 keyEl.hidden = false;
