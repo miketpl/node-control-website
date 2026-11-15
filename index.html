@@ -21,8 +21,12 @@
     <meta name="twitter:image:alt" content="Node Control. Desktop network operations for network engineers.">
     <meta name="twitter:site" content="@node_control_">
     <meta name="twitter:creator" content="@node_control_">
-    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20261114engineers">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="css/style.css?v=20261115logo">
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -34,9 +38,9 @@
       "url": "https://nodecontrol.io/",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://nodecontrol.io/images/logo-simple.svg",
-        "width": 256,
-        "height": 256
+        "url": "https://nodecontrol.io/images/logo-official.png",
+        "width": 1336,
+        "height": 834
       },
       "sameAs": [
         "https://x.com/node_control_",
@@ -105,7 +109,10 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#hero" class="nav-logo">
-                <img src="images/logo-simple.svg" alt="Node Control" class="nav-logo-img">
+                <picture>
+                    <source type="image/webp" srcset="images/logo-lockup.webp 1x, images/logo-lockup@2x.webp 2x">
+                    <img src="images/logo-lockup.png" srcset="images/logo-lockup.png 1x, images/logo-lockup@2x.png 2x" alt="Node Control" class="nav-logo-img" width="166" height="40">
+                </picture>
                 <span class="nav-logo-text">Node <span class="cyan">Control</span></span>
             </a>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
@@ -959,7 +966,10 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <img src="images/logo-simple.svg" alt="Node Control" class="footer-logo">
+                    <picture>
+                        <source type="image/webp" srcset="images/logo-lockup.webp 1x, images/logo-lockup@2x.webp 2x">
+                        <img src="images/logo-lockup.png" srcset="images/logo-lockup.png 1x, images/logo-lockup@2x.png 2x" alt="Node Control" class="footer-logo" width="166" height="40">
+                    </picture>
                     <span class="footer-logo-text">Node <span class="cyan">Control</span></span>
                     <p class="footer-tagline">Desktop network operations</p>
                     <nav class="footer-social" aria-label="Node Control on social media">
