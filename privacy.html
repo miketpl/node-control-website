@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TC3ZN5NN');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/css/consent.css?v=20261115consent">
+<script src="/js/consent.js?v=20261115consent"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy — Node Control</title>
@@ -29,6 +43,10 @@
     <link rel="stylesheet" href="css/style.css?v=20261115logo">
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TC3ZN5NN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
     <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
@@ -52,7 +70,7 @@
 
     <main class="legal-page">
         <div class="container">
-            <p>Last updated 9 November 2026.</p>
+            <p>Last updated 15 November 2026.</p>
             <h1>Privacy</h1>
             <p>This notice describes personal data used by the Node Control website, the Free Edition download, the Professional subscription, and the desktop app when it talks to the licence server at api.nodecontrol.io. Node Control is a product of Node Control Ltd.</p>
             <p>Device configs, topology, and credentials stay in the app on your computer. They are not sent to the licence server. The licence server does receive the categories on this page.</p>
@@ -71,6 +89,7 @@
                 <li>Contract: licences, downloads, and the service emails that go with them.</li>
                 <li>Legitimate interests: security, rate limiting, and aggregate usage statistics.</li>
                 <li>Legal obligation: billing records.</li>
+                <li>Consent: Google Analytics and Google Ads measurement cookies. You can withdraw that consent with the Cookie settings link in the footer.</li>
             </ul>
             <p>Those uses cover the following.</p>
             <ul>
@@ -136,6 +155,7 @@
                 <li>GitHub hosts the installer files. Your browser downloads the installer from GitHub, so GitHub sees that download. The licence server also asks GitHub for release details, using its own token.</li>
                 <li>A legacy switch can copy a free licence code to a file on GitHub. That file contains codes, not names or email addresses. The switch is off unless it is turned on. Professional activates with a licence key checked at api.nodecontrol.io.</li>
                 <li>Stripe processes the Professional payment, as above.</li>
+                <li>Google receives website measurement if you accept analytics or ads cookies. That covers Google Tag Manager, Google Analytics, and Google Ads. The cookies section says what is sent. Google's privacy policy is at <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>.</li>
                 <!-- SMTP host comes from the server environment. The code names no live provider. The unset default is not the host in use. -->
                 <li>Email is sent by our email delivery provider, over SMTP.</li>
             </ul>
@@ -143,7 +163,7 @@
             <p>There is no separate cookie page. Cookies are described below.</p>
 
             <h2>International transfers</h2>
-            <p>Processors such as Cloudflare, GitHub, Stripe, and our email delivery provider may process personal data outside the United Kingdom. Where they do, the transfer is made under UK adequacy regulations, or under the International Data Transfer Agreement or the UK Addendum to the EU Standard Contractual Clauses.</p>
+            <p>Processors such as Cloudflare, GitHub, Stripe, Google, and our email delivery provider may process personal data outside the United Kingdom. Where they do, the transfer is made under UK adequacy regulations, or under the International Data Transfer Agreement or the UK Addendum to the EU Standard Contractual Clauses.</p>
 
             <h2>How long we keep it</h2>
             <ul>
@@ -154,10 +174,16 @@
                 <li>An expired email code: we keep it for 30 days. A device-move code expires after 15 minutes, and maintenance removes expired codes when it runs. We delete or anonymise any that remain on request, or periodically.</li>
                 <li>Licence and registration records, including the computer a licence is active on and the record that a product notice was sent: we keep them while the licence is active, and for 2 years after it ends. We delete or anonymise them on request, or periodically.</li>
                 <li>Stripe and billing records: we keep them for 6 years, for UK tax. We delete or anonymise them on request, or periodically.</li>
+                <li>Google Analytics and Google Ads cookies: only after you accept. Google's default lifetime is two years for the Analytics cookie _ga, and 90 days for Ads cookies such as _gcl_au and _gcl_aw. A tag setting can make a lifetime shorter. You can withdraw consent with Cookie settings, and you can delete the cookies in the browser.</li>
             </ul>
 
-            <h2>Cookies and local storage</h2>
-            <p>The scripts on this website do not set a cookie, and they do not use local storage. Campaign tags are kept in session storage only for the visit, to credit a sign-up. The Free form sends those stored values when the page address has none.</p>
+            <h2 id="cookies">Cookies and local storage</h2>
+            <p>Google Tag Manager loads on each page. Until you choose, analytics storage and ads storage are denied, so Google Analytics and Google Ads cookies are not set. The page does not wait on a choice. Rejecting leaves that storage denied.</p>
+            <p>If you accept analytics, Google Analytics can set a first-party cookie named _ga to tell browsers apart. Google's default lifetime for _ga is two years. If you accept ads, Google Ads can set first-party cookies such as _gcl_au and _gcl_aw to measure an ad click and a later purchase. Google's published lifetime for those cookies is 90 days. Google's list of advertising and measurement cookies is at <a href="https://business.safety.google/adscookies/">business.safety.google/adscookies</a>. The Analytics cookie description is at <a href="https://support.google.com/analytics/answer/11397207">support.google.com/analytics/answer/11397207</a>.</p>
+            <p>Google receives that measurement, including the IP address and the pages opened, for the choices you accept. Google is the recipient and processes that measurement. Google's privacy policy is at <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>. The lawful basis is consent. Cloudflare Web Analytics, described above, is separate. It is cookieless and does not track people across sites.</p>
+            <p>The banner offers Accept all and Reject all with equal weight, and a Manage choice for analytics and ads separately. The boxes are not ticked in advance. The choice is stored in local storage on this browser, under the name nc_cookie_consent. It is not a cookie. Cookie settings, in the footer of each page, opens the same choice again. Choosing Reject all, or turning a category off, withdraws that consent on this browser. Withdrawal stops further use of that storage. It does not undo a measurement already sent.</p>
+            <p>After a Professional payment, and only once the success page has confirmed that the Stripe checkout is paid, the site sends a purchase event to Google Tag Manager. The event carries the Stripe checkout session id, the currency (GBP), and the price when the plan is known: £25 for monthly, or £255 for annual. It does not include an email address. The session id is stored in local storage under the name nc_purchase_sent so a reload of the same payment is not sent again.</p>
+            <p>Campaign tags (utm_source, utm_medium, utm_campaign, utm_content) are kept in session storage only for the visit, to credit a sign-up. They are not stored in a cookie. The Free form sends those stored values when the page address has none.</p>
             <p>Professional checkout happens on Stripe's website. Stripe's own cookies apply there.</p>
 
             <h2>Children</h2>
@@ -194,7 +220,7 @@
                     </a>
                 </nav>
                 <p>&copy; 2026 Node Control Ltd. Node Control is a product of Node Control Ltd.</p>
-                <p><a href="index.html">Home</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+                <p><a href="index.html">Home</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="/privacy.html#cookies" class="nc-cookie-settings">Cookie settings</a></p>
             </div>
         </div>
     </footer>
