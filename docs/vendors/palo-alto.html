@@ -258,7 +258,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </li>
 </ul>
 <p>Edges in the L3 map are tagged with the LR they came from. Hover an edge to see the per-LR breakdown.</p>
-<p>From 0.9.42, when the logical-router field is blank, the firewall&#x27;s routers are listed first and each router&#x27;s FIB is read. Route tables are kept per router, with one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error.</p>
+<p>From 0.9.42, when the logical-router field is blank, the firewall&#x27;s routers are listed first and each router&#x27;s FIB is read. Route tables are kept per router, with one row per neighbour. Neighbours are taken from the route tables, not by tracerouting off the map. Right-click a node on the L2, L3 and WAN maps for SSH, ping, and traceroute. A firewall with no redundancy facility is reported that way. It is not an error.</p>
 <p><strong>Important fix in 0.9.x</strong>: previous versions only walked the first LR — multi-LR PA deployments showed only partial peer detail. The 0.9.x parsers accumulate across all command outputs and the L3 task iterates every LR explicitly. Update if you&#x27;re on an older version.</p>
 <h2 id="vrf-stamping">VRF stamping</h2>
 <p>In the unioned L3 map, each edge is stamped with the LR (acting as VRF) it came from. If two LRs share a BGP peer (multi-tenant edge), you&#x27;ll see two edges between the same nodes, one per LR.</p>

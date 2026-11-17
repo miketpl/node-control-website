@@ -58,7 +58,7 @@ Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%)
 - [Monitor](https://nodecontrol.io/docs/tasks/monitor.html): Monitor polls interface counters, CPU, memory, and environment over SSH, with graphs and threshold alerts. On Pro and the AI edition. The trial shows a clickable example view. It is not operational until Pro.
 - [Firewall Rule Analyser](https://nodecontrol.io/docs/tasks/firewall-analyser.html): Firewall Rule Analyser is a PAN-OS tool on Pro and the AI edition. Load a config file, edit standards, and analyse. The trial shows a clickable example view. It is not operational until Pro.
 - [IPAM](https://nodecontrol.io/docs/tasks/ipam.html): IPAM tracks subnets and how much of each was seen in use. The list is the Site Subnets report. On Pro and the AI edition. The trial shows a clickable example view. It is not operational until Pro.
-- [Meraki Configurator](https://nodecontrol.io/docs/tasks/meraki-configurator.html): Meraki Configurator changes SSIDs and RF profiles across many networks in one pass, via the Dashboard API. It does not SSH to the APs. Pro and the AI edition. The trial shows a clickable example view. It is not operational until Pro.
+- [Meraki Configurator](https://nodecontrol.io/docs/tasks/meraki-configurator.html): Meraki Configurator changes SSIDs and RF profiles in one pass via the Dashboard API. The trial shows a clickable example view. It is not operational until Pro.
 
 ### Reports
 

@@ -271,6 +271,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </li>
 <li>Click a node: opens routing table summary
 </li>
+<li>Right-click a node for SSH, ping, and traceroute.
+</li>
 </ul>
 <h2 id="per-lr-per-vrf-unioning">Per-LR / per-VRF unioning</h2>
 <p>Devices with multiple routing instances (Palo Alto LRs, Cisco VRFs, Juniper routing-instances) have their adjacencies discovered per-instance and unioned together. The resulting map shows all peer relationships, with each edge annotated by which VRF / LR it came from.</p>
@@ -290,7 +292,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </tr>
 <tr>
 <td>Palo Alto PAN-OS</td>
-<td>Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall&#x27;s routers are listed first and each router&#x27;s FIB is read. Route tables are kept per router, one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error</td>
+<td>Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall&#x27;s routers are listed first and each router&#x27;s FIB is read. Route tables are kept per router, one row per neighbour. Neighbours are taken from the route tables, not by tracerouting off the map. Right-click a node on the L2, L3 and WAN maps for SSH, ping, and traceroute. A firewall with no redundancy facility is reported that way. It is not an error</td>
 </tr>
 <tr>
 <td>Juniper</td>

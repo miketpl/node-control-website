@@ -31,6 +31,7 @@ The WAN topology task walks one router-or-firewall per site (typically the WAN e
 - **Edges**: BGP peering, IPSec tunnels, MPLS pseudowires
 - **Edge labels**: AS path for BGP, tunnel peer for IPSec, VRF name for MPLS
 - Hover for full peer details
+- Right-click a node for SSH, ping, and traceroute.
 
 ## Best practice
 

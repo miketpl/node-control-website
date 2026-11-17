@@ -39,7 +39,7 @@ Node Control's L3 topology task walks **every logical router** plus the special 
 
 Edges in the L3 map are tagged with the LR they came from. Hover an edge to see the per-LR breakdown.
 
-From 0.9.42, when the logical-router field is blank, the firewall's routers are listed first and each router's FIB is read. Route tables are kept per router, with one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error.
+From 0.9.42, when the logical-router field is blank, the firewall's routers are listed first and each router's FIB is read. Route tables are kept per router, with one row per neighbour. Neighbours are taken from the route tables, not by tracerouting off the map. Right-click a node on the L2, L3 and WAN maps for SSH, ping, and traceroute. A firewall with no redundancy facility is reported that way. It is not an error.
 
 **Important fix in 0.9.x**: previous versions only walked the first LR — multi-LR PA deployments showed only partial peer detail. The 0.9.x parsers accumulate across all command outputs and the L3 task iterates every LR explicitly. Update if you're on an older version.
 
