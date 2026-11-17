@@ -1,6 +1,6 @@
 # Layer 3 topology map
 
-> The task name is **L3 Topology Builder**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
+> The task name is **L3 Topology Builder**. On **Pro** and the **AI** edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 The L3 topology map walks every routing device in scope, reads its routing table, OSPF and BGP neighbours, and renders an interactive map of the L3 overlay — which routers and firewalls peer with which, across what protocols.
 
@@ -36,6 +36,7 @@ For each L3-capable device:
   - ⚪ Grey: static / connected
 - Hover an edge: shows the OSPF area, BGP AS, or static route details
 - Click a node: opens routing table summary
+- Right-click a node for SSH, ping, and traceroute.
 
 ## Per-LR / per-VRF unioning
 
@@ -48,7 +49,7 @@ Hover a multi-VRF edge to see the per-VRF breakdown.
 | Vendor | Notes |
 |---|---|
 | Cisco IOS / IOS-XE / NX-OS | Full OSPF + BGP + EIGRP, multi-VRF. HSRP and VRRP gateways resolve to the active router on the map instead of an Internet node. A routed campus keeps proper rows. Point-to-point OSPF neighbours are handled. When the VRF field is blank, the device's own VRFs from `show vrf` are walked. NX-OS route tables with long via lines are read correctly |
-| Palo Alto PAN-OS | Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall's routers are listed first and each router's FIB is read. Route tables are kept per router, one row per neighbour. Node Control does not traceroute off the map. A firewall with no redundancy facility is reported that way. It is not an error |
+| Palo Alto PAN-OS | Walks every Logical Router and unions the results. From 0.9.42, with the logical-router field blank, the firewall's routers are listed first and each router's FIB is read. Route tables are kept per router, one row per neighbour. Neighbours are taken from the route tables, not by tracerouting off the map. Right-click a node on the L2, L3 and WAN maps for SSH, ping, and traceroute. A firewall with no redundancy facility is reported that way. It is not an error |
 | Juniper | OSPF + BGP via `show ospf neighbour` and `show bgp summary` |
 | Arista EOS | Routes, interfaces, and BGP peers are read as JSON first, with a text fallback. On an EOS campus a dynamically learned default is a routed adjacency, not a configured gateway. The VRRP virtual address resolves to the router that holds it. OSPF neighbours are parsed. A VARP gateway resolves by subnet ownership |
 | HP ProCurve | OSPF + BGP if licensed and configured |

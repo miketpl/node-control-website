@@ -42,7 +42,7 @@ The table is sortable and filterable:
 | **Switches** | Access, distribution, core switches |
 | **Routers** | WAN routers, branch ISRs, ASRs, CSRs |
 | **Firewalls** | Palo Alto, Fortigate, Cisco ASA |
-| **SD-WAN** | Velocloud, Viptela, Silver Peak edges |
+| **SD-WAN** | Velocloud and Viptela edges |
 | **Wireless** | Meraki MR, Cisco APs, Aruba IAP, controllers |
 | **Other** | Anything that doesn't fit above |
 

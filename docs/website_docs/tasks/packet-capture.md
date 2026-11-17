@@ -1,6 +1,6 @@
 # Packet Capture
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
+> On **Pro** and the **AI** edition. The task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
 
 **Packet Capture** runs an IOS-XE Embedded Packet Capture, exports it to flash, copies it locally, and opens it in Wireshark. It is Cisco IOS / IOS-XE only. Another vendor is skipped before any command is sent. The row reads `SKIP, "Packet Capture not supported on <type>"`.
 

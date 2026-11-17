@@ -1,6 +1,6 @@
 # Discover Variables
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode allows it.
+> On **Pro** and the **AI** edition. The task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode allows it.
 
 **Discover Variables** reads a few facts off each device and stores them on the library row. It is an inventory enrichment step. Nothing else in the app reads these values yet. [Config Push](config-push.md) does not use them.
 

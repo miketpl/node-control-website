@@ -4,7 +4,7 @@ Two different things share this name.
 
 The **File Transfer** sidebar page is on **Free**, **Pro**, and the **AI** edition. Nothing on that page is tier gated.
 
-The **File Transfer** Engineer task is Pro and the AI edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides the task. Safe Mode does not remove the sidebar page.
+The **File Transfer** Engineer task is Pro and the AI edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides the task. Safe Mode does not remove the sidebar page.
 
 ## The File Transfer page
 

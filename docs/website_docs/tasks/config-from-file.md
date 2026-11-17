@@ -1,6 +1,6 @@
 # Config from File
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
+> On **Pro** and the **AI** edition. The task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode hides it.
 
 **Config from File** sends the lines in a file to the devices you ticked. The lines go verbatim. There are no placeholders.
 

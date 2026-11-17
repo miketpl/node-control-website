@@ -1,6 +1,6 @@
 # Config Push
 
-> On **Pro** and the **AI** edition. On Free the task is listed but greyed, with an upgrade prompt. Safe Mode removes it.
+> On **Pro** and the **AI** edition. The task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is listed but greyed, with an upgrade prompt. Safe Mode removes it.
 
 **Config Push** sends commands to a list of switch ports from a file. You get a preview, safety exclusions, and a revert. It was called Interface Config Push until 0.9.39.
 
@@ -116,7 +116,7 @@ Sending is vendor-generic, through Netmiko. Save is mapped for Cisco, Arista, Ar
 
 Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert.
 
-The task is on Pro and the AI edition. On Free it is listed but greyed, with an upgrade prompt.
+The task is on Pro and the AI edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is listed but greyed, with an upgrade prompt.
 
 ## Safe Mode
 

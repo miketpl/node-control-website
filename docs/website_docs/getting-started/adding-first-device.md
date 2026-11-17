@@ -45,7 +45,7 @@ Without credentials configured, **Test Connection** will fail with an auth error
 
 If you have a known management subnet (e.g., `10.1.1.0/24` or `192.168.10.0/24`):
 
-1. Engineer → **Task** → **Library Updater** → **Run**. On Free this task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**
+1. Engineer → **Task** → **Library Updater** → **Run**. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial this task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**
 2. Under **Subnet Input:**, load an Excel file (column A is the subnet, column B is the site) or type rows of **Subnet (CIDR)** and **Site Code**
 3. Click **Start Scan**
 
@@ -66,7 +66,7 @@ Devices are organised into tabs based on their role:
 | **Switches** | Access switches, distribution switches, core switches |
 | **Routers** | WAN edge routers, branch routers, ISR / ASR / CSR |
 | **Firewalls** | Palo Alto, Fortigate, Cisco ASA |
-| **SD-WAN** | Velocloud, Viptela, Silver Peak edges |
+| **SD-WAN** | Velocloud and Viptela edges |
 | **Wireless** | Access points (Meraki MR, Cisco APs, Aruba IAP) and controllers |
 | **Other** | Anything that doesn't fit above |
 

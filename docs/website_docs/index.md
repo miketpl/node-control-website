@@ -26,26 +26,26 @@ A new Free activation starts a 14-day trial: all Engineer tasks, all reports, yo
 ## Tasks
 
 - [L2 Topology Builder](tasks/topology-l2.md) — on Free
-- [L3 Topology Builder](tasks/topology-l3.md) — Pro and AI
-- [Watcher of The WAN](tasks/topology-wan.md) — Pro and AI
+- [L3 Topology Builder](tasks/topology-l3.md) — in the 14-day trial, then Pro
+- [Watcher of The WAN](tasks/topology-wan.md) — in the 14-day trial, then Pro
 - [Config Backup and Save Config](tasks/config-backup.md) — on Free
 - [Config Compliance](tasks/config-compliance.md) — Pro and AI. After VLAN Port Finder, **Open port list** sends the ports you tick to the audit, which then checks only those interfaces
 - [Config from File](tasks/config-from-file.md) — Pro and AI; hidden in Safe Mode
 - [Discover Variables](tasks/discover-variables.md) — Pro and AI; inventory enrichment
-- [Discover](tasks/discovery.md) — sidebar page, Pro and AI; not on Free
+- [Discover](tasks/discovery.md) — sidebar page, the trial shows a clickable example view; not operational until Pro
 - [Lab Export](tasks/lab-export.md) — Pro and AI. A saved Discovery or L2 topology, plus an optional L3 topology and a Config Backup folder, becomes a Cisco CML 2.10 or EVE-NG Community 6.2 lab. Nothing connects to a device, so it is also available in Safe Mode
 - [Find Device](tasks/find-device.md) — on Free, one switch at a time
 - [Verify Device Types](tasks/verify-device-types.md) — Pro and AI
 - [SSH Terminal](tasks/ssh-terminal.md)
 - [Serial console](tasks/serial-console.md) — on the Engineer tab. Free and Pro; hidden in Safe Mode
 - [Local network terminal](tasks/local-terminal.md) — on the Engineer tab. Free and Pro; visible in Safe Mode
-- [Monitor](tasks/monitor.md) — Pro and AI; not on Free. Link status colours L2 cables for Cisco IOS, IOS-XE, and NX-OS ports
+- [Monitor](tasks/monitor.md) — the trial shows a clickable example view; not operational until Pro. Link status colours L2 cables for Cisco IOS, IOS-XE, and NX-OS ports
 - [Config Push](tasks/config-push.md) — Pro and AI. Commands to ports from a file. Full support is Cisco IOS, IOS-XE, and NX-OS. On Juniper Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Every other vendor, Palo Alto included, gets a template only, with no reliable revert. Safe Mode removes Config Push
 - [Packet Capture](tasks/packet-capture.md) — Pro and AI; hidden in Safe Mode
-- [Firewall Rule Analyser](tasks/firewall-analyser.md) — Pro and AI; not on Free
+- [Firewall Rule Analyser](tasks/firewall-analyser.md) — the trial shows a clickable example view; not operational until Pro
 - [File Transfer](tasks/file-transfer.md) — the page is on Free. The task is Pro
-- [IPAM](tasks/ipam.md) — Pro and AI; not on Free
-- [Meraki Configurator](tasks/meraki-configurator.md) — Pro and AI; not on Free
+- [IPAM](tasks/ipam.md) — the trial shows a clickable example view; not operational until Pro
+- [Meraki Configurator](tasks/meraki-configurator.md) — the trial shows a clickable example view; not operational until Pro
 
 ## Reports
 

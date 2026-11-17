@@ -168,6 +168,6 @@ It is one of the five tasks that run on Free. See [tier comparison](../tiers/ove
 
 ## Next steps
 
-- [Discover](discovery.md) — for live walks without library setup. Pro and AI; not on Free
+- [Discover](discovery.md) — for live walks without library setup. The trial shows a clickable example view; not operational until Pro
 - [L2 topology](topology-l2.md) — for the bigger picture of where devices are connected
 - [Safe Mode](../settings/safe-mode.md) — when to enable/disable it for port actions

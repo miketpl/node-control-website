@@ -1,8 +1,8 @@
 # Node Control
 
-> NodeControl is a desktop network-operations tool for network engineers. L2 topology mapping over SSH, find any MAC or IP, multi-vendor terminal, config backup and inventory. Runs on your laptop; your data stays there.
+> NodeControl is a desktop network-operations tool for network engineers. L2 topology mapping, find any MAC or IP, multi-vendor terminal, config backup and inventory. Runs on your laptop; your data stays there.
 
-Map your whole multi-vendor network over SSH, trace any MAC or IP to its switch port, and run audits, reports and config pushes from one app. Your data stays on your laptop.
+Map your whole multi-vendor network, trace any MAC or IP to its switch port, and run audits, reports and config pushes from one app. Your data stays on your laptop.
 
 Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%). A new Free activation starts a 14-day trial: all Engineer tasks, all reports, your own AI provider, and no device cap. After 14 days, the Free Edition is free for up to 25 devices.
 
@@ -11,11 +11,11 @@ Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%)
 - [Home](https://nodecontrol.io/): NodeControl is a desktop network-operations tool for network engineers. Runs on your laptop; your data stays there.
 - [Free download](https://nodecontrol.io/free/): A new Free activation starts a 14-day trial, then it is free for up to 25 devices, on macOS and Windows. No card needed.
 - [Pricing and Professional](https://nodecontrol.io/#pricing): Free Edition, Professional at £25/month or £255/year, and Enterprise at a custom price.
-- [Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map from SSH. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
+- [Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
 
 ## Documentation
 
-- [NodeControl Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map from SSH. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
+- [NodeControl Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
 
 ### Getting Started
 
@@ -32,7 +32,7 @@ Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%)
 
 - [Library overview](https://nodecontrol.io/docs/library/overview.html): The library is the list of devices Node Control can connect to. Topology maps, reports, Find Device, and the SSH terminal all run against devices in that list.
 - [Adding devices manually](https://nodecontrol.io/docs/library/adding-devices.html): Add one device from the Engineer device table. The management IP is required, and it is IPv4 only. Hostname, site code, and tab are optional.
-- [Subnet scan (Library Updater)](https://nodecontrol.io/docs/library/subnet-scan.html): Library Updater walks an IP range, tries SSH, and adds devices with type, hostname, and site code. Pro and the AI edition. On Free the task is greyed out.
+- [Subnet scan (Library Updater)](https://nodecontrol.io/docs/library/subnet-scan.html): Library Updater walks an IP range, tries SSH, and adds devices with type, hostname, and site code. Pro and the AI edition. Included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is greyed out.
 - [Organising devices by site](https://nodecontrol.io/docs/library/sites.html): A site code groups devices by location, customer, or domain. The codes narrow which devices a tool runs on, which appear on a map, and how reports aggregate.
 - [Sharing libraries via GitHub](https://nodecontrol.io/docs/library/github-sync.html): GitHub push and pull run on Free, Pro, and the AI edition. Set the repository and token in Settings. On Free, a pulled library is cut to the first 25 devices.
 
@@ -92,7 +92,7 @@ Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%)
 - [Settings overview](https://nodecontrol.io/docs/settings/overview.html): Open Settings from the navigation footer, or Edit, Settings. On macOS it is in the application menu. There is no Tools menu and no Ctrl or Cmd comma shortcut.
 - [Site detection rules](https://nodecontrol.io/docs/settings/site-detection.html): Site detection reads a hostname and extracts a short site code, usually two to four characters, such as LON or NYC. Those codes drive filters and scopes.
 - [Custom command catalogs](https://nodecontrol.io/docs/settings/custom-commands.html): The command catalog maps a vendor and a capability to a show command. Defaults cover most devices. Unusual firmware can override or add commands per device.
-- [Custom Scripts](https://nodecontrol.io/docs/settings/scripts.html): A custom script is a Python file run as an Engineer task, on Pro and the AI edition. On Free it can be registered, but the task is greyed out and Run refuses.
+- [Custom Scripts](https://nodecontrol.io/docs/settings/scripts.html): A custom script is a Python file run as an Engineer task, on Pro and the AI edition. On Free it can be registered. The task is included for the first 14 days of the trial, then it needs Pro. After the trial it is greyed out and Run refuses.
 - [Safe Mode](https://nodecontrol.io/docs/settings/safe-mode.html): Safe Mode is session-wide. Each launch asks for Safe Mode or Config Mode. There is no default. Cancel quits the app. The task list is cut while it is on.
 - [AI provider](https://nodecontrol.io/docs/settings/ai.html): Feature-level AI runs on Pro, on a provider you configure. Free opens the payload and sends nothing. The AI edition is nine specialist agents, not this setting.
 - [AI on Professional](https://nodecontrol.io/docs/settings/ai-llm.html): AI on Professional: bring your own key. Auto-detect, Backend, Anthropic, OpenAI, Gemini, Grok, OpenAI-compatible endpoint, Ollama, or Disabled.

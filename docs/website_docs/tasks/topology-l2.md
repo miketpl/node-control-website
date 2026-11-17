@@ -54,13 +54,13 @@ Interactions:
 
 - **Hover** a node — shows interface details
 - **Drag** a node — repositions it; the force-directed layout adjusts
-- **Right-click** a node — its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports
+- **Right-click** a node — its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports. The same menu offers SSH, ping, and traceroute
 
 Port Connections is the Pro Discover tab. It is not this map.
 
 ## Right-click → MAC table
 
-Right-click a switch for its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports. The MAC flyout does not show an OUI vendor or a neighbour.
+Right-click a switch for its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports. The same menu offers SSH, ping, and traceroute. The MAC flyout does not show an OUI vendor or a neighbour.
 
 ## Map per run
 
@@ -130,4 +130,4 @@ On Cisco NX-OS, MAC-table entries are read on their real port. The age column is
 
 - [Layer 3 topology](topology-l3.md) — adds routing info, OSPF/BGP peers
 - [WAN topology](topology-wan.md) — across-site view
-- [Discover](discovery.md) — live walk without needing the library pre-populated. Pro and AI; not on Free
+- [Discover](discovery.md) — live walk without needing the library pre-populated. The trial shows a clickable example view; not operational until Pro
