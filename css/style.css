@@ -1501,17 +1501,6 @@ select.form-input {
     transform: translateY(-1px);
 }
 
-.btn-primary-orange {
-    background: var(--orange);
-    color: #1a1000;
-}
-.btn-primary-orange:hover {
-    background: var(--orange-light);
-    color: #1a1000;
-    box-shadow: 0 0 24px var(--orange-glow-strong);
-    transform: translateY(-1px);
-}
-
 /* ── Docs ──────────────────────────────────────────────────── */
 .docs-grid {
     display: grid;
@@ -2439,8 +2428,7 @@ select.form-input {
 }
 
 /* .payment-pending hides a control that is not for sale yet.
-   The AI edition anchors use it: that edition has no price and no public download.
-   Professional subscribe buttons stay visible. */
+   Professional subscribe buttons use it when checkout is turned off. */
 .payment-pending {
     display: none !important;
 }
