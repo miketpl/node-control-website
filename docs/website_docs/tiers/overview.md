@@ -47,7 +47,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 
 Free is a working copy for a small estate.
 
-A new activation starts a 14-day trial. One trial per email address, and one per computer. For those 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. The trial shows Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator as clickable example views. They are not operational until Pro. After 14 days the trial ends, and the limits below are what remains.
+A new activation starts a 14-day trial. One trial per email address, and one per computer. For those 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator stay off. After 14 days the trial ends, and the limits below are what remains.
 
 ### What you get
 
