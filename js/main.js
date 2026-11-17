@@ -83,8 +83,11 @@
     fetch(API_BASE + '/api/v1/status', statusOptions)
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (data) {
-            if (!downloadSection || !data || data.free_downloads_paused !== true) return;
-            downloadSection.classList.add('free-paused');
+            if (!data || data.free_downloads_paused !== true) return;
+            if (downloadSection) downloadSection.classList.add('free-paused');
+            document.querySelectorAll('[data-trial-form]').forEach(function (block) {
+                block.classList.add('free-paused');
+            });
             var notice = document.getElementById('free-paused-notice');
             if (!notice) {
                 var header = document.querySelector('#free-edition .download-tier-header');
@@ -386,6 +389,40 @@
         } catch (err) { /* the page still works */ }
     }
 
+    // One trial_signup per download code. The dataLayer event is only the
+    // name and the method. The code stays in memory and in nc_signup_sent
+    // so a repeat response is not sent again. It is not put on the event.
+    var signupMemory = {};
+
+    function pushTrialSignup(downloadCode, method) {
+        var code = String(downloadCode || '');
+        if (!code || signupMemory[code]) return;
+        var key = 'nc_signup_sent';
+        var sent = [];
+        try {
+            var stored = JSON.parse(localStorage.getItem(key) || '[]');
+            if (Array.isArray(stored)) {
+                sent = stored.filter(function (item) {
+                    return typeof item === 'string';
+                });
+            }
+        } catch (err) {
+            sent = [];
+        }
+        if (sent.indexOf(code) !== -1) {
+            signupMemory[code] = true;
+            return;
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'trial_signup', method: method });
+        signupMemory[code] = true;
+        sent.push(code);
+        if (sent.length > 20) sent = sent.slice(sent.length - 20);
+        try {
+            localStorage.setItem(key, JSON.stringify(sent));
+        } catch (err) { /* this page view is already marked in memory */ }
+    }
+
     function trackDownload(code, platform, kind) {
         if (kind === 'click') signalConversion('download');
         try {
@@ -444,8 +481,8 @@
     function watchFreeFunnel() {
         var seenView = false;
         var seenStart = false;
-        var section = document.getElementById('free-edition');
-        if (section && typeof IntersectionObserver === 'function') {
+        var sections = document.querySelectorAll('[data-trial-view]');
+        if (sections.length && typeof IntersectionObserver === 'function') {
             try {
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
@@ -455,20 +492,24 @@
                         observer.disconnect();
                     });
                 }, { threshold: [0.5] });
-                observer.observe(section);
+                sections.forEach(function (section) { observer.observe(section); });
             } catch (err) { /* leave the page alone */ }
         }
-        var form = document.getElementById('freeRequestForm');
-        if (!form) return;
+        var forms = document.querySelectorAll('[data-trial-form] form');
+        if (!forms.length) return;
         function markStart() {
             if (seenStart) return;
             seenStart = true;
             trackFunnel('free_form_start');
-            form.removeEventListener('focusin', markStart);
-            form.removeEventListener('input', markStart);
+            forms.forEach(function (form) {
+                form.removeEventListener('focusin', markStart);
+                form.removeEventListener('input', markStart);
+            });
         }
-        form.addEventListener('focusin', markStart);
-        form.addEventListener('input', markStart);
+        forms.forEach(function (form) {
+            form.addEventListener('focusin', markStart);
+            form.addEventListener('input', markStart);
+        });
     }
 
     watchFreeFunnel();
@@ -493,256 +534,298 @@
         return { status: res.status, data: await res.json() };
     }
 
-    // ── Free Request Form — Step 1: Request Access ─────────────
-    let pendingEmail = '';  // Track email between steps
+    // ── Free trial forms. One page can have several. The homepage
+    // keeps the original element ids. Other forms use data-trial.
+    var TRIAL_LEGACY = {
+        email: "reqEmail",
+        platform: "reqPlatform",
+        company: "reqCompany",
+        name: "reqName",
+        submit: "reqSubmitBtn",
+        result: "reqResult",
+        verify: "verifySection",
+        "verify-email": "verifyEmailDisplay",
+        "verify-code": "verifyCode",
+        "verify-btn": "verifyBtn",
+        "verify-result": "verifyResult",
+        resend: "resendBtn",
+        code: "downloadCodeSection",
+        revealed: "revealedCode",
+        confirm: "downloadConfirmNote",
+        "email-note": "downloadEmailNote",
+        "email-delivery": "reqEmailDelivery",
+        "redeem-code": "redeemCode",
+        "redeem-btn": "redeemBtn",
+        "redeem-result": "redeemResult"
+    };
 
-    const freeForm = document.getElementById('freeRequestForm');
-    const verifySection = document.getElementById('verifySection');
-    const downloadCodeSection = document.getElementById('downloadCodeSection');
-    const reqResult = document.getElementById('reqResult');
+    function prefersEmailDelivery() {
+        try {
+            if (window.matchMedia && window.matchMedia("(max-width: 768px)").matches) return true;
+        } catch (err) { /* fall through to the user agent */ }
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+    }
 
-    if (freeForm) {
-        freeForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            trackFunnel('free_form_submit');
+    function trialNode(root, name) {
+        var inside = root.querySelector('[data-trial="' + name + '"]');
+        if (inside) return inside;
+        if (root.id !== "free-edition") return null;
+        var id = TRIAL_LEGACY[name];
+        return id ? document.getElementById(id) : null;
+    }
 
-            const btn = document.getElementById('reqSubmitBtn');
-            const nameEl = document.getElementById('reqName');
-            const name = nameEl ? nameEl.value.trim() : '';
-            const email = document.getElementById('reqEmail').value.trim();
-            const platform = document.getElementById('reqPlatform').value;
-            const company = document.getElementById('reqCompany').value.trim();
+    function startDownload(url) {
+        var a = document.createElement("a");
+        a.href = url;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { a.remove(); }, 1000);
+    }
 
-            if (!email || !platform) {
-                showResult(reqResult, 'Enter your email and platform.', 'error');
-                return;
+    function isInstallerUrl(url) {
+        if (!url) return false;
+        if (/\.(dmg|exe)(\?|#|$)/i.test(url)) return true;
+        try {
+            var parsed = new URL(url, window.location.href);
+            return /\/api\/v1\/download\/free\/(mac|win)$/i.test(parsed.pathname);
+        } catch (err) {
+            return false;
+        }
+    }
+
+    function bindTrialForm(root) {
+        var form = root.querySelector("form");
+        var emailInput = trialNode(root, "email");
+        var platformSelect = trialNode(root, "platform");
+        var companyInput = trialNode(root, "company");
+        var nameInput = trialNode(root, "name");
+        var submitBtn = trialNode(root, "submit");
+        var reqResult = trialNode(root, "result");
+        var verifySection = trialNode(root, "verify");
+        var verifyEmail = trialNode(root, "verify-email");
+        var verifyCodeInput = trialNode(root, "verify-code");
+        var verifyBtn = trialNode(root, "verify-btn");
+        var verifyResult = trialNode(root, "verify-result");
+        var resendBtn = trialNode(root, "resend");
+        var codeSection = trialNode(root, "code");
+        var revealed = trialNode(root, "revealed");
+        var confirmNote = trialNode(root, "confirm");
+        var emailNote = trialNode(root, "email-note");
+        var emailDelivery = trialNode(root, "email-delivery");
+        var emailDeliveryNote = root.querySelector("[data-trial='email-note-preview']");
+        var redeemCode = trialNode(root, "redeem-code");
+        var redeemBtn = trialNode(root, "redeem-btn");
+        var redeemResult = trialNode(root, "redeem-result");
+        var pendingEmail = "";
+
+        function wantsEmail() {
+            return !!(emailDelivery && emailDelivery.checked);
+        }
+
+        function idleLabel() {
+            if (wantsEmail()) return "Email me the download";
+            return (submitBtn && submitBtn.getAttribute("data-label")) || "Start the 14-day trial";
+        }
+
+        function restoreSubmit() {
+            if (!submitBtn) return;
+            submitBtn.textContent = idleLabel();
+            submitBtn.style.opacity = "";
+            submitBtn.style.pointerEvents = "";
+        }
+
+        function syncEmailDelivery() {
+            if (emailDeliveryNote) emailDeliveryNote.hidden = !wantsEmail();
+            if (wantsEmail() && platformSelect && !platformSelect.value) platformSelect.value = "both";
+            if (submitBtn && submitBtn.style.pointerEvents !== "none") submitBtn.textContent = idleLabel();
+        }
+
+        if (emailDelivery) {
+            if (prefersEmailDelivery()) emailDelivery.checked = true;
+            emailDelivery.addEventListener("change", syncEmailDelivery);
+            syncEmailDelivery();
+        }
+
+        function reveal(el) {
+            if (!el) return;
+            el.hidden = false;
+            el.style.display = "block";
+        }
+
+        function showCode(code) {
+            if (form) form.style.display = "none";
+            if (verifySection) verifySection.style.display = "none";
+            reveal(codeSection);
+            if (revealed) revealed.textContent = code;
+            if (confirmNote) confirmNote.style.display = "block";
+            if (emailNote) {
+                emailNote.hidden = false;
+                emailNote.style.display = wantsEmail() ? "block" : "none";
             }
+            if (!wantsEmail() && redeemCode && redeemBtn) {
+                redeemCode.value = code;
+                setTimeout(function () { redeemBtn.click(); }, 500);
+            }
+        }
 
-            btn.textContent = 'Sending…';
-            btn.style.opacity = '0.6';
-            btn.style.pointerEvents = 'none';
-            reqResult.className = 'redeem-result';
-
-            try {
-                const { status, data } = await apiCall('/api/request-access',
-                    Object.assign({ name, email, company, platform }, attributionPayload()));
-
-                if (data.success && data.download_code) {
-                    signalConversion('sign_up');
-                    pendingEmail = email;
-                    freeForm.style.display = 'none';
-                    if (verifySection) verifySection.style.display = 'none';
-                    downloadCodeSection.style.display = 'block';
-                    document.getElementById('revealedCode').textContent = data.download_code;
-                    const note = document.getElementById('downloadConfirmNote');
-                    if (note) note.style.display = 'block';
-                    const redeemInput = document.getElementById('redeemCode');
-                    if (redeemInput) {
-                        redeemInput.value = data.download_code;
-                        setTimeout(() => document.getElementById('redeemBtn').click(), 500);
-                    }
-                } else if (data.success) {
-                    // A page that still has a 6-digit request in progress.
-                    pendingEmail = email;
-                    freeForm.style.display = 'none';
-                    verifySection.style.display = 'block';
-                    document.getElementById('verifyEmailDisplay').textContent = email;
-                    document.getElementById('verifyCode').focus();
-                } else {
-                    showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Download Free';
-                    btn.style.opacity = '';
-                    btn.style.pointerEvents = '';
+        if (form && emailInput && platformSelect && submitBtn && reqResult) {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                trackFunnel("free_form_submit");
+                var name = nameInput ? nameInput.value.trim() : "";
+                var email = emailInput.value.trim();
+                var platform = platformSelect.value;
+                var company = companyInput ? companyInput.value.trim() : "";
+                if (!email || !platform) {
+                    showResult(reqResult, "Enter your email and platform.", "error");
+                    return;
                 }
-            } catch (err) {
-                showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Download Free';
-                btn.style.opacity = '';
-                btn.style.pointerEvents = '';
-            }
-        });
-    }
-
-    // ── Step 2: Verify email code ──────────────────────────────
-    const verifyBtn = document.getElementById('verifyBtn');
-    const verifyCodeInput = document.getElementById('verifyCode');
-    const verifyResult = document.getElementById('verifyResult');
-    const resendBtn = document.getElementById('resendBtn');
-
-    if (verifyBtn) {
-        async function doVerify() {
-            const code = verifyCodeInput.value.trim();
-            if (!code || code.length < 6) {
-                showResult(verifyResult, 'Please enter the 6-digit code from your email.', 'error');
-                return;
-            }
-
-            verifyBtn.textContent = 'Verifying…';
-            verifyBtn.style.opacity = '0.6';
-
-            try {
-                const { status, data } = await apiCall('/api/verify', { email: pendingEmail, code });
-
-                if (data.success) {
-                    // Show the download code
-                    verifySection.style.display = 'none';
-                    downloadCodeSection.style.display = 'block';
-                    document.getElementById('revealedCode').textContent = data.download_code;
-
-                    // Also auto-fill the redeem section
-                    const redeemInput = document.getElementById('redeemCode');
-                    if (redeemInput) {
-                        redeemInput.value = data.download_code;
-                        // Auto-trigger redeem
-                        setTimeout(() => document.getElementById('redeemBtn').click(), 500);
-                    }
-                } else {
-                    showResult(verifyResult, data.error || 'Invalid code. Please try again.', 'error');
-                    verifyBtn.textContent = 'Verify';
-                    verifyBtn.style.opacity = '';
-                }
-            } catch (err) {
-                showResult(verifyResult, 'Connection error. Please try again.', 'error');
-                verifyBtn.textContent = 'Verify';
-                verifyBtn.style.opacity = '';
-            }
-        }
-
-        verifyBtn.addEventListener('click', doVerify);
-        verifyCodeInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); doVerify(); }
-        });
-    }
-
-    // Resend button
-    if (resendBtn) {
-        resendBtn.addEventListener('click', async function () {
-            if (!pendingEmail) return;
-            this.textContent = 'Resending…';
-            this.style.pointerEvents = 'none';
-
-            try {
-                // Re-submit the original form data
-                const nameEl = document.getElementById('reqName');
-                const name = nameEl ? nameEl.value.trim() : '';
-                const platform = document.getElementById('reqPlatform').value;
-                const company = document.getElementById('reqCompany').value.trim();
-                await apiCall('/api/request-access',
-                    Object.assign({ name, email: pendingEmail, company, platform }, attributionPayload()));
-                this.textContent = 'Code resent! Check your inbox.';
-                this.style.color = '#00e8ff';
-            } catch (err) {
-                this.textContent = 'Failed to resend. Try again.';
-            }
-
-            setTimeout(() => {
-                this.textContent = "Didn't receive it? Resend code";
-                this.style.pointerEvents = '';
-                this.style.color = '';
-            }, 5000);
-        });
-    }
-
-    // ── Download Code Redemption (via API) ─────────────────────
-    const redeemBtn = document.getElementById('redeemBtn');
-    const redeemCode = document.getElementById('redeemCode');
-    const redeemResult = document.getElementById('redeemResult');
-
-    if (redeemBtn && redeemCode && redeemResult) {
-        // Trigger a file download without leaving the page. GitHub release
-        // assets are served as attachments, so navigating a hidden anchor
-        // starts the download in place.
-        function startDownload(url) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => a.remove(), 1000);
-        }
-
-        // A direct installer ends in .dmg or .exe. A signed Free link is
-        // /api/v1/download/free/mac or /win and does not. The GitHub
-        // releases-page fallback is neither, so it still shows the buttons.
-        function isInstallerUrl(url) {
-            if (!url) return false;
-            if (/\.(dmg|exe)(\?|#|$)/i.test(url)) return true;
-            try {
-                var parsed = new URL(url, window.location.href);
-                return /\/api\/v1\/download\/free\/(mac|win)$/i.test(parsed.pathname);
-            } catch (err) {
-                return false;
-            }
-        }
-
-        async function validateCode(code) {
-            const normalised = code.trim().toUpperCase().replace(/\s+/g, '-');
-
-            if (!normalised) {
-                showResult(redeemResult, 'Please enter a download code.', 'error');
-                return;
-            }
-
-            redeemBtn.textContent = 'Checking…';
-            redeemBtn.style.opacity = '0.6';
-
-            try {
-                const { status, data } = await apiCall('/api/redeem', { code: normalised });
-
-                if (data.success) {
-                    const urls = data.downloads;
-
-                    // Platform chosen in the request form, if the user came
-                    // through the email flow this session. Returning users
-                    // with a saved code won't have one — treat as "both".
-                    const platformSelect = document.getElementById('reqPlatform');
-                    const chosen = platformSelect ? platformSelect.value : '';
-                    const key = chosen === 'macos' ? 'mac' : chosen === 'windows' ? 'win' : null;
-
-                    if (key && isInstallerUrl(urls[key])) {
-                        const other = key === 'mac' ? 'win' : 'mac';
-                        const otherLabel = key === 'mac' ? 'Windows (.exe)' : 'macOS (.dmg)';
-                        startDownload(urls[key]);
-                        trackDownload(normalised, key, 'auto');
-                        showResult(redeemResult,
-                            '<strong>' + data.label + '</strong> — your download is starting.' +
-                            '<div class="redeem-download-links">' +
-                            '<a href="' + urls[key] + '" class="redeem-fallback-link" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
-                            '</div>' +
-                            '<a href="' + urls[other] + '" class="redeem-other-link" data-platform="' + other + '">Need ' + otherLabel + ' instead?</a>',
-                            'success'
-                        );
+                submitBtn.textContent = "Sending…";
+                submitBtn.style.opacity = "0.6";
+                submitBtn.style.pointerEvents = "none";
+                reqResult.className = "redeem-result";
+                try {
+                    var result = await apiCall("/api/request-access",
+                        Object.assign({ name: name, email: email, company: company, platform: platform }, attributionPayload()));
+                    var data = result.data;
+                    if (data.success && data.download_code) {
+                        signalConversion("sign_up");
+                        pushTrialSignup(data.download_code, "request_access");
+                        pendingEmail = email;
+                        showCode(data.download_code);
+                    } else if (data.success && verifySection && verifyEmail && verifyCodeInput) {
+                        pendingEmail = email;
+                        form.style.display = "none";
+                        reveal(verifySection);
+                        verifyEmail.textContent = email;
+                        verifyCodeInput.focus();
                     } else {
-                        showResult(redeemResult,
-                            '<strong>' + data.label + '</strong> — choose your platform:' +
-                            '<div class="redeem-download-links">' +
-                            '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
-                            '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
-                            '</div>',
-                            'success'
-                        );
+                        showResult(reqResult, data.error || "Something went wrong. Please try again.", "error");
+                        restoreSubmit();
                     }
-                    redeemResult.querySelectorAll('a[data-platform]').forEach(function (link) {
-                        link.addEventListener('click', function () {
-                            trackDownload(normalised, link.getAttribute('data-platform'), 'click');
-                        });
-                    });
-                } else {
-                    showResult(redeemResult, data.error || 'Invalid code. Please try again.', 'error');
+                } catch (err) {
+                    showResult(reqResult, "Connection error. Please try again.", "error");
+                    restoreSubmit();
                 }
-            } catch (err) {
-                showResult(redeemResult, 'Connection error. Please try again.', 'error');
-            }
-
-            redeemBtn.textContent = 'Redeem';
-            redeemBtn.style.opacity = '';
+            });
         }
 
-        redeemBtn.addEventListener('click', () => validateCode(redeemCode.value));
-        redeemCode.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); validateCode(redeemCode.value); }
-        });
+        if (verifyBtn && verifyCodeInput && verifyResult && verifySection && codeSection) {
+            async function doVerify() {
+                var code = verifyCodeInput.value.trim();
+                if (!code || code.length < 6) {
+                    showResult(verifyResult, "Please enter the 6-digit code from your email.", "error");
+                    return;
+                }
+                verifyBtn.textContent = "Verifying…";
+                verifyBtn.style.opacity = "0.6";
+                try {
+                    var result = await apiCall("/api/verify", { email: pendingEmail, code: code });
+                    if (result.data.success && result.data.download_code) {
+                        pushTrialSignup(result.data.download_code, "verify");
+                        showCode(result.data.download_code);
+                    } else {
+                        showResult(verifyResult, result.data.error || "Invalid code. Please try again.", "error");
+                        verifyBtn.textContent = "Verify";
+                        verifyBtn.style.opacity = "";
+                    }
+                } catch (err) {
+                    showResult(verifyResult, "Connection error. Please try again.", "error");
+                    verifyBtn.textContent = "Verify";
+                    verifyBtn.style.opacity = "";
+                }
+            }
+            verifyBtn.addEventListener("click", doVerify);
+            verifyCodeInput.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") { e.preventDefault(); doVerify(); }
+            });
+        }
+
+        if (resendBtn) {
+            resendBtn.addEventListener("click", async function () {
+                if (!pendingEmail) return;
+                this.textContent = "Resending…";
+                this.style.pointerEvents = "none";
+                try {
+                    var name = nameInput ? nameInput.value.trim() : "";
+                    var platform = platformSelect ? platformSelect.value : "";
+                    var company = companyInput ? companyInput.value.trim() : "";
+                    await apiCall("/api/request-access",
+                        Object.assign({ name: name, email: pendingEmail, company: company, platform: platform }, attributionPayload()));
+                    this.textContent = "Code resent. Check your inbox.";
+                    this.style.color = "#00e8ff";
+                } catch (err) {
+                    this.textContent = "Failed to resend. Try again.";
+                }
+                var button = this;
+                setTimeout(function () {
+                    button.textContent = "Didn't receive it? Resend code";
+                    button.style.pointerEvents = "";
+                    button.style.color = "";
+                }, 5000);
+            });
+        }
+
+        if (redeemBtn && redeemCode && redeemResult) {
+            async function validateCode(code) {
+                var normalised = code.trim().toUpperCase().replace(/\s+/g, "-");
+                if (!normalised) {
+                    showResult(redeemResult, "Please enter a download code.", "error");
+                    return;
+                }
+                redeemBtn.textContent = "Checking…";
+                redeemBtn.style.opacity = "0.6";
+                try {
+                    var result = await apiCall("/api/redeem", { code: normalised });
+                    var data = result.data;
+                    if (data.success) {
+                        var urls = data.downloads;
+                        var chosen = platformSelect ? platformSelect.value : "";
+                        var key = chosen === "macos" ? "mac" : chosen === "windows" ? "win" : null;
+                        if (key && isInstallerUrl(urls[key])) {
+                            var other = key === "mac" ? "win" : "mac";
+                            var otherLabel = key === "mac" ? "Windows (.exe)" : "macOS (.dmg)";
+                            startDownload(urls[key]);
+                            trackDownload(normalised, key, "auto");
+                            showResult(redeemResult,
+                                "<strong>" + data.label + "</strong> — your download is starting." +
+                                '<div class="redeem-download-links">' +
+                                '<a href="' + urls[key] + '" class="redeem-fallback-link" data-platform="' + key + '">Download didn\'t start? Click here.</a>' +
+                                "</div>" +
+                                '<a href="' + urls[other] + '" class="redeem-other-link" data-platform="' + other + '">Need ' + otherLabel + " instead?</a>",
+                                "success");
+                        } else {
+                            showResult(redeemResult,
+                                "<strong>" + data.label + "</strong> — choose your platform:" +
+                                '<div class="redeem-download-links">' +
+                                '<a href="' + urls.mac + '" class="btn btn-outline btn-sm" data-platform="mac">macOS (.dmg)</a>' +
+                                '<a href="' + urls.win + '" class="btn btn-outline btn-sm" data-platform="win">Windows (.exe)</a>' +
+                                "</div>",
+                                "success");
+                        }
+                        redeemResult.querySelectorAll("a[data-platform]").forEach(function (link) {
+                            link.addEventListener("click", function () {
+                                trackDownload(normalised, link.getAttribute("data-platform"), "click");
+                            });
+                        });
+                    } else {
+                        showResult(redeemResult, data.error || "Invalid code. Please try again.", "error");
+                    }
+                } catch (err) {
+                    showResult(redeemResult, "Connection error. Please try again.", "error");
+                }
+                redeemBtn.textContent = "Redeem";
+                redeemBtn.style.opacity = "";
+            }
+            redeemBtn.addEventListener("click", function () { validateCode(redeemCode.value); });
+            redeemCode.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") { e.preventDefault(); validateCode(redeemCode.value); }
+            });
+        }
     }
+
+    document.querySelectorAll("[data-trial-form]").forEach(bindTrialForm);
 
     // ── Scroll-triggered fade-in animations ──────────────────
     const animatedElements = document.querySelectorAll(

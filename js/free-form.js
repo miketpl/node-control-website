@@ -77,6 +77,79 @@
 
     rememberAttribution();
 
+    function prefersEmailDelivery() {
+        try {
+            if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) return true;
+        } catch (err) { /* fall through to the user agent */ }
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+    }
+
+    function applyFreeHeadline() {
+        var heading = document.getElementById('freeHeadline');
+        if (!heading) return;
+        var params = new URLSearchParams(window.location.search);
+        var content = params.get('utm_content') || '';
+        if (!content) {
+            var stored = storedAttribution();
+            content = stored ? (stored.utm_content || '') : '';
+        }
+        var key = String(content).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        if (!key || /discover|firewall/.test(key)) return;
+        var shot = document.getElementById('freeShot');
+        function matches(list) {
+            return list.some(function (item) {
+                return key === item || key.indexOf(item) !== -1;
+            });
+        }
+        if (matches(['topology', 'watcher', 'wan', 'maps'])) {
+            heading.textContent = 'L2, L3 and WAN maps, and Watcher of The WAN, in a 14-day trial of Node Control Pro';
+            if (!shot) return;
+            if (matches(['watcher', 'wan'])) {
+                shot.src = '../images/screenshots/nc-sdwan-watcher-topology.png';
+                shot.alt = 'Watcher of The WAN topology';
+            } else {
+                shot.src = '../images/screenshots/nc-l3-topology.png';
+                shot.alt = 'L3 topology view';
+            }
+        } else if (matches(['automation', 'compliance', 'lab-export', 'labexport', 'security-audit', 'securityaudit', 'psirt', 'config-push', 'configpush'])) {
+            heading.textContent = 'Config Push and compliance in a 14-day trial of Node Control Pro';
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyFreeHeadline);
+    } else {
+        applyFreeHeadline();
+    }
+
+    function wantsEmailDelivery() {
+        var box = document.getElementById('reqEmailDelivery');
+        return !!(box && box.checked);
+    }
+
+    function trialSubmitLabel() {
+        if (wantsEmailDelivery()) return 'Email me the download';
+        var btn = document.getElementById('reqSubmitBtn');
+        return (btn && btn.getAttribute('data-label')) || 'Start the 14-day trial';
+    }
+
+    function syncEmailDelivery() {
+        var box = document.getElementById('reqEmailDelivery');
+        var note = document.getElementById('reqEmailDeliveryNote');
+        var btn = document.getElementById('reqSubmitBtn');
+        var platform = document.getElementById('reqPlatform');
+        if (note) note.hidden = !(box && box.checked);
+        if (box && box.checked && platform && !platform.value) platform.value = 'both';
+        if (btn && btn.style.pointerEvents !== 'none') btn.textContent = trialSubmitLabel();
+    }
+
+    var emailDeliveryBox = document.getElementById('reqEmailDelivery');
+    if (emailDeliveryBox) {
+        if (prefersEmailDelivery()) emailDeliveryBox.checked = true;
+        emailDeliveryBox.addEventListener('change', syncEmailDelivery);
+        syncEmailDelivery();
+    }
+
     function funnelCampaign() {
         try {
             var params = new URLSearchParams(window.location.search);
@@ -217,6 +290,7 @@
                 var data = result.data;
                 if (data.success && data.download_code) {
                     signalConversion('sign_up');
+                    pushTrialSignup(data.download_code, 'request_access');
                     pendingEmail = email;
                     freeForm.style.display = 'none';
                     if (verifySection) verifySection.style.display = 'none';
@@ -224,8 +298,10 @@
                     document.getElementById('revealedCode').textContent = data.download_code;
                     var note = document.getElementById('downloadConfirmNote');
                     if (note) note.style.display = 'block';
+                    var mailed = document.getElementById('downloadEmailNote');
+                    if (mailed) mailed.style.display = wantsEmailDelivery() ? 'block' : 'none';
                     var redeemInput = document.getElementById('redeemCode');
-                    if (redeemInput) {
+                    if (!wantsEmailDelivery() && redeemInput) {
                         redeemInput.value = data.download_code;
                         setTimeout(function () { document.getElementById('redeemBtn').click(); }, 500);
                     }
@@ -237,15 +313,15 @@
                     document.getElementById('verifyCode').focus();
                 } else {
                     showResult(reqResult, data.error || 'Something went wrong. Please try again.', 'error');
-                    btn.textContent = 'Download Free';
                     btn.style.opacity = '';
                     btn.style.pointerEvents = '';
+                    btn.textContent = trialSubmitLabel();
                 }
             } catch (err) {
                 showResult(reqResult, 'Connection error. Please try again.', 'error');
-                btn.textContent = 'Download Free';
                 btn.style.opacity = '';
                 btn.style.pointerEvents = '';
+                btn.textContent = trialSubmitLabel();
             }
         });
     }
@@ -266,12 +342,15 @@
             verifyBtn.style.opacity = '0.6';
             try {
                 var result = await apiCall('/api/verify', { email: pendingEmail, code: code });
-                if (result.data.success) {
+                if (result.data.success && result.data.download_code) {
+                    pushTrialSignup(result.data.download_code, 'verify');
                     verifySection.style.display = 'none';
                     downloadCodeSection.style.display = 'block';
                     document.getElementById('revealedCode').textContent = result.data.download_code;
+                    var mailed = document.getElementById('downloadEmailNote');
+                    if (mailed) mailed.style.display = wantsEmailDelivery() ? 'block' : 'none';
                     var redeemInput = document.getElementById('redeemCode');
-                    if (redeemInput) {
+                    if (!wantsEmailDelivery() && redeemInput) {
                         redeemInput.value = result.data.download_code;
                         setTimeout(function () { document.getElementById('redeemBtn').click(); }, 500);
                     }
@@ -320,6 +399,40 @@
         try {
             document.dispatchEvent(new CustomEvent('nc-conversion', { detail: { name: name } }));
         } catch (err) { /* the page still works */ }
+    }
+
+    // One trial_signup per download code. The dataLayer event is only the
+    // name and the method. The code stays in memory and in nc_signup_sent
+    // so a repeat response is not sent again. It is not put on the event.
+    var signupMemory = {};
+
+    function pushTrialSignup(downloadCode, method) {
+        var code = String(downloadCode || '');
+        if (!code || signupMemory[code]) return;
+        var key = 'nc_signup_sent';
+        var sent = [];
+        try {
+            var stored = JSON.parse(localStorage.getItem(key) || '[]');
+            if (Array.isArray(stored)) {
+                sent = stored.filter(function (item) {
+                    return typeof item === 'string';
+                });
+            }
+        } catch (err) {
+            sent = [];
+        }
+        if (sent.indexOf(code) !== -1) {
+            signupMemory[code] = true;
+            return;
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'trial_signup', method: method });
+        signupMemory[code] = true;
+        sent.push(code);
+        if (sent.length > 20) sent = sent.slice(sent.length - 20);
+        try {
+            localStorage.setItem(key, JSON.stringify(sent));
+        } catch (err) { /* this page view is already marked in memory */ }
     }
 
     function trackDownload(code, platform, kind) {

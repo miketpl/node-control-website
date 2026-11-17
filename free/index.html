@@ -38,7 +38,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="../css/style.css?v=20261115logo">
+    <link rel="stylesheet" href="../css/style.css?v=20261117signup">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -61,19 +61,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <section class="section section-alt" id="download" style="padding-top: calc(var(--nav-height) + 32px);">
         <div class="container">
-            <h1 class="section-title">Free starts with a 14-day trial</h1>
+            <h1 class="section-title" id="freeHeadline">Free starts with a 14-day trial</h1>
             <p class="hero-free-line">Then free for up to 25 devices. macOS and Windows. No card needed.</p>
-            <p class="section-subtitle">A new activation starts the trial. For 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. After 14 days the Free limits apply, including 25 devices. Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator are not in the trial.</p>
+            <p class="section-subtitle">A new activation starts 14 days of all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. After 14 days, Free stays for up to 25 devices. Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator are not in the trial.</p>
             <ul class="pricing-features download-tier-features">
-                <li>Draw an L2 map over SSH</li>
+                <li>Draw an L2 map</li>
                 <li>Back up a config when you run it</li>
                 <li>Find a MAC or IP down to the switch port</li>
             </ul>
 
-            <div class="download-tier" id="free-edition">
+            <div class="download-tier" id="free-edition" data-trial-view>
                 <div class="download-tier-header">
-                    <h2 class="download-tier-title">Get <span class="cyan">Node Control Free</span></h2>
-                    <p class="download-tier-desc free-signup-hint">Enter your email and platform. The download starts on this page.</p>
+                    <h2 class="download-tier-title">Start the <span class="cyan">14-day trial</span></h2>
+                    <p class="download-tier-desc free-signup-hint">Enter your email and platform. Company is optional.</p>
                 </div>
                 <div class="download-cards">
                     <div class="download-card" style="grid-column: 1 / -1;">
@@ -90,9 +90,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <div class="form-row">
                                 <input type="text" id="reqCompany" placeholder="Company / Organisation (optional)" class="form-input" aria-label="Company, optional">
                             </div>
-                            <button type="submit" class="btn btn-primary btn-download" id="reqSubmitBtn">Download Free</button>
+                            <label class="trial-email-option">
+                                <input type="checkbox" id="reqEmailDelivery">
+                                Email me the download
+                            </label>
+                            <p class="trial-email-note" id="reqEmailDeliveryNote" hidden>We email your download code. Open that email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers.</p>
+                            <button type="submit" class="btn btn-primary btn-download" id="reqSubmitBtn" data-label="Start the 14-day trial">Start the 14-day trial</button>
                             <div id="reqResult" class="redeem-result"></div>
                         </form>
+                        <p class="trial-rules">A new activation starts 14 days of all Engineer tasks, all reports, your own AI provider, and no device cap. No card needed. One trial per email and per computer. After 14 days, Free stays for up to 25 devices. macOS and Windows.</p>
+                        <p class="trial-start">The trial starts when you install the app and enter the code shown on this page.</p>
 
                         <div class="request-form" id="verifySection" style="display: none;">
                             <p style="color: #c8cdd3; margin-bottom: 16px;">A <strong style="color: #00e8ff;">6-digit code</strong> was sent to <span id="verifyEmailDisplay" style="color: #00e8ff;"></span>.</p>
@@ -107,6 +114,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="request-form" id="downloadCodeSection" style="display: none;">
                             <p style="color: #c8cdd3; margin-bottom: 8px;">Your download code is:</p>
                             <p id="downloadConfirmNote" style="display: none; color: #c8cdd3; font-size: 14px;">A confirmation link is on its way to your email. The code works before you open it.</p>
+                            <p id="downloadEmailNote" class="trial-email-sent" style="display: none;">We emailed this code. Open the email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers. The trial starts when you install the app and enter that code.</p>
                             <div style="text-align: center; margin: 20px 0;">
                                 <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
                             </div>
@@ -133,6 +141,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </div>
 
+            <div class="free-trust">
+                <figure class="free-shot">
+                    <img id="freeShot" src="../images/screenshots/nc-l2-topology.png" alt="L2 topology view" width="1920" height="1080">
+                    <figcaption>L2 topology. L3 and WAN maps are in the 14-day trial.</figcaption>
+                </figure>
+                <figure class="free-quote">
+                    <blockquote>
+                        <p>The Layer 2 &amp; Layer 3 Topology Builder is a particularly good feature that allows me to visualise a site and to quickly identify trunk ports and vlans in use, along with viewing routing tables throughout connected devices.</p>
+                    </blockquote>
+                    <figcaption>Peter, Senior 3rd Line Engineer</figcaption>
+                </figure>
+            </div>
+
             <p class="section-subtitle"><a href="../index.html">Back to the main page</a></p>
         </div>
     </section>
@@ -146,6 +167,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </footer>
 
     <script src="../js/conversions.js?v=20261109ads"></script>
-    <script src="../js/free-form.js?v=20261114pause"></script>
+    <script src="../js/free-form.js?v=20261117signup"></script>
 </body>
 </html>
