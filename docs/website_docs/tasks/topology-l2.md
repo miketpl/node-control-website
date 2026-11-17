@@ -130,4 +130,4 @@ On Cisco NX-OS, MAC-table entries are read on their real port. The age column is
 
 - [Layer 3 topology](topology-l3.md) — adds routing info, OSPF/BGP peers
 - [WAN topology](topology-wan.md) — across-site view
-- [Discover](discovery.md) — live walk without needing the library pre-populated. the trial shows a clickable example view; not operational until Pro
+- [Discover](discovery.md) — live walk without needing the library pre-populated. The trial shows a clickable example view; not operational until Pro
