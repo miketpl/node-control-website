@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TC3ZN5NN');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/css/consent.css?v=20261115consent">
+<script src="/js/consent.js?v=20261115consent"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cisco PSIRT Checker and Security Audit | Node Control</title>
+    <meta name="description" content="A Cisco PSIRT checker that reads the running software and lists openVuln advisories by severity. In the 14-day trial, then in Pro.">
+    <link rel="canonical" href="https://nodecontrol.io/features/cisco-psirt-checker/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Cisco PSIRT Checker and Security Audit | Node Control">
+    <meta property="og:description" content="A Cisco PSIRT checker that reads the running software and lists openVuln advisories by severity. In the 14-day trial, then in Pro.">
+    <meta property="og:url" content="https://nodecontrol.io/features/cisco-psirt-checker/">
+    <meta property="og:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="NodeControl. Desktop network operations for network engineers.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cisco PSIRT Checker and Security Audit | Node Control">
+    <meta name="twitter:description" content="A Cisco PSIRT checker that reads the running software and lists openVuln advisories by severity. In the 14-day trial, then in Pro.">
+    <meta name="twitter:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta name="twitter:image:alt" content="NodeControl. Desktop network operations for network engineers.">
+    <meta name="twitter:site" content="@node_control_">
+    <meta name="twitter:creator" content="@node_control_">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/css/style.css?v=20261117signup">
+    <link rel="stylesheet" href="/css/compare.css?v=20261115">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the Cisco PSIRT checker in the 14-day trial?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Security Audit is included for the first 14 days, with all other reports and every Engineer task, and no device cap. No card is needed. After 14 days it stays on Professional. Free does not run this report."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it use Cisco's openVuln data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The report queries Cisco's openVuln API with the version string normalised to the form that API accepts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What about advisories that match the version but not the hardware?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They are marked platform mismatch, sorted below the confirmed matches, and kept out of the confirmed High, Medium and Low counts. An advisory with no product data is called out and is not treated as a clean pass."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it check non-Cisco or ASA devices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non-Cisco devices are skipped. Security Audit is not supported on Cisco ASA. The report is for Cisco IOS, IOS-XE and NX-OS."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I export or email the report?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. There is an Export CSV button above each table, and you can email the report. If the email is skipped, the log says why."
+      }
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nodecontrol.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Features",
+      "item": "https://nodecontrol.io/features/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cisco PSIRT checker for the software you run",
+      "item": "https://nodecontrol.io/features/cisco-psirt-checker/"
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TC3ZN5NN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <picture>
+                    <source type="image/webp" srcset="/images/logo-lockup.webp 1x, /images/logo-lockup@2x.webp 2x">
+                    <img src="/images/logo-lockup.png" srcset="/images/logo-lockup.png 1x, /images/logo-lockup@2x.png 2x" alt="NodeControl" class="nav-logo-img" width="166" height="40">
+                </picture>
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/features/">Features</a></li>
+                <li><a href="/pro/">Pro</a></li>
+                <li><a href="/free/">Free</a></li>
+                <li><a href="/docs/">Docs</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="compare-page">
+        <div class="container">
+            <p><a href="/">Home</a> · <a href="/features/">Features</a></p>
+            <h1>Cisco PSIRT checker for the software you run</h1>
+            <p>The Security Audit report in Node Control is a Cisco PSIRT checker. It reads the running software on each device in scope and lists published Cisco security advisories for that version, grouped by severity. <a href="/pro/">Professional is £25 a month or £255 a year</a>, with no per-device fees. The report is in the 14-day trial, with no card needed and no device cap, and it stays in Professional. After 14 days, Free remains for up to 25 devices, but it does not run this report.</p>
+            <h2>The problem a PSIRT check has to solve</h2>
+            <p>Cisco publishes a large advisory list. The useful question is which advisories apply to the software you are actually running, on the hardware you actually have. A version-only match can still include advisories written for other platforms on the same release. You want those called out, not mixed into the confirmed counts, and a report you can export or email.</p>
+            <h2>How Node Control does it</h2>
+            <p>Open Reports, choose Security Audit, set the scope, and run. The report connects to each device in scope, reads the running software, and queries Cisco's openVuln API with the version string normalised to the form that API accepts. Advisories are grouped by severity. Each advisory names the devices it applies to. Non-Cisco devices are skipped.</p>
+            <p>A Cisco IOS vulnerability audit is one of the searches this report answers, but the check is not limited to IOS. On Cisco IOS, IOS-XE and NX-OS, Security Audit is listed as a supported report. It is not supported on Cisco ASA. IOS-XR is not a supported platform in Node Control.</p>
+            <p>Cisco indexes many advisories by software release alone. An advisory written for other hardware on that same release is not hidden. It is marked platform mismatch, sorted below the confirmed matches, and kept out of the confirmed High, Medium and Low counts. A missing product list is called out, not treated as a clean pass. If the product list is only a software train but the title names hardware, the title is what gets checked.</p>
+            <p>You can turn on an optional baseline section. In the same session the report pulls the running config and checks it against your hardening template, using the same engine as Config Compliance. The report is for reading the result; the task is for pushing fixes. The HTML report has Export CSV above each table, and you can email it. If the email is skipped, the log says why.</p>
+            <p>Built-in AI, with a provider you bring and your own API key, can add an optional AI Summary. It is off on a fresh install, and the PSIRT checks do not depend on it. Vuln Plan is on the AI edition only, which is not yet available to buy. Professional does not have it.</p>
+            <h2>What you get</h2>
+            <p>A Cisco PSIRT report in the 14-day trial and in Professional: advisories for the software you actually run, from Cisco's openVuln data, grouped by severity, with a platform check, an optional hardening baseline, and CSV or email export. Professional is £25 a month or £255 a year, with no per-device fees. After the trial, Security Audit stays on Professional. Free keeps the Inventory report only, for up to 25 devices.</p>
+            <h2>Requirements and supported platforms</h2>
+            <p>The app runs on macOS and Windows. Security Audit runs in the 14-day trial, on Professional, and on the AI edition. Free does not run it after the trial. Non-Cisco devices are skipped. Supported platforms here are Cisco IOS, IOS-XE and NX-OS. Cisco ASA is not supported for this report, and IOS-XR is not supported. The report queries Cisco's openVuln API, so it is not an offline-only check.</p>
+            <!-- Screenshot section: no approved Security Audit or PSIRT captures yet. Add severity results, a platform-mismatch row, the optional baseline, and Export CSV here later. Do not use topology, terminal, or compliance images. -->
+            <h2>FAQ</h2>
+            <h3>Is the Cisco PSIRT checker in the 14-day trial?</h3>
+            <p>Yes. Security Audit is included for the first 14 days, with all other reports and every Engineer task, and no device cap. No card is needed. After 14 days it stays on Professional. Free does not run this report.</p>
+            <h3>Does it use Cisco&#x27;s openVuln data?</h3>
+            <p>Yes. The report queries Cisco's openVuln API with the version string normalised to the form that API accepts.</p>
+            <h3>What about advisories that match the version but not the hardware?</h3>
+            <p>They are marked platform mismatch, sorted below the confirmed matches, and kept out of the confirmed High, Medium and Low counts. An advisory with no product data is called out and is not treated as a clean pass.</p>
+            <h3>Does it check non-Cisco or ASA devices?</h3>
+            <p>Non-Cisco devices are skipped. Security Audit is not supported on Cisco ASA. The report is for Cisco IOS, IOS-XE and NX-OS.</p>
+            <h3>Can I export or email the report?</h3>
+            <p>Yes. There is an Export CSV button above each table, and you can email the report. If the email is skipped, the log says why.</p>
+
+            <div class="trial-compact" id="free-edition" data-trial-form data-trial-view>
+                <h2>Start 14-day Pro trial</h2>
+                <p class="trial-rules">The report is in the 14-day trial, with no card needed and no device cap, and it stays in Professional. After 14 days, Free remains for up to 25 devices, but it does not run this report.</p>
+                <form class="request-form nc-trial-request">
+                    <div class="form-row">
+                        <input type="email" data-trial="email" placeholder="Email" required class="form-input" aria-label="Email" autocomplete="email">
+                        <select data-trial="platform" required class="form-input" aria-label="Platform">
+                            <option value="" disabled selected>Platform</option>
+                            <option value="macos">macOS</option>
+                            <option value="windows">Windows</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" data-trial="company" placeholder="Company / Organisation (optional)" class="form-input" aria-label="Company, optional">
+                    </div>
+                    <label class="trial-email-option">
+                        <input type="checkbox" data-trial="email-delivery">
+                        Email me the download
+                    </label>
+                    <p class="trial-email-note" data-trial="email-note-preview" hidden>We email your download code. Open that email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers.</p>
+                    
+                    <button type="submit" class="btn btn-primary btn-download" data-trial="submit" data-label="Start 14-day Pro trial">Start 14-day Pro trial</button>
+                    <a class="btn btn-outline" href="/free/">Download Free Edition</a>
+                    <p class="trial-start">The trial starts when you install the app and enter the code shown on this page.</p>
+                    <div data-trial="result" class="redeem-result"></div>
+                </form>
+                <div class="request-form" data-trial="verify" hidden>
+                    <p style="color: #c8cdd3; margin-bottom: 16px;">A <strong style="color: #00e8ff;">6-digit code</strong> was sent to <span data-trial="verify-email" style="color: #00e8ff;"></span>.</p>
+                    <div class="form-row form-row-redeem">
+                        <input type="text" data-trial="verify-code" placeholder="Enter 6-digit code" class="form-input form-input-code" maxlength="6" spellcheck="false" autocomplete="off" inputmode="numeric">
+                        <button type="button" data-trial="verify-btn" class="btn btn-primary">Verify</button>
+                    </div>
+                    <div data-trial="verify-result" class="redeem-result"></div>
+                    <button type="button" data-trial="resend" class="btn-link" style="margin-top: 12px; background: none; border: none; color: #636b75; cursor: pointer; font-size: 13px;">Didn't receive it? Resend code</button>
+                </div>
+                <div class="request-form" data-trial="code" hidden>
+                    <p style="color: #c8cdd3; margin-bottom: 8px;">Your download code is:</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <span data-trial="revealed" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
+                    </div>
+                    <p data-trial="confirm" style="display: none; color: #c8cdd3; font-size: 14px; margin-bottom: 12px;">A confirmation link is on its way to your email. The code works before you open it.</p>
+                    <p data-trial="email-note" class="trial-email-sent" style="display: none;">We emailed this code. Open the email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers. The trial starts when you install the app and enter that code.</p>
+                    <p class="trial-start">The trial starts when you install the app and enter this code.</p>
+                </div>
+                <div data-trial="redeem-block">
+                    <p class="download-tier-desc">Have a download code?</p>
+                    <div class="form-row form-row-redeem">
+                        <input type="text" data-trial="redeem-code" placeholder="NC-XXXX-XXXX" class="form-input form-input-code" spellcheck="false" autocomplete="off" aria-label="Download code">
+                        <button type="button" data-trial="redeem-btn" class="btn btn-outline">Redeem</button>
+                    </div>
+                    <div data-trial="redeem-result" class="redeem-result"></div>
+                </div>
+            </div>
+            <h2>See also</h2>
+            <ul>
+                <li><a href="/features/">Features</a></li>
+                <li><a href="/features/topology-mapping/">Network topology mapping</a></li>
+                <li><a href="/features/palo-alto-rule-analyser/">Palo Alto PAN-OS rule analyser</a></li>
+                <li><a href="/free/">Free Edition</a></li>
+                <li><a href="/pro/">Professional</a></li>
+                <li><a href="/docs/reports/security-audit.html">Security Audit</a></li>
+                <li><a href="/docs/vendors/cisco.html">Cisco</a></li>
+                <li><a href="/docs/tasks/config-compliance.html">Config Compliance</a></li>
+                <li><a href="/docs/reports/lifecycle.html">Lifecycle and EoX</a></li>
+                <li><a href="/docs/tiers/overview.html">Tiers</a></li>
+            </ul>
+
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Node Control Ltd. Node Control is a product of Node Control Ltd.</p>
+                <p><a href="/">Home</a> · <a href="/features/">Features</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/privacy.html#cookies" class="nc-cookie-settings">Cookie settings</a></p>
+            </div>
+        </div>
+    </footer>
+    <script src="/js/main.js?v=20261117signup"></script>
+</body>
+</html>
