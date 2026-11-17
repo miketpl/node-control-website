@@ -91,9 +91,8 @@ Active/passive PA pairs are common. Node Control:
 - **Panorama**: not supported as a "device" type. Manage individual firewalls instead.
 - **GlobalProtect**: Firewall Health & Logs saves GlobalProtect user counts to the local network memory, used by Ask Network AI and Architect Review on the Monitor tab (Pro and the AI edition)
 - **App-ID / User-ID**: not surfaced in reports
-- **Policy review**: no built-in policy inspector
 
-For Panorama-driven workflows or policy review, dedicated PA tools (Strata Cloud Manager, Panorama itself, third-party policy auditors) are better.
+Panorama is still not a device type. Manage the firewalls themselves. Policy review is the [Firewall Rule Analyser](../tasks/firewall-analyser.md).
 
 Discovery saves the host name without the `user@` prefix, and without the HA state (`(active)`, `(passive)`, and the other states), so a firewall keeps one name across a failover.
 

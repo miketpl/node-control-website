@@ -1,6 +1,6 @@
 # Config Compliance
 
-> On **Pro** and the **AI** edition. On Free both tasks are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. **Config Compliance Audit** is in the Safe Mode task list. Its remediation offer is suppressed there. **Config Compliance Remediate** stays hidden. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
+> On **Pro** and the **AI** edition. They are included for the first 14 days of the trial, then they need Pro. On Free after the trial both tasks are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. **Config Compliance Audit** is in the Safe Mode task list. Its remediation offer is suppressed there. **Config Compliance Remediate** stays hidden. Remediation is Cisco IOS, IOS-XE, and NX-OS only.
 
 On AOS-CX, the compliance pull needs an admin or manager login, the same as Config Backup. An operators-level login cannot read the config.
 

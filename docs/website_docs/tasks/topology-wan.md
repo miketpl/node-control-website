@@ -1,6 +1,6 @@
 # WAN topology map
 
-> The task name is **Watcher of The WAN**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
+> The task name is **Watcher of The WAN**. On **Pro** and the **AI** edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 The WAN topology map renders the cross-site connectivity between your sites — the routers, firewalls, and SD-WAN edges that link locations together.
 
@@ -23,7 +23,7 @@ The WAN topology task walks one router-or-firewall per site (typically the WAN e
 - `show ip bgp summary` — external BGP peers (cross-site, transit, ISP)
 - `show ip route` — wan-facing routes, default route source
 - `show crypto ipsec sa` (or equivalent) — IPSec tunnel endpoints
-- SD-WAN-specific commands for Velocloud / Viptela / Silver Peak edges
+- SD-WAN-specific commands for Velocloud / Viptela edges
 
 ## Reading the map
 

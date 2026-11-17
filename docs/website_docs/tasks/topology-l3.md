@@ -1,6 +1,6 @@
 # Layer 3 topology map
 
-> The task name is **L3 Topology Builder**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
+> The task name is **L3 Topology Builder**. On **Pro** and the **AI** edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 The L3 topology map walks every routing device in scope, reads its routing table, OSPF and BGP neighbours, and renders an interactive map of the L3 overlay — which routers and firewalls peer with which, across what protocols.
 

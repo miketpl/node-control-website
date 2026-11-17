@@ -1,6 +1,6 @@
 # Custom Scripts
 
-> On **Pro** and the **AI** edition. On Free, **Settings → Scripts** is there and a script can be registered, but every `Script: <name>` task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**, and **Run** refuses. Safe Mode hides these tasks on every tier.
+> On **Pro** and the **AI** edition. **Settings → Scripts** is there on Free and a script can be registered. Every `Script: <name>` task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**, and **Run** refuses. Safe Mode hides these tasks on every tier.
 
 A custom script is a Python file I run as an Engineer task. It is not the [command catalog](custom-commands.md). The catalog chooses which show command a built-in task sends. A script is the program itself.
 

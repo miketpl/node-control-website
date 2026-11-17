@@ -19,7 +19,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Discovery — NodeControl Docs</title>
-    <meta name="description" content="Discover walks CDP and LLDP from a seed switch and maps devices not yet in the library. On Pro and the AI edition. Free does not show this page.">
+    <meta name="description" content="Discover walks CDP and LLDP from a seed IP and maps devices not yet in the library. On Pro and the AI edition. The trial shows a clickable example view. It is not operational until Pro.">
     <link rel="canonical" href="https://nodecontrol.io/docs/tasks/discovery.html">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -206,9 +206,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <h1 id="network-discovery">Network Discovery</h1>
 <blockquote>
-<p>The sidebar page is <strong>Discover</strong>. It is on <strong>Pro</strong> and the <strong>AI</strong> edition. Free does not show it. This is not the <a href="../library/subnet-scan.html">subnet scan</a>. Subnet scan is a library import, and that import does run on Free.</p>
+<p>The sidebar page is <strong>Discover</strong>. It is on <strong>Pro</strong> and the <strong>AI</strong> edition. The trial shows it as a clickable example view. It is not operational until Pro. This is not the <a href="../library/subnet-scan.html">subnet scan</a>. Subnet scan is a library import, and that import does run on Free.</p>
 </blockquote>
-<p>Network Discovery is the live, &quot;I don&#x27;t know what&#x27;s out there&quot; topology walk. Give it a seed switch and credentials, and it builds a topology map by walking CDP/LLDP neighbours hop by hop — discovering devices that aren&#x27;t yet in your library.</p>
+<p>Network Discovery is the live, &quot;I don&#x27;t know what&#x27;s out there&quot; topology walk. Give it a seed IP and credentials, and it builds a topology map by walking CDP/LLDP neighbours hop by hop — discovering devices that aren&#x27;t yet in your library.</p>
 <p>Contrast with <a href="topology-l2.html">L2 topology</a>, which only maps devices already in your library.</p>
 <h2 id="when-to-use-discovery-vs-l2-topology">When to use Discovery vs L2 topology</h2>
 <table>
@@ -257,7 +257,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <tbody>
 <tr>
 <td><strong>Subnet</strong></td>
-<td>Optional — narrow ping sweep to this range. Leave blank to start solely from the seed switch</td>
+<td>Optional — narrow ping sweep to this range. Leave blank to start solely from the seed IP</td>
 </tr>
 <tr>
 <td><strong>Seed switch IP</strong></td>
@@ -265,7 +265,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </tr>
 <tr>
 <td><strong>Seed credentials</strong></td>
-<td>SSH credentials for the seed switch</td>
+<td>SSH credentials for the seed IP</td>
 </tr>
 <tr>
 <td><strong>Walk neighbours</strong></td>
@@ -284,7 +284,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h2 id="click-start">Click Start</h2>
 <p>Discovery runs in phases:</p>
 <h3 id="phase-1-seed-login">Phase 1 — Seed login</h3>
-<p>SSH to the seed switch, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.</p>
+<p>SSH to the seed IP, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.</p>
 <h3 id="phase-2-ping-sweep-optional">Phase 2 — Ping sweep (optional)</h3>
 <p>If you set a subnet, ping-sweep that range. Hosts that respond appear on the map as &quot;grey nodes&quot; (alive but not yet walked).</p>
 <h3 id="phase-3-bfs-walk">Phase 3 — BFS walk</h3>

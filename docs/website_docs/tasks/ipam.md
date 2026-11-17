@@ -1,6 +1,6 @@
 # IPAM
 
-> **IPAM** is a sidebar page on **Pro** and the **AI** edition. Free does not show it.
+> **IPAM** is a sidebar page on **Pro** and the **AI** edition. The trial shows it as a clickable example view. It is not operational until Pro.
 
 IPAM is its own page. It tracks your subnets and how much of each was seen in use.
 

@@ -1,6 +1,6 @@
 # Verify Device Types
 
-> On **Pro** and the **AI** edition. On Free the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
+> On **Pro** and the **AI** edition. The task is included for the first 14 days of the trial, then it needs Pro. On Free after the trial the task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list.
 
 A bulk sweep that re-runs device type detection across every device (or a subset) in your library. Useful when:
 

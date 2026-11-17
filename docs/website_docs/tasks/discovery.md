@@ -1,8 +1,8 @@
 # Network Discovery
 
-> The sidebar page is **Discover**. It is on **Pro** and the **AI** edition. Free does not show it. This is not the [subnet scan](../library/subnet-scan.md). Subnet scan is a library import, and that import does run on Free.
+> The sidebar page is **Discover**. It is on **Pro** and the **AI** edition. The trial shows it as a clickable example view. It is not operational until Pro. This is not the [subnet scan](../library/subnet-scan.md). Subnet scan is a library import, and that import does run on Free.
 
-Network Discovery is the live, "I don't know what's out there" topology walk. Give it a seed switch and credentials, and it builds a topology map by walking CDP/LLDP neighbours hop by hop — discovering devices that aren't yet in your library.
+Network Discovery is the live, "I don't know what's out there" topology walk. Give it a seed IP and credentials, and it builds a topology map by walking CDP/LLDP neighbours hop by hop — discovering devices that aren't yet in your library.
 
 Contrast with [L2 topology](topology-l2.md), which only maps devices already in your library.
 
@@ -24,9 +24,9 @@ Contrast with [L2 topology](topology-l2.md), which only maps devices already in 
 
 | Field | What it controls |
 |---|---|
-| **Subnet** | Optional — narrow ping sweep to this range. Leave blank to start solely from the seed switch |
+| **Subnet** | Optional — narrow ping sweep to this range. Leave blank to start solely from the seed IP |
 | **Seed switch IP** | The starting point for the BFS walk |
-| **Seed credentials** | SSH credentials for the seed switch |
+| **Seed credentials** | SSH credentials for the seed IP |
 | **Walk neighbours** | Whether to recursively SSH into discovered neighbours (default ON) |
 | **Max hops** | Limit on BFS depth (default 5) |
 | **Infrastructure only** | Skip CDP/LLDP entries identified as phones, APs, end-user devices (default ON) |
@@ -37,7 +37,7 @@ Discovery runs in phases:
 
 ### Phase 1 — Seed login
 
-SSH to the seed switch, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.
+SSH to the seed IP, read CDP neighbours on Cisco and LLDP neighbours, and list its directly-connected peers.
 
 ### Phase 2 — Ping sweep (optional)
 

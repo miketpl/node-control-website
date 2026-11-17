@@ -4,7 +4,7 @@
 
 **Save Config** also runs on Free, Pro, and the AI edition. Safe Mode hides it.
 
-On Free the tasks that run are **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device**. Every other task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
+For the first 14 days of the trial, the other Engineer tasks are included, then they need Pro. On Free after the trial the tasks that run are **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device**. Every other task is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
 
 ## Config Backup
 

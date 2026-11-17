@@ -4,7 +4,7 @@ The app opens on a Home page. A left sidebar is how you move between pages. The 
 
 There is no top row of tabs. If an older page in these docs still says "tab" for Engineer, Reports, or Monitor, read that as the page of that name in the sidebar.
 
-On Free the sidebar is **Home**, **Engineer**, **Reports**, and **File Transfer**. The status bar shows a **FREE VERSION** badge. Free does not show Monitor, Discover, IPAM, the Meraki Configurator, the Firewall Analyser, or AI. The **Update** tab is the AI edition only. It is not on Pro or Free.
+On Free the sidebar is **Home**, **Engineer**, **Reports**, and **File Transfer**. The status bar shows a **FREE VERSION** badge. The trial shows Monitor, Discover, IPAM, the Meraki Configurator, and the Firewall Analyser as clickable example views. They are not operational until Pro. After the trial, Free does not show them. AI stays on the AI edition. The **Update** tab is the AI edition only. It is not on Pro or Free.
 
 ## Home
 
@@ -44,7 +44,7 @@ The Engineer task dropdown is the same list on Free, Pro, and the AI edition, in
 
 **Config Push Script** appears only when **Settings → Paths → Config Push Script** points at an existing file. A configured [custom script](../settings/scripts.md) appears as `Script: <name>`. On Free that task is greyed, with the tooltip **Upgrade to Pro to unlock this feature**, and **Run** refuses. Safe Mode hides it on every tier.
 
-On Free only **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device** are enabled. The rest are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
+For the first 14 days of the trial, the other Engineer tasks are included, then they need Pro. On Free after the trial only **None**, **L2 Topology Builder**, **Config Backup**, **Save Config**, and **Find Device** are enabled. The rest are greyed out, with the tooltip **Upgrade to Pro to unlock this feature**.
 
 Safe Mode is session-wide. It is not a per-tab setting. The **Select Mode** dialog at startup uses **Settings → General → Startup Mode**. The **Edit** menu or the mode badge switches it mid-session. In Safe Mode the task list is cut to **None**, **L2 Topology Builder**, **L3 Topology Builder**, **Watcher of The WAN**, **Config Backup**, **Library Updater**, **VLAN Port Finder**, **Refresh Hostnames**, **Verify Device Types**, **Discover Variables**, **Find Device** (read-only), **Config Compliance Audit**, and **Lab Export**. The audit's remediation offer is suppressed. **Config Compliance Remediate** is not in the list. **HTTPS** is hidden, **Console** is hidden, the **Terminal** button on the log header stays visible, non-read-only SSH commands are blocked, and a Meraki Configurator push is blocked. See [Safe Mode](../settings/safe-mode.md).
 
@@ -76,11 +76,11 @@ These are their own sidebar pages, not tasks inside the Engineer command bar:
 
 - **Reports** — on Free this page runs the Inventory report only
 - **File Transfer** — the page is on Free, Pro, and the AI edition, including the local server and the remote client. The File Transfer task in the dropdown is Pro
-- **Monitor** (Pro and AI; not on Free)
-- **Discover** (Pro and AI; not on Free). This is not the Library Updater
-- **IPAM** (Pro and AI; not on Free)
-- **Meraki Configurator** (Pro and AI; not on Free)
-- The firewall rule analyser (Pro and AI; not on Free)
+- **Monitor** (the trial shows a clickable example view; not operational until Pro)
+- **Discover** (the trial shows a clickable example view; not operational until Pro). This is not the Library Updater
+- **IPAM** (the trial shows a clickable example view; not operational until Pro)
+- **Meraki Configurator** (the trial shows a clickable example view; not operational until Pro)
+- The firewall rule analyser (the trial shows a clickable example view; not operational until Pro)
 - **Update** (AI edition only; not on Pro or Free)
 - **AI** (AI edition; not on Free)
 

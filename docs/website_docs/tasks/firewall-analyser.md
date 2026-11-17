@@ -1,6 +1,6 @@
 # Firewall Rule Analyser
 
-> On **Pro** and the **AI** edition. Free does not show this page. This is a PAN-OS tool.
+> On **Pro** and the **AI** edition. The trial shows this page as a clickable example view. It is not operational until Pro. This is a PAN-OS tool.
 
 There is no standards picker and no list of named standards.
 

@@ -1,6 +1,6 @@
 # Subnet scan (Library Updater)
 
-> The task name is **Library Updater**. On **Pro** and the **AI** edition. On Free it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list. It is not the **Discover** page.
+> The task name is **Library Updater**. On **Pro** and the **AI** edition. It is included for the first 14 days of the trial, then it needs Pro. On Free after the trial it is greyed out, with the tooltip **Upgrade to Pro to unlock this feature**. Safe Mode leaves it in the list. It is not the **Discover** page.
 
 The Library Updater walks an IP range, attempts SSH on each responding host, and adds discovered devices to your library — auto-filling the device type, hostname, and site code along the way.
 
