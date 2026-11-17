@@ -234,6 +234,13 @@ class LicenceApiTests(unittest.TestCase):
         self.assertIn("Hi there,", text)
         self.assertIn(body["download_code"], text)
         self.assertIn("/api/confirm-email?token=", text)
+        self.assertIn("https://nodecontrol.io/free/", text)
+        self.assertIn("macOS and Windows installers", text)
+        self.assertIn("14-day trial", text)
+        self.assertNotIn("/api/v1/download/free/", text)
+        html_body = sent.get_payload(1).get_payload()
+        self.assertIn("https://nodecontrol.io/free/", html_body)
+        self.assertNotIn("/api/v1/download/free/", html_body)
         self.assertNotIn("Hi ,", text)
 
     @patch("app.smtplib.SMTP")
