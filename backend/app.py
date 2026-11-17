@@ -2432,9 +2432,15 @@ def send_free_download_email(to_email, to_name, download_code, confirm_url, remi
     else:
         subject = "Your Node Control download code"
         lead = "Your download code is below. It works before you confirm this email."
+    computer = (
+        "On a computer, open https://nodecontrol.io/free/ and enter this code "
+        "to download the macOS and Windows installers. Install the app and enter "
+        "the same code. That starts the 14-day trial.\n\n"
+    )
     text_body = (
         f"Hi {who},\n\n{lead}\n\n"
         f"Download code: {download_code}\n\n"
+        f"{computer}"
         f"Confirm this email:\n{confirm_url}\n\n"
         "The link lasts 14 days.\n\n"
         "Node Control\nhttps://nodecontrol.io\n"
@@ -2449,6 +2455,9 @@ def send_free_download_email(to_email, to_name, download_code, confirm_url, remi
         "border:1px solid rgba(0,232,255,0.1);\">"
         f"<p>Hi {safe_who},</p><p>{html.escape(lead)}</p>"
         f"<p style=\"font-family:monospace;font-size:20px;letter-spacing:2px;color:#00e8ff;\">{safe_code}</p>"
+        "<p>On a computer, open <a href=\"https://nodecontrol.io/free/\" style=\"color:#00e8ff;\">"
+        "https://nodecontrol.io/free/</a> and enter this code to download the macOS and Windows "
+        "installers. Install the app and enter the same code. That starts the 14-day trial.</p>"
         f"<p><a href=\"{safe_url}\" style=\"color:#00e8ff;\">Confirm this email</a></p>"
         f"<p style=\"color:#636b75;font-size:13px;\">If the link does not open, copy this address:<br>{safe_url}</p>"
         "<p style=\"color:#636b75;font-size:13px;\">The link lasts 14 days.</p>"
