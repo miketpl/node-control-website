@@ -96,11 +96,11 @@ def _hash_token(value):
 
 
 def _repeat_mode():
-    """same keeps one key per computer. new issues another NC- code."""
+    """new issues another NC- code. same returns the existing one. Empty means new."""
     raw = str(licence_v1._api().app.config.get("FREE_CLAIM_REPEAT") or "").strip().lower()
-    if raw in ("same", "new"):
-        return raw
-    return "same"
+    if raw == "same":
+        return "same"
+    return "new"
 
 
 def _issued(code, new=None):

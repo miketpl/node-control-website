@@ -148,7 +148,7 @@ class FreeUngateTests(unittest.TestCase):
         self.assertNotIn("ada@example.com", gone.get_data(as_text=True))
         self.assertFalse(trial._updates_opted_in("ada@example.com"))
 
-    def test_claim_returns_the_same_key_for_one_computer(self):
+    def test_claim_issues_a_new_key_for_the_same_computer(self):
         machine = "12" * 32
         headers = {
             "User-Agent": "NodeControl/0.9.48 (free; mac; arm64)",
@@ -161,8 +161,12 @@ class FreeUngateTests(unittest.TestCase):
         self.assertTrue(first.get_json()["new"])
         second = self.client.post("/api/v1/app/free/claim", json=body, headers=headers)
         self.assertEqual(second.status_code, 200)
-        self.assertFalse(second.get_json()["new"])
-        self.assertEqual(first.get_json()["licence_key"], second.get_json()["licence_key"])
+        self.assertTrue(second.get_json()["new"])
+        self.assertNotEqual(first.get_json()["licence_key"], second.get_json()["licence_key"])
+        self.assertRegex(first.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        self.assertRegex(second.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        self.assertEqual(first.get_json()["tier"], "free")
+        self.assertEqual(second.get_json()["tier"], "free")
         bare = dict(headers)
         bare["X-NC-Machine-Hash"] = "unavailable"
         bare["X-NC-Install-Id"] = str(uuid.uuid4())
@@ -173,8 +177,11 @@ class FreeUngateTests(unittest.TestCase):
         stored = db.execute("SELECT machine_hmac FROM free_claims").fetchall()
         db.close()
         self.assertNotIn(machine, "".join(row["machine_hmac"] for row in stored))
-        self.assertRegex(first.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
-        self.assertEqual(first.get_json()["tier"], "free")
+        app.config["FREE_CLAIM_REPEAT"] = "same"
+        again = self.client.post("/api/v1/app/free/claim", json=body, headers=headers)
+        self.assertEqual(again.status_code, 200)
+        self.assertFalse(again.get_json()["new"])
+        self.assertEqual(again.get_json()["licence_key"], second.get_json()["licence_key"])
 
     def _claim(self, machine, install=None):
         headers = {
@@ -256,24 +263,24 @@ class FreeUngateTests(unittest.TestCase):
         self.assertEqual(instant.get_json()["tier"], "free")
         self.assertNotIn("pro", instant.get_json()["tier"])
 
-    def test_repeat_same_is_the_default_and_new_issues_another_code(self):
+    def test_repeat_defaults_to_a_new_key(self):
         machine = "cd" * 32
-        app.config["FREE_CLAIM_REPEAT"] = "nope"
+        app.config["FREE_CLAIM_REPEAT"] = ""
         first = self._claim(machine)
+        app.config["FREE_CLAIM_REPEAT"] = "nope"
+        second = self._claim(machine)
+        self.assertTrue(second.get_json()["new"])
+        self.assertNotEqual(second.get_json()["licence_key"], first.get_json()["licence_key"])
+        self.assertRegex(second.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
         app.config["FREE_CLAIM_REPEAT"] = "same"
         again = self._claim(machine)
-        self.assertEqual(first.get_json()["licence_key"], again.get_json()["licence_key"])
         self.assertFalse(again.get_json()["new"])
-        app.config["FREE_CLAIM_REPEAT"] = "new"
-        fresh = self._claim(machine)
-        self.assertTrue(fresh.get_json()["new"])
-        self.assertNotEqual(fresh.get_json()["licence_key"], first.get_json()["licence_key"])
-        self.assertRegex(fresh.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        self.assertEqual(again.get_json()["licence_key"], second.get_json()["licence_key"])
 
     def test_new_code_does_not_grant_a_second_trial(self):
         machine = "ef" * 32
         install = str(uuid.uuid4())
-        app.config["FREE_CLAIM_REPEAT"] = "new"
+        app.config["FREE_CLAIM_REPEAT"] = ""
         first = self._claim(machine, install)
         started = self._activate(first.get_json()["licence_key"], machine, install)
         self.assertTrue(started.get_json()["licence"]["trial"]["active"])
@@ -287,8 +294,8 @@ class FreeUngateTests(unittest.TestCase):
         self._confirm_optin("ada@example.com", second.get_json()["licence_key"])
         self.assertEqual(self._trial_count(), 1)
 
-    def test_new_mode_still_uses_the_cap_and_the_rate_limit(self):
-        app.config["FREE_CLAIM_REPEAT"] = "new"
+    def test_reinstall_still_uses_the_cap_and_the_rate_limit(self):
+        app.config["FREE_CLAIM_REPEAT"] = ""
         app.config["FREE_CLAIM_DAILY_CAP"] = "1"
         first = self._claim("a1" * 32)
         self.assertEqual(first.status_code, 200)

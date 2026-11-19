@@ -38,7 +38,7 @@ Rows whose UTM or tag is `nc-selftest`, or starts with `v0`, are left out. Free 
 
 The trial starts on its own only when the machine hash is present and has not been used for a trial. A missing hash, `unavailable`, or a hash that already had a trial still gets Free, with no trial. Confirming the update opt-in can start it later, if that email has not had one and the computer's hash has not had one. Pass `licence_key` on the opt-in body to tie the address to that Free licence. The key is not returned. An address that is already confirmed can be tied the same way on a later opt-in, and that also unlocks the trial under the same rule. A licence that already had an email still starts its trial on first activation. `/api/confirm-email` does not start the clock early.
 
-`FREE_CLAIM_REPEAT` is `same` or `new`. Empty means `same`. `same` returns the existing Free key when that computer claims again. `new` issues another `NC-` code. The new code does not start a second trial on a hash that already had one. The daily cap and the claim rate limits still apply.
+`POST /api/v1/app/free/claim` issues a new `NC-` key on every claim. `FREE_CLAIM_REPEAT` is `new` or `same`. Empty, or any other value, means `new`. `same` returns the existing Free key for that computer. A new code does not start a second trial on a hash that already had one. The 300-a-day cap and the per-IP and per-machine-hash rate limits still apply to every new code.
 
 `GET /api/v1/download/free/latest` is public JSON: version, published time, and mac/win name, size and sha256. `GET /api/v1/download/free/latest/<mac|win>` 302s to the short-lived installer URL and counts kind `direct` with the `utm_*` query fields.
 
@@ -46,6 +46,6 @@ The trial starts on its own only when the machine hash is present and has not be
 
 `FREE_CLAIM_DAILY_CAP` is the number of new email-less licences per UTC day. Empty uses 300. Over the cap the response is 503 `claim_capacity`.
 
-`FREE_CLAIM_REPEAT` is `same` or `new`, described above. Empty means `same`.
+`FREE_CLAIM_REPEAT` is `new` or `same`, described above. Empty means `new`.
 
 The redeem box on the website stays until 2027-02-17.
