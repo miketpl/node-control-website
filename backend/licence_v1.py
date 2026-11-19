@@ -3349,6 +3349,260 @@ def _usage_counts(db, now):
     }
 
 
+# Mike's own Free licences. Kept out of the marketing counts, not out of the
+# rest of stats/v1. One list so the ids are not repeated in the queries.
+MARKETING_EXCLUDED_FREE_LICENCE_IDS = (23, 24, 32)
+_MARKETING_SLUG = re.compile(r"^[a-z0-9_-]{1,64}$")
+_MARKETING_HOST = re.compile(r"^[a-z0-9.-]{1,253}$")
+_MARKETING_DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_FREE_DOWNLOAD_KINDS = ("app_download", "auto", "redirect")
+
+
+def _marketing_slug(value):
+    """Lower case slug, or none, or other.
+
+    At most 64 characters. Letters, digits, hyphen and underscore only.
+    A dot is other. An empty value is none.
+    """
+    text = str(value or "").strip().lower()
+    if not text:
+        return "none"
+    if not _MARKETING_SLUG.match(text):
+        return "other"
+    return text
+
+
+def _marketing_tag_excluded(*values):
+    """True when a UTM or tag is the self-test marker or a v0 build tag."""
+    for value in values:
+        text = str(value or "").strip().lower()
+        if text == "nc-selftest" or text.startswith("v0"):
+            return True
+    return False
+
+
+def _marketing_referrer(raw, utm_empty):
+    """ref:host when UTM is empty, else none. Unsafe hosts are excluded."""
+    if not utm_empty:
+        return "none", False
+    host = str(raw or "").strip().lower()
+    if not host:
+        return "none", False
+    if (
+        "@" in host
+        or "/" in host
+        or not _MARKETING_HOST.match(host)
+        or host == "nc-selftest"
+        or host.startswith("v0")
+    ):
+        return "none", True
+    return "ref:" + host, False
+
+
+def _marketing_add(bucket, key, field, amount):
+    row = bucket.get(key)
+    if row is None:
+        row = dict(key)
+        bucket[key] = row
+    row[field] = row.get(field, 0) + amount
+
+
+def _marketing_report(db, since, until):
+    """Counts for the same UTC window as the rest of stats/v1.
+
+    No emails, addresses, licence keys, licence ids, or names. Referrer
+    hosts are returned only as ref:host, and only when UTM is empty.
+    """
+    window = (since, until)
+    funnel_rows = {}
+    funnel_total = 0
+    funnel_excluded = 0
+    for row in db.execute(
+        """
+        SELECT day, event, utm_source, utm_campaign, utm_content, count
+        FROM funnel_daily
+        WHERE day >= ? AND day < ?
+        """,
+        window,
+    ):
+        count = int(row["count"] or 0)
+        if (
+            not _MARKETING_DAY.match(row["day"] or "")
+            or _marketing_tag_excluded(
+                row["event"], row["utm_source"], row["utm_campaign"], row["utm_content"]
+            )
+        ):
+            funnel_excluded += count
+            continue
+        key = (
+            ("day", row["day"]),
+            ("event", _marketing_slug(row["event"])),
+            ("utm_source", _marketing_slug(row["utm_source"])),
+            ("utm_campaign", _marketing_slug(row["utm_campaign"])),
+            ("utm_content", _marketing_slug(row["utm_content"])),
+        )
+        _marketing_add(funnel_rows, key, "count", count)
+        funnel_total += count
+
+    signup_rows = {}
+    signup_total = 0
+    signup_excluded = 0
+    for row in db.execute(
+        """
+        SELECT
+            id,
+            substr(created_at, 1, 10) AS day,
+            utm_source, utm_campaign, utm_content, referrer,
+            status, download_count
+        FROM licenses
+        WHERE tier = 'free' AND created_at >= ? AND created_at < ?
+        """,
+        window,
+    ):
+        raw_utms = (row["utm_source"], row["utm_campaign"], row["utm_content"])
+        utm_empty = not any(str(value or "").strip() for value in raw_utms)
+        referrer, drop_referrer = _marketing_referrer(row["referrer"], utm_empty)
+        if (
+            int(row["id"]) in MARKETING_EXCLUDED_FREE_LICENCE_IDS
+            or not _MARKETING_DAY.match(row["day"] or "")
+            or _marketing_tag_excluded(*raw_utms, row["referrer"])
+            or drop_referrer
+        ):
+            signup_excluded += 1
+            continue
+        key = (
+            ("day", row["day"]),
+            ("utm_source", _marketing_slug(row["utm_source"])),
+            ("utm_campaign", _marketing_slug(row["utm_campaign"])),
+            ("utm_content", _marketing_slug(row["utm_content"])),
+            ("referrer", referrer),
+        )
+        current = signup_rows.get(key)
+        if current is None:
+            current = dict(key)
+            current.update({"requested": 0, "verified": 0, "unverified": 0, "redeemed": 0})
+            signup_rows[key] = current
+        current["requested"] += 1
+        if row["status"] == "active":
+            current["verified"] += 1
+        elif row["status"] == "unverified":
+            current["unverified"] += 1
+        if int(row["download_count"] or 0) > 0:
+            current["redeemed"] += 1
+        signup_total += 1
+
+    download_rows = {}
+    download_total = 0
+    download_excluded = 0
+    kinds = ",".join("?" * len(_FREE_DOWNLOAD_KINDS))
+    for row in db.execute(
+        f"""
+        SELECT
+            download_events.license_id AS license_id,
+            substr(download_events.created_at, 1, 10) AS day,
+            download_events.platform AS platform,
+            download_events.kind AS kind,
+            download_events.utm_source AS event_source,
+            download_events.utm_campaign AS event_campaign,
+            download_events.utm_content AS event_content,
+            licenses.id AS licence_id,
+            licenses.utm_source AS utm_source,
+            licenses.utm_campaign AS utm_campaign,
+            licenses.utm_content AS utm_content
+        FROM download_events
+        LEFT JOIN licenses ON licenses.id = download_events.license_id
+        WHERE download_events.kind IN ({kinds})
+          AND COALESCE(download_events.tier, '') != 'pro'
+          AND download_events.created_at >= ? AND download_events.created_at < ?
+        """,
+        (*_FREE_DOWNLOAD_KINDS, *window),
+    ):
+        linked = row["licence_id"] is not None
+        source = row["utm_source"] if linked else ""
+        campaign = row["utm_campaign"] if linked else ""
+        content = row["utm_content"] if linked else ""
+        licence_id = row["license_id"]
+        if (
+            (licence_id is not None and int(licence_id) in MARKETING_EXCLUDED_FREE_LICENCE_IDS)
+            or not _MARKETING_DAY.match(row["day"] or "")
+            or _marketing_tag_excluded(
+                source, campaign, content,
+                row["event_source"], row["event_campaign"], row["event_content"],
+                row["platform"], row["kind"],
+            )
+        ):
+            download_excluded += 1
+            continue
+        key = (
+            ("day", row["day"]),
+            ("platform", _marketing_slug(row["platform"])),
+            ("kind", _marketing_slug(row["kind"])),
+            ("utm_source", _marketing_slug(source)),
+            ("utm_campaign", _marketing_slug(campaign)),
+            ("utm_content", _marketing_slug(content)),
+        )
+        _marketing_add(download_rows, key, "count", 1)
+        download_total += 1
+
+    pro_rows = {}
+    pro_total = 0
+    pro_excluded = 0
+    for row in db.execute(
+        """
+        SELECT plan, free_license_id
+        FROM pro_keys
+        WHERE created_at >= ? AND created_at < ?
+        """,
+        window,
+    ):
+        free_id = row["free_license_id"]
+        if (
+            (free_id is not None and int(free_id) in MARKETING_EXCLUDED_FREE_LICENCE_IDS)
+            or _marketing_tag_excluded(row["plan"])
+        ):
+            pro_excluded += 1
+            continue
+        plan = _marketing_slug(row["plan"])
+        pro_rows[plan] = pro_rows.get(plan, 0) + 1
+        pro_total += 1
+
+    def _rows(bucket, count_fields):
+        listed = []
+        for key in sorted(bucket):
+            item = {name: value for name, value in key}
+            for field in count_fields:
+                item[field] = bucket[key][field]
+            listed.append(item)
+        return listed
+
+    return {
+        "funnel": {
+            "total": funnel_total,
+            "excluded": funnel_excluded,
+            "rows": _rows(funnel_rows, ("count",)),
+        },
+        "signups": {
+            "total": signup_total,
+            "excluded": signup_excluded,
+            "rows": _rows(signup_rows, ("requested", "verified", "unverified", "redeemed")),
+        },
+        "downloads": {
+            "total": download_total,
+            "excluded": download_excluded,
+            "rows": _rows(download_rows, ("count",)),
+        },
+        "pro_purchases": {
+            "attribution": "none",
+            "total": pro_total,
+            "excluded": pro_excluded,
+            "rows": [
+                {"plan": plan, "count": pro_rows[plan]}
+                for plan in sorted(pro_rows)
+            ],
+        },
+    }
+
+
 def admin_stats_v1():
     """Aggregate counts for a read-only dashboard. No emails, keys, install ids, or IPs.
 
@@ -3639,6 +3893,7 @@ def admin_stats_v1():
             ).fetchall(), ("tier", "platform", "version"))
             if row["count"] > 0
         ]
+        marketing = _marketing_report(db, since, until)
     finally:
         db.close()
 
@@ -3666,6 +3921,7 @@ def admin_stats_v1():
         "current_installs_by_version": current_installs_by_version,
         "update_checks_by_version": update_checks_by_version,
         "telemetry_note": TELEMETRY_INSTALL_NOTE,
+        "marketing": marketing,
         "flags": {
             "free_downloads_paused": flags["free_downloads_paused"],
             "maintenance": flags["maintenance"],
@@ -4008,7 +4264,7 @@ def register(flask_app):
     flask_app.add_url_rule(
         "/api/admin/stats/v1",
         "admin_stats_v1",
-        api.require_admin_read(admin_stats_v1),
+        api.require_stats_read(admin_stats_v1),
         methods=["GET"],
     )
     flask_app.add_url_rule(
