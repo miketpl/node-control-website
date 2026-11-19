@@ -63,11 +63,27 @@ def _secret():
     return (os.environ.get("MACHINE_HASH_KEY") or "").encode("utf-8")
 
 
-def email_hash(email):
+def email_hash(email, licence_id=None):
+    """HMAC of an email, or of the licence id when the email is empty.
+
+    Existing rows were stored as "email:" plus the address, including an
+    empty address. This function still does that when an address is present.
+    An empty address with a licence id uses "licence:free:<id>" so two
+    email-less licences do not share one hash. Callers that only have an
+    address keep the old "email:" form, so a lookup of an existing row
+    does not change.
+    """
     key = _secret()
     if not key:
         return ""
-    return hmac.new(key, ("email:" + (email or "").strip().lower()).encode(), hashlib.sha256).hexdigest()
+    text = (email or "").strip().lower()
+    if text:
+        material = "email:" + text
+    elif licence_id is not None:
+        material = f"licence:free:{int(licence_id)}"
+    else:
+        material = "email:"
+    return hmac.new(key, material.encode(), hashlib.sha256).hexdigest()
 
 
 def machine_hmac(presented):
@@ -151,6 +167,15 @@ def _state_for(record, presented, version, now):
             "eligible": False,
             "no_lease": True,
         }
+    email_text = (record.get("email") or "").strip()
+    if record["tier"] == "free" and not email_text and presented in (None, "unavailable"):
+        return {
+            "trial_state": "ineligible",
+            "reason": "no_machine",
+            "row": None,
+            "active": False,
+            "eligible": False,
+        }
     if not _app_ok(version):
         return {
             "trial_state": "ineligible",
@@ -167,7 +192,7 @@ def _state_for(record, presented, version, now):
             "active": False,
             "eligible": False,
         }
-    digest = email_hash(record.get("email") or "")
+    digest = email_hash(record.get("email") or "", record.get("id"))
     presented_hmac = machine_hmac(presented) if presented and HASH_RE.match(presented) else ""
     db = _db()
     try:
@@ -281,7 +306,7 @@ def _insert_trial(record, install_id, presented, how):
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
-                    email_hash(record.get("email") or ""),
+                    email_hash(record.get("email") or "", record.get("id")),
                     machine,
                     record["kind"],
                     int(record["id"]),
@@ -457,7 +482,9 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
     ):
         if presented == "unavailable" or (presented and HASH_RE.match(presented)):
             view = _state_for(record, presented, app_version, now)
-            if view["trial_state"] == "available":
+            if view["reason"] == "no_machine":
+                _count("trial_refused_no_machine")
+            elif view["trial_state"] == "available":
                 _insert_trial(record, install_id, presented, "auto")
             elif view["reason"] in ("email_used", "machine_used"):
                 _count("trial_refused_" + view["reason"])
@@ -561,6 +588,12 @@ def start_request():
             "tier": record["tier"],
             "licence": body,
         })
+    if view["reason"] == "no_machine":
+        _count("trial_refused_no_machine")
+        return v1.error(
+            409, "trial_unavailable", "This computer cannot start the Pro trial.",
+            details={"reason": "no_machine"},
+        )
     if view["reason"] in ("email_used", "machine_used"):
         _count("trial_refused_" + view["reason"])
         return v1.error(
@@ -650,6 +683,36 @@ def _template_opt_out(name):
     return bool(data.get("respect_opt_out", True))
 
 
+def _updates_opted_in(email):
+    """True when this address confirmed update mail and has not unsubscribed."""
+    text = (email or "").strip().lower()
+    if not text:
+        return False
+    digest = email_hash(text)
+    if not digest:
+        return False
+    db = _db()
+    try:
+        present = db.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'update_subscribers'"
+        ).fetchone()
+        if not present:
+            return False
+        row = db.execute(
+            """
+            SELECT confirmed_at, unsubscribed_at
+            FROM update_subscribers
+            WHERE email_hash = ?
+            """,
+            (digest,),
+        ).fetchone()
+    finally:
+        db.close()
+    if not row or not (row["confirmed_at"] or "").strip():
+        return False
+    return not (row["unsubscribed_at"] or "").strip()
+
+
 def run_reminders(confirm):
     """Day 11 and day 14 trial reminders. Prints counts only."""
     import notices
@@ -683,6 +746,10 @@ def run_reminders(confirm):
         if (row["licence_status"] or "") == "revoked":
             continue
         if (row["licence_tier"] or "") == "pro":
+            continue
+        if not (row["email"] or "").strip():
+            continue
+        if not _updates_opted_in(row["email"]):
             continue
         if int(row["licence_ref"]) in upgraded:
             continue

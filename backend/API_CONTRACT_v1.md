@@ -27,3 +27,19 @@ Rows whose UTM or tag is `nc-selftest`, or starts with `v0`, are left out. Free 
 `downloads.rows` is Free download events per day, platform and kind. The kinds are `app_download`, `auto` and `redirect`. UTM is copied from the linked licence. A download with no linked licence uses `none`.
 
 `pro_purchases` is a count by plan for Professional keys created in the window. `attribution` is `none`. Pro UTM is not included.
+
+`signups.rows` includes `source` (`web_instant`, `first_run`, or `none` for an older form row). `downloads.rows` includes kind `direct` for the public installer redirect. UTM on a direct download comes from the query string. A linked licence still supplies the UTM. `optins` is submitted, confirmed and unsubscribed update opt-ins per UTC day.
+
+## Email-less Free
+
+`POST /api/free/instant-key` with `{"platform": "mac|win"}` returns `{"licence_key": "NC-..."}`. No email. Status is `active`, `source` is `web_instant`.
+
+`POST /api/v1/app/free/claim` takes the app User-Agent, `X-NC-Install-Id` and `X-NC-Machine-Hash`. A real hash returns the same key on a later claim. `unavailable` or a missing hash still returns a Free key. The trial does not start for that computer. A revoked licence for that computer returns 403 `licence_revoked`.
+
+`GET /api/v1/download/free/latest` is public JSON: version, published time, and mac/win name, size and sha256. `GET /api/v1/download/free/latest/<mac|win>` 302s to the short-lived installer URL and counts kind `direct` with the `utm_*` query fields.
+
+`POST /api/free/updates/subscribe` needs `email`, `consent: true` and `consent_text_version`. The response is always 202. Confirmation and unsubscribe are one-click links and do not show the address.
+
+`FREE_CLAIM_DAILY_CAP` is the number of new email-less licences per UTC day. Empty uses 300. Over the cap the response is 503 `claim_capacity`.
+
+The redeem box on the website stays until 2027-02-17.

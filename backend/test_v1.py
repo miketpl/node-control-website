@@ -140,6 +140,7 @@ class V1Tests(unittest.TestCase):
             "email_codes", "registrations", "telemetry_sessions", "telemetry_monthly",
             "server_flags", "release_cache", "rate_limits", "stripe_events",
             "download_events", "update_check_daily",
+            "free_claims", "update_subscribers", "admin_daily_counts",
             "notices_sent", "notice_opt_outs", "purchase_intents",
         ):
             db.execute(f"DELETE FROM {table}")
@@ -1401,6 +1402,7 @@ class V1Tests(unittest.TestCase):
         later = "2026-11-02"
         outside = "2026-11-03"
         db = get_db()
+        db.execute("DELETE FROM licenses")
         db.execute("DELETE FROM funnel_daily")
         db.execute(
             """
@@ -1512,22 +1514,22 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(marketing["signups"]["rows"], [
             {
                 "day": day, "utm_source": "linkedin", "utm_campaign": "launch",
-                "utm_content": "post", "referrer": "none",
+                "utm_content": "post", "referrer": "none", "source": "none",
                 "requested": 1, "verified": 1, "unverified": 0, "redeemed": 1,
             },
             {
                 "day": day, "utm_source": "none", "utm_campaign": "none",
-                "utm_content": "none", "referrer": "none",
+                "utm_content": "none", "referrer": "none", "source": "none",
                 "requested": 1, "verified": 0, "unverified": 0, "redeemed": 0,
             },
             {
                 "day": day, "utm_source": "none", "utm_campaign": "none",
-                "utm_content": "none", "referrer": "ref:www.linkedin.com",
+                "utm_content": "none", "referrer": "ref:www.linkedin.com", "source": "none",
                 "requested": 1, "verified": 0, "unverified": 1, "redeemed": 0,
             },
             {
                 "day": day, "utm_source": "other", "utm_campaign": "launch",
-                "utm_content": "post", "referrer": "none",
+                "utm_content": "post", "referrer": "none", "source": "none",
                 "requested": 1, "verified": 1, "unverified": 0, "redeemed": 0,
             },
         ])

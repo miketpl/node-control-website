@@ -119,8 +119,8 @@ def cmd_list(args):
         return
     for row in rows:
         print(
-            f"{row.get('id')}\t{row.get('status')}\t{row.get('email')}\t"
-            f"{row.get('code')}\t{row.get('created_at')}"
+            f"{row.get('id')}\t{row.get('status')}\t{row.get('email') or '-'}\t"
+            f"{row.get('source') or '-'}\t{row.get('code')}\t{row.get('created_at')}"
         )
     print(f"{len(rows)} licence(s)")
 
@@ -458,6 +458,34 @@ def cmd_funnel(args):
         )
 
 
+def cmd_subscribers(_args):
+    """Print update opt-in counts. No addresses."""
+    db = open_funnel_db()
+    try:
+        present = db.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'update_subscribers'"
+        ).fetchone()
+        if not present:
+            print("submitted 0")
+            print("confirmed 0")
+            print("unsubscribed 0")
+            return
+        row = db.execute(
+            """
+            SELECT
+                COUNT(*) AS submitted,
+                SUM(CASE WHEN confirmed_at != '' AND unsubscribed_at = '' THEN 1 ELSE 0 END) AS confirmed,
+                SUM(CASE WHEN unsubscribed_at != '' THEN 1 ELSE 0 END) AS unsubscribed
+            FROM update_subscribers
+            """
+        ).fetchone()
+    finally:
+        db.close()
+    print(f"submitted {int(row['submitted'] or 0)}")
+    print(f"confirmed {int(row['confirmed'] or 0)}")
+    print(f"unsubscribed {int(row['unsubscribed'] or 0)}")
+
+
 def cmd_lease_keygen(args):
     """Write a lease seed into the env file. Prints the public key and key id only."""
     here = os.path.dirname(os.path.abspath(__file__))
@@ -622,6 +650,9 @@ def main(argv=None):
     )
     funnel_cmd.set_defaults(func=cmd_funnel)
 
+    subscribers = sub.add_parser("subscribers", help="Update opt-in counts. Read-only")
+    subscribers.set_defaults(func=cmd_subscribers)
+
     stats_cmd = sub.add_parser("stats", help="Registrations by source, and download events")
     stats_cmd.add_argument("--since", help="UTC date, inclusive, e.g. 2026-10-12")
     stats_cmd.add_argument("--until", help="UTC date, exclusive, e.g. 2026-10-19")
@@ -696,7 +727,7 @@ def main(argv=None):
     notify.add_argument(
         "--audience",
         required=True,
-        choices=("free_downloaded", "free_all", "pro_active", "all"),
+        choices=("free_downloaded", "free_all", "pro_active", "all", "update_subscribers"),
     )
     notify.add_argument("--below-version", default="", help="Only licences whose newest known version is below this")
     notify.add_argument(

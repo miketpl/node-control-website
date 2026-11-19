@@ -109,6 +109,8 @@ app.config.update(
     KEY_ENCRYPTION_KEY=os.environ.get("KEY_ENCRYPTION_KEY", ""),
     # Empty means paused. Set FREE_DOWNLOADS_PAUSED=false to open Free downloads.
     FREE_DOWNLOADS_PAUSED=os.environ.get("FREE_DOWNLOADS_PAUSED", ""),
+    # New email-less Free licences per UTC day. Empty uses 300.
+    FREE_CLAIM_DAILY_CAP=os.environ.get("FREE_CLAIM_DAILY_CAP", ""),
     FREE_PAUSED_MESSAGE=os.environ.get("FREE_PAUSED_MESSAGE", ""),
     MAINTENANCE=os.environ.get("MAINTENANCE", ""),
     # Empty means no minimum. A floor is only applied when this or a flag is set.
@@ -317,7 +319,7 @@ def _add_column(db, table, column, declaration):
 
 def _add_license_text_column(db, column):
     """Add one text column with an empty default. Existing rows stay."""
-    if column not in ("reminder_sent_at",):
+    if column not in ("reminder_sent_at", "source"):
         raise ValueError("unknown licence column")
     have = {row["name"] for row in db.execute("PRAGMA table_info(licenses)")}
     if column in have:
@@ -494,6 +496,9 @@ def migrate_db():
                 if column not in have:
                     _add_license_column(db, column)
             _add_license_text_column(db, "reminder_sent_at")
+            _add_license_text_column(db, "source")
+            import free_ungate
+            free_ungate.ensure_schema(db)
             _apply_schema(db, """
                 CREATE TABLE IF NOT EXISTS download_events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -569,7 +574,22 @@ _download_event_hits = {}
 
 # Funnel counts are a public POST. The address cap is in memory, per worker,
 # and is never written to the database. The same fixed window as consume_rate.
-FUNNEL_EVENTS = ("free_section_view", "free_form_start", "free_form_submit")
+FUNNEL_EVENTS = (
+    "free_section_view",
+    "free_page_view",
+    "free_form_start",
+    "free_form_submit",
+    "free_download_click_mac",
+    "free_download_click_win",
+    "free_instant_key_issued",
+    "free_first_run_claim",
+    "free_first_run_reclaim",
+    "free_claim_refused_rate",
+    "free_claim_refused_no_machine",
+    "free_optin_submit",
+    "free_optin_confirmed",
+    "free_optin_unsubscribed",
+)
 FUNNEL_IP_LIMIT = 30
 FUNNEL_IP_WINDOW = 60
 FUNNEL_BODY_LIMIT = 1024
@@ -3209,7 +3229,7 @@ def stats():
             SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
         FROM licenses
         WHERE tier = 'free' AND created_at >= ? AND created_at < ?
-        GROUP BY source, medium
+        GROUP BY 1, medium
         ORDER BY requested DESC
     """, (since, until))]
     by_campaign = [dict(r) for r in db.execute("""
@@ -3226,7 +3246,7 @@ def stats():
             SUM(CASE WHEN download_count > 0 THEN 1 ELSE 0 END) AS redeemed
         FROM licenses
         WHERE tier = 'free' AND created_at >= ? AND created_at < ?
-        GROUP BY source, utm_campaign, utm_content
+        GROUP BY 1, utm_campaign, utm_content
         ORDER BY requested DESC
     """, (since, until))]
     download_events = [dict(r) for r in db.execute("""
@@ -3324,6 +3344,8 @@ with app.app_context():
     migrate_db()
     import licence_v1
     licence_v1.register(app)
+    import free_ungate
+    free_ungate.register(app)
     import notices
     notices.register(app)
 
