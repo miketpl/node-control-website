@@ -20,6 +20,7 @@ EXCLUDED_FREE_IDS = (23, 24, 32)
 # The redeem box on /free/ stays until this UTC date, then the page hides it.
 REDEEM_BOX_UNTIL = "2027-02-17"
 _CRAWLER = re.compile(r"bot|spider|crawl|slurp|preview|facebookexternalhit|whatsapp", re.I)
+_NC_KEY = re.compile(r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
 _EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,190}\.[^@\s]{2,24}$")
 _meta_cache = {"at": 0.0, "body": None}
 _META_TTL = 300
@@ -38,10 +39,11 @@ def ensure_schema(db):
         )
         """
     )
+    db.execute("DROP INDEX IF EXISTS idx_free_claims_machine")
     db.execute(
         """
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_free_claims_machine
-        ON free_claims(machine_hmac) WHERE machine_hmac != ''
+        CREATE INDEX IF NOT EXISTS idx_free_claims_lookup
+        ON free_claims(machine_hmac)
         """
     )
     db.execute(
@@ -61,6 +63,9 @@ def ensure_schema(db):
         )
         """
     )
+    subscriber_cols = {row[1] for row in db.execute("PRAGMA table_info(update_subscribers)")}
+    if "licence_id" not in subscriber_cols:
+        db.execute("ALTER TABLE update_subscribers ADD COLUMN licence_id INTEGER")
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS admin_daily_counts (
@@ -88,6 +93,24 @@ def _day(moment=None):
 
 def _hash_token(value):
     return hashlib.sha256((value or "").encode("utf-8")).hexdigest()
+
+
+def _repeat_mode():
+    """same keeps one key per computer. new issues another NC- code."""
+    raw = str(licence_v1._api().app.config.get("FREE_CLAIM_REPEAT") or "").strip().lower()
+    if raw in ("same", "new"):
+        return raw
+    return "same"
+
+
+def _issued(code, new=None):
+    """An issued Free key is always an NC- code. The lease, on activate, is free or trial."""
+    if not _NC_KEY.match(code or ""):
+        return licence_v1.error(503, "upstream_unavailable", "A licence could not be issued.")
+    body = {"licence_key": code, "tier": "free", "active": True}
+    if new is not None:
+        body["new"] = new
+    return jsonify(body)
 
 
 def _cap():
@@ -286,7 +309,7 @@ def instant_key():
     finally:
         db.close()
     _count("free_instant_key_issued", *slugs)
-    return jsonify({"licence_key": code})
+    return _issued(code)
 
 
 def claim():
@@ -338,9 +361,13 @@ def claim():
     slugs = _slug_tags(source, campaign, content)
     db = _db()
     try:
-        if machine:
+        if machine and _repeat_mode() == "same":
             existing = db.execute(
-                "SELECT licence_id FROM free_claims WHERE machine_hmac = ?",
+                """
+                SELECT licence_id FROM free_claims
+                WHERE machine_hmac = ?
+                ORDER BY id DESC LIMIT 1
+                """,
                 (machine,),
             ).fetchone()
             if existing:
@@ -350,9 +377,9 @@ def claim():
                 ).fetchone()
                 if row and row["status"] == "revoked":
                     return licence_v1.error(403, "licence_revoked", "This licence has been revoked.")
-                if row:
+                if row and _NC_KEY.match(row["code"] or ""):
                     _count("free_first_run_reclaim", *slugs)
-                    return jsonify({"licence_key": row["code"], "tier": "free", "new": False})
+                    return _issued(row["code"], new=False)
         blocked = _capacity_block(db)
         if blocked:
             db.commit()
@@ -378,7 +405,7 @@ def claim():
     if not machine:
         _count("free_claim_refused_no_machine", *slugs)
     _count("free_first_run_claim", *slugs)
-    return jsonify({"licence_key": code, "tier": "free", "new": True})
+    return _issued(code, new=True)
 
 
 def _release_meta():
@@ -512,6 +539,19 @@ def _maybe_mail_yesterday(db):
     _mail("Free downloads", f"Direct Free downloads on {yesterday}: {int(row['count'])}.")
 
 
+def _free_licence_id(raw_key):
+    """Licence id for an NC- key, or None. The key is not logged."""
+    text = str(raw_key or "").strip()
+    if not text:
+        return None
+    record, reason = licence_v1._lookup_key(text)
+    if reason or not record or record.get("kind") != "free":
+        return None
+    if record.get("status") == "revoked":
+        return None
+    return int(record["id"])
+
+
 def _optin_serializer():
     from itsdangerous import URLSafeTimedSerializer
     secret = (licence_v1._api().app.config.get("SECRET_KEY") or "").strip()
@@ -540,8 +580,10 @@ def subscribe_updates():
     if limited:
         return limited
     utm_source, utm_campaign, utm_content, _ref, _land = _tags(data)
+    licence_id = _free_licence_id(data.get("licence_key"))
     now = licence_v1.iso(_now())
     db = _db()
+    unlock_id = None
     try:
         row = db.execute(
             "SELECT id, confirmed_at, unsubscribed_at FROM update_subscribers WHERE email_hash = ?",
@@ -549,6 +591,20 @@ def subscribe_updates():
         ).fetchone()
         if row and (row["confirmed_at"] or "") and not (row["unsubscribed_at"] or ""):
             subscriber_id = int(row["id"])
+            if licence_id:
+                db.execute(
+                    "UPDATE update_subscribers SET licence_id = COALESCE(licence_id, ?) WHERE id = ?",
+                    (licence_id, subscriber_id),
+                )
+                db.execute(
+                    """
+                    UPDATE licenses SET email = ?
+                    WHERE id = ? AND tier = 'free' AND status != 'revoked'
+                      AND (email IS NULL OR trim(email) = '')
+                    """,
+                    (email, licence_id),
+                )
+                unlock_id = licence_id
             send = False
         elif row:
             db.execute(
@@ -556,10 +612,11 @@ def subscribe_updates():
                 UPDATE update_subscribers
                 SET email = ?, consent_text_version = ?, consented_at = ?,
                     confirmed_at = '', unsubscribed_at = '', source = ?,
-                    utm_source = ?, utm_campaign = ?, utm_content = ?
+                    utm_source = ?, utm_campaign = ?, utm_content = ?,
+                    licence_id = COALESCE(?, licence_id)
                 WHERE id = ?
                 """,
-                (email, version, now, source_name, utm_source, utm_campaign, utm_content, int(row["id"])),
+                (email, version, now, source_name, utm_source, utm_campaign, utm_content, licence_id, int(row["id"])),
             )
             subscriber_id = int(row["id"])
             send = True
@@ -568,10 +625,10 @@ def subscribe_updates():
                 """
                 INSERT INTO update_subscribers (
                     email, email_hash, consent_text_version, consented_at, source,
-                    utm_source, utm_campaign, utm_content
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    utm_source, utm_campaign, utm_content, licence_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (email, email_key, version, now, source_name, utm_source, utm_campaign, utm_content),
+                (email, email_key, version, now, source_name, utm_source, utm_campaign, utm_content, licence_id),
             )
             subscriber_id = int(cursor.lastrowid)
             send = True
@@ -582,6 +639,8 @@ def subscribe_updates():
     _count("free_optin_submit", *slugs)
     if send:
         _send_confirm(email, subscriber_id)
+    elif unlock_id:
+        trial.try_unlock_after_verified_email(unlock_id)
     return jsonify({"message": "Check your email to confirm."}), 202
 
 
@@ -625,11 +684,13 @@ def confirm_updates():
     db = _db()
     try:
         row = db.execute(
-            "SELECT id, confirmed_at FROM update_subscribers WHERE id = ?",
+            "SELECT id, email, licence_id, confirmed_at FROM update_subscribers WHERE id = ?",
             (subscriber_id,),
         ).fetchone()
         if not row:
             return _page("Link not valid", "This link is not valid.", 400)
+        linked = row["licence_id"]
+        address = row["email"] or ""
         if not (row["confirmed_at"] or ""):
             db.execute(
                 """
@@ -639,6 +700,15 @@ def confirm_updates():
                 """,
                 (licence_v1.iso(_now()), subscriber_id),
             )
+            if linked and address:
+                db.execute(
+                    """
+                    UPDATE licenses SET email = ?
+                    WHERE id = ? AND tier = 'free' AND status != 'revoked'
+                      AND (email IS NULL OR trim(email) = '')
+                    """,
+                    (address, int(linked)),
+                )
             db.commit()
             fresh = True
         else:
@@ -647,6 +717,8 @@ def confirm_updates():
         db.close()
     if fresh:
         _count("free_optin_confirmed")
+        if linked:
+            trial.try_unlock_after_verified_email(int(linked))
     return _page("Email confirmed", "You will get an email when a new version ships. You can close this page.")
 
 

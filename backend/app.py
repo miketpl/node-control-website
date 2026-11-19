@@ -111,6 +111,8 @@ app.config.update(
     FREE_DOWNLOADS_PAUSED=os.environ.get("FREE_DOWNLOADS_PAUSED", ""),
     # New email-less Free licences per UTC day. Empty uses 300.
     FREE_CLAIM_DAILY_CAP=os.environ.get("FREE_CLAIM_DAILY_CAP", ""),
+    # same returns the existing Free key for a computer. new issues another NC- code.
+    FREE_CLAIM_REPEAT=os.environ.get("FREE_CLAIM_REPEAT", ""),
     FREE_PAUSED_MESSAGE=os.environ.get("FREE_PAUSED_MESSAGE", ""),
     MAINTENANCE=os.environ.get("MAINTENANCE", ""),
     # Empty means no minimum. A floor is only applied when this or a flag is set.

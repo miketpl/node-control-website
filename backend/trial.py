@@ -480,11 +480,23 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
         and trial_enabled()
         and _secret()
     ):
-        if presented == "unavailable" or (presented and HASH_RE.match(presented)):
-            view = _state_for(record, presented, app_version, now)
-            if view["reason"] == "no_machine":
+        email_text = (record.get("email") or "").strip()
+        real_hash = bool(presented and HASH_RE.match(presented))
+        # A licence with no email gets an automatic trial only when this
+        # computer is recognisable and has not had a trial. A missing hash,
+        # "unavailable", or a hash already used still leaves Free in place.
+        if not email_text:
+            if not real_hash:
                 _count("trial_refused_no_machine")
-            elif view["trial_state"] == "available":
+            else:
+                view = _state_for(record, presented, app_version, now)
+                if view["trial_state"] == "available":
+                    _insert_trial(record, install_id, presented, "auto")
+                elif view["reason"] in ("email_used", "machine_used", "no_machine"):
+                    _count("trial_refused_" + view["reason"])
+        elif presented == "unavailable" or real_hash:
+            view = _state_for(record, presented, app_version, now)
+            if view["trial_state"] == "available":
                 _insert_trial(record, install_id, presented, "auto")
             elif view["reason"] in ("email_used", "machine_used"):
                 _count("trial_refused_" + view["reason"])
@@ -503,6 +515,12 @@ def apply_to_payload(payload, record, install_id, app_version, auto_start=False)
     else:
         payload["entitlements"] = []
         payload["preview_only"] = list(PREVIEW_ONLY)
+    if record["tier"] != "pro":
+        payload["edition"] = "free"
+        if payload.get("entitlements") == ["all"]:
+            payload["entitlements"] = list(TRIAL_ENTITLEMENTS) if view["active"] else []
+        if view.get("trial_state") == "not_applicable":
+            view["trial_state"] = "ineligible"
     if view.get("no_lease"):
         payload["lease"] = None
         payload["lease_format"] = None
@@ -681,6 +699,68 @@ def _template_opt_out(name):
     except (OSError, ValueError):
         return True
     return bool(data.get("respect_opt_out", True))
+
+
+def try_unlock_after_verified_email(licence_id):
+    """Start a trial after an email is confirmed, if neither side has had one.
+
+    A missing machine hash can still start an email trial. A hash that
+    already has a trial does not get another. Returns a short status and
+    does not raise.
+    """
+    db = _db()
+    try:
+        row = db.execute("SELECT * FROM licenses WHERE id = ?", (int(licence_id),)).fetchone()
+        if not row or (row["tier"] or "") != "free" or (row["status"] or "") == "revoked":
+            return "skipped"
+        email = (row["email"] or "").strip().lower()
+        if not email:
+            return "skipped"
+        digest = email_hash(email, row["id"])
+        prior_id = email_hash("", row["id"])
+        by_email = _row_for_email(db, digest)
+        by_licence = _row_for_email(db, prior_id)
+        if by_email or by_licence:
+            return "already"
+        claim = db.execute(
+            """
+            SELECT machine_hmac FROM free_claims
+            WHERE licence_id = ? AND machine_hmac != ''
+            ORDER BY id DESC LIMIT 1
+            """,
+            (int(licence_id),),
+        ).fetchone()
+        machine = (claim["machine_hmac"] if claim else "") or ""
+        if machine and _row_for_machine(db, machine):
+            _count("trial_refused_machine_used")
+            return "machine_used"
+    finally:
+        db.close()
+    v1 = _v1()
+    now = v1.utcnow()
+    started = v1.iso(now)
+    expires = v1.iso(now + timedelta(days=TRIAL_DAYS))
+    db = _db()
+    try:
+        try:
+            db.execute(
+                """
+                INSERT INTO free_trials (
+                    email_hash, machine_hash, licence_kind, licence_ref, install_id,
+                    started_at, expires_at, started_how, created_at
+                ) VALUES (?, ?, 'free', ?, '', ?, ?, 'email', ?)
+                """,
+                (digest, machine, int(licence_id), started, expires, started),
+            )
+            db.commit()
+        except sqlite3.IntegrityError:
+            db.rollback()
+            _count("trial_refused_machine_used")
+            return "machine_used"
+    finally:
+        db.close()
+    _count("trial_started_email")
+    return "started"
 
 
 def _updates_opted_in(email):

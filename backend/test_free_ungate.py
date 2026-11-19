@@ -16,7 +16,6 @@ os.environ["MACHINE_HASH_KEY"] = "test-only-machine-hash-key"
 os.environ["API_PUBLIC_URL"] = "https://api.nodecontrol.io"
 
 import app as api
-import free_ungate
 import licence_v1
 import trial
 from app import app, get_db
@@ -32,6 +31,7 @@ class FreeUngateTests(unittest.TestCase):
         self.mail_patch.start()
         app.config["ADMIN_ALERT_EMAIL"] = ""
         app.config["FREE_CLAIM_DAILY_CAP"] = "300"
+        app.config["FREE_CLAIM_REPEAT"] = ""
         app.config["FREE_DOWNLOADS_PAUSED"] = "false"
         licence_v1.set_flag("free_downloads_paused", "false")
         licence_v1.set_flag("free_trial_enabled", "true")
@@ -143,8 +143,7 @@ class FreeUngateTests(unittest.TestCase):
         self.assertEqual(confirmed.status_code, 200)
         self.assertNotIn("ada@example.com", confirmed.get_data(as_text=True))
         self.assertTrue(trial._updates_opted_in("ada@example.com"))
-        unsub = free_ungate._optin_serializer().dumps({"id": 1})
-        gone = self.client.get("/api/free/updates/unsubscribe?t=" + unsub)
+        gone = self.client.get("/api/free/updates/unsubscribe?t=" + token)
         self.assertEqual(gone.status_code, 200)
         self.assertNotIn("ada@example.com", gone.get_data(as_text=True))
         self.assertFalse(trial._updates_opted_in("ada@example.com"))
@@ -174,3 +173,149 @@ class FreeUngateTests(unittest.TestCase):
         stored = db.execute("SELECT machine_hmac FROM free_claims").fetchall()
         db.close()
         self.assertNotIn(machine, "".join(row["machine_hmac"] for row in stored))
+        self.assertRegex(first.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        self.assertEqual(first.get_json()["tier"], "free")
+
+    def _claim(self, machine, install=None):
+        headers = {
+            "User-Agent": "NodeControl/0.9.48 (free; mac; arm64)",
+            "X-NC-Install-Id": install or str(uuid.uuid4()),
+            "X-NC-Machine-Hash": machine,
+        }
+        return self.client.post(
+            "/api/v1/app/free/claim",
+            json={"platform": "mac", "arch": "arm64", "app_version": "0.9.48"},
+            headers=headers,
+        )
+
+    def _activate(self, key, machine, install):
+        return self.client.post(
+            "/api/v1/app/activate",
+            json={"tier": "free", "app_version": "0.9.48", "platform": "mac", "arch": "arm64"},
+            headers={
+                "Authorization": "Bearer " + key,
+                "User-Agent": "NodeControl/0.9.48 (free; mac; arm64)",
+                "X-NC-Install-Id": install,
+                "X-NC-Machine-Hash": machine,
+            },
+        )
+
+    def _confirm_optin(self, email, licence_key=None):
+        body = {"email": email, "consent": True, "consent_text_version": "v1"}
+        if licence_key:
+            body["licence_key"] = licence_key
+        before = len(self.mail)
+        opted = self.client.post("/api/free/updates/subscribe", json=body)
+        self.assertEqual(opted.status_code, 202)
+        self.assertNotIn(email, opted.get_data(as_text=True))
+        if len(self.mail) == before:
+            return opted
+        link = [line for line in self.mail[-1][2].splitlines() if line.startswith("http")][0]
+        token = link.split("t=", 1)[1]
+        confirmed = self.client.get("/api/free/updates/confirm?t=" + token)
+        self.assertEqual(confirmed.status_code, 200)
+        self.assertNotIn(email, confirmed.get_data(as_text=True))
+        return confirmed
+
+    def _trial_count(self):
+        db = get_db()
+        count = db.execute("SELECT COUNT(*) AS c FROM free_trials").fetchone()["c"]
+        db.close()
+        return count
+
+    def _assert_free_lease(self, response):
+        self.assertEqual(response.status_code, 200)
+        body = response.get_json()
+        self.assertEqual(body["tier"], "free")
+        licence = body["licence"]
+        self.assertEqual(licence["edition"], "free")
+        self.assertNotEqual(licence["entitlements"], ["all"])
+        self.assertIsNotNone(licence["trial"])
+        self.assertNotEqual(licence["edition"], "pro")
+
+    def test_fresh_hash_starts_a_trial_and_a_missing_hash_does_not(self):
+        machine = "ab" * 32
+        install = str(uuid.uuid4())
+        issued = self._claim(machine, install)
+        self.assertRegex(issued.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        started = self._activate(issued.get_json()["licence_key"], machine, install)
+        self._assert_free_lease(started)
+        self.assertTrue(started.get_json()["licence"]["trial"]["active"])
+        self.assertEqual(self._trial_count(), 1)
+
+        bare = self._claim("unavailable")
+        self.assertRegex(bare.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        quiet = self._activate(bare.get_json()["licence_key"], "unavailable", str(uuid.uuid4()))
+        self._assert_free_lease(quiet)
+        self.assertFalse(quiet.get_json()["licence"]["trial"]["active"])
+        self.assertEqual(self._trial_count(), 1)
+
+        instant = self.client.post("/api/free/instant-key", json={"platform": "mac"})
+        self.assertEqual(instant.status_code, 200)
+        self.assertRegex(instant.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+        self.assertEqual(instant.get_json()["tier"], "free")
+        self.assertNotIn("pro", instant.get_json()["tier"])
+
+    def test_repeat_same_is_the_default_and_new_issues_another_code(self):
+        machine = "cd" * 32
+        app.config["FREE_CLAIM_REPEAT"] = "nope"
+        first = self._claim(machine)
+        app.config["FREE_CLAIM_REPEAT"] = "same"
+        again = self._claim(machine)
+        self.assertEqual(first.get_json()["licence_key"], again.get_json()["licence_key"])
+        self.assertFalse(again.get_json()["new"])
+        app.config["FREE_CLAIM_REPEAT"] = "new"
+        fresh = self._claim(machine)
+        self.assertTrue(fresh.get_json()["new"])
+        self.assertNotEqual(fresh.get_json()["licence_key"], first.get_json()["licence_key"])
+        self.assertRegex(fresh.get_json()["licence_key"], r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
+
+    def test_new_code_does_not_grant_a_second_trial(self):
+        machine = "ef" * 32
+        install = str(uuid.uuid4())
+        app.config["FREE_CLAIM_REPEAT"] = "new"
+        first = self._claim(machine, install)
+        started = self._activate(first.get_json()["licence_key"], machine, install)
+        self.assertTrue(started.get_json()["licence"]["trial"]["active"])
+        second_install = str(uuid.uuid4())
+        second = self._claim(machine, second_install)
+        self.assertNotEqual(second.get_json()["licence_key"], first.get_json()["licence_key"])
+        again = self._activate(second.get_json()["licence_key"], machine, second_install)
+        self._assert_free_lease(again)
+        self.assertFalse(again.get_json()["licence"]["trial"]["active"])
+        self.assertEqual(again.get_json()["licence"]["trial"]["reason"], "machine_used")
+        self._confirm_optin("ada@example.com", second.get_json()["licence_key"])
+        self.assertEqual(self._trial_count(), 1)
+
+    def test_new_mode_still_uses_the_cap_and_the_rate_limit(self):
+        app.config["FREE_CLAIM_REPEAT"] = "new"
+        app.config["FREE_CLAIM_DAILY_CAP"] = "1"
+        first = self._claim("a1" * 32)
+        self.assertEqual(first.status_code, 200)
+        blocked = self._claim("b2" * 32)
+        self.assertEqual(blocked.status_code, 503)
+        self.assertEqual(blocked.get_json()["error"]["code"], "claim_capacity")
+        app.config["FREE_CLAIM_DAILY_CAP"] = "300"
+        machine = "c3" * 32
+        for _ in range(5):
+            self.assertEqual(self._claim(machine).status_code, 200)
+        limited = self._claim(machine)
+        self.assertEqual(limited.status_code, 429)
+        self.assertEqual(limited.get_json()["error"]["code"], "rate_limited")
+
+    def test_confirmed_email_unlocks_one_trial(self):
+        issued = self.client.post("/api/free/instant-key", json={"platform": "win"})
+        key = issued.get_json()["licence_key"]
+        self._confirm_optin("ada@example.com", key)
+        db = get_db()
+        row = db.execute("SELECT email FROM licenses WHERE code = ?", (key,)).fetchone()
+        db.close()
+        self.assertEqual(row["email"], "ada@example.com")
+        self.assertEqual(self._trial_count(), 1)
+        install = str(uuid.uuid4())
+        started = self._activate(key, "d4" * 32, install)
+        self._assert_free_lease(started)
+        self.assertTrue(started.get_json()["licence"]["trial"]["active"])
+        other = self.client.post("/api/free/instant-key", json={"platform": "mac"})
+        self._confirm_optin("ada@example.com", other.get_json()["licence_key"])
+        self.assertEqual(self._trial_count(), 1)
