@@ -63,7 +63,7 @@ class TrialTests(unittest.TestCase):
         db = get_db()
         for table in ("licenses", "devices", "device_moves", "free_trials", "funnel_daily",
                       "notices_sent", "notice_opt_outs", "pro_keys", "server_flags",
-                      "rate_limits"):
+                      "rate_limits", "update_subscribers", "free_claims"):
             db.execute(f"DELETE FROM {table}")
         db.commit()
         db.close()
@@ -86,6 +86,21 @@ class TrialTests(unittest.TestCase):
     def _send(self, *args, **kwargs):
         self.mail.append(args)
         return True
+
+    def _confirm_updates(self, email):
+        digest = trial.email_hash(email)
+        now = "2026-01-01T00:00:00"
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO update_subscribers (
+                email, email_hash, consent_text_version, consented_at, confirmed_at
+            ) VALUES (?, ?, 'v1', ?, ?)
+            """,
+            (email, digest, now, now),
+        )
+        db.commit()
+        db.close()
 
     def _insert(self, code="NC-TRAL-0001", email="trial@example.com"):
         db = get_db()
@@ -328,6 +343,7 @@ class TrialTests(unittest.TestCase):
         )
         db.commit()
         db.close()
+        self._confirm_updates("trial@example.com")
         out = StringIO()
         with patch("sys.stdout", out):
             self.assertEqual(trial.reset_trial(trial_id, False), 0)
@@ -768,6 +784,7 @@ class TrialTests(unittest.TestCase):
             db.execute("DELETE FROM notices_sent")
             db.commit()
 
+        self._confirm_updates("remind@example.com")
         shift(11)
         with patch("sys.stdout", StringIO()):
             trial.run_reminders(True)

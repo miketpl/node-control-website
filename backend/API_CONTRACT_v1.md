@@ -27,3 +27,25 @@ Rows whose UTM or tag is `nc-selftest`, or starts with `v0`, are left out. Free 
 `downloads.rows` is Free download events per day, platform and kind. The kinds are `app_download`, `auto` and `redirect`. UTM is copied from the linked licence. A download with no linked licence uses `none`.
 
 `pro_purchases` is a count by plan for Professional keys created in the window. `attribution` is `none`. Pro UTM is not included.
+
+`signups.rows` includes `source` (`web_instant`, `first_run`, or `none` for an older form row). `downloads.rows` includes kind `direct` for the public installer redirect. UTM on a direct download comes from the query string. A linked licence still supplies the UTM. `optins` is submitted, confirmed and unsubscribed update opt-ins per UTC day.
+
+## Email-less Free
+
+`POST /api/free/instant-key` with `{"platform": "mac|win"}` returns `{"licence_key": "NC-..."}`. No email. Status is `active`, `source` is `web_instant`.
+
+`POST /api/free/instant-key` and `POST /api/v1/app/free/claim` return `licence_key` as an `NC-XXXX-XXXX` code and `tier` `free`. They do not return an `NCP-` key. The lease written on activate has edition `free`. While a trial is active the lease carries that trial. It never has edition `pro` or entitlement `all`.
+
+The trial starts on its own only when the machine hash is present and has not been used for a trial. A missing hash, `unavailable`, or a hash that already had a trial still gets Free, with no trial. Confirming the update opt-in can start it later, if that email has not had one and the computer's hash has not had one. Pass `licence_key` on the opt-in body to tie the address to that Free licence. The key is not returned. An address that is already confirmed can be tied the same way on a later opt-in, and that also unlocks the trial under the same rule. A licence that already had an email still starts its trial on first activation. `/api/confirm-email` does not start the clock early.
+
+`POST /api/v1/app/free/claim` issues a new `NC-` key on every claim. `FREE_CLAIM_REPEAT` is `new` or `same`. Empty, or any other value, means `new`. `same` returns the existing Free key for that computer. A new code does not start a second trial on a hash that already had one. The 300-a-day cap and the per-IP and per-machine-hash rate limits still apply to every new code.
+
+`GET /api/v1/download/free/latest` is public JSON: version, published time, and mac/win name, size and sha256. `GET /api/v1/download/free/latest/<mac|win>` 302s to the short-lived installer URL and counts kind `direct` with the `utm_*` query fields.
+
+`POST /api/free/updates/subscribe` needs `email`, `consent: true` and `consent_text_version`. The response is always 202. Confirmation and unsubscribe are one-click links and do not show the address.
+
+`FREE_CLAIM_DAILY_CAP` is the number of new email-less licences per UTC day. Empty uses 300. Over the cap the response is 503 `claim_capacity`.
+
+`FREE_CLAIM_REPEAT` is `new` or `same`, described above. Empty means `new`.
+
+The redeem box on the website stays until 2027-02-17.

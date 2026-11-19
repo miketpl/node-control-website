@@ -124,6 +124,11 @@ LIMITS = {
     # The app polls about every 5 seconds for up to 30 minutes (about 360 calls).
     "purchase-status": (("install", 600, 3600), ("ip", 1200, 3600)),
     "trial-start": (("key", 10, 3600), ("ip", 30, 3600)),
+    # Hashed tokens only. The raw address and machine hash are not the bucket key.
+    "free-claim": (("machine", 5, 3600), ("install", 5, 3600), ("ip", 10, 3600), ("ip", 30, 86400)),
+    "free-instant-key": (("ip", 5, 3600), ("ip", 15, 86400)),
+    "free-public-download": (("ip", 20, 3600),),
+    "free-optin": (("ip", 5, 3600), ("email", 3, 86400)),
 }
 
 V1_SCHEMA = (
@@ -3355,7 +3360,7 @@ MARKETING_EXCLUDED_FREE_LICENCE_IDS = (23, 24, 32)
 _MARKETING_SLUG = re.compile(r"^[a-z0-9_-]{1,64}$")
 _MARKETING_HOST = re.compile(r"^[a-z0-9.-]{1,253}$")
 _MARKETING_DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-_FREE_DOWNLOAD_KINDS = ("app_download", "auto", "redirect")
+_FREE_DOWNLOAD_KINDS = ("app_download", "auto", "redirect", "direct")
 
 
 def _marketing_slug(value):
@@ -3452,7 +3457,7 @@ def _marketing_report(db, since, until):
         SELECT
             id,
             substr(created_at, 1, 10) AS day,
-            utm_source, utm_campaign, utm_content, referrer,
+            utm_source, utm_campaign, utm_content, referrer, source,
             status, download_count
         FROM licenses
         WHERE tier = 'free' AND created_at >= ? AND created_at < ?
@@ -3476,6 +3481,7 @@ def _marketing_report(db, since, until):
             ("utm_campaign", _marketing_slug(row["utm_campaign"])),
             ("utm_content", _marketing_slug(row["utm_content"])),
             ("referrer", referrer),
+            ("source", _marketing_slug(row["source"])),
         )
         current = signup_rows.get(key)
         if current is None:
@@ -3518,9 +3524,10 @@ def _marketing_report(db, since, until):
         (*_FREE_DOWNLOAD_KINDS, *window),
     ):
         linked = row["licence_id"] is not None
-        source = row["utm_source"] if linked else ""
-        campaign = row["utm_campaign"] if linked else ""
-        content = row["utm_content"] if linked else ""
+        if linked:
+            source, campaign, content = row["utm_source"], row["utm_campaign"], row["utm_content"]
+        else:
+            source, campaign, content = row["event_source"], row["event_campaign"], row["event_content"]
         licence_id = row["license_id"]
         if (
             (licence_id is not None and int(licence_id) in MARKETING_EXCLUDED_FREE_LICENCE_IDS)
@@ -3600,7 +3607,44 @@ def _marketing_report(db, since, until):
                 for plan in sorted(pro_rows)
             ],
         },
+        "optins": _optin_counts(db, since, until),
     }
+
+
+def _optin_counts(db, since, until):
+    """Submitted, confirmed and unsubscribed update opt-ins per UTC day."""
+    present = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'update_subscribers'"
+    ).fetchone()
+    days = {}
+    if not present:
+        return {"total": 0, "excluded": 0, "rows": []}
+
+    def add(column, field):
+        for row in db.execute(
+            f"""
+            SELECT substr({column}, 1, 10) AS day, COUNT(*) AS count
+            FROM update_subscribers
+            WHERE {column} >= ? AND {column} < ? AND {column} != ''
+            GROUP BY 1
+            """,
+            (since, until),
+        ):
+            if not _MARKETING_DAY.match(row["day"] or ""):
+                continue
+            item = days.setdefault(row["day"], {"submitted": 0, "confirmed": 0, "unsubscribed": 0})
+            item[field] += int(row["count"] or 0)
+
+    add("consented_at", "submitted")
+    add("confirmed_at", "confirmed")
+    add("unsubscribed_at", "unsubscribed")
+    rows = []
+    total = 0
+    for day in sorted(days):
+        item = {"day": day, **days[day]}
+        rows.append(item)
+        total += item["submitted"]
+    return {"total": total, "excluded": 0, "rows": rows}
 
 
 def admin_stats_v1():
@@ -3643,8 +3687,8 @@ def admin_stats_v1():
                 COUNT(*) AS count
             FROM licenses
             WHERE created_at >= ? AND created_at < ?
-            GROUP BY tier, status, source
-            ORDER BY tier, status, source
+            GROUP BY tier, status, 3
+            ORDER BY tier, status, 3
             """,
             window,
         ).fetchall(), ("tier", "status", "source"))

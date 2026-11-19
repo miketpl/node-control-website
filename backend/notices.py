@@ -40,7 +40,7 @@ SCHEMA = (
     """,
 )
 
-AUDIENCES = ("free_downloaded", "free_all", "pro_active", "all")
+AUDIENCES = ("free_downloaded", "free_all", "pro_active", "all", "update_subscribers")
 TEMPLATE_NAME = re.compile(r"^[a-z0-9][a-z0-9.-]{0,63}$")
 KINDS = ("free", "pro", "subscription")
 _SALT = "nodecontrol-notice-unsubscribe"
@@ -148,6 +148,7 @@ def _free_targets(db, downloaded_only):
     sql = """
         SELECT id, email FROM licenses
         WHERE tier = 'free' AND status = 'active'
+          AND email IS NOT NULL AND trim(email) != ''
     """
     if downloaded_only:
         sql += " AND download_count > 0"
@@ -203,6 +204,9 @@ def _audience(db, name):
         return _free_targets(db, False)
     if name == "pro_active":
         return _pro_targets(db)
+    if name == "update_subscribers":
+        import free_ungate
+        return free_ungate.subscriber_rows(db)
     if name == "all":
         return _free_targets(db, False) + _pro_targets(db)
     return None
