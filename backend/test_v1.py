@@ -9,6 +9,7 @@ import tempfile
 import time
 import unittest
 import uuid
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
@@ -1321,7 +1322,7 @@ class V1Tests(unittest.TestCase):
                 "registrations", "telemetry", "usage", "downloads", "updates",
                 "downloads_by_version", "update_checks", "installs_by_version",
                 "current_installs_by_version", "update_checks_by_version",
-                "telemetry_note", "flags", "db_bytes", "generated_at",
+                "telemetry_note", "marketing", "flags", "db_bytes", "generated_at",
             },
         )
         text = res.get_data(as_text=True)
@@ -1394,6 +1395,201 @@ class V1Tests(unittest.TestCase):
             headers={"Authorization": "Bearer test-admin-token"},
         )
         self.assertEqual(bad.status_code, 400)
+
+    def test_marketing_stats_are_counts_and_the_stats_token_is_v1_only(self):
+        day = "2026-11-01"
+        later = "2026-11-02"
+        outside = "2026-11-03"
+        db = get_db()
+        db.execute("DELETE FROM funnel_daily")
+        db.execute(
+            """
+            INSERT INTO funnel_daily (day, event, utm_source, utm_campaign, utm_content, count)
+            VALUES
+                (?, 'free_section_view', 'linkedin', 'launch', 'post', 4),
+                (?, 'free_form_start', 'linkedin', 'launch', 'post', 2),
+                (?, 'free_form_submit', 'linkedin', 'launch', 'post', 1),
+                (?, 'trial_started_auto', 'none', 'none', 'none', 3),
+                (?, 'free_section_view', 'nc-selftest', 'launch', 'post', 9),
+                (?, 'free_section_view', 'v0.9.48', 'none', 'none', 5),
+                (?, 'free_section_view', 'Hello World', 'none', 'none', 1),
+                (?, 'free_section_view', 'linkedin', 'launch', 'post', 7)
+            """,
+            (day, day, day, day, day, day, later, outside),
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (
+                id, code, name, email, tier, status, created_at,
+                utm_source, utm_campaign, utm_content, referrer, download_count, ip_address
+            ) VALUES
+                (23, 'NC-EX23-EX23', 'Hidden', 'hidden23@example.com', 'free', 'active', ?, 'linkedin', 'launch', 'post', '', 1, '203.0.113.23'),
+                (24, 'NC-EX24-EX24', 'Hidden', 'hidden24@example.com', 'free', 'active', ?, '', '', '', 'self.example', 0, '203.0.113.24'),
+                (32, 'NC-EX32-EX32', 'Hidden', 'hidden32@example.com', 'free', 'unverified', ?, 'nc-selftest', '', '', '', 0, '203.0.113.32'),
+                (80, 'NC-OK80-OK80', 'Ada', 'ada-marketing@example.com', 'free', 'active', ?, 'linkedin', 'launch', 'post', 'www.linkedin.com', 1, '203.0.113.80'),
+                (81, 'NC-OK81-OK81', 'Grace', 'grace-marketing@example.com', 'free', 'unverified', ?, '', '', '', 'www.linkedin.com', 0, '203.0.113.81'),
+                (82, 'NC-OK82-OK82', 'Lin', 'lin-marketing@example.com', 'free', 'pending', ?, '', '', '', '', 0, '203.0.113.82'),
+                (83, 'NC-OK83-OK83', 'Bad', 'bad-marketing@example.com', 'free', 'active', ?, 'Hello World', 'launch', 'post', '', 0, '203.0.113.83'),
+                (84, 'NC-OK84-OK84', 'Self', 'self-marketing@example.com', 'free', 'active', ?, 'v0-build', 'launch', 'post', '', 0, '203.0.113.84'),
+                (85, 'NC-OK85-OK85', 'Mail', 'mail-marketing@example.com', 'free', 'active', ?, '', '', '', 'not a host', 0, '203.0.113.85')
+            """,
+            (day + "T01:00:00",) * 9,
+        )
+        db.execute(
+            """
+            INSERT INTO download_events (
+                license_id, platform, kind, created_at, tier,
+                utm_source, utm_campaign, utm_content
+            ) VALUES
+                (80, 'mac', 'redirect', ?, 'free', '', '', ''),
+                (80, 'mac', 'app_download', ?, 'free', 'ignored', 'ignored', 'ignored'),
+                (80, 'mac', 'click', ?, 'free', 'linkedin', 'launch', 'post'),
+                (99999, 'win', 'auto', ?, '', 'v0.9.1', '', ''),
+                (23, 'mac', 'redirect', ?, 'free', 'linkedin', 'launch', 'post'),
+                (80, 'mac', 'app_download', ?, 'pro', 'linkedin', 'launch', 'post'),
+                (80, 'win', 'redirect', ?, 'free', '', '', '')
+            """,
+            (
+                day + "T02:00:00", day + "T03:00:00", day + "T04:00:00",
+                day + "T05:00:00", day + "T06:00:00", day + "T07:00:00",
+                outside + "T01:00:00",
+            ),
+        )
+        db.execute(
+            """
+            INSERT INTO pro_keys (
+                key_hash, key_last4, email, source, status, plan, created_at, free_license_id
+            ) VALUES
+                ('hash-mkt-month', '1111', 'buyer-marketing@example.com', 'stripe', 'active', 'monthly', ?, NULL),
+                ('hash-mkt-year', '2222', 'buyer-annual@example.com', 'stripe', 'active', 'annual', ?, NULL),
+                ('hash-mkt-self', '3333', 'buyer-self@example.com', 'manual', 'active', 'nc-selftest', ?, NULL),
+                ('hash-mkt-old', '4444', 'buyer-old@example.com', 'stripe', 'active', 'monthly', ?, 23),
+                ('hash-mkt-out', '5555', 'buyer-out@example.com', 'stripe', 'active', 'monthly', ?, NULL)
+            """,
+            (day + "T08:00:00", day + "T09:00:00", day + "T10:00:00", day + "T11:00:00", outside + "T01:00:00"),
+        )
+        db.commit()
+        db.close()
+
+        headers = {"Authorization": "Bearer test-admin-token"}
+        res = self.client.get(
+            "/api/admin/stats/v1?since=2026-11-01&until=2026-11-03",
+            headers=headers,
+        )
+        self.assertEqual(res.status_code, 200)
+        marketing = res.get_json()["marketing"]
+        self.assertEqual(marketing["funnel"]["total"], 11)
+        self.assertEqual(marketing["funnel"]["excluded"], 14)
+        self.assertEqual(marketing["funnel"]["rows"], [
+            {
+                "day": day, "event": "free_form_start",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 2,
+            },
+            {
+                "day": day, "event": "free_form_submit",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 1,
+            },
+            {
+                "day": day, "event": "free_section_view",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 4,
+            },
+            {
+                "day": day, "event": "trial_started_auto",
+                "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
+                "count": 3,
+            },
+            {
+                "day": later, "event": "free_section_view",
+                "utm_source": "other", "utm_campaign": "none", "utm_content": "none",
+                "count": 1,
+            },
+        ])
+        self.assertEqual(marketing["signups"]["total"], 4)
+        self.assertEqual(marketing["signups"]["excluded"], 5)
+        self.assertEqual(marketing["signups"]["rows"], [
+            {
+                "day": day, "utm_source": "linkedin", "utm_campaign": "launch",
+                "utm_content": "post", "referrer": "none",
+                "requested": 1, "verified": 1, "unverified": 0, "redeemed": 1,
+            },
+            {
+                "day": day, "utm_source": "none", "utm_campaign": "none",
+                "utm_content": "none", "referrer": "none",
+                "requested": 1, "verified": 0, "unverified": 0, "redeemed": 0,
+            },
+            {
+                "day": day, "utm_source": "none", "utm_campaign": "none",
+                "utm_content": "none", "referrer": "ref:www.linkedin.com",
+                "requested": 1, "verified": 0, "unverified": 1, "redeemed": 0,
+            },
+            {
+                "day": day, "utm_source": "other", "utm_campaign": "launch",
+                "utm_content": "post", "referrer": "none",
+                "requested": 1, "verified": 1, "unverified": 0, "redeemed": 0,
+            },
+        ])
+        self.assertEqual(marketing["downloads"]["total"], 2)
+        self.assertEqual(marketing["downloads"]["excluded"], 2)
+        self.assertEqual(marketing["downloads"]["rows"], [
+            {
+                "day": day, "platform": "mac", "kind": "app_download",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 1,
+            },
+            {
+                "day": day, "platform": "mac", "kind": "redirect",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 1,
+            },
+        ])
+        self.assertEqual(marketing["pro_purchases"]["attribution"], "none")
+        self.assertEqual(marketing["pro_purchases"]["total"], 2)
+        self.assertEqual(marketing["pro_purchases"]["excluded"], 2)
+        self.assertEqual(marketing["pro_purchases"]["rows"], [
+            {"plan": "annual", "count": 1},
+            {"plan": "monthly", "count": 1},
+        ])
+        self.assertNotIn("utm_source", marketing["pro_purchases"])
+        marketing_text = json.dumps(marketing)
+        for secret in (
+            "ada-marketing@example.com", "grace-marketing@example.com",
+            "hidden23@example.com", "buyer-marketing@example.com",
+            "mail-marketing@example.com",
+            "NC-OK80-OK80", "NC-EX23-EX23", "203.0.113.80", "203.0.113.23",
+            "not a host", "Ada", "Grace",
+        ):
+            self.assertNotIn(secret, marketing_text)
+        self.assertNotIn("license_id", marketing_text)
+        self.assertNotIn("free_license_id", marketing_text)
+
+        app.config["STATS_READ_TOKEN"] = "change-me-in-production"
+        placeholder = self.client.get(
+            "/api/admin/stats/v1?since=2026-11-01&until=2026-11-03",
+            headers={"Authorization": "Bearer change-me-in-production"},
+        )
+        self.assertEqual(placeholder.status_code, 401)
+        app.config["STATS_READ_TOKEN"] = "stats-read-token"
+        app.config["ADMIN_READ_TOKEN"] = "dash-read-token"
+        try:
+            stats_headers = {"Authorization": "Bearer stats-read-token"}
+            allowed = self.client.get("/api/admin/stats/v1", headers=stats_headers)
+            self.assertEqual(allowed.status_code, 200)
+            self.assertIn("marketing", allowed.get_json())
+            for path in ("/api/admin/stats", "/api/admin/flags", "/api/admin/pro-keys"):
+                denied = self.client.get(path, headers=stats_headers)
+                self.assertIn(denied.status_code, (401, 503), path)
+            self.assertEqual(
+                self.client.get("/api/admin/flags", headers={"Authorization": "Bearer dash-read-token"}).status_code,
+                200,
+            )
+        finally:
+            app.config["STATS_READ_TOKEN"] = ""
+            app.config["ADMIN_READ_TOKEN"] = ""
+        example = (Path(__file__).resolve().parent / ".env.example").read_text()
+        self.assertIn("STATS_READ_TOKEN=change-me-in-production", example)
 
     def test_admin_stats_usage_is_counts_only(self):
         headers = {"Authorization": "Bearer test-admin-token"}

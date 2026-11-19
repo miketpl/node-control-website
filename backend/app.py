@@ -54,6 +54,9 @@ app.config.update(
     ADMIN_TOKEN=os.environ.get("ADMIN_TOKEN", ""),
     # Read-only dashboard. Empty or the placeholder is ignored.
     ADMIN_READ_TOKEN=os.environ.get("ADMIN_READ_TOKEN", ""),
+    # Marketing counts on GET /api/admin/stats/v1 only. Empty or the
+    # placeholder is ignored. It is not accepted on any other admin route.
+    STATS_READ_TOKEN=os.environ.get("STATS_READ_TOKEN", ""),
 
     # SMTP settings
     SMTP_HOST=os.environ.get("SMTP_HOST", "smtp.gmail.com"),
@@ -897,6 +900,30 @@ def require_admin_read(f):
         ok_admin = _bearer_matches(presented, admin)
         ok_reader = _bearer_matches(presented, reader)
         if ok_admin or ok_reader:
+            return f(*args, **kwargs)
+        return jsonify({"error": "Unauthorized"}), 401
+    return decorated
+
+
+def require_stats_read(f):
+    """Read token for GET /api/admin/stats/v1 only.
+
+    Accepts the admin token, the dashboard read token, or STATS_READ_TOKEN.
+    The stats token is not checked on any other route.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        admin = _usable_admin_secret(app.config.get("ADMIN_TOKEN"))
+        reader = _usable_admin_secret(app.config.get("ADMIN_READ_TOKEN"))
+        stats = _usable_admin_secret(app.config.get("STATS_READ_TOKEN"))
+        if not admin and not reader and not stats:
+            return jsonify({"error": "admin disabled"}), 503
+        presented = _bearer_token()
+        if (
+            _bearer_matches(presented, admin)
+            or _bearer_matches(presented, reader)
+            or _bearer_matches(presented, stats)
+        ):
             return f(*args, **kwargs)
         return jsonify({"error": "Unauthorized"}), 401
     return decorated
