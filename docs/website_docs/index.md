@@ -2,7 +2,7 @@
 
 Node Control runs on your laptop and talks to switches, routers, and firewalls over SSH and vendor APIs. These pages are the how-to: install it, add devices, and draw an L2 map.
 
-A new Free activation starts a 14-day trial: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per computer. After that, the Free Edition is free for up to 25 devices.
+A new Free activation starts a 14-day trial when the computer can be recognised and has not had one: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per computer. After that, the Free Edition is free for up to 25 devices.
 
 ## New to Node Control?
 

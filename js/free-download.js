@@ -233,19 +233,25 @@
                 return;
             }
             var attr = attributionPayload();
+            var keyEl = document.getElementById('freeKeyValue');
+            var licenceKey = keyEl ? (keyEl.textContent || '').trim() : '';
+            var body = {
+                email: email ? email.value : '',
+                consent: true,
+                consent_text_version: 'v1',
+                source: 'free_page',
+                platform: /Win/.test(navigator.platform || '') ? 'win' : 'mac',
+                utm_source: attr.utm_source,
+                utm_campaign: attr.utm_campaign,
+                utm_content: attr.utm_content
+            };
+            if (/^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(licenceKey)) {
+                body.licence_key = licenceKey;
+            }
             fetch(API_BASE + '/api/free/updates/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email ? email.value : '',
-                    consent: true,
-                    consent_text_version: 'v1',
-                    source: 'free_page',
-                    platform: /Win/.test(navigator.platform || '') ? 'win' : 'mac',
-                    utm_source: attr.utm_source,
-                    utm_campaign: attr.utm_campaign,
-                    utm_content: attr.utm_content
-                })
+                body: JSON.stringify(body)
             }).then(function (res) {
                 return res.json().then(function (body) {
                     return { ok: res.ok, body: body };
