@@ -1,6 +1,6 @@
 # First launch and activation
 
-On first launch, Node Control checks the licence at api.nodecontrol.io. Pro activates with the NCP licence key alone. Free activates with its activation code. There is no GitHub licence check, and there is no email allow-list.
+On first launch, Node Control checks the licence at api.nodecontrol.io. Pro activates with the NCP licence key alone. Free activates with the licence key shown on the download page. There is no GitHub licence check, and there is no email allow-list.
 
 ## Free tier — activation code
 

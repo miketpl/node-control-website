@@ -9,7 +9,7 @@ Professional is £25/month, or £255/year (£21.25/mo billed annually, save 15%)
 ## Key pages
 
 - [Home](https://nodecontrol.io/): NodeControl is a desktop network-operations tool for network engineers. Runs on your laptop; your data stays there.
-- [Free download](https://nodecontrol.io/free/): A new Free activation starts a 14-day trial, then it is free for up to 25 devices, on macOS and Windows. No card needed.
+- [Free download](https://nodecontrol.io/free/): Download Node Control Free for macOS or Windows. Up to 25 devices, no time limit. The first activation starts a 14-day trial, one per computer. Pro is £25 a month or £255 a year.
 - [Pricing and Professional](https://nodecontrol.io/#pricing): Free Edition, Professional at £25/month or £255/year, and Enterprise at a custom price.
 - [Documentation](https://nodecontrol.io/docs/): Install Node Control, add your switches, and draw an L2 map. Docs cover getting started, the library, tasks, reports, vendors, and troubleshooting.
 

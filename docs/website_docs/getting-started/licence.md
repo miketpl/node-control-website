@@ -1,6 +1,6 @@
 # Your licence and moving between computers
 
-Pro activates with the NCP licence key alone. Free activates with its activation code. Both are checked at api.nodecontrol.io. There is no GitHub licence check, and there is no email allow-list.
+Pro activates with the NCP licence key alone. Free activates with the licence key shown on the download page. Both are checked at api.nodecontrol.io. There is no GitHub licence check, and there is no email allow-list.
 
 ## One computer per licence
 
