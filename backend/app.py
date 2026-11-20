@@ -113,6 +113,10 @@ app.config.update(
     FREE_CLAIM_DAILY_CAP=os.environ.get("FREE_CLAIM_DAILY_CAP", ""),
     # new issues another NC- code. same returns the existing Free key. Empty means new.
     FREE_CLAIM_REPEAT=os.environ.get("FREE_CLAIM_REPEAT", ""),
+    # Empty means on. false turns off the public Free download admin mail.
+    FREE_DOWNLOAD_ALERTS=os.environ.get("FREE_DOWNLOAD_ALERTS", ""),
+    # Emails per UTC day for that mail. Empty uses 200.
+    FREE_DOWNLOAD_ALERT_DAILY_CAP=os.environ.get("FREE_DOWNLOAD_ALERT_DAILY_CAP", ""),
     FREE_PAUSED_MESSAGE=os.environ.get("FREE_PAUSED_MESSAGE", ""),
     MAINTENANCE=os.environ.get("MAINTENANCE", ""),
     # Empty means no minimum. A floor is only applied when this or a flag is set.

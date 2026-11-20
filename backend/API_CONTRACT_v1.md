@@ -42,6 +42,10 @@ The trial starts on its own only when the machine hash is present and has not be
 
 `GET /api/v1/download/free/latest` is public JSON: version, published time, and mac/win name, size and sha256. `GET /api/v1/download/free/latest/<mac|win>` 302s to the short-lived installer URL and counts kind `direct` with the `utm_*` query fields.
 
+A GET that is served sends one admin mail to `ADMIN_ALERT_EMAIL`. The subject is `Node Control Free download (mac)` or `(win)`. The body is the platform, the version, the UTC time, the UTM source, medium, campaign and content when those are present, and the counted downloads for today. It has no IP address, user agent, machine hash, or email address. HEAD requests and crawlers are not mailed. The redirect is returned even when the mail fails. The same address hash is mailed at most once per 10 minutes.
+
+`FREE_DOWNLOAD_ALERTS` turns that mail on or off. Empty means on. `false`, `0`, `off`, or `no` turns it off. `FREE_DOWNLOAD_ALERT_DAILY_CAP` is the number of those messages per UTC day. Empty uses 200. After the cap, downloads are still counted and no further message is sent that day.
+
 `POST /api/free/updates/subscribe` needs `email`, `consent: true` and `consent_text_version`. The response is always 202. Confirmation and unsubscribe are one-click links and do not show the address.
 
 `FREE_CLAIM_DAILY_CAP` is the number of new email-less licences per UTC day. Empty uses 300. Over the cap the response is 503 `claim_capacity`.
