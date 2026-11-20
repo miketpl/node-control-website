@@ -108,7 +108,10 @@
                 shot.src = '../images/screenshots/nc-sdwan-watcher-topology.png';
                 shot.alt = 'Watcher of The WAN topology';
             } else {
-                shot.src = '../images/screenshots/nc-l3-topology.png';
+                shot.src = '../images/screenshots/nc-l3-topology@1x.png';
+                shot.srcset = '../images/screenshots/nc-l3-topology@1x.png 1x, ../images/screenshots/nc-l3-topology.png 2x';
+                shot.width = 1024;
+                shot.height = 586;
                 shot.alt = 'L3 topology view';
             }
         } else if (matches(['automation', 'compliance', 'lab-export', 'labexport', 'security-audit', 'securityaudit', 'psirt', 'config-push', 'configpush'])) {
