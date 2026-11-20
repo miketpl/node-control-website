@@ -5,6 +5,7 @@ import os
 import tempfile
 import unittest
 import uuid
+from contextlib import ExitStack
 from unittest.mock import patch
 
 os.environ["DB_PATH"] = tempfile.mktemp(suffix=".db")
@@ -16,11 +17,23 @@ os.environ["MACHINE_HASH_KEY"] = "test-only-machine-hash-key"
 os.environ["API_PUBLIC_URL"] = "https://api.nodecontrol.io"
 
 import app as api
+import free_ungate
 import licence_v1
 import trial
 from app import app, get_db
 
 ASSET = "https://release-assets.example/free"
+ALERT_TO = "alerts@example.com"
+
+
+class _NowThread:
+    def __init__(self, target=None, args=(), kwargs=None, daemon=None):
+        self._target = target
+        self._args = args or ()
+        self._kwargs = kwargs or {}
+
+    def start(self):
+        self._target(*self._args, **self._kwargs)
 
 
 class FreeUngateTests(unittest.TestCase):
@@ -326,3 +339,113 @@ class FreeUngateTests(unittest.TestCase):
         other = self.client.post("/api/free/instant-key", json={"platform": "mac"})
         self._confirm_optin("ada@example.com", other.get_json()["licence_key"])
         self.assertEqual(self._trial_count(), 1)
+
+    def _public_download(self, platform="mac", query="", headers=None):
+        stack = ExitStack()
+        stack.enter_context(patch.object(free_ungate.threading, "Thread", _NowThread))
+        stack.enter_context(patch.object(
+            licence_v1, "_load_release",
+            return_value={"tag_name": "v0.9.48", "published_at": "2026-11-01T00:00:00Z", "assets": []},
+        ))
+        stack.enter_context(patch.object(licence_v1, "_describe_asset", side_effect=self._describe))
+        stack.enter_context(patch.object(licence_v1, "_signed_asset_url", return_value=ASSET))
+        self.addCleanup(stack.close)
+        stack.__enter__()
+        return self.client.get(
+            "/api/v1/download/free/latest/" + platform + query,
+            headers=headers,
+        )
+
+    def _direct_count(self):
+        db = get_db()
+        count = db.execute(
+            "SELECT COUNT(*) AS c FROM download_events WHERE kind = 'direct'"
+        ).fetchone()["c"]
+        db.close()
+        return count
+
+    def test_public_download_alert_fires(self):
+        app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
+        app.config["FREE_DOWNLOAD_ALERTS"] = ""
+        sent = self._public_download(
+            query="?utm_source=linkedin&utm_medium=cpc&utm_campaign=launch&utm_content=ad"
+        )
+        self.assertEqual(sent.status_code, 302)
+        self.assertEqual(sent.location, ASSET)
+        self.assertEqual(len(self.mail), 1)
+        self.assertEqual(self.mail[0][0], ALERT_TO)
+        self.assertEqual(self.mail[0][1], "Node Control Free download (mac)")
+        text = self.mail[0][2]
+        self.assertIn("Platform: mac\n", text)
+        self.assertIn("Version: 0.9.48\n", text)
+        self.assertIn("Source: linkedin\n", text)
+        self.assertIn("Medium: cpc\n", text)
+        self.assertIn("Campaign: launch\n", text)
+        self.assertIn("Content: ad\n", text)
+        self.assertIn("Today: 1\n", text)
+        self.assertRegex(text, r"Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
+        self.assertNotIn("127.0.0.1", text)
+        self.assertNotIn("@", text)
+
+    def test_public_download_alert_skips_when_off_or_not_a_browser_get(self):
+        app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
+        app.config["FREE_DOWNLOAD_ALERTS"] = "false"
+        quiet = self._public_download(headers={"CF-Connecting-IP": "203.0.113.10"})
+        self.assertEqual(quiet.status_code, 302)
+        self.assertEqual(self.mail, [])
+        self.assertEqual(self._direct_count(), 1)
+        app.config["FREE_DOWNLOAD_ALERTS"] = "true"
+        bot = self._public_download(headers={
+            "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+            "CF-Connecting-IP": "203.0.113.11",
+        })
+        self.assertEqual(bot.status_code, 302)
+        self.assertEqual(self.mail, [])
+        head = self.client.head("/api/v1/download/free/latest/win")
+        self.assertIn(head.status_code, (200, 302))
+        self.assertEqual(self.mail, [])
+
+    def test_public_download_alert_throttle_and_cap(self):
+        app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
+        app.config["FREE_DOWNLOAD_ALERTS"] = "true"
+        app.config["FREE_DOWNLOAD_ALERT_DAILY_CAP"] = "200"
+        headers = {"CF-Connecting-IP": "203.0.113.20"}
+        self.assertEqual(self._public_download(headers=headers).status_code, 302)
+        self.assertEqual(self._public_download(headers=headers).status_code, 302)
+        self.assertEqual(len(self.mail), 1)
+        self.assertNotIn("203.0.113.20", self.mail[0][2])
+        db = get_db()
+        db.execute("DELETE FROM rate_limits WHERE bucket LIKE 'direct-alert:%'")
+        db.commit()
+        db.close()
+        self.assertEqual(self._public_download(headers=headers).status_code, 302)
+        self.assertEqual(len(self.mail), 2)
+        db = get_db()
+        db.execute(
+            "UPDATE admin_daily_counts SET count = 200 WHERE kind = 'free_direct_alert'"
+        )
+        db.commit()
+        db.close()
+        other = {"CF-Connecting-IP": "203.0.113.21"}
+        self.assertEqual(self._public_download(headers=other).status_code, 302)
+        self.assertEqual(len(self.mail), 2)
+        self.assertNotIn("203.0.113.21", self.mail[0][2])
+        self.assertEqual(self._direct_count(), 2)
+
+    def test_public_download_alert_mail_failure_still_redirects(self):
+        app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
+        app.config["FREE_DOWNLOAD_ALERTS"] = "true"
+        self.mail_patch.stop()
+        failed = patch.object(api, "_send_mail", side_effect=RuntimeError("smtp down"))
+        failed.start()
+        self.addCleanup(failed.stop)
+        self.addCleanup(self.mail_patch.start)
+        with self.assertLogs("free_ungate", level="ERROR") as caught:
+            sent = self._public_download(headers={"CF-Connecting-IP": "203.0.113.30"})
+        self.assertEqual(sent.status_code, 302)
+        self.assertEqual(sent.location, ASSET)
+        logged = "\n".join(caught.output)
+        self.assertIn("Admin alert was not sent", logged)
+        self.assertNotIn("203.0.113.30", logged)
+        self.assertNotIn(ALERT_TO, logged)
+        self.assertNotIn("smtp down", logged)

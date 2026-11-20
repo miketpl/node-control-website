@@ -7,6 +7,7 @@ column the app already stores. Counts and hashes only leave this module.
 import hashlib
 import logging
 import re
+import threading
 from datetime import datetime, timedelta, timezone
 
 from flask import jsonify, redirect, request
@@ -20,6 +21,7 @@ EXCLUDED_FREE_IDS = (23, 24, 32)
 # The redeem box on /free/ stays until this UTC date, then the page hides it.
 REDEEM_BOX_UNTIL = "2027-02-17"
 _CRAWLER = re.compile(r"bot|spider|crawl|slurp|preview|facebookexternalhit|whatsapp", re.I)
+_ALERT_WINDOW = 600
 _NC_KEY = re.compile(r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
 _EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,190}\.[^@\s]{2,24}$")
 _meta_cache = {"at": 0.0, "body": None}
@@ -474,8 +476,9 @@ def latest_download(platform):
     except Exception:
         logger.exception("Public Free download redirect failed")
         return licence_v1.error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
-    if not crawler:
+    if request.method == "GET" and not crawler:
         _record_direct(platform, described.get("version") or "", ip_hash)
+    _queue_direct_alert(platform, described.get("version") or "", ip_hash, crawler)
     response = redirect(location, code=302)
     response.headers["X-Robots-Tag"] = "noindex"
     return response
@@ -521,6 +524,133 @@ def _record_direct(platform, version, ip_hash):
         _maybe_mail_yesterday(db)
     finally:
         db.close()
+
+
+def _alerts_on():
+    """Empty means on. false, 0, off and no turn the public-download mail off."""
+    raw = str(licence_v1._api().app.config.get("FREE_DOWNLOAD_ALERTS") or "").strip().lower()
+    return raw not in ("0", "false", "off", "no")
+
+
+def _alert_cap():
+    raw = str(licence_v1._api().app.config.get("FREE_DOWNLOAD_ALERT_DAILY_CAP") or "").strip()
+    if raw.isdigit():
+        return int(raw)
+    return 200
+
+
+def _queue_direct_alert(platform, version, ip_hash, crawler):
+    """One admin mail per public download. A failure here does not change the 302."""
+    if request.method != "GET" or crawler or not _alerts_on():
+        return
+    api = licence_v1._api()
+    if not (api.app.config.get("ADMIN_ALERT_EMAIL") or "").strip():
+        return
+    allowed, _wait = licence_v1.consume_rate(f"direct-alert:{ip_hash}", 1, _ALERT_WINDOW)
+    if not allowed or not _reserve_alert_slot():
+        return
+    import alerts
+    cleaned = api.clean_attribution({
+        "utm_source": request.args.get("utm_source"),
+        "utm_medium": request.args.get("utm_medium"),
+        "utm_campaign": request.args.get("utm_campaign"),
+        "utm_content": request.args.get("utm_content"),
+    })
+    fields = {}
+    for name in ("utm_source", "utm_medium", "utm_campaign", "utm_content"):
+        raw = request.args.get(name) or ""
+        fields[name] = "" if "@" in raw else alerts._attr(cleaned.get(name))
+    safe = {
+        "platform": platform if platform in ("mac", "win") else "unknown",
+        "version": alerts._version(version),
+        "fields": fields,
+        "today": _direct_today(),
+        "time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    try:
+        threading.Thread(target=_send_direct_alert, args=(safe,), daemon=True).start()
+    except Exception:
+        logger.error("Admin alert was not sent")
+
+
+def _reserve_alert_slot():
+    """True when this UTC day is still under the email cap. Downloads are counted elsewhere."""
+    cap = _alert_cap()
+    db = _db()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        row = db.execute(
+            "SELECT count FROM admin_daily_counts WHERE day = ? AND kind = 'free_direct_alert'",
+            (_day(),),
+        ).fetchone()
+        sent = int(row["count"] or 0) if row else 0
+        if sent >= cap:
+            db.rollback()
+            return False
+        db.execute(
+            """
+            INSERT INTO admin_daily_counts (day, kind, count, mailed)
+            VALUES (?, 'free_direct_alert', 1, 0)
+            ON CONFLICT(day, kind) DO UPDATE SET count = count + 1
+            """,
+            (_day(),),
+        )
+        db.commit()
+        return True
+    except Exception:
+        db.rollback()
+        logger.error("Admin alert was not sent")
+        return False
+    finally:
+        db.close()
+
+
+def _direct_today():
+    db = _db()
+    try:
+        row = db.execute(
+            "SELECT count FROM admin_daily_counts WHERE day = ? AND kind = 'free_direct'",
+            (_day(),),
+        ).fetchone()
+    finally:
+        db.close()
+    return int(row["count"] or 0) if row else 0
+
+
+def _send_direct_alert(safe):
+    try:
+        api = licence_v1._api()
+        address = (api.app.config.get("ADMIN_ALERT_EMAIL") or "").strip()
+        if not address:
+            return
+        lines = [
+            f"Platform: {safe['platform']}",
+            f"Version: {safe['version']}",
+            f"Time: {safe['time']}",
+        ]
+        for label, key in (
+            ("Source", "utm_source"),
+            ("Medium", "utm_medium"),
+            ("Campaign", "utm_campaign"),
+            ("Content", "utm_content"),
+        ):
+            value = safe["fields"].get(key) or ""
+            if value:
+                lines.append(f"{label}: {value}")
+        lines.append(f"Today: {int(safe['today'])}")
+        text = "\n".join(lines) + "\n"
+        import html
+        ok = api._send_mail(
+            address,
+            f"Node Control Free download ({safe['platform']})",
+            text,
+            "<pre>" + html.escape(text) + "</pre>",
+            log_recipient=False,
+        )
+        if not ok:
+            logger.error("Admin alert was not sent")
+    except Exception:
+        logger.error("Admin alert was not sent")
 
 
 def _maybe_mail_yesterday(db):
