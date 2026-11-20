@@ -1,6 +1,6 @@
 # Tier overview — Free, Pro, AI
 
-Node Control is one codebase with three gates. Free is the one to start with. A new Free activation starts a 14-day trial: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. After 14 days, the Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
+Node Control is one codebase with three gates. Free is the one to start with. A new Free activation starts a 14-day trial when the computer can be recognised and has not had one: all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per computer. After 14 days, the Free Edition is free for up to 25 devices. Pro is the working set for a real estate, and it is the product you can get today. Pro includes bring your own AI provider. It uses your own API key. There is no AI subscription and no markup. The providers are Auto-detect, Backend (DGX / on-prem), Anthropic, OpenAI, Google Gemini, xAI Grok, OpenAI-compatible endpoint, Ollama, and Disabled. See [AI on Professional](../settings/ai-llm.md).
 
 The AI edition is separate. It runs nine specialist AI agents on infrastructure you host, so the AI stays inside your network. It is not yet available to buy. It has no price and no download on the site.
 
@@ -47,7 +47,7 @@ The AI edition is separate. It runs nine specialist AI agents on infrastructure 
 
 Free is a working copy for a small estate.
 
-A new activation starts a 14-day trial. One trial per email address, and one per computer. For those 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. The trial shows Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator as clickable example views. They are not operational until Pro. After 14 days the trial ends, and the limits below are what remains.
+A new activation starts a 14-day trial when the computer can be recognised and has not had one. One trial per computer. A computer that cannot be recognised, or that already had a trial, still gets Free. For those 14 days it includes all Engineer tasks, all reports, your own AI provider, and no device cap. The trial shows Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator as clickable example views. They are not operational until Pro. After 14 days the trial ends, and the limits below are what remains.
 
 ### What you get
 

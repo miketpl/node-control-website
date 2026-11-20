@@ -2709,3 +2709,29 @@ a.ai-coming-soon:hover {
         font-size: 1.6rem;
     }
 }
+.download-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+.free-key-block {
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid rgba(0, 232, 255, 0.35);
+    border-radius: 8px;
+}
+.free-key-value {
+    font-family: monospace;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #00e8ff;
+}
+.free-optin {
+    margin-top: 28px;
+}
+.free-optin .form-input {
+    max-width: 360px;
+    margin: 8px 0;
+    display: block;
+}

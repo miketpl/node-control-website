@@ -17,20 +17,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="/js/consent.js?v=20261115consent"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NodeControl Free — 14-day trial, then 25 devices</title>
-    <meta name="description" content="Node Control Pro is £25/month or £255/year, with a 14-day free trial. After that, Free Edition covers up to 25 devices with no time limit, on macOS and Windows.">
+    <title>Node Control Free — 25 devices, no time limit</title>
+    <meta name="description" content="Download Node Control Free for macOS or Windows. Up to 25 devices, no time limit. A new computer starts a 14-day trial. Pro is £25 a month or £255 a year.">
     <link rel="canonical" href="https://nodecontrol.io/free/">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="NodeControl Free — 14-day trial, then 25 devices">
-    <meta property="og:description" content="Node Control Pro is £25/month or £255/year, with a 14-day free trial. After that, Free Edition covers up to 25 devices with no time limit, on macOS and Windows.">
+    <meta property="og:title" content="Node Control Free — 25 devices, no time limit">
+    <meta property="og:description" content="Download Node Control Free for macOS or Windows. Up to 25 devices, no time limit. A new computer starts a 14-day trial. Pro is £25 a month or £255 a year.">
     <meta property="og:url" content="https://nodecontrol.io/free/">
     <meta property="og:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="NodeControl. Desktop network operations for network engineers.">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="NodeControl Free — 14-day trial, then 25 devices">
-    <meta name="twitter:description" content="Node Control Pro is £25/month or £255/year, with a 14-day free trial. After that, Free Edition covers up to 25 devices with no time limit, on macOS and Windows.">
+    <meta name="twitter:title" content="Node Control Free — 25 devices, no time limit">
+    <meta name="twitter:description" content="Download Node Control Free for macOS or Windows. Up to 25 devices, no time limit. A new computer starts a 14-day trial. Pro is £25 a month or £255 a year.">
     <meta name="twitter:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
     <meta name="twitter:site" content="@node_control_">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -38,7 +38,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="../css/style.css?v=20261117signup">
+    <link rel="stylesheet" href="../css/style.css?v=20261119ungate">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -61,9 +61,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <section class="section section-alt" id="download" style="padding-top: calc(var(--nav-height) + 32px);">
         <div class="container">
-            <h1 class="section-title" id="freeHeadline">Free starts with a 14-day trial</h1>
-            <p class="hero-free-line">Then free for up to 25 devices. macOS and Windows. No card needed.</p>
-            <p class="section-subtitle">A new activation starts 14 days of all Engineer tasks, all reports, your own AI provider, and no device cap. One trial per email address, and one per computer. After 14 days, Free stays for up to 25 devices. The trial shows Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator as clickable example views. They are not operational until Pro.</p>
+            <h1 class="section-title" id="freeHeadline">Node Control Free. Up to 25 devices, no time limit. macOS and Windows.</h1>
+            <p class="section-subtitle">The first activation starts a 14-day trial when this computer can be recognised and has not had one. Otherwise you still get Free. One trial per computer. Pro is £25 a month or £255 a year, with a 14-day trial. The trial shows Monitor, Discover, IPAM, the Firewall Analyser, and the Meraki Configurator as clickable example views. They are not operational until Pro.</p>
             <ul class="pricing-features download-tier-features">
                 <li>Draw an L2 map</li>
                 <li>Back up a config when you run it</li>
@@ -71,72 +70,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </ul>
 
             <div class="download-tier" id="free-edition" data-trial-view>
-                <div class="download-tier-header">
-                    <h2 class="download-tier-title">Start the <span class="cyan">14-day trial</span></h2>
-                    <p class="download-tier-desc free-signup-hint">Enter your email and platform. Company is optional.</p>
+                <div class="download-actions" id="freeDownloadActions">
+                    <a class="btn btn-primary" data-free-download data-platform="mac" href="https://api.nodecontrol.io/api/v1/download/free/latest/mac">Download for macOS (.dmg)</a>
+                    <a class="btn btn-outline" data-free-download data-platform="win" href="https://api.nodecontrol.io/api/v1/download/free/latest/win">Download for Windows (.exe)</a>
                 </div>
-                <div class="download-cards">
-                    <div class="download-card" style="grid-column: 1 / -1;">
-                        <form class="request-form" id="freeRequestForm">
-                            <div class="form-row">
-                                <input type="email" id="reqEmail" placeholder="Email" required class="form-input" aria-label="Email" autocomplete="email">
-                                <select id="reqPlatform" required class="form-input" aria-label="Platform">
-                                    <option value="" disabled selected>Platform</option>
-                                    <option value="macos">macOS</option>
-                                    <option value="windows">Windows</option>
-                                    <option value="both">Both</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <input type="text" id="reqCompany" placeholder="Company / Organisation (optional)" class="form-input" aria-label="Company, optional">
-                            </div>
-                            <label class="trial-email-option">
-                                <input type="checkbox" id="reqEmailDelivery">
-                                Email me the download
-                            </label>
-                            <p class="trial-email-note" id="reqEmailDeliveryNote" hidden>We email your download code. Open that email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers.</p>
-                            <button type="submit" class="btn btn-primary btn-download" id="reqSubmitBtn" data-label="Start the 14-day trial">Start the 14-day trial</button>
-                            <div id="reqResult" class="redeem-result"></div>
-                        </form>
-                        <p class="trial-rules">A new activation starts 14 days of all Engineer tasks, all reports, your own AI provider, and no device cap. No card needed. One trial per email and per computer. After 14 days, Free stays for up to 25 devices. macOS and Windows.</p>
-                        <p class="trial-start">The trial starts when you install the app and enter the code shown on this page.</p>
-
-                        <div class="request-form" id="verifySection" style="display: none;">
-                            <p style="color: #c8cdd3; margin-bottom: 16px;">A <strong style="color: #00e8ff;">6-digit code</strong> was sent to <span id="verifyEmailDisplay" style="color: #00e8ff;"></span>.</p>
-                            <div class="form-row form-row-redeem">
-                                <input type="text" id="verifyCode" placeholder="Enter 6-digit code" class="form-input form-input-code" maxlength="6" spellcheck="false" autocomplete="off" inputmode="numeric">
-                                <button type="button" id="verifyBtn" class="btn btn-primary">Verify</button>
-                            </div>
-                            <div id="verifyResult" class="redeem-result"></div>
-                            <button type="button" id="resendBtn" class="btn-link" style="margin-top: 12px; background: none; border: none; color: #636b75; cursor: pointer; font-size: 13px;">Didn't receive it? Resend code</button>
-                        </div>
-
-                        <div class="request-form" id="downloadCodeSection" style="display: none;">
-                            <p style="color: #c8cdd3; margin-bottom: 8px;">Your download code is:</p>
-                            <p id="downloadConfirmNote" style="display: none; color: #c8cdd3; font-size: 14px;">A confirmation link is on its way to your email. The code works before you open it.</p>
-                            <p id="downloadEmailNote" class="trial-email-sent" style="display: none;">We emailed this code. Open the email on your computer, go to nodecontrol.io/free/, and enter the code to download the macOS and Windows installers. The trial starts when you install the app and enter that code.</p>
-                            <div style="text-align: center; margin: 20px 0;">
-                                <span id="revealedCode" style="display: inline-block; background: #1a2030; border: 2px solid #00e8ff; border-radius: 8px; padding: 14px 28px; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: #00e8ff; font-family: monospace;"></span>
-                            </div>
-                        </div>
-                    </div>
+                <p id="freeReleaseMeta" class="download-tier-desc"></p>
+                <p class="download-tier-desc"><a href="/docs/getting-started/installation-mac.html">macOS install guide</a> · <a href="/docs/getting-started/installation-windows.html">Windows install guide</a></p>
+                <p id="freeDownloadMessage" class="redeem-result" hidden></p>
+                <div id="freeKeyBlock" class="free-key-block" hidden>
+                    <h2>Your Free licence key</h2>
+                    <p id="freeKeyValue" class="free-key-value"></p>
+                    <button type="button" class="btn btn-outline" id="freeKeyCopy">Copy</button>
+                    <p>Paste this into Node Control when it asks for a licence key. The trial starts when this computer can be recognised and has not had one. Confirming the email below can start it if that email and this computer have not had one.</p>
                 </div>
-            </div>
-
-            <div class="download-tier download-tier-redeem">
-                <div class="download-tier-header">
-                    <h2 class="download-tier-title">Have a <span class="cyan">Download Code</span>?</h2>
-                    <p class="download-tier-desc">Enter the code from your email.</p>
-                </div>
-                <div class="download-cards">
-                    <div class="download-card" style="grid-column: 1 / -1;">
-                        <div class="redeem-form" id="redeemForm">
-                            <div class="form-row form-row-redeem">
-                                <input type="text" id="redeemCode" placeholder="NC-XXXX-XXXX" class="form-input form-input-code" spellcheck="false" autocomplete="off">
-                                <button type="button" id="redeemBtn" class="btn btn-outline">Redeem</button>
-                            </div>
-                            <div id="redeemResult" class="redeem-result"></div>
+                <form class="free-optin" id="freeOptIn">
+                    <h2>Get an email when a new version ships (optional)</h2>
+                    <input type="email" id="freeOptInEmail" class="form-input" placeholder="Email" aria-label="Email" autocomplete="email">
+                    <label class="trial-email-option">
+                        <input type="checkbox" id="freeOptInConsent">
+                        Email me about new versions of Node Control. I can unsubscribe at any time.
+                    </label>
+                    <button type="submit" class="btn btn-outline">Subscribe</button>
+                    <p id="freeOptInResult" class="redeem-result"></p>
+                </form>
+                <div id="redeem">
+                    <p><button type="button" class="btn-link" id="freeRedeemToggle">Have a download code from an email?</button></p>
+                    <div class="redeem-form" id="redeemForm" hidden>
+                        <div class="form-row form-row-redeem">
+                            <input type="text" id="redeemCode" placeholder="NC-XXXX-XXXX" class="form-input form-input-code" spellcheck="false" autocomplete="off" aria-label="Download code">
+                            <button type="button" id="redeemBtn" class="btn btn-outline">Redeem</button>
                         </div>
+                        <div id="redeemResult" class="redeem-result"></div>
                     </div>
                 </div>
             </div>
@@ -166,7 +130,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </footer>
 
-    <script src="../js/conversions.js?v=20261109ads"></script>
-    <script src="../js/free-form.js?v=20261117signup"></script>
+    <script src="../js/free-download.js?v=20261119claim"></script>
 </body>
 </html>
