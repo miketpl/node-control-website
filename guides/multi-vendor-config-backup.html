@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <script>document.documentElement.classList.add("docs-js")</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+        DRAFT for Mike's review. Do not publish until commands are lab-checked
+        and every [VERIFY] / [MIKE] marker is resolved.
+
+        MANUAL VENDOR COMMANDS — check on Mike's lab before this page goes live:
+        Documented in Node Control docs (still lab-check the live CLI):
+        - Cisco / Arista: show running-config
+        - Cisco / Arista startup: show startup-config
+        - Junos: show configuration | no-more
+          (no startup variant, per Config Backup docs)
+        - PAN-OS: show config running
+        - PAN-OS saved: show config saved
+        - Dell OS10: show running-configuration
+          (named on the Dell vendor page)
+        - Extreme VSP: show running-config
+          (named on the Extreme vendor page)
+
+        Not named in the Node Control docs — treat as unconfirmed until
+        lab-checked, and do not present as Node Control catalogue commands
+        until confirmed:
+        - Aruba AOS-CX running / startup (typical candidate: show running-config)
+        - Aruba OS-Switch / ProCurve running / startup
+        - Dell OS6 running / startup
+        - Extreme EXOS running / startup (typical candidate: show configuration)
+        - Pager-off commands:
+            Cisco / Arista: terminal length 0
+            PAN-OS: set cli pager off
+            Aruba OS-Switch: no page
+            AOS-CX, Dell, EXOS, VSP pager-off forms
+    -->
+    <title>Back up running configs from mixed vendors in one run</title>
+    <meta name="description" content="The commands each vendor needs for a config backup, how to name and keep the files, and how to back up Cisco, Junos, PAN-OS and Aruba together.">
+    <link rel="canonical" href="https://nodecontrol.io/guides/multi-vendor-config-backup.html">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Back up running configs from mixed vendors in one run">
+    <meta property="og:description" content="The commands each vendor needs for a config backup, how to name and keep the files, and how to back up Cisco, Junos, PAN-OS and Aruba together.">
+    <meta property="og:url" content="https://nodecontrol.io/guides/multi-vendor-config-backup.html">
+    <meta property="og:site_name" content="Node Control">
+    <meta property="og:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Node Control. Desktop network operations for network engineers.">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Back up running configs from mixed vendors in one run">
+    <meta name="twitter:description" content="The commands each vendor needs for a config backup, how to name and keep the files, and how to back up Cisco, Junos, PAN-OS and Aruba together.">
+    <meta name="twitter:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta name="twitter:image:alt" content="Node Control. Desktop network operations for network engineers.">
+    <meta name="twitter:site" content="@node_control_">
+    <meta name="twitter:creator" content="@node_control_">
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=20261109hero">
+    <link rel="stylesheet" href="../css/docs.css?v=20261017">
+    <style>
+        .guide-updated { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 24px; }
+        .guide-review-note {
+            border: 1px solid #c9a227;
+            background: rgba(201, 162, 39, 0.08);
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin: 0 0 20px;
+        }
+        .guide-review-note strong { color: var(--text-primary); display: block; margin-bottom: 8px; }
+        .guide-review-note p { margin-bottom: 0; }
+        .guide-screenshot-placeholder {
+            border: 1px dashed var(--border);
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 28px 20px;
+            margin: 0 0 20px;
+            color: var(--text-muted);
+        }
+        .guide-screenshot-placeholder strong { color: var(--text-primary); display: block; margin-bottom: 8px; }
+        .guide-screenshot-placeholder .guide-alt {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 8px;
+        }
+        .guide-closing { margin-top: 48px; padding-top: 8px; }
+        .guide-start-free { margin-top: 16px; font-size: 0.95rem; }
+    </style>
+    <script type="application/ld+json">
+{
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "headline": "Back up running configs from mixed vendors in one run",
+          "description": "The commands each vendor needs for a config backup, how to name and keep the files, and how to back up Cisco, Junos, PAN-OS and Aruba together.",
+          "datePublished": "2026-11-11",
+          "dateModified": "2026-11-11",
+          "inLanguage": "en-GB",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://nodecontrol.io/guides/multi-vendor-config-backup.html"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Mike",
+            "url": "https://nodecontrol.io/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "The Promised Lan Limited",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://nodecontrol.io/images/logo.svg"
+            }
+          },
+          "image": "https://nodecontrol.io/images/og/nodecontrol-share.png"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://nodecontrol.io/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Back up running configs from mixed vendors in one run",
+              "item": "https://nodecontrol.io/guides/multi-vendor-config-backup.html"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../images/logo-simple.svg" alt="Node Control" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../index.html#download">Download</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
+                <li><a href="../docs/">Docs</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+    <button type="button" class="docs-menu-toggle" id="docsMenuToggle" aria-expanded="false" aria-controls="docsSidebar">Docs menu</button>
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">Updated 24 October 2026</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Guides</h4>
+      <a href="find-mac-address-switch-port.html" class="docs-nav-link">Find a MAC or IP on a switch port</a>
+      <a href="multi-vendor-config-backup.html" class="docs-nav-link active">Back up mixed-vendor configs</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../docs/getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../docs/getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../docs/getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../docs/getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../docs/getting-started/updating.html" class="docs-nav-link">Updating</a>
+      <a href="../docs/getting-started/navigation.html" class="docs-nav-link">Where things are</a>
+      <a href="../docs/getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../docs/getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../docs/library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../docs/library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../docs/library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../docs/library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../docs/library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../docs/tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../docs/tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../docs/tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../docs/tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../docs/tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../docs/tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
+      <a href="../docs/tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../docs/tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../docs/tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../docs/tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
+      <a href="../docs/tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../docs/tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../docs/tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../docs/tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../docs/tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../docs/tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../docs/tasks/serial-console.html" class="docs-nav-link">Serial console</a>
+      <a href="../docs/tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
+      <a href="../docs/tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../docs/tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../docs/tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../docs/tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../docs/reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../docs/reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../docs/reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../docs/reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../docs/reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../docs/reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../docs/reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../docs/reports/access-review.html" class="docs-nav-link">Access Review</a>
+      <a href="../docs/reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../docs/reports/change-summary.html" class="docs-nav-link">Change Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../docs/vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../docs/vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../docs/vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../docs/vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../docs/vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../docs/vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
+      <a href="../docs/vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../docs/vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../docs/vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../docs/vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../docs/vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../docs/settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../docs/settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../docs/settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../docs/settings/scripts.html" class="docs-nav-link">Custom Scripts</a>
+      <a href="../docs/settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../docs/settings/ai.html" class="docs-nav-link">AI provider</a>
+      <a href="../docs/settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
+      <a href="../docs/settings/ai-features.html" class="docs-nav-link">AI features overview</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../docs/security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../docs/security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
+      <a href="../docs/security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../docs/troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../docs/troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../docs/troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../docs/troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../docs/troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../docs/tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../docs/tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../index.html">Home</a> &rsaquo; Guides &rsaquo; Back up running configs from mixed vendors in one run
+                </div>
+                <h1 id="back-up-running-configs-from-mixed-vendors-in-one-run">Back up running configs from mixed vendors in one run</h1>
+                <p class="guide-updated">Last updated 11 November 2026</p>
+                <p>A useful backup is the running config, captured completely, named so you can find it later, and taken with an account that only needs to read. On a mixed estate that means a different command on each vendor, and a pager that will happily write “--More--” into the file if you leave it on.</p>
+                <p>This page is the manual method first. Then it shows how Config Backup in Node Control runs the vendor command for you, across the devices you tick, in one go.</p>
+                <p>The file name example below uses a documentation address (192.0.2.10). Use your own values in the lab.</p>
+
+                <h2 id="the-command-each-vendor-needs">The command each vendor needs</h2>
+                <p>These are the running-config commands I would run by hand. The first five, and the VSP line, are also the commands the Node Control docs name for Config Backup. The others need a check on my lab before this page goes live.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Running config</th>
+                            <th>Saved / startup, if there is one</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cisco IOS, IOS-XE, NX-OS, and Arista EOS</td>
+                            <td><code>show running-config</code></td>
+                            <td><code>show startup-config</code></td>
+                        </tr>
+                        <tr>
+                            <td>Juniper Junos</td>
+                            <td><code>show configuration | no-more</code></td>
+                            <td>There is no startup variant</td>
+                        </tr>
+                        <tr>
+                            <td>Palo Alto PAN-OS</td>
+                            <td><code>show config running</code></td>
+                            <td><code>show config saved</code></td>
+                        </tr>
+                        <tr>
+                            <td>Dell OS10</td>
+                            <td><code>show running-configuration</code></td>
+                            <td>[VERIFY] confirm the startup form on the lab</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme VSP</td>
+                            <td><code>show running-config</code></td>
+                            <td>[VERIFY] confirm the startup form on the lab</td>
+                        </tr>
+                        <tr>
+                            <td>Aruba AOS-CX</td>
+                            <td colspan="2">[VERIFY] Node Control docs say Aruba has its own variants, but they do not name the command. A typical candidate is <code>show running-config</code>. Confirm running and startup on the lab.</td>
+                        </tr>
+                        <tr>
+                            <td>Aruba OS-Switch / HP ProCurve</td>
+                            <td colspan="2">[VERIFY] not named in the docs. Confirm running and startup on the lab.</td>
+                        </tr>
+                        <tr>
+                            <td>Dell OS6</td>
+                            <td colspan="2">[VERIFY] not named in the docs. Confirm running and startup on the lab.</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme EXOS</td>
+                            <td colspan="2">[VERIFY] not named in the docs. A typical candidate is <code>show configuration</code>. Confirm running and startup on the lab.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 id="pager-gotchas">Pager gotchas</h2>
+                <p>Most CLIs pause long output with a pager. If you capture a session without turning that off, the file contains “--More--” prompts, or it stops early, and the backup is not a complete config.</p>
+                <p>Junos is the easy one: <code>| no-more</code> is already in the command above. On Cisco IOS, IOS-XE, NX-OS and Arista, I would run <code>terminal length 0</code> first. On PAN-OS, the usual form is <code>set cli pager off</code>. Aruba OS-Switch often uses <code>no page</code>.</p>
+                <aside class="guide-review-note">
+                    <strong>[VERIFY] Pager-off commands</strong>
+                    <p>Every pager-off form on this page needs a lab check, including the PAN-OS and Aruba OS-Switch lines, and the AOS-CX, Dell, EXOS and VSP equivalents, which I have not named because they are not in the Node Control docs.</p>
+                </aside>
+                <p>When you finish, set the pager back if other people share the session. And do not treat a truncated capture as a backup. If the file is shorter than you expect, or it contains a pager prompt, take it again.</p>
+
+                <h2 id="how-to-name-the-files">How to name the files</h2>
+                <p>Give every file a name you can sort and search later: the device, the address, whether it is running or startup, and a timestamp. Node Control writes one file per device in this form:</p>
+                <pre><code>&lt;hostname&gt;_&lt;ip with underscores&gt;_&lt;running|startup&gt;_&lt;YYYYmmdd_HHMMSS&gt;.txt</code></pre>
+                <p>For a documentation example:</p>
+                <pre><code>core-sw1_192_0_2_10_running_20261111_090000.txt</code></pre>
+                <p>One timestamp covers the whole run, so a batch taken together stays grouped. Keep the files in one folder per run, or in a folder you already back up. The content is the device config, so treat the folder as sensitive.</p>
+
+                <h2 id="why-read-only-matters">Why read-only matters</h2>
+                <p>A backup should not change the device. Use an account that can read the running config and nothing more, where the vendor allows it. That way a typo, a mixed-up session, or a paste into the wrong window cannot write to the box.</p>
+                <p>There is one documented exception on Aruba AOS-CX: an operators-level login cannot read the config. You need an admin or manager user, or the backup is empty. Do not save an empty file and think you have a backup.</p>
+                <p>Pulling the running config is also not the same as saving it on the device. Writing running into startup is a separate change, and it should be a deliberate one.</p>
+
+                <h2 id="how-node-control-does-it">How Node Control does it</h2>
+                <p>In Node Control this is <a href="../docs/tasks/config-backup.html">Config Backup</a>. You tick the devices, choose Config Backup, pick credentials, and choose running or startup. The default output folder is <code>&lt;Output Directory from Settings&gt;/connection_manager/backups</code>. The task is read-only. It is allowed in Safe Mode. It runs the vendor command from the catalogue, through the safe-send allowlist, and writes one file per device in the naming scheme above.</p>
+                <p>A row shows Backed up or FAIL, and the summary is in the form <code>Complete - X saved, Y failed. Output: &lt;dir&gt;</code>. Dry run logs the commands and the file it would write, without writing it. Stop cancels the run. On AOS-CX, if the login cannot read the config, the task tells you an admin or manager user is needed and does not save an empty file.</p>
+                <p>On Extreme EXOS, Config Backup saves the file only if the configuration looks complete. A short read, a missing section compared with an earlier backup of the same switch, or an account without permission, is not saved, and the row says why. The first backup of a switch is read twice and saved only if both reads match.</p>
+                <figure class="guide-screenshot-placeholder">
+                    <strong>Screenshot placeholder — lab capture needed</strong>
+                    Suggested file: <code>images/guides/config-backup-dialog.png</code>, taken in demo mode. Show the running/startup choice and the output directory. No customer names, real IPs or hostnames.
+                    <span class="guide-alt">Suggested alt text: The Node Control Config Backup dialog, with Running Config selected and an output directory set.</span>
+                </figure>
+                <figure class="guide-screenshot-placeholder">
+                    <strong>Screenshot placeholder — lab capture needed</strong>
+                    Suggested file: <code>images/guides/config-backup-files.png</code>. A folder of backup files named with the hostname, documentation IP, running or startup, and timestamp.
+                    <span class="guide-alt">Suggested alt text: Backup files written by Node Control, each named with hostname, IP address, running or startup, and a timestamp.</span>
+                </figure>
+                <p><strong>Save Config</strong> is a different task. It writes the running configuration into the saved config on the devices you tick. It also runs on Free and Professional, but Safe Mode hides it, because it changes the device.</p>
+                <p>On Professional you can also run a <a href="../docs/tasks/config-compliance.html">Config Compliance Audit</a> against your own baseline, without pushing anything, and <a href="../docs/tasks/config-push.html">Config Push</a> with a snapshot and revert. Full push-and-revert support is documented for Cisco IOS, IOS-XE and NX-OS. On Junos, revert restores the snapshot taken before the push; if that snapshot could not be taken, the revert is marked as manual. Other vendors get a template only, with no reliable revert.</p>
+                <aside class="guide-review-note">
+                    <strong>[VERIFY] Scheduled backups are not claimed here</strong>
+                    <p>The SEO outline said Professional includes scheduled backups. That is not in the current website docs. The website brief says scheduled backups come with Node Control Server, not the current desktop editions. This draft omits them. Confirm before anyone adds that sentence back.</p>
+                </aside>
+                <p>Config Backup and Save Config run on Free and Professional. See the <a href="../docs/settings/safe-mode.html">Safe Mode</a> page for what the read-only path allows. A related guide covers <a href="find-mac-address-switch-port.html">finding which switch port a MAC or IP is on</a>.</p>
+
+                <div class="guide-closing">
+                    <p>Node Control does this alongside topology maps, config backup and push with revert, compliance, EoL and PSIRT reports, the PAN-OS analyser, IPAM, Meraki tools, custom scripts and AI on your own key, for Cisco, Palo Alto, Meraki, Juniper, Arista, Aruba, Dell and Extreme. Config Backup and Save Config run on Free and Professional. Config Compliance and Config Push are Professional.</p>
+                    <p class="guide-start-free">Start free: up to 25 devices → <a href="https://nodecontrol.io/#free-edition">nodecontrol.io/#free-edition</a></p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer footer-social-bar">
+        <div class="container">
+            <div class="footer-bottom">
+                <nav class="footer-social" aria-label="Node Control on social media">
+                    <a href="https://x.com/node_control_" target="_blank" rel="noopener" aria-label="Node Control on X">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/company/node-control/" target="_blank" rel="noopener" aria-label="Node Control on LinkedIn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Node_Control" target="_blank" rel="noopener" aria-label="Node Control on YouTube">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+    <script src="../js/docs.js?v=20261017"></script>
+</body>
+</html>
