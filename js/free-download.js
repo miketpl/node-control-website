@@ -124,8 +124,14 @@
     }
 
     function startDownload(platform) {
+        var chosen = platform === 'win' ? 'win' : 'mac';
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: chosen === 'win' ? 'free_download_click_win' : 'free_download_click_mac',
+            platform: chosen
+        });
         showMessage('');
-        trackFunnel(platform === 'win' ? 'free_download_click_win' : 'free_download_click_mac');
+        trackFunnel(chosen === 'win' ? 'free_download_click_win' : 'free_download_click_mac');
         var attr = attributionPayload();
         fetch(API_BASE + '/api/free/instant-key', {
             method: 'POST',
