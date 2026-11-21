@@ -12,7 +12,7 @@ Node Control is distributed as a notarized macOS application bundle. Installatio
 
 Go to [nodecontrol.io](https://nodecontrol.io) and choose your tier:
 
-- **Free** — sign up with your email to receive a download link and an `NC-XXXX-XXXX` activation code
+- **Free** — open [nodecontrol.io/free/](https://nodecontrol.io/free/), choose macOS or Windows, and the page shows an `NC-XXXX-XXXX` licence key. No email is required.
 - **Pro** — the confirmation email after purchase contains the NCP licence key and the download for the first install. The checkout success page shows that key for 24 hours, with macOS and Windows links that last 30 minutes. Reload the page for a new pair. If the email cannot point at that page, it contains links that last 24 hours, and they work only while the subscription is active. A key added by hand arrives with its own links for the first install. Those last 7 days, and sending them again does not change the key. After that install, the app updates itself
 - **AI** — there is no download on the site. The edition is not yet available to buy
 
