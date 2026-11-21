@@ -94,7 +94,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script>
         (function () {
             var params = new URLSearchParams(window.location.search);
-            if (params.get('from') === 'app') {
+            var fromApp = params.get('from') === 'app';
+            if (fromApp) {
                 var appNote = document.getElementById('proAppReturn');
                 if (appNote) {
                     appNote.hidden = false;
@@ -103,7 +104,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 if (checking) {
                     checking.hidden = true;
                 }
-                return;
             }
             var sessionId = params.get('session_id') || '';
             var api = params.get('localapi') === '1'
@@ -172,6 +172,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 } catch (err) { /* this page view is already marked in memory */ }
             }
 
+            function recordPurchase(data) {
+                if (data && data.status === 'active') pushPurchase(data);
+            }
+
+            function stopForApp(data) {
+                if (!fromApp || !data) return false;
+                return data.status === 'active' || data.status === 'unpaid';
+            }
+
             function paint(data) {
                 pushPurchase(data);
                 emailEl.hidden = false;
@@ -216,6 +225,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         }
                         if (rateLimitRetry) {
                             rateLimitRetry = false;
+                            recordPurchase(result.data);
+                            if (stopForApp(result.data)) return;
                             if (result.ok && result.data.status === 'active' && result.data.downloads) {
                                 paint(result.data);
                                 return;
@@ -228,9 +239,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             return;
                         }
                         if (!result.ok) {
-                            showError(result.data.error || 'Could not confirm the payment.');
+                            if (!fromApp) showError(result.data.error || 'Could not confirm the payment.');
                             return;
                         }
+                        recordPurchase(result.data);
+                        if (stopForApp(result.data)) return;
                         if (result.data.status === 'active' && result.data.downloads) {
                             paint(result.data);
                             return;
