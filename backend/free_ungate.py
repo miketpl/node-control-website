@@ -21,7 +21,7 @@ EXCLUDED_FREE_IDS = (23, 24, 32)
 # The redeem box on /free/ stays until this UTC date, then the page hides it.
 REDEEM_BOX_UNTIL = "2027-02-17"
 _CRAWLER = re.compile(r"bot|spider|crawl|slurp|preview|facebookexternalhit|whatsapp", re.I)
-_ALERT_WINDOW = 600
+_IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 _NC_KEY = re.compile(r"^NC-[A-Z0-9]{4}-[A-Z0-9]{4}$")
 _EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,190}\.[^@\s]{2,24}$")
 _meta_cache = {"at": 0.0, "body": None}
@@ -476,9 +476,11 @@ def latest_download(platform):
     except Exception:
         logger.exception("Public Free download redirect failed")
         return licence_v1.error(503, "upstream_unavailable", "The release service is unavailable. Try again later.")
+    repeat = False
     if request.method == "GET" and not crawler:
+        repeat = _direct24_already(platform, ip_hash)
         _record_direct(platform, described.get("version") or "", ip_hash)
-    _queue_direct_alert(platform, described.get("version") or "", ip_hash, crawler)
+    _queue_direct_alert(platform, described.get("version") or "", ip_hash, crawler, repeat)
     response = redirect(location, code=302)
     response.headers["X-Robots-Tag"] = "noindex"
     return response
@@ -536,19 +538,46 @@ def _alert_cap():
     raw = str(licence_v1._api().app.config.get("FREE_DOWNLOAD_ALERT_DAILY_CAP") or "").strip()
     if raw.isdigit():
         return int(raw)
-    return 200
+    return 1000
 
 
-def _queue_direct_alert(platform, version, ip_hash, crawler):
-    """One admin mail per public download. A failure here does not change the 302."""
-    if request.method != "GET" or crawler or not _alerts_on():
+def _direct24_already(platform, ip_hash):
+    """True when this client already counted a download for this platform today.
+
+    Read-only. The counter itself is still updated by _record_direct.
+    """
+    import time
+    now = int(time.time())
+    window = 86400
+    start = now - (now % window)
+    db = _db()
+    try:
+        row = db.execute(
+            "SELECT count FROM rate_limits WHERE bucket = ? AND window_start = ?",
+            (f"direct24:{platform}:{ip_hash}", start),
+        ).fetchone()
+    except Exception:
+        return False
+    finally:
+        db.close()
+    return bool(row and int(row["count"] or 0) >= 1)
+
+
+def _queue_direct_alert(platform, version, ip_hash, crawler, repeat):
+    """One admin mail per public GET, including crawlers and repeats.
+
+    A failure here does not change the 302. Crawlers stay out of the download counts.
+    """
+    if request.method != "GET" or not _alerts_on():
         return
     api = licence_v1._api()
     if not (api.app.config.get("ADMIN_ALERT_EMAIL") or "").strip():
         return
-    allowed, _wait = licence_v1.consume_rate(f"direct-alert:{ip_hash}", 1, _ALERT_WINDOW)
-    if not allowed or not _reserve_alert_slot():
+    if not _reserve_alert_slot():
         return
+    if crawler:
+        fresh, _wait = licence_v1.consume_rate(f"alert24:{platform}:{ip_hash}", 1, 86400)
+        repeat = not fresh
     import alerts
     cleaned = api.clean_attribution({
         "utm_source": request.args.get("utm_source"),
@@ -566,11 +595,23 @@ def _queue_direct_alert(platform, version, ip_hash, crawler):
         "fields": fields,
         "today": _direct_today(),
         "time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "client": (ip_hash or "")[:12],
+        "crawler": "yes" if crawler else "no",
+        "repeat": "yes" if repeat else "no",
+        "agent": _public_agent(request.headers.get("User-Agent")),
+        "referrer": alerts._referrer(request.headers.get("Referer")),
     }
     try:
         threading.Thread(target=_send_direct_alert, args=(safe,), daemon=True).start()
     except Exception:
         logger.error("Admin alert was not sent")
+
+
+def _public_agent(value):
+    """One line of the user agent, with any raw IP address removed."""
+    text = " ".join(str(value or "").replace("\r", " ").replace("\n", " ").split())
+    text = _IPV4.sub("[ip]", text)
+    return text[:300] or "unknown"
 
 
 def _reserve_alert_slot():
@@ -627,6 +668,10 @@ def _send_direct_alert(safe):
             f"Platform: {safe['platform']}",
             f"Version: {safe['version']}",
             f"Time: {safe['time']}",
+            f"Client: {safe['client']}",
+            f"Likely crawler: {safe['crawler']}",
+            f"Repeat within 24h: {safe['repeat']}",
+            f"User-Agent: {safe['agent']}",
         ]
         for label, key in (
             ("Source", "utm_source"),
@@ -637,6 +682,8 @@ def _send_direct_alert(safe):
             value = safe["fields"].get(key) or ""
             if value:
                 lines.append(f"{label}: {value}")
+        if safe.get("referrer"):
+            lines.append(f"Referrer: {safe['referrer']}")
         lines.append(f"Today: {int(safe['today'])}")
         text = "\n".join(lines) + "\n"
         import html
