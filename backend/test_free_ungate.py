@@ -367,8 +367,11 @@ class FreeUngateTests(unittest.TestCase):
     def test_public_download_alert_fires(self):
         app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
         app.config["FREE_DOWNLOAD_ALERTS"] = ""
+        app.config["FREE_DOWNLOAD_ALERT_DAILY_CAP"] = ""
+        self.assertEqual(free_ungate._alert_cap(), 1000)
         sent = self._public_download(
-            query="?utm_source=linkedin&utm_medium=cpc&utm_campaign=launch&utm_content=ad"
+            query="?utm_source=linkedin&utm_medium=cpc&utm_campaign=launch&utm_content=ad",
+            headers={"Referer": "https://news.ycombinator.com/item?id=1"},
         )
         self.assertEqual(sent.status_code, 302)
         self.assertEqual(sent.location, ASSET)
@@ -376,6 +379,7 @@ class FreeUngateTests(unittest.TestCase):
         self.assertEqual(self.mail[0][0], ALERT_TO)
         self.assertEqual(self.mail[0][1], "Node Control Free download (mac)")
         text = self.mail[0][2]
+        prefix = free_ungate._hash_token("127.0.0.1")[:12]
         self.assertIn("Platform: mac\n", text)
         self.assertIn("Version: 0.9.48\n", text)
         self.assertIn("Source: linkedin\n", text)
@@ -383,11 +387,17 @@ class FreeUngateTests(unittest.TestCase):
         self.assertIn("Campaign: launch\n", text)
         self.assertIn("Content: ad\n", text)
         self.assertIn("Today: 1\n", text)
+        self.assertIn("Likely crawler: no\n", text)
+        self.assertIn("Repeat within 24h: no\n", text)
+        self.assertIn(f"Client: {prefix}\n", text)
+        self.assertIn("Referrer: news.ycombinator.com\n", text)
+        self.assertNotIn(free_ungate._hash_token("127.0.0.1"), text)
         self.assertRegex(text, r"Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
         self.assertNotIn("127.0.0.1", text)
         self.assertNotIn("@", text)
+        self.assertNotIn("/item", text)
 
-    def test_public_download_alert_skips_when_off_or_not_a_browser_get(self):
+    def test_public_download_alert_includes_crawlers_and_obeys_the_switch(self):
         app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
         app.config["FREE_DOWNLOAD_ALERTS"] = "false"
         quiet = self._public_download(headers={"CF-Connecting-IP": "203.0.113.10"})
@@ -395,41 +405,47 @@ class FreeUngateTests(unittest.TestCase):
         self.assertEqual(self.mail, [])
         self.assertEqual(self._direct_count(), 1)
         app.config["FREE_DOWNLOAD_ALERTS"] = "true"
+        bot_agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         bot = self._public_download(headers={
-            "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+            "User-Agent": bot_agent,
             "CF-Connecting-IP": "203.0.113.11",
         })
         self.assertEqual(bot.status_code, 302)
-        self.assertEqual(self.mail, [])
+        self.assertEqual(len(self.mail), 1)
+        self.assertIn("Likely crawler: yes\n", self.mail[0][2])
+        self.assertIn("User-Agent: " + bot_agent + "\n", self.mail[0][2])
+        self.assertNotIn("203.0.113.11", self.mail[0][2])
+        self.assertEqual(self._direct_count(), 1)
+        again = self._public_download(headers={
+            "User-Agent": bot_agent,
+            "CF-Connecting-IP": "203.0.113.11",
+        })
+        self.assertEqual(again.status_code, 302)
+        self.assertEqual(len(self.mail), 2)
+        self.assertIn("Repeat within 24h: yes\n", self.mail[1][2])
+        self.assertEqual(self._direct_count(), 1)
         head = self.client.head("/api/v1/download/free/latest/win")
         self.assertIn(head.status_code, (200, 302))
-        self.assertEqual(self.mail, [])
+        self.assertEqual(len(self.mail), 2)
 
-    def test_public_download_alert_throttle_and_cap(self):
+    def test_public_download_alert_repeats_and_stops_at_the_cap(self):
         app.config["ADMIN_ALERT_EMAIL"] = ALERT_TO
         app.config["FREE_DOWNLOAD_ALERTS"] = "true"
-        app.config["FREE_DOWNLOAD_ALERT_DAILY_CAP"] = "200"
+        app.config["FREE_DOWNLOAD_ALERT_DAILY_CAP"] = "2"
         headers = {"CF-Connecting-IP": "203.0.113.20"}
         self.assertEqual(self._public_download(headers=headers).status_code, 302)
         self.assertEqual(self._public_download(headers=headers).status_code, 302)
-        self.assertEqual(len(self.mail), 1)
-        self.assertNotIn("203.0.113.20", self.mail[0][2])
-        db = get_db()
-        db.execute("DELETE FROM rate_limits WHERE bucket LIKE 'direct-alert:%'")
-        db.commit()
-        db.close()
-        self.assertEqual(self._public_download(headers=headers).status_code, 302)
         self.assertEqual(len(self.mail), 2)
-        db = get_db()
-        db.execute(
-            "UPDATE admin_daily_counts SET count = 200 WHERE kind = 'free_direct_alert'"
-        )
-        db.commit()
-        db.close()
+        self.assertIn("Repeat within 24h: no\n", self.mail[0][2])
+        self.assertIn("Repeat within 24h: yes\n", self.mail[1][2])
+        prefix = free_ungate._hash_token("203.0.113.20")[:12]
+        self.assertIn(f"Client: {prefix}\n", self.mail[0][2])
+        self.assertNotIn("203.0.113.20", self.mail[0][2])
+        self.assertNotIn("203.0.113.20", self.mail[1][2])
+        self.assertNotIn(free_ungate._hash_token("203.0.113.20"), self.mail[0][2])
         other = {"CF-Connecting-IP": "203.0.113.21"}
         self.assertEqual(self._public_download(headers=other).status_code, 302)
         self.assertEqual(len(self.mail), 2)
-        self.assertNotIn("203.0.113.21", self.mail[0][2])
         self.assertEqual(self._direct_count(), 2)
 
     def test_public_download_alert_mail_failure_still_redirects(self):
