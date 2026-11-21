@@ -780,8 +780,11 @@ def _record_download(license_id, platform, kind, version, tier):
 # Free download rows store licenses.id. Pro rows store pro_keys.id
 # (pro_paid_redirect falls back to pro_subscriptions.id when no key exists yet).
 _FREE_DOWNLOAD_SQL = """(
-    download_events.kind = 'redirect'
-    OR COALESCE(download_events.tier, '') = 'free'
+    download_events.kind IN ('redirect', 'direct')
+    OR (
+        COALESCE(download_events.tier, '') = 'free'
+        AND download_events.kind NOT IN ('pro_redirect', 'pro_paid_redirect')
+    )
 )"""
 _PRO_DOWNLOAD_SQL = """(
     download_events.kind IN ('pro_redirect', 'pro_paid_redirect')
@@ -812,8 +815,10 @@ def _stats_exclude_emails():
 def _download_count_filters():
     """SQL fragment and params that leave test licences out of download counts.
 
-    STATS_EXCLUDE_LICENCE_IDS applies only to Free rows (kind redirect, or
-    tier free). Those rows store licenses.id. STATS_EXCLUDE_PRO_KEY_IDS
+    STATS_EXCLUDE_LICENCE_IDS applies only to Free rows (kind redirect or
+    direct, or tier free). Those rows store licenses.id. A public direct
+    download stores license_id 0, which is not a test licence, so it stays.
+    STATS_EXCLUDE_PRO_KEY_IDS
     applies only to Pro rows (pro_redirect, pro_paid_redirect, or tier pro).
     pro_redirect stores pro_keys.id. pro_paid_redirect stores pro_keys.id,
     or the subscription id when the key row does not exist yet. Addresses
@@ -3654,7 +3659,8 @@ def admin_stats_v1():
     Move requests are not kept after the code is used. Telemetry has no
     separate event log and no opt-out deletion log. Rate-limit rows are
     request counters, not 429 outcomes. downloads counts new installs:
-    redirect is Free, and pro_redirect and pro_paid_redirect are Pro.
+    redirect and direct are Free, and pro_redirect and pro_paid_redirect
+    are Pro. direct is the public installer redirect with no email.
     updates counts in-app app_download rows, split by the licence tier.
     click and auto are beacons and are not counted.
     installs_by_version is all time and ignores since/until. One install
@@ -3791,11 +3797,12 @@ def admin_stats_v1():
             + _labelled(rollups, ("status", "month", "tier", "version", "os"))
         )
         exclude_sql, exclude_params = _download_count_filters()
-        new_kinds = "kind IN ('redirect', 'pro_redirect', 'pro_paid_redirect')"
+        new_kinds = "kind IN ('redirect', 'direct', 'pro_redirect', 'pro_paid_redirect')"
         update_kinds = "kind = 'app_download' AND COALESCE(tier, '') IN ('free', 'pro')"
         tier_sql = """
             CASE
-                WHEN kind = 'redirect' OR (kind = 'app_download' AND tier = 'free') THEN 'free'
+                WHEN kind IN ('redirect', 'direct')
+                  OR (kind = 'app_download' AND tier = 'free') THEN 'free'
                 ELSE 'pro'
             END
         """
@@ -3811,6 +3818,17 @@ def admin_stats_v1():
             """,
             (*window, *exclude_params),
         ).fetchall(), ("tier", "platform"))
+        downloads_by_kind = _labelled(db.execute(
+            f"""
+            SELECT {tier_sql} AS tier, kind, COALESCE(platform, '') AS platform, COUNT(*) AS count
+            FROM download_events
+            WHERE ({new_kinds}) AND created_at >= ? AND created_at < ?
+            {exclude_sql}
+            GROUP BY 1, kind, platform
+            ORDER BY 1, kind, platform
+            """,
+            (*window, *exclude_params),
+        ).fetchall(), ("tier", "kind", "platform"))
         updates = _labelled(db.execute(
             f"""
             SELECT {tier_sql} AS tier, COALESCE(platform, '') AS platform, COUNT(*) AS count
@@ -3958,6 +3976,7 @@ def admin_stats_v1():
         "telemetry": telemetry,
         "usage": usage,
         "downloads": downloads,
+        "downloads_by_kind": downloads_by_kind,
         "updates": updates,
         "downloads_by_version": downloads_by_version,
         "update_checks": update_checks,
