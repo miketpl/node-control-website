@@ -1320,7 +1320,7 @@ class V1Tests(unittest.TestCase):
             set(body),
             {
                 "window", "licences", "pro_keys", "device_moves", "devices",
-                "registrations", "telemetry", "usage", "downloads", "updates",
+                "registrations", "telemetry", "usage", "downloads", "downloads_by_kind", "updates",
                 "downloads_by_version", "update_checks", "installs_by_version",
                 "current_installs_by_version", "update_checks_by_version",
                 "telemetry_note", "marketing", "flags", "db_bytes", "generated_at",
@@ -2451,6 +2451,99 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(recorded["platform"], "win")
         self.assertEqual(recorded["version"], "0.9.41")
         self.assertIsNone(legacy["version"])
+
+    def test_direct_downloads_count_as_free_and_keep_licence_zero(self):
+        previous = {
+            "STATS_EXCLUDE_LICENCE_IDS": app.config.get("STATS_EXCLUDE_LICENCE_IDS"),
+            "STATS_EXCLUDE_EMAILS": app.config.get("STATS_EXCLUDE_EMAILS"),
+        }
+        app.config["STATS_EXCLUDE_LICENCE_IDS"] = "23,24,32"
+        app.config["STATS_EXCLUDE_EMAILS"] = "hidden-direct@example.com"
+        db = get_db()
+        db.execute("DELETE FROM download_events")
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (23, 'NC-TEST-0023', 'Owner', 'owner-test@example.com', '', 'macos', 'free', 'active', '2026-11-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO licenses (id, code, name, email, company, platform, tier, status, created_at)
+            VALUES (41, 'NC-HIDE-0041', 'Hidden', 'hidden-direct@example.com', '', 'macos', 'free', 'active', '2026-11-21T00:00:00')
+            """
+        )
+        db.execute(
+            """
+            INSERT INTO download_events (
+                license_id, platform, kind, created_at, version, tier,
+                utm_source, utm_campaign, utm_content
+            ) VALUES
+                (0, 'mac', 'direct', '2026-11-21T12:00:00Z', '0.9.48', 'free', 'linkedin', 'launch', 'post'),
+                (0, 'win', 'direct', '2026-11-21T13:00:00Z', '0.9.48', '', '', '', ''),
+                (23, 'mac', 'direct', '2026-11-21T14:00:00Z', '0.9.48', 'free', 'linkedin', 'launch', 'post'),
+                (0, 'mac', 'direct', '2026-11-21T15:00:00Z', '0.9.48', 'free', 'nc-selftest', '', ''),
+                (0, 'mac', 'direct', '2026-11-21T16:00:00Z', '0.9.48', 'free', 'v0-build', '', ''),
+                (41, 'mac', 'redirect', '2026-11-21T17:00:00Z', '0.9.47', 'free', '', '', ''),
+                (0, 'mac', 'redirect', '2026-11-17T01:00:00Z', '0.9.47', 'free', '', '', '')
+            """
+        )
+        db.commit()
+        db.close()
+        try:
+            res = self.client.get(
+                "/api/admin/stats/v1?since=2026-11-01&until=2026-11-22",
+                headers={"Authorization": "Bearer test-admin-token"},
+            )
+        finally:
+            app.config["STATS_EXCLUDE_LICENCE_IDS"] = previous["STATS_EXCLUDE_LICENCE_IDS"]
+            app.config["STATS_EXCLUDE_EMAILS"] = previous["STATS_EXCLUDE_EMAILS"]
+        self.assertEqual(res.status_code, 200)
+        body = res.get_json()
+        self.assertEqual(body["downloads"], [
+            {"tier": "free", "platform": "mac", "count": 4},
+            {"tier": "free", "platform": "win", "count": 1},
+        ])
+        self.assertEqual(body["downloads_by_kind"], [
+            {"tier": "free", "kind": "direct", "platform": "mac", "count": 3},
+            {"tier": "free", "kind": "direct", "platform": "win", "count": 1},
+            {"tier": "free", "kind": "redirect", "platform": "mac", "count": 1},
+        ])
+        versions = {
+            (row["tier"], row["source"], row["platform"], row["version"]): row["count"]
+            for row in body["downloads_by_version"]
+        }
+        self.assertEqual(versions[("free", "new", "mac", "0.9.48")], 3)
+        self.assertEqual(versions[("free", "new", "win", "0.9.48")], 1)
+        self.assertEqual(versions[("free", "new", "mac", "0.9.47")], 1)
+        self.assertNotIn("pro", {row["tier"] for row in body["downloads"]})
+        text = res.get_data(as_text=True)
+        self.assertNotIn("hidden-direct@example.com", text)
+        self.assertNotIn("owner-test@example.com", text)
+        marketing = body["marketing"]["downloads"]
+        self.assertEqual(marketing["excluded"], 3)
+        self.assertEqual(marketing["rows"], [
+            {
+                "day": "2026-11-17", "platform": "mac", "kind": "redirect",
+                "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
+                "count": 1,
+            },
+            {
+                "day": "2026-11-21", "platform": "mac", "kind": "direct",
+                "utm_source": "linkedin", "utm_campaign": "launch", "utm_content": "post",
+                "count": 1,
+            },
+            {
+                "day": "2026-11-21", "platform": "mac", "kind": "redirect",
+                "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
+                "count": 1,
+            },
+            {
+                "day": "2026-11-21", "platform": "win", "kind": "direct",
+                "utm_source": "none", "utm_campaign": "none", "utm_content": "none",
+                "count": 1,
+            },
+        ])
 
     def test_installs_by_version_keep_history_and_one_current_row(self):
         now = datetime.now(timezone.utc).replace(microsecond=0)

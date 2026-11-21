@@ -24,7 +24,9 @@ Rows whose UTM or tag is `nc-selftest`, or starts with `v0`, are left out. Free 
 
 `signups.rows` is Free sign-ups per day and those three UTM fields. `requested`, `verified`, `unverified` and `redeemed` are counts. `verified` is status `active`. `unverified` is status `unverified`. `redeemed` is a download count above zero. When all three UTM fields are empty and the stored referrer is a host, `referrer` is `ref:` plus that host. Otherwise `referrer` is `none`.
 
-`downloads.rows` is Free download events per day, platform and kind. The kinds are `app_download`, `auto` and `redirect`. UTM is copied from the linked licence. A download with no linked licence uses `none`.
+`downloads.rows` is Free download events per day, platform and kind. The kinds are `app_download`, `auto`, `redirect` and `direct`. UTM is copied from the linked licence. A download with no linked licence, including a public `direct` row stored with licence id 0, uses the event's own UTM, or `none` when that is empty.
+
+The top-level `downloads` and `downloads_by_version` lists count new installs. `redirect` and `direct` are Free. `pro_redirect` and `pro_paid_redirect` are Pro. `downloads_by_kind` splits those same rows by kind. A `direct` row with licence id 0 is counted. Free licence ids in `STATS_EXCLUDE_LICENCE_IDS` are left out, including a `direct` row that carries one of those ids. Self-test tags (`nc-selftest`, or a tag starting with `v0`) are left out of `marketing.downloads` only.
 
 `pro_purchases` is a count by plan for Professional keys created in the window. `attribution` is `none`. Pro UTM is not included.
 
