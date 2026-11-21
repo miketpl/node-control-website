@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <script>document.documentElement.classList.add("docs-js")</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+        DRAFT for Mike's review. Do not publish until commands are lab-checked
+        and every [VERIFY] / [MIKE] marker is resolved.
+
+        MANUAL VENDOR COMMANDS — check on Mike's lab before this page goes live:
+        - show ip arp 192.0.2.10
+        - show ip arp vrf <name> 192.0.2.10
+        - show arp no-resolve | match 192.0.2.10
+        - show mac address-table address 0011.2233.4455
+          (Cisco IOS / IOS-XE / NX-OS and Arista EOS)
+        - show ethernet-switching table | match 00:11:22:33:44:55
+          (Junos; confirm on EX / QFX / ELS vs non-ELS)
+        - show mac-address-table address 00:11:22:33:44:55
+          (Aruba AOS-CX)
+        - show mac-address 001122-334455
+          (Aruba AOS-S / OS-Switch)
+        - show mac address-table address 00:11:22:33:44:55
+          (Dell OS10; confirm OS6 form)
+        - show fdb 00:11:22:33:44:55
+          (Extreme EXOS; confirm VSP: show fdb-entry)
+        - show cdp neighbors GigabitEthernet1/0/1 detail
+        - show lldp neighbors GigabitEthernet1/0/1 detail
+          (confirm per-vendor interface syntax)
+    -->
+    <title>Find which switch port a MAC or IP is on (any vendor)</title>
+    <meta name="description" content="How to trace a MAC or IP address to its switch port on Cisco, Juniper, Arista, Aruba, Dell and Extreme, by hand and across every site at once.">
+    <link rel="canonical" href="https://nodecontrol.io/guides/find-mac-address-switch-port.html">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Find which switch port a MAC or IP is on (any vendor)">
+    <meta property="og:description" content="How to trace a MAC or IP address to its switch port on Cisco, Juniper, Arista, Aruba, Dell and Extreme, by hand and across every site at once.">
+    <meta property="og:url" content="https://nodecontrol.io/guides/find-mac-address-switch-port.html">
+    <meta property="og:site_name" content="Node Control">
+    <meta property="og:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Node Control. Desktop network operations for network engineers.">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Find which switch port a MAC or IP is on (any vendor)">
+    <meta name="twitter:description" content="How to trace a MAC or IP address to its switch port on Cisco, Juniper, Arista, Aruba, Dell and Extreme, by hand and across every site at once.">
+    <meta name="twitter:image" content="https://nodecontrol.io/images/og/nodecontrol-share.png">
+    <meta name="twitter:image:alt" content="Node Control. Desktop network operations for network engineers.">
+    <meta name="twitter:site" content="@node_control_">
+    <meta name="twitter:creator" content="@node_control_">
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=20261109hero">
+    <link rel="stylesheet" href="../css/docs.css?v=20261017">
+    <style>
+        .guide-updated { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 24px; }
+        .guide-review-note {
+            border: 1px solid #c9a227;
+            background: rgba(201, 162, 39, 0.08);
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin: 0 0 20px;
+        }
+        .guide-review-note strong { color: var(--text-primary); display: block; margin-bottom: 8px; }
+        .guide-review-note p { margin-bottom: 0; }
+        .guide-screenshot-placeholder {
+            border: 1px dashed var(--border);
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 28px 20px;
+            margin: 0 0 20px;
+            color: var(--text-muted);
+        }
+        .guide-screenshot-placeholder strong { color: var(--text-primary); display: block; margin-bottom: 8px; }
+        .guide-screenshot-placeholder .guide-alt {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 8px;
+        }
+        .guide-closing { margin-top: 48px; padding-top: 8px; }
+        .guide-start-free { margin-top: 16px; font-size: 0.95rem; }
+    </style>
+    <script type="application/ld+json">
+{
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "headline": "Find which switch port a MAC or IP is on (any vendor)",
+          "description": "How to trace a MAC or IP address to its switch port on Cisco, Juniper, Arista, Aruba, Dell and Extreme, by hand and across every site at once.",
+          "datePublished": "2026-11-11",
+          "dateModified": "2026-11-11",
+          "inLanguage": "en-GB",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://nodecontrol.io/guides/find-mac-address-switch-port.html"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Mike",
+            "url": "https://nodecontrol.io/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "The Promised Lan Limited",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://nodecontrol.io/images/logo.svg"
+            }
+          },
+          "image": "https://nodecontrol.io/images/og/nodecontrol-share.png"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://nodecontrol.io/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Find which switch port a MAC or IP is on",
+              "item": "https://nodecontrol.io/guides/find-mac-address-switch-port.html"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="background: rgba(11, 15, 20, 0.98);">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../images/logo-simple.svg" alt="Node Control" class="nav-logo-img">
+                <span class="nav-logo-text">Node<span class="cyan">Control</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#screenshots">Screenshots</a></li>
+                <li><a href="../index.html#download">Download</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
+                <li><a href="../docs/">Docs</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+    <button type="button" class="docs-menu-toggle" id="docsMenuToggle" aria-expanded="false" aria-controls="docsSidebar">Docs menu</button>
+        <aside class="docs-sidebar" id="docsSidebar">
+  <div class="docs-sidebar-header">
+    <h3>Documentation</h3>
+    <span class="docs-version">Updated 24 October 2026</span>
+  </div>
+  <nav class="docs-nav">
+    <div class="docs-nav-section">
+      <h4>Guides</h4>
+      <a href="find-mac-address-switch-port.html" class="docs-nav-link active">Find a MAC or IP on a switch port</a>
+      <a href="multi-vendor-config-backup.html" class="docs-nav-link">Back up mixed-vendor configs</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Getting Started</h4>
+      <a href="../docs/getting-started/installation-mac.html" class="docs-nav-link">Installing on macOS</a>
+      <a href="../docs/getting-started/installation-windows.html" class="docs-nav-link">Installing on Windows</a>
+      <a href="../docs/getting-started/first-launch-activation.html" class="docs-nav-link">First Launch &amp; Activation</a>
+      <a href="../docs/getting-started/licence.html" class="docs-nav-link">Your licence</a>
+      <a href="../docs/getting-started/updating.html" class="docs-nav-link">Updating</a>
+      <a href="../docs/getting-started/navigation.html" class="docs-nav-link">Where things are</a>
+      <a href="../docs/getting-started/adding-first-device.html" class="docs-nav-link">Adding Your First Device</a>
+      <a href="../docs/getting-started/credentials.html" class="docs-nav-link">Setting Up Credentials</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Library</h4>
+      <a href="../docs/library/overview.html" class="docs-nav-link">Library Overview</a>
+      <a href="../docs/library/adding-devices.html" class="docs-nav-link">Adding Devices</a>
+      <a href="../docs/library/subnet-scan.html" class="docs-nav-link">Subnet Scan</a>
+      <a href="../docs/library/sites.html" class="docs-nav-link">Organising by Site</a>
+      <a href="../docs/library/github-sync.html" class="docs-nav-link">GitHub Sync</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tasks</h4>
+      <a href="../docs/tasks/topology-l2.html" class="docs-nav-link">L2 Topology Builder</a>
+      <a href="../docs/tasks/topology-l3.html" class="docs-nav-link">L3 Topology Builder</a>
+      <a href="../docs/tasks/topology-wan.html" class="docs-nav-link">Watcher of The WAN</a>
+      <a href="../docs/tasks/config-backup.html" class="docs-nav-link">Config Backup and Save Config</a>
+      <a href="../docs/tasks/config-compliance.html" class="docs-nav-link">Config Compliance</a>
+      <a href="../docs/tasks/config-compliance.html#compliance-by-interface" class="docs-nav-link">Compliance by interface</a>
+      <a href="../docs/tasks/config-from-file.html" class="docs-nav-link">Config from File</a>
+      <a href="../docs/tasks/discover-variables.html" class="docs-nav-link">Discover Variables</a>
+      <a href="../docs/tasks/discovery.html" class="docs-nav-link">Discover</a>
+      <a href="../docs/tasks/lab-export.html" class="docs-nav-link">Lab Export</a>
+      <a href="../docs/tasks/find-device.html" class="docs-nav-link">Find Device</a>
+      <a href="../docs/tasks/verify-device-types.html" class="docs-nav-link">Verify Device Types</a>
+      <a href="../docs/tasks/config-push.html" class="docs-nav-link">Config Push</a>
+      <a href="../docs/tasks/packet-capture.html" class="docs-nav-link">Packet Capture</a>
+      <a href="../docs/tasks/file-transfer.html" class="docs-nav-link">File Transfer</a>
+      <a href="../docs/tasks/ssh-terminal.html" class="docs-nav-link">SSH Terminal</a>
+      <a href="../docs/tasks/serial-console.html" class="docs-nav-link">Serial console</a>
+      <a href="../docs/tasks/local-terminal.html" class="docs-nav-link">Local network terminal</a>
+      <a href="../docs/tasks/monitor.html" class="docs-nav-link">Monitor</a>
+      <a href="../docs/tasks/firewall-analyser.html" class="docs-nav-link">Firewall Rule Analyser</a>
+      <a href="../docs/tasks/ipam.html" class="docs-nav-link">IPAM</a>
+      <a href="../docs/tasks/meraki-configurator.html" class="docs-nav-link">Meraki Configurator</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Reports</h4>
+      <a href="../docs/reports/overview.html" class="docs-nav-link">Reports Overview</a>
+      <a href="../docs/reports/port-utilisation.html" class="docs-nav-link">Port Utilisation</a>
+      <a href="../docs/reports/bandwidth.html" class="docs-nav-link">Bandwidth</a>
+      <a href="../docs/reports/vlan-port-finder.html" class="docs-nav-link">VLAN Port Finder</a>
+      <a href="../docs/reports/inventory.html" class="docs-nav-link">Inventory</a>
+      <a href="../docs/reports/meraki-usage-summary.html" class="docs-nav-link">Meraki Usage Summary</a>
+      <a href="../docs/reports/security-audit.html" class="docs-nav-link">Security Audit</a>
+      <a href="../docs/reports/access-review.html" class="docs-nav-link">Access Review</a>
+      <a href="../docs/reports/lifecycle.html" class="docs-nav-link">Lifecycle and EoX</a>
+      <a href="../docs/reports/change-summary.html" class="docs-nav-link">Change Summary</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Vendors</h4>
+      <a href="../docs/vendors/overview.html" class="docs-nav-link">Vendor Overview</a>
+      <a href="../docs/vendors/cisco.html" class="docs-nav-link">Cisco IOS / IOS-XE / NX-OS</a>
+      <a href="../docs/vendors/palo-alto.html" class="docs-nav-link">Palo Alto PAN-OS</a>
+      <a href="../docs/vendors/hp-procurve.html" class="docs-nav-link">HP ProCurve</a>
+      <a href="../docs/vendors/aruba.html" class="docs-nav-link">Aruba</a>
+      <a href="../docs/vendors/aruba-aos-cx.html" class="docs-nav-link">Aruba AOS-CX</a>
+      <a href="../docs/vendors/juniper.html" class="docs-nav-link">Juniper Junos</a>
+      <a href="../docs/vendors/arista.html" class="docs-nav-link">Arista EOS</a>
+      <a href="../docs/vendors/dell.html" class="docs-nav-link">Dell OS6 / OS10</a>
+      <a href="../docs/vendors/extreme.html" class="docs-nav-link">Extreme EXOS / VSP</a>
+      <a href="../docs/vendors/meraki.html" class="docs-nav-link">Cisco Meraki</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Settings</h4>
+      <a href="../docs/settings/overview.html" class="docs-nav-link">Settings Overview</a>
+      <a href="../docs/settings/site-detection.html" class="docs-nav-link">Site Detection Rules</a>
+      <a href="../docs/settings/custom-commands.html" class="docs-nav-link">Custom Commands</a>
+      <a href="../docs/settings/scripts.html" class="docs-nav-link">Custom Scripts</a>
+      <a href="../docs/settings/safe-mode.html" class="docs-nav-link">Safe Mode</a>
+      <a href="../docs/settings/ai.html" class="docs-nav-link">AI provider</a>
+      <a href="../docs/settings/ai-llm.html" class="docs-nav-link">AI on Professional</a>
+      <a href="../docs/settings/ai-features.html" class="docs-nav-link">AI features overview</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Security</h4>
+      <a href="../docs/security/credential-storage.html" class="docs-nav-link">Credential Storage</a>
+      <a href="../docs/security/data-and-privacy.html" class="docs-nav-link">What leaves your laptop</a>
+      <a href="../docs/security/safe-mode.html" class="docs-nav-link">Safe Mode &amp; Allowlist</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Troubleshooting</h4>
+      <a href="../docs/troubleshooting/overview.html" class="docs-nav-link">Common Issues</a>
+      <a href="../docs/troubleshooting/ssh-connection-issues.html" class="docs-nav-link">SSH Connection Problems</a>
+      <a href="../docs/troubleshooting/device-type-detection.html" class="docs-nav-link">Device Type Misdetection</a>
+      <a href="../docs/troubleshooting/crash-logs.html" class="docs-nav-link">Reading Crash Logs</a>
+      <a href="../docs/troubleshooting/update-issues.html" class="docs-nav-link">Update Problems</a>
+    </div>
+    <div class="docs-nav-section">
+      <h4>Tiers</h4>
+      <a href="../docs/tiers/overview.html" class="docs-nav-link">Tier Comparison</a>
+      <a href="../docs/tiers/upgrading.html" class="docs-nav-link">Upgrading</a>
+    </div>
+  </nav>
+</aside>
+
+        <main class="docs-content">
+            <div class="docs-content-inner">
+                <div class="docs-breadcrumb">
+                    <a href="../index.html">Home</a> &rsaquo; Guides &rsaquo; Find which switch port a MAC or IP is on
+                </div>
+                <h1 id="find-which-switch-port-a-mac-or-ip-is-on-any-vendor">Find which switch port a MAC or IP is on (any vendor)</h1>
+                <p class="guide-updated">Last updated 11 November 2026</p>
+                <p>Someone hands you a MAC address, or an IP, and asks where it is plugged in. On a mixed estate that means the gateway ARP table, then the MAC table on one switch after another, until you reach an edge port.</p>
+                <aside class="guide-review-note">
+                    <strong>[MIKE: confirm or rewrite in your words]</strong>
+                    <p>I once spent a day finding one MAC across 10 sites.</p>
+                </aside>
+                <p>This page is the manual method first: the commands, the formats, and the things that catch people out. Then it shows how Find Device in Node Control does the same job.</p>
+                <p>The addresses below are documentation examples (RFC 5737 and a made-up MAC). Use your own values in the lab.</p>
+
+                <h2 id="start-with-the-ip">Start with the IP, if that is what you have</h2>
+                <p>If you were given an IP address, resolve it to a MAC on the gateway first.</p>
+                <p>On Cisco IOS, IOS-XE and NX-OS:</p>
+                <pre><code>show ip arp 192.0.2.10</code></pre>
+                <p>If the address sits in a VRF, add the VRF name:</p>
+                <pre><code>show ip arp vrf &lt;name&gt; 192.0.2.10</code></pre>
+                <p>On Junos:</p>
+                <pre><code>show arp no-resolve | match 192.0.2.10</code></pre>
+                <p>Take the MAC from that output and look it up in the switching table. If the gateway has no ARP entry, the host may be quiet, in another VRF, or not on this gateway.</p>
+
+                <h2 id="look-the-mac-up">Look the MAC up in the address table</h2>
+                <p>Each vendor has its own command and its own MAC format. These are the forms I would try first. They need a check on my lab before this page goes live.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Command</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cisco IOS, IOS-XE, NX-OS, and Arista EOS</td>
+                            <td><code>show mac address-table address 0011.2233.4455</code></td>
+                        </tr>
+                        <tr>
+                            <td>Juniper Junos</td>
+                            <td><code>show ethernet-switching table | match 00:11:22:33:44:55</code></td>
+                        </tr>
+                        <tr>
+                            <td>Aruba AOS-CX</td>
+                            <td><code>show mac-address-table address 00:11:22:33:44:55</code></td>
+                        </tr>
+                        <tr>
+                            <td>Aruba AOS-S / OS-Switch</td>
+                            <td><code>show mac-address 001122-334455</code></td>
+                        </tr>
+                        <tr>
+                            <td>Dell OS10</td>
+                            <td><code>show mac address-table address 00:11:22:33:44:55</code></td>
+                        </tr>
+                        <tr>
+                            <td>Extreme EXOS</td>
+                            <td><code>show fdb 00:11:22:33:44:55</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>If the port is an access port, you have the answer. If it is a trunk, a LAG, or a port-channel, keep going.</p>
+
+                <h2 id="follow-the-uplink">Follow the uplink to the edge</h2>
+                <p>A MAC learned on a trunk is usually coming from a downstream switch, not sitting on that port. Check who is on the other end, then hop to that neighbour and run the MAC table command again.</p>
+                <p>On Cisco and anything that speaks CDP:</p>
+                <pre><code>show cdp neighbors GigabitEthernet1/0/1 detail</code></pre>
+                <p>Where you use LLDP (Junos, Aruba, and many mixed fabrics):</p>
+                <pre><code>show lldp neighbors GigabitEthernet1/0/1 detail</code></pre>
+                <p>Repeat until the port is an edge port. If the MAC shows on a port-channel or LAG, identify the bundle members and the neighbour on the bundle before you hop. The interface name in those neighbour commands is an example; use the port the MAC table actually returned, in that vendor’s form.</p>
+
+                <h2 id="gotchas">Things that catch people out</h2>
+                <ul>
+                    <li><strong>MAC formats.</strong> Cisco dotted (0011.2233.4455), colon-separated (00:11:22:33:44:55), hyphenated, and Aruba’s 001122-334455 are the same address. A paste in the wrong form often returns nothing.</li>
+                    <li><strong>Aged-out entries.</strong> If the client has been quiet, the MAC may have left the table. A ping from the gateway can refresh ARP and the CAM, but only if the host replies.</li>
+                    <li><strong>Port-channels and LAGs.</strong> The table may show the bundle, not a member port. Look up the members and the neighbour on the aggregate before you treat it as the edge.</li>
+                    <li><strong>Wireless clients.</strong> The MAC often appears on the switch port that faces the access point, not on a port of its own. The SSID and AP name live in the wireless system.</li>
+                </ul>
+
+                <h2 id="how-node-control-does-it">How Node Control does it</h2>
+                <p>In Node Control this is <a href="../docs/tasks/find-device.html">Find Device</a>, on the Engineer tab. You paste a list of MAC addresses and IP addresses, one per line. It accepts common MAC formats (colons, dots, hyphens, or none) and dotted-quad IPs.</p>
+                <p>If you give it an IP, it asks the starting switch — or, on Professional, the site’s saved core switches — for that IP in the ARP table, including VRFs. If none of them holds it, the row says it could not resolve the IP to a MAC.</p>
+                <p>On Professional you pick a site, or All. Find Device starts from that site’s saved core switches and follows CDP or LLDP into the fabric until it reaches an edge port, or the port of an access point. If you have a Meraki Dashboard API key in Settings, it can also look up Meraki wireless clients and return the network, SSID, AP and last seen.</p>
+                <p>The results show the edge switch, port, VLAN, neighbour, and the OUI vendor.</p>
+                <figure class="guide-screenshot-placeholder">
+                    <strong>Screenshot placeholder — lab capture needed</strong>
+                    Suggested file: <code>images/guides/find-device-results.png</code>, taken in demo mode with documentation addresses only (for example 192.0.2.10 and 0011.2233.4455). No customer names, real IPs or hostnames.
+                    <span class="guide-alt">Suggested alt text: Node Control Find Device results on Professional, showing a documentation MAC resolved to an edge switch, port, VLAN, neighbour and OUI vendor.</span>
+                </figure>
+                <figure class="guide-screenshot-placeholder">
+                    <strong>Screenshot placeholder — lab capture needed</strong>
+                    Suggested file: <code>images/guides/find-device-input.png</code>. The Find Device input, with a short list of documentation MACs and IPs and the site picker on Professional.
+                    <span class="guide-alt">Suggested alt text: The Find Device task in Node Control, with a list of documentation MAC and IP addresses ready to search from a site’s core switches.</span>
+                </figure>
+                <p>On Free, you pick one switch to start from. Find Device follows the trail from there to the edge port, one switch at a time, with no site or cores model. Meraki wireless clients are included on Free as well as Professional.</p>
+                <p>The Find Device walk is documented for Cisco IOS, IOS-XE and NX-OS, Aruba AOS-CX, HP ProCurve and Aruba OS-Switch, and Arista EOS. The Find Device documentation currently says Juniper Junos, Dell and Extreme are skipped with a clear reason until their output formats are confirmed.</p>
+                <aside class="guide-review-note">
+                    <strong>[VERIFY] Vendor coverage for Find Device</strong>
+                    <p>The Dell and Extreme vendor pages still tick Find Device as working. The Juniper page lists it under “What works”, then later says Junos is skipped until the output format is confirmed. This draft follows the Find Device page and does not claim a walk on Juniper, Dell or Extreme. Confirm which is current before publish, and tighten the meta description if “any vendor” and “across every site at once” overclaim.</p>
+                </aside>
+                <p>For the wider picture of how switches are connected, see the <a href="../docs/tasks/topology-l2.html">L2 Topology Builder</a>. Edition differences are in the <a href="../docs/tiers/overview.html">tier comparison</a>. A related guide covers <a href="multi-vendor-config-backup.html">backing up running configs from mixed vendors in one run</a>.</p>
+
+                <div class="guide-closing">
+                    <p>Node Control does this alongside topology maps, config backup and push with revert, compliance, EoL and PSIRT reports, the PAN-OS analyser, IPAM, Meraki tools, custom scripts and AI on your own key, for Cisco, Palo Alto, Meraki, Juniper, Arista, Aruba, Dell and Extreme. Find Device on Professional starts from a site’s saved core switches, or All sites, and follows CDP or LLDP into the fabric. Meraki wireless clients are included. On Free you pick one switch to start from.</p>
+                    <p class="guide-start-free">Start free: up to 25 devices → <a href="https://nodecontrol.io/#free-edition">nodecontrol.io/#free-edition</a></p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer footer-social-bar">
+        <div class="container">
+            <div class="footer-bottom">
+                <nav class="footer-social" aria-label="Node Control on social media">
+                    <a href="https://x.com/node_control_" target="_blank" rel="noopener" aria-label="Node Control on X">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/company/node-control/" target="_blank" rel="noopener" aria-label="Node Control on LinkedIn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Node_Control" target="_blank" rel="noopener" aria-label="Node Control on YouTube">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            links.classList.toggle('active');
+        });
+        links.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.classList.remove('active');
+                links.classList.remove('active');
+            });
+        });
+    }
+    </script>
+
+    <script src="../js/docs.js?v=20261017"></script>
+</body>
+</html>
