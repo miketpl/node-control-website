@@ -530,12 +530,13 @@ a:hover {
 
 .hero-bg-glow {
     position: absolute;
-    top: 42%;
+    top: 46%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(1100px, 140%);
-    height: 640px;
-    background: radial-gradient(ellipse at center, rgba(1, 205, 229, 0.22) 0%, rgba(12, 57, 72, 0.42) 46%, transparent 74%);
+    width: min(980px, 130%);
+    height: 760px;
+    /* Same dark teal as the banner field, so any leftover tone is the page. */
+    background: radial-gradient(ellipse at center, rgba(12, 40, 54, 0.9) 0%, rgba(9, 25, 36, 0.72) 46%, rgba(8, 14, 18, 0) 78%);
     pointer-events: none;
 }
 
@@ -552,11 +553,18 @@ a:hover {
     max-height: 56vh;
     object-fit: contain;
     margin-bottom: 0;
-    /* One radial mask. Two layers were not intersecting in Chrome, so the
-       side edges stayed sharp. The solid centre keeps the wordmark and the
-       line under it. */
-    -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 70%, transparent 100%);
-    mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 70%, transparent 100%);
+    /* Radii are of the image box. The fade begins inside the artwork and is
+       fully clear before the banner's own rectangle. */
+    -webkit-mask-image:
+        radial-gradient(ellipse 46% 48% at 50% 50%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
+        linear-gradient(to bottom, transparent 0%, #000 7%, #000 90%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        radial-gradient(ellipse 46% 48% at 50% 50%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
+        linear-gradient(to bottom, transparent 0%, #000 7%, #000 90%, transparent 100%);
+    mask-composite: intersect;
+    /* Dark banner pixels drop out against the matching glow. Bright type stays. */
+    mix-blend-mode: lighten;
     filter: drop-shadow(0 0 36px rgba(1, 205, 229, 0.16));
 }
 
