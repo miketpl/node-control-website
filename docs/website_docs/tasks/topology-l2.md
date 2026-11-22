@@ -62,6 +62,16 @@ Port Connections is the Pro Discover tab. It is not this map.
 
 Right-click a switch for its MAC table, grouped by VLAN with the port for each MAC, plus its VLANs, spanning tree and trunk ports. The same menu offers SSH, ping, and traceroute. The MAC flyout does not show an OUI vendor or a neighbour.
 
+<figure>
+<img src="../../images/screenshots/nc-mac-table@1x.png" srcset="../../images/screenshots/nc-mac-table@1x.png 1x, ../../images/screenshots/nc-mac-table.png 2x" alt="MAC Address Table" width="1024" height="698" loading="lazy">
+</figure>
+<figure>
+<img src="../../images/screenshots/nc-vlan-table@1x.png" srcset="../../images/screenshots/nc-vlan-table@1x.png 1x, ../../images/screenshots/nc-vlan-table.png 2x" alt="VLAN Table Lookup" width="1024" height="698" loading="lazy">
+</figure>
+<figure>
+<img src="../../images/screenshots/nc-l2-spanning-tree@1x.png" srcset="../../images/screenshots/nc-l2-spanning-tree@1x.png 1x, ../../images/screenshots/nc-l2-spanning-tree.png 2x" alt="Spanning Tree" width="1024" height="698" loading="lazy">
+</figure>
+
 ## Map per run
 
 The task draws one HTML map per run, named after the site.
