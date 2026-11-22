@@ -526,6 +526,8 @@ a:hover {
     text-align: center;
     padding: calc(var(--nav-height) + 10px) 24px 28px;
     overflow: hidden;
+    /* Sampled from the opaque field just inside the hero image's side edges. */
+    background-color: #081823;
 }
 
 .hero-bg-glow {
@@ -535,14 +537,13 @@ a:hover {
     transform: translate(-50%, -50%);
     width: min(980px, 130%);
     height: 760px;
-    /* Same dark teal as the banner field, so any leftover tone is the page. */
-    background: radial-gradient(ellipse at center, rgba(12, 40, 54, 0.9) 0%, rgba(9, 25, 36, 0.72) 46%, rgba(8, 14, 18, 0) 78%);
+    /* Kept inside the matching field. A lighter glow here drew the side seam. */
+    background: none;
     pointer-events: none;
 }
 
 .hero-content {
     position: relative;
-    z-index: 1;
     max-width: 820px;
 }
 
@@ -553,20 +554,19 @@ a:hover {
     max-height: 56vh;
     object-fit: contain;
     margin-bottom: 0;
-    /* Radii are of the image box. Sides and top stay soft. The ellipse sits
-       lower so Brought to you by and The Promised LAN stay solid, and the
-       bottom fade starts after those lines. */
+    /* Side fade stays outside the outermost nodes (they begin near 8%).
+       Top and bottom still feather so the artwork has no hard edge. */
     -webkit-mask-image:
-        radial-gradient(ellipse 46% 61% at 50% 58%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
-        linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+        linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, #000 4%, #000 94%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-        radial-gradient(ellipse 46% 61% at 50% 58%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
-        linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+        linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, #000 4%, #000 94%, transparent 100%);
     mask-composite: intersect;
-    /* Dark banner pixels drop out against the matching glow. Bright type stays. */
+    /* Field pixels are the same colour as the hero, or darker, so they drop
+       out. Nodes and lines are lighter, so they stay at full strength. */
     mix-blend-mode: lighten;
-    filter: drop-shadow(0 0 36px rgba(1, 205, 229, 0.16));
 }
 
 .hero-headline {
