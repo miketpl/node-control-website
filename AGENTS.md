@@ -50,6 +50,9 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
 sentences. If a claim can't be made concretely, don't make it.
 
+The homepage H1 must stay "Built by Network Engineers for Network Engineers."
+unless Mike himself says otherwise. Do not replace it in an SEO pass.
+
 ## Deployment model — read this twice
 
 - **`main` is production.** GitHub Pages serves `main` (root path) at
