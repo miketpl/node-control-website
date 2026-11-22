@@ -330,10 +330,15 @@
 }
 
 :root {
-    --bg-primary: #0b0f14;
-    --bg-secondary: #0f1620;
+    /* Sampled from images/hero-banner.png: edge field about #080f14,
+       interior teal about #0c212d and #294f54, logo cyan about #01cde5.
+       Kept as dark as the old #0b0f14 so body text stays at the same contrast. */
+    --bg-primary: #080e12;
+    --bg-secondary: #0b151c;
     --bg-card: #111b26;
     --bg-card-hover: #162230;
+    --hero-cyan: #01cde5;
+    --hero-teal: #0c3948;
     --cyan: #00e5ff;
     --cyan-hover: #12f0ff;
     --cyan-glow: rgba(0, 229, 255, 0.15);
@@ -365,10 +370,21 @@ section[id],
 
 body {
     font-family: var(--font);
-    background: var(--bg-primary);
+    background-color: var(--bg-primary);
+    background-image:
+        radial-gradient(ellipse 72% 36% at 50% -6%, rgba(1, 205, 229, 0.22), transparent 58%),
+        radial-gradient(ellipse 58% 42% at 50% 16%, rgba(12, 57, 72, 0.55), transparent 68%),
+        radial-gradient(ellipse 42% 32% at 92% 78%, rgba(10, 36, 48, 0.4), transparent 70%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+    body {
+        background-attachment: scroll;
+    }
 }
 
 a {
@@ -396,7 +412,7 @@ a:hover {
     left: 0;
     right: 0;
     height: var(--nav-height);
-    background: rgba(11, 15, 20, 0.92);
+    background: rgba(8, 14, 18, 0.9);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
@@ -514,14 +530,14 @@ a:hover {
 
 .hero-bg-glow {
     position: absolute;
-    top: 50%;
+    top: 46%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
+    width: min(980px, 130%);
+    height: 760px;
+    /* Same dark teal as the banner field, so any leftover tone is the page. */
+    background: radial-gradient(ellipse at center, rgba(12, 40, 54, 0.9) 0%, rgba(9, 25, 36, 0.72) 46%, rgba(8, 14, 18, 0) 78%);
     pointer-events: none;
-    opacity: 0.4;
 }
 
 .hero-content {
@@ -537,6 +553,20 @@ a:hover {
     max-height: 56vh;
     object-fit: contain;
     margin-bottom: 0;
+    /* Radii are of the image box. Sides and top stay soft. The ellipse sits
+       lower so Brought to you by and The Promised LAN stay solid, and the
+       bottom fade starts after those lines. */
+    -webkit-mask-image:
+        radial-gradient(ellipse 46% 61% at 50% 58%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
+        linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        radial-gradient(ellipse 46% 61% at 50% 58%, #000 58%, rgba(0, 0, 0, 0.45) 78%, transparent 92%),
+        linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    mask-composite: intersect;
+    /* Dark banner pixels drop out against the matching glow. Bright type stays. */
+    mix-blend-mode: lighten;
+    filter: drop-shadow(0 0 36px rgba(1, 205, 229, 0.16));
 }
 
 .hero-headline {
@@ -708,7 +738,7 @@ a:hover {
 }
 
 .section-alt {
-    background: var(--bg-secondary);
+    background: linear-gradient(180deg, rgba(11, 24, 32, 0.72), rgba(8, 14, 18, 0.35));
 }
 
 .statement-section {
