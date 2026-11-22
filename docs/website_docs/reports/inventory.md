@@ -4,6 +4,10 @@ Available on **Free**, **Pro**, **AI**.
 
 The Inventory report walks each device in scope and collects hostname, IP, device type, model, OS version and serial. It is an HTML report you can filter and export to CSV. There is no uptime column and no Excel export.
 
+<figure>
+<img src="../../images/screenshots/nc-report-inventory@1x.png" srcset="../../images/screenshots/nc-report-inventory@1x.png 1x, ../../images/screenshots/nc-report-inventory.png 2x" alt="Inventory" width="1024" height="600" loading="lazy">
+</figure>
+
 ## Open the report
 
 - **Reports** in the left sidebar → **Inventory** → set Scope → **Run**

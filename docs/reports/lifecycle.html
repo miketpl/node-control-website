@@ -217,6 +217,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </blockquote>
 <p>This report answers a plain question: which hardware and which software in scope are at end of sale or end of life, and when.</p>
 <p>On AOS-CX, Asset Lifecycle reads model, serial, version, and uptime. On Arista EOS it reads the EOS inventory and the EOS version.</p>
+<figure>
+<img src="../../images/screenshots/nc-report-asset-lifecycle@1x.png" srcset="../../images/screenshots/nc-report-asset-lifecycle@1x.png 1x, ../../images/screenshots/nc-report-asset-lifecycle.png 2x" alt="Asset Lifecycle" width="1024" height="600" loading="lazy">
+</figure>
 <h2 id="where-the-dates-come-from">Where the dates come from</h2>
 <p><strong>Catalyst Center</strong> is the authoritative source for devices it manages. A completed Catalyst Center answer is never overwritten by another source. A failed Catalyst Center scan is not the same thing as &quot;this device has no end-of-life date&quot;. An empty answer from a failed scan does not wipe the other sources either.</p>
 <p>If Catalyst Center is unreachable (VPN down, DNS failure), the log says so in one line. You do not get a traceback. A refused login — wrong password, or a password that has expired — is a plain message that names the account.</p>
