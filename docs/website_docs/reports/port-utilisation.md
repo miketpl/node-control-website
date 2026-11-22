@@ -4,6 +4,10 @@
 
 For each switch in scope, lists every port with its status, VLAN, MAC count, and traffic counters. Useful for capacity planning, finding unused ports, and spotting interface errors.
 
+<figure>
+<img src="../../images/screenshots/nc-report-port-utilisation@1x.png" srcset="../../images/screenshots/nc-report-port-utilisation@1x.png 1x, ../../images/screenshots/nc-report-port-utilisation.png 2x" alt="Port Utilisation" width="1024" height="600" loading="lazy">
+</figure>
+
 ## Open the report
 
 - **Reports** in the left sidebar → **Port Utilisation** → set Scope → **Run**

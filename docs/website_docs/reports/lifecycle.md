@@ -6,6 +6,10 @@ This report answers a plain question: which hardware and which software in scope
 
 On AOS-CX, Asset Lifecycle reads model, serial, version, and uptime. On Arista EOS it reads the EOS inventory and the EOS version.
 
+<figure>
+<img src="../../images/screenshots/nc-report-asset-lifecycle@1x.png" srcset="../../images/screenshots/nc-report-asset-lifecycle@1x.png 1x, ../../images/screenshots/nc-report-asset-lifecycle.png 2x" alt="Asset Lifecycle" width="1024" height="600" loading="lazy">
+</figure>
+
 ## Where the dates come from
 
 **Catalyst Center** is the authoritative source for devices it manages. A completed Catalyst Center answer is never overwritten by another source. A failed Catalyst Center scan is not the same thing as "this device has no end-of-life date". An empty answer from a failed scan does not wipe the other sources either.
