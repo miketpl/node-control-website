@@ -50,6 +50,10 @@ Palo Alto, HP/Aruba, Juniper, Arista, Dell, Extreme.
 hate marketing. No hype, no exclamation marks, no buzzwords. Short declarative
 sentences. If a claim can't be made concretely, don't make it.
 
+The homepage title must stay "Node Control | Network Operations App for Network Engineers."
+The homepage H1 must stay "Built by Network Engineers for Network Engineers."
+Do not change the title or the H1 without Mike's own approval.
+
 ## Deployment model — read this twice
 
 - **`main` is production.** GitHub Pages serves `main` (root path) at

@@ -865,6 +865,11 @@ a:hover {
 .screenshots-grid-2 { grid-template-columns: repeat(2, 1fr); }
 .screenshots-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .screenshots-grid-4 { grid-template-columns: repeat(4, 1fr); }
+/* Five cards: three on the first row, two centred on the second. */
+.screenshots-grid-5 { grid-template-columns: repeat(6, 1fr); }
+.screenshots-grid-5 > .screenshot-card { grid-column: span 2; }
+.screenshots-grid-5 > .screenshot-card:nth-child(4) { grid-column: 2 / span 2; }
+.screenshots-grid-5 > .screenshot-card:nth-child(5) { grid-column: 4 / span 2; }
 
 .screenshot-card {
     background: var(--bg-card);
@@ -2297,8 +2302,16 @@ select.form-input {
     .pricing-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    .screenshots-grid-4 {
+    .screenshots-grid-4,
+    .screenshots-grid-5 {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .screenshots-grid-5 > .screenshot-card,
+    .screenshots-grid-5 > .screenshot-card:nth-child(4) {
+        grid-column: auto;
+    }
+    .screenshots-grid-5 > .screenshot-card:nth-child(5) {
+        grid-column: 1 / -1;
     }
     .watcher-showcase {
         grid-template-columns: 1fr;
@@ -2403,6 +2416,7 @@ select.form-input {
     .screenshots-grid-2,
     .screenshots-grid-3,
     .screenshots-grid-4,
+    .screenshots-grid-5,
     .pricing-grid,
     .pricing-grid-2,
     .contact-grid,
